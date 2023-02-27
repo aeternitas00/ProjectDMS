@@ -1,0 +1,63 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Card/DMSCardContainerComponent.h"
+
+
+// Called when the game starts
+void UDMSCardContainerComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//DMS_LOG_SCREEN(TEXT("%s"), *GetClass()->GetName());
+}
+
+
+TArray<ADMSCardBase*> UDMSCardContainerComponent::PopAt(uint16 Idx)
+{
+	ADMSCardBase* Card = CardList.Cards[Idx];
+
+	if (Card) CardList.Cards.RemoveAt(Idx);
+
+	OnContainerRemoved({Card});
+
+	return {Card};
+}
+
+TArray<ADMSCardBase*> UDMSCardContainerComponent::PopAt(uint16 Idx, uint16 Num)
+{
+	TArray<ADMSCardBase*> Rv;
+
+	//CardList.Cards.
+	
+	for ( int i = Idx; Num+Idx > i ;i++)
+	{
+		ADMSCardBase* Card = CardList.Cards[i];
+
+		if (Card) { CardList.Cards.RemoveAt(i); Rv.Add(Card); }
+		else break;
+	}
+	OnContainerRemoved(Rv);
+	return Rv;
+}
+
+void UDMSCardContainerComponent::Insert(TArray<ADMSCardBase*> iContainer, uint16 Idx)
+{
+	uint16 Dest = Idx;
+	if (CardList.Cards.Num() < Dest) Dest= CardList.Cards.Num();
+	for (auto Card : iContainer) Card->SetOwningContainer(this);
+	CardList.Cards.Insert(iContainer,Dest);
+	OnContainerAdded(iContainer);
+}
+
+void UDMSCardContainerComponent::Remove(ADMSCardBase* iCard)
+{
+	CardList.Cards.Remove(iCard);
+	OnContainerRemoved({iCard});
+}
+
+void UDMSCardContainerComponent::Remove(TArray<ADMSCardBase*> iCards) 
+{
+	for (auto iCard : iCards) CardList.Cards.Remove(iCard);
+	OnContainerRemoved(iCards);
+}
