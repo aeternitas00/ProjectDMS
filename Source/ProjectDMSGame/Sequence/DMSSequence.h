@@ -2,11 +2,24 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Class for objectifying "Events" that happen in the game.
+ *
+ *	========================================
+ *	objectifying 이 맞는 표현인가?
+ */
+
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
 #include "Selector/DMSSelectorQueue.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSSequence.generated.h"
+
+
 
 class UDMSEffectInstance;
 class UDMSDataObjectSet;
@@ -14,14 +27,21 @@ class UDMSEffectorInterface;
 class UDMSEffectNode;
 class UDMSEffectElementSelectorWidget;
 
+
+/** 
+ * 	========================================
+ *
+ *	초고 : 일반적으로 게임에서 일어나는 일들이 모두 '이펙트'의 결과이며 이 이펙트가 어떻게 진행 되는지에 대한 정보를 오브젝트화 하는 형태로 설계.
+ *	게임 중 어떤 사건이 일어나면 각 게임 오브젝트들이 이 시퀀스 정보를 받아서 각자가 적절한 반응을 할 수 있게 만들기 위함. ( 컨디션 객체가 시퀀스를 받아서 체크하는 형태 )
+ *	 
+ *	========================================
+ */
 UCLASS(ClassGroup = (Sequence))
 class UDMSSequence : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	//static const uint16 IDX_NONE = 0xFFFF;
-
 	// Default Initializer
 	UDMSSequence( ) { 
 		Progress = EDMSTimingFlag::T_Before; //EDMSTimingFlag::T_Null;
@@ -37,10 +57,12 @@ public:
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
 	bool bIsActive;
 
-	// B-D-A 3단계 구성
+	// 어떠한 이펙트가 실제로 월드에 영향을 끼치기 까지의 과정 중에 간섭할 '타이밍'은 결론적으로 발동 전, 도중, 후 세가지로 크게 나눌 수 있음.
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
 	EDMSTimingFlag Progress;
 
+	// 이펙트 노드와 1:1 매칭.
+	// 이 시퀀스에 있어 사실상의 의미절에 해당함.
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
 	UDMSEffectNode* OriginalEffectNode;
 
@@ -60,9 +82,11 @@ public:
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
 	TArray<UDMSEffectInstance*> EIs;
 	
+	// 시퀀스에 진행에 필요한 플레이어의 의사 결정용 위젯들의 컨테이너
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
 	FDMSSelectorQueue SelectorQueue;
 
+	// 시퀀스 플로우에 필요한 데이터들을 보관. ( 수치 같은 것의 변화 같이 )
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDMSDataObjectSet* EIDatas;
 

@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Selector queue
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
 #include "DMSSelectorQueue.generated.h"

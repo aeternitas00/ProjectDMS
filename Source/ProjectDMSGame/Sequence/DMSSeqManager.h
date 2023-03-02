@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	"Handling Sequences"
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
 #include "GameModes/DMSGameMode.h"
@@ -15,7 +25,11 @@ class UDMSSequence;
 class UDMSEffectorInterface;
 
 /**
- * Managemnet seq. flow. tossing to effect handler.
+ *	========================================
+ * 
+ *	Managemnet seq. flow. tossing to effect handler.
+ * 
+ *	========================================
  */
 DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 UCLASS(ClassGroup = (Sequence))

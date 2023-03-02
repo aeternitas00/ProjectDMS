@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Combinator string parsing helper library
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DMSCombinatorLibrary.generated.h"
@@ -15,9 +25,13 @@ class PROJECTDMSGAME_API UDMSCombinatorLibrary : public UBlueprintFunctionLibrar
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable, Category = "Combinator")
-	static bool GetCombinatedResult(const TArray<bool>& iBoolArr,const FString& Combinator);
+	static bool ValidateCombinator(const FString& Combinator);
+
+	//UFUNCTION(BlueprintCallable, Category = "Combinator")
+	static void ExecOperation(bool& iRv, const bool& NewValue, const uint8& Operator);
 
 	UFUNCTION(BlueprintCallable, Category = "Combinator")
-	static bool ValidateCombinator(const FString& Combinator);
+	static bool ParseCombinator(const TArray<bool>& Values, const FString& Combinator); /*const*/
+
 };
 

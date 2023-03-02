@@ -107,8 +107,10 @@ void UDMSSeqManager::RunSequence(UDMSSequence* Sequence)
 
 	Sequence->SetActive(true);
 
+	
 	if (Sequence->OriginalEffectNode->bIsChainableEffect)
 	{
+		// 이 방식 말고 받는 입장에서 알아서 생각 하게 하면 한번 뿌리는 것으로 해결 할 수 있을 듯?
 		DMS_LOG_SCREEN(TEXT("==-- BEFORE --=="));
 		NotifyManager->BroadCast(Sequence);
 		Sequence->Progress = EDMSTimingFlag::T_During;

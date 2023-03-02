@@ -2,13 +2,27 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE
+ *
+ *	DMS Game's Player state
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "GameFramework/PlayerState.h"
 #include "Card/DMSCardContainerComponent.h"
 #include "DMSPlayerState.generated.h"
 
 /**
- * 
+ *	========================================
+ *
+ *
+ *
+ *	========================================
  */
 UCLASS(Blueprintable)
 class PROJECTDMSGAME_API ADMSPlayerState : public APlayerState

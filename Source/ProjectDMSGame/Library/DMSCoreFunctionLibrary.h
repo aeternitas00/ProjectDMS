@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE ?
+ *
+ *	Simple singleton getter for DMS ones.
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DMSCoreFunctionLibrary.generated.h"

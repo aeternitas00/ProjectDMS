@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Base of selector widget.
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
 #include "Selector/DMSSelectorQueue.h"

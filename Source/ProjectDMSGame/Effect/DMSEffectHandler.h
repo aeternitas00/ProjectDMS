@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Handling Effect Instances.
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSEffectHandler.generated.h"
@@ -11,8 +21,9 @@ class UDMSSequence;
 class UDMSEffectNode;
 class UDMSDataObjectSet;
 class IDMSEffectorInterface;
+
 /**
- * 
+ *  working...
  */
 UCLASS(/*ClassGroup = (Effect)*/)
 class PROJECTDMSGAME_API UDMSEffectHandler : public UObject // or ActorComponent to attach GM

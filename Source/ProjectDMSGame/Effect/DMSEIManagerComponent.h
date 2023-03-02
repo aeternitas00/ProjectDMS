@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE
+ *
+ *	Effect instance management component can be attached to various actors such as cards, enemies, and more.
+ *
+ * =========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Attribute/DMSAttributeInterface.h"
@@ -9,9 +19,9 @@
 #include "DMSEIManagerComponent.generated.h"
 
 class UDMSEffectSet;
+
 /// EI 인터랙션을 필요로 하는 오브젝트에 부착하여 사용.
 /// SelfLogging System?
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTDMSGAME_API UDMSEIManagerComponent : public UActorComponent, public IDMSEffectorInterface, public IDMSAttributeInterface
 {
@@ -30,11 +40,9 @@ public:
 	TArray<UDMSEffectInstance*> OwnEffectInstances;
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual UObject* GetObject() { return Cast<UObject>(GetOwner()); }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
@@ -44,5 +52,5 @@ public:
 	virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
 	virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
 
-	void SetupOwnEffect(TArray<UDMSEffectNodeWrapper*> EffectNodes);
+	void SetupOwnEffect(UDMSEffectSet* EffectSet);
 };

@@ -37,7 +37,7 @@ void UDMSEffect_ActivateCard::Work_Implementation(UDMSEffectInstance* iEI)
 	// Make Sequence for all Effects[{SelectedIndexs}];
 	// 지금은 전체순회만 구현
 
-	for (auto NodeWrapper : TargetCard->GetCardDefinition()->CardEffects->EffectNodes)
+	for (auto NodeWrapper : TargetCard->GetCardDefinition()->CardEffectSets[SetName]->EffectNodes)
 	{
 		auto Node = NodeWrapper->GetEffectNode();
 		SeqMan->RequestCreateSequence(iEI->SourceObject, iEI->SourceController, Node,{});

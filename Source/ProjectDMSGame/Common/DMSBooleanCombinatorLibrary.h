@@ -7,7 +7,7 @@
 #include "DMSBooleanCombinatorLibrary.generated.h"
 
 /**
- * 
+ *	DEPRECATED ( MOVED TO Library/DMSCombinatorLibrary.h )
  */
 UCLASS()
 class PROJECTDMSGAME_API UDMSBooleanCombinatorLibrary : public UBlueprintFunctionLibrary

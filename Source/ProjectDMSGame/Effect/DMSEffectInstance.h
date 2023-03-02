@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Effect Instance
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectorInterface.h"
@@ -10,10 +20,11 @@
 #include "DMSEffectInstance.generated.h"
 
 class ADMSPlayerController;
-/**
- * 
- */
 
+/**
+ *	State flag of Effect instance.
+ *	TODO :: make some flags and workflow for persistent effect
+ */
 UENUM()
 enum class EDMSEIState : uint8
 {
@@ -22,13 +33,17 @@ enum class EDMSEIState : uint8
 	//...
 };
 
-// Is it possible? && maybe Struct is more proper type
-
-
-// Will be attached to each target
-// One EI per One Affect Object
-// Seq has multiple EI
-
+/**
+ * 	========================================
+ *
+ *	EffectInstance : ~~
+ * 
+ *	Will be attached to each target
+ *	One EI per One Affected Object
+ * 
+ *	======================================== 
+ *	Is it good enough? 
+ */
 UCLASS()
 class PROJECTDMSGAME_API UDMSEffectInstance : public UObject , public IDMSEffectorInterface
 {

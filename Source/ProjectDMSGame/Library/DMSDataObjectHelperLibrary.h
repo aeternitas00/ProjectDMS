@@ -2,13 +2,22 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Helps getting value from std::any formed Data Objects in Blueprint.
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DMSDataObjectHelperLibrary.generated.h"
 
 /**
- * DataObject의 BP 환경에서 사용 지원용 함수들.
  * 필요한 타입이면 상속받아서 추가하기?
  * [ BP호환을 위해선 이렇게 더러운 방식 밖에 안되는 걸까 ]
  */

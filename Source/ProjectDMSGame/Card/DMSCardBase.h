@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE
+ *
+ *	Base of Card actor in DMS GAME
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "GameFramework/Actor.h"
 #include "Effect/DMSEffectorInterface.h"
@@ -11,6 +21,13 @@ class UDMSCardDefinition;
 class UDMSCardContainerComponent;
 class UDMSEIManagerComponent;
 
+/**
+ * 	========================================
+ *
+ *	ADMSCardBase : Base of Card actor. Wiil be implemented in BP.
+ *
+ *	========================================
+ */
 UCLASS(Blueprintable, Abstract)
 class PROJECTDMSGAME_API ADMSCardBase : public AActor, public IDMSEffectorInterface
 {

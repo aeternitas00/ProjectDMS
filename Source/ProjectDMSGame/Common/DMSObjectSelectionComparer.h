@@ -2,6 +2,19 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	Working...
+ *
+ *	=========================================
+ * 
+ *	기본적으로 게임 오브젝트 탐색을 위한 범용 컴페어러를 만들 생각으로 구현 중이었는데 아직 잘 모르겠음. ( 컨디션 체킹, 셀렉터에 후보군 리스트 만들기 위한 탐색 등... )
+ *	필요성이라던가 구현방식에 대해 좀 더 생각해보기.
+ */
+
 #include "ProjectDMS.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Common/DMSCommons.h"
@@ -10,7 +23,6 @@
 /**
  * 
  */
-
 UCLASS(Blueprintable,Abstract, EditInlineNew)
 class UDMSObjectSelectionComparer : public UObject
 {

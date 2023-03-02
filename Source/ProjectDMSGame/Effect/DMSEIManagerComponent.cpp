@@ -74,8 +74,9 @@ bool UDMSEIManagerComponent::TryModAttribute(const FDMSAttributeModifier& Modifi
 	return Owner != nullptr ? Owner->TryModAttribute(Modifier) : false;
 }
 
-void UDMSEIManagerComponent::SetupOwnEffect(TArray<UDMSEffectNodeWrapper*> EffectNodes)
+void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
 {
+	auto EffectNodes = EffectSet->EffectNodes;
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 	if (!EH) { DMS_LOG(Error, TEXT("No Effect Handler")); 	return; }
 

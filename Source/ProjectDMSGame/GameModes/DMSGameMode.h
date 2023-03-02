@@ -2,14 +2,21 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE
+ *
+ *	Default rules of DMS GAME
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameModeBase.h"
 #include "DMSGameMode.generated.h"
 
-/**
- * 
- */
 
 class UDMSEffectHandler;
 class UDMSSeqManager;
@@ -17,6 +24,15 @@ class UDMSNotifyManager;
 class UDMSCardDefinition;
 class IDMSEffectorInterface;
 
+
+/**
+ *	========================================
+ * 
+ *	DMS Game specified GM. Arkham LCG-Like Phase controll, Enemy fightings and Card Upgrade system... 
+ *	Save/Load upgrade data... etc.
+ * 
+ *  ========================================
+ */
 UCLASS(/*Blueprintable, Config = Game*/)
 class PROJECTDMSGAME_API ADMSGameMode: public AGameModeBase
 {

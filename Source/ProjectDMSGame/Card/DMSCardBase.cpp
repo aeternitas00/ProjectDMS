@@ -47,12 +47,13 @@ void ADMSCardBase::SetCardDefinition(UDMSCardDefinition* iCardDefinition)
 }
 
 
-void ADMSCardBase::InitializeCard(UDMSCardDefinition* iCardDefinition/*...*/)
+void ADMSCardBase::InitializeCard(UDMSCardDefinition* iCardDefinition/*, Saved data...*/)
 {
 	// EffectManagerComponent->CleanupOwnEffect(); ?
 	SetCardDefinition(iCardDefinition);
 
-	EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffects->EffectNodes);
+	// ¿ì¸®²¨¸¸?
+	EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Effect"]);
 }
 
 void ADMSCardBase::AttachEffectInstance(UDMSEffectInstance* EI)
@@ -68,6 +69,6 @@ void ADMSCardBase::OnNotifyReceived(UDMSSequence* Seq, UObject* SourceTweaker)
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FName& iSetName)
 {
-	return CardDefinition->CardEffects;
-	// return CardDefinition->CardEffectSets.Contain(iSetName) ? CardDefinition->CardEffectSets[iSetName] : nullptr;
+	//return CardDefinition->CardEffects;
+	return CardDefinition->CardEffectSets.Contains(iSetName) ? CardDefinition->CardEffectSets[iSetName] : nullptr;
 }

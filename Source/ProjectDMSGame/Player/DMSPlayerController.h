@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE
+ *
+ *	DMS Game's Player controller
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include "GameFramework/PlayerController.h"
 #include "Effect/DMSEffectorInterface.h"
@@ -11,19 +21,6 @@
 #include "DMSPlayerController.generated.h"
 
 
-/**
- * 
- * 
- * 
- * ====================================
- * 
- * 
- * 
- * 
- * 
- * 
- */
-
 struct FDMSAttributeModifier;
 class UDMSCardManagerComponent;
 class UDMSCardContainerComponent;
@@ -32,6 +29,13 @@ class UDMSEIManagerComponent;
 class UDMSAttributeComponent;
 class UDMSAttribute;
 
+/**
+ * 	========================================
+ *
+ *	 
+ *	
+ *	========================================
+ */
 UCLASS(Blueprintable)
 class PROJECTDMSGAME_API ADMSPlayerController : public APlayerController, public IDMSEffectorInterface, public IDMSAttributeInterface
 {

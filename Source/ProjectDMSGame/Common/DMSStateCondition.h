@@ -1,12 +1,30 @@
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	State checking part of Effect's condition.
+ *
+ * =========================================
+ */
+
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
 #include "DMSStateCondition.generated.h"
 
 class UDMSSequence;
-//
 
+/**
+ *	========================================
+ *
+ *	Define non-timing condition of Effect's. ( non-relative )
+ *	It doesn't depend on who receives the notify data, so we may be able to check this just once during the notify loop.
+ *	( RENAME? )
+ *
+ *	========================================
+ */
 UCLASS(Abstract, Blueprintable, EditInlineNew, ClassGroup = (Condition))
 class PROJECTDMSGAME_API UDMSStateCheckerDefinition : public UObject
 {
@@ -83,6 +101,14 @@ public:
 
 	virtual bool CheckState(UObject* Target);
 };
+
+/**
+ *	========================================
+ *
+ *	A simple container that collect single conditions and compose them like commonly used boolean expressions.
+ *
+ *	========================================
+ */
 UCLASS(/*HideDropdown,*/ Blueprintable, BlueprintType, Const,EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "State Condition Base"))
 class PROJECTDMSGAME_API UDMSStateCondition : public UObject
 {
@@ -101,6 +127,14 @@ public:
 	bool CheckCondition(UDMSSequence* Seq);
 };
 
+/**
+ * 	========================================
+ *
+ *	State Condition Wrapper :: Wrapper for exposing condition object to Blueprint in various ways.
+ *	Similar to Effect Node Wrapper.
+ *
+ *	=========================================
+ */
 UCLASS(Abstract, Const, DefaultToInstanced, EditInlineNew, ClassGroup = (Condition))
 class PROJECTDMSGAME_API UDMSStateConditionWrapper : public UObject
 {

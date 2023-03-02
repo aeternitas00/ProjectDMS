@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_CORE_MODULE
+ *
+ *	ENUMS and Data Object that used often in DMS.
+ *
+ *	========================================
+ */
+
 #include "ProjectDMS.h"
 #include <any>
 #include "DMSCommons.generated.h"

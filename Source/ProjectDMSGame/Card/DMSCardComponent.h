@@ -8,9 +8,9 @@
 
 class UDMSEffectInstance;
 class UDMSCardDefinition;
-// Card 관련 부분을 별도 모듈화 진행해야 할 듯
-// Rename :: CardEffectComponent
 
+// 
+// Rename :: CardEffectComponent
 UCLASS( ClassGroup=(Card), meta=(BlueprintSpawnableComponent) )
 class PROJECTDMSGAME_API UDMSCardComponent : public UActorComponent
 {
