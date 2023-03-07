@@ -34,12 +34,12 @@ protected:
 	//Cache
 	UDMSSequence* OwnerSeq;
 
-	UPROPERTY()
-	UDMSDataObject* CandidatesData;
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UDMSDataObject*> CandidatesData;
 
 	UDMSEffectDefinition* SourceEffectDefinition;
 public:
-	//UDMSEffectElementSelectorWidget(): CandidatesData(nullptr),SourceEffectDefinition(nullptr){}
+	UDMSEffectElementSelectorWidget(const FObjectInitializer& ObjectInitializer) :UUserWidget(ObjectInitializer),bForEachTarget(false),SourceEffectDefinition(nullptr){}
 	// À§Ä¡? Effect handler or Here
 	//UPROPERTY()
 
@@ -48,6 +48,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void InitializeSelector(UDMSSequence* iOwnerSeq);
+
+	// Return showing selector is successful
+	UFUNCTION(BlueprintCallable)
+	bool PopupSelector();
+
+	UFUNCTION(BlueprintCallable)
+	void CloseSelector();
 
 	// Usage : Bind to Confirm Button
 	UFUNCTION(BlueprintCallable)
@@ -65,10 +72,11 @@ public:
 	// Usage : Use this in SetupCandidate() when if this selector have dynamic candidates.
 	// ex) 
 	UFUNCTION(BlueprintCallable)
-	bool SetupCandidatesFromED(/*UDMSSequence* iSeq*/);
+	bool GetCandidatesFromED();
 	
+
 	FORCEINLINE void SetSourceEffectDefinition(UDMSEffectDefinition* iDef) { SourceEffectDefinition = iDef;}
-	FORCEINLINE UDMSDataObject* GetCandidatesData() {return CandidatesData; }
+	FORCEINLINE UDMSDataObject* GetCandidatesData(const uint8& TargetIdx) { return CandidatesData[TargetIdx]; }
 
 	//UDELEGATE(BlueprintAuthorityOnly)
 	DECLARE_DELEGATE_OneParam(FOnSelectCompleted, UDMSDataObjectSet*);
@@ -76,6 +84,9 @@ public:
 
 	FOnSelectCompleted OnSelectCompleted;
 	FOnSelectCanceled OnSelectCanceled;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bForEachTarget;
 };
 
 UCLASS(Blueprintable, Abstract)

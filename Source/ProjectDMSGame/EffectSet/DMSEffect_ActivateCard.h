@@ -6,7 +6,7 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "DMSEffect_ActivateCard.generated.h"
 
-// Deprecated
+// ============= Deprecated ================= //
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "Activate Card Base (Dep?)"))
 class UDMSEffect_ActivateCard : public UDMSEffectDefinition
 {
@@ -17,7 +17,7 @@ public:
 	// ( 일종의 포함 관계에 속하는 이펙트들의 구분 위함. --> HP가 변화했을 때 > { HP 피해를 입었을 때 , HP 회복을 했을 때 } )
 	UDMSEffect_ActivateCard();
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName SetName;
 
 	virtual void Work_Implementation(UDMSEffectInstance* iEI) override; // temp

@@ -22,8 +22,7 @@
 void UDMSEffectElementSelectorWidget::CompleteSelect(UDMSDataObjectSet* OutData)
 {
 	OnSelectCompleted.Execute(OutData);
-	RemoveFromParent();
-	//Destruct();
+	CloseSelector();
 }
 
 void UDMSEffectElementSelectorWidget::CancelSelect()
@@ -31,9 +30,24 @@ void UDMSEffectElementSelectorWidget::CancelSelect()
 	OnSelectCanceled.Execute();
 }
 
-bool UDMSEffectElementSelectorWidget::SetupCandidatesFromED()
+bool UDMSEffectElementSelectorWidget::PopupSelector()
 {
-	return SourceEffectDefinition->GetCandidates(CandidatesData);
+	AddToViewport();
+	bool rv=SetupCandidates();
+	return rv;
+	// if (Candidates.Num() == 1) { /*autoselect and close..*/ } 
+}
+
+void UDMSEffectElementSelectorWidget::CloseSelector()
+{
+	//...
+	RemoveFromParent();
+}
+
+
+bool UDMSEffectElementSelectorWidget::GetCandidatesFromED()
+{
+	return SourceEffectDefinition->GetCandidates(OwnerSeq,CandidatesData);
 }
 
 

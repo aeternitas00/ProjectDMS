@@ -19,19 +19,6 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* Sou
 	EffectInstance->SourceObject = SourceObject;
 	EffectInstance->SourceController = SourceController;
 
-	// Do it in Outer Self
-	//auto NM = GetDMSNotifyManager();
-	//Attach to Target ( INTERFACE )
-	//if (SourceObject->Implements<UDMSEffectorInterface>())
-	//{
-	//	DMS_LOG_SCREEN(TEXT("EH: CreateEI To %s"), *SourceObject->GetName());
-
-	//	
-	//	//Cast<IDMSEffectorInterface>(SourceObject)->AttachEffectInstance(EffectInstance);
-	//}
-	
-	//if(NM) NM->RegisterNotifyObject(EffectInstance);
-
 	rv.Add(EffectInstance);
 	return rv;
 }

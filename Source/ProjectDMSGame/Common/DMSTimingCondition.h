@@ -123,9 +123,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	FString CheckersCombinator;
 
-	// 효과 발동에 대한 선택권이 있는 효과인가? == false : 조건에 맞으면 강제 발동 / true : 조건에 맞으면 효과 발동에 대한 Y/N UI 띄우는 형태로
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
-	bool bUserDecidable;
+
 
 	// Deprecated
 	bool isChildOf(const UDMSTimingCondition& i) const;

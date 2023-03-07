@@ -79,6 +79,7 @@ public:
 
 	// ----------------------------------------------------------------------------------------- //
 
+	// enum for key?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
 	TMap<FName,UDMSEffectSet*> CardEffectSets;
 

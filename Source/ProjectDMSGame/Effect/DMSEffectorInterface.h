@@ -20,7 +20,7 @@ class UDMSEffectInstance;
 class UDMSSequence;
 class UDMSEffectSet;
 
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, BlueprintType)
 class UDMSEffectorInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -47,7 +47,7 @@ public:
 	
 	// 객체가 노티파이를 받았을 때의 응답
 	// 이펙트의 발동 기능은 일반적으로 노티파이와 떨어질 수 없는 구조기도 하여 이 인터페이스에 노티 파이 관련도 통합.
-	virtual void OnNotifyReceived(UDMSSequence* Seq, UObject* SourceTweak=nullptr) = 0;
+	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq, UObject* SourceTweak=nullptr) = 0;
 	
 	// 객체가 자체적으로 소유한 이펙트 세트를 반환.
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName)=0;

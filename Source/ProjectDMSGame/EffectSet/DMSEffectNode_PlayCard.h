@@ -14,8 +14,8 @@ class PROJECTDMSGAME_API UDMSEffectNode_PlayCard : public UDMSEffectNode
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY()
-	bool bIgnoreCost;
+	//UPROPERTY()
+	//bool bIgnoreCost;
 
 	UDMSEffectNode_PlayCard();
 };

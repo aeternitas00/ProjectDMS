@@ -103,6 +103,8 @@ public:
 
 	bool IsInheriting() {return Inheriting;}
 	void SetInheriting(const bool& i) { Inheriting=i; }
+	
+	void CopyValue(UDMSDataObject* iObj) {this->AnyValue = iObj->AnyValue;}
 };
 
 UCLASS(BlueprintType)
@@ -134,7 +136,7 @@ public:
 	FORCEINLINE void AddData(FName Name, UDMSDataObject* Data,const bool& Inheriting=false) { 
 		if(Data==nullptr) return;
 		Data->SetInheriting(Inheriting); 
-		DataMap[Name] = Data; 
+		DataMap.Add(Name, Data);
 	}
 
 	UFUNCTION(BlueprintCallable,BlueprintPure)
@@ -144,6 +146,9 @@ public:
 	FORCEINLINE UDMSDataObject* GetData(/*const*/FName/*&*/ Name) { return ContainData(Name) ? DataMap[Name] : nullptr; }
 
 	void Inherit(UDMSDataObjectSet* Parent, const bool& InheritAgain=false);
+
+	// actually it's overwrite
+	void Merge(UDMSDataObjectSet* iSet);
 
 };
 

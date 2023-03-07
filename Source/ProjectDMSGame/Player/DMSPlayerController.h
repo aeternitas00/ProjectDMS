@@ -58,6 +58,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	TMap<FName,TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
+	// TEST
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly,Instanced)
+	TMap<FName, UDMSEffectNode*> DefaultBasicActions;
+
 public:
 	ADMSPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -78,13 +82,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectObject(UObject* Object);
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void PlayCard(ADMSCardBase* Card);
+
 	// Deprecated
 	UFUNCTION(BlueprintCallable)
 	void PlayCardDep(ADMSCardBase* Card);
 
 	// INTERFACE FUNCTIONS
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual void OnNotifyReceived(UDMSSequence* Seq,UObject* SourceTweak) override;
+	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq,UObject* SourceTweak) override;
 	virtual UObject* GetObject() override { return this; }
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
 	virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;

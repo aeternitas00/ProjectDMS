@@ -36,7 +36,7 @@ public:
 	TArray<UDMSEffectInstance*> EffectInstances;
 
 	// Owning Effects
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<UDMSEffectInstance*> OwnEffectInstances;
 
 protected:
@@ -46,7 +46,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual UObject* GetObject() { return Cast<UObject>(GetOwner()); }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual void OnNotifyReceived(UDMSSequence* Seq, UObject* SourceTweak) override;
+	virtual void OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
 
 	virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;

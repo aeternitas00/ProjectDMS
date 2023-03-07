@@ -86,27 +86,10 @@ void ADMSPlayerController::PlayCardDep(ADMSCardBase* Card)
 
 	if(!SeqMan) return;
 
-	// TODO :: Cost work
-
-	//UDMSEffectNode* CostSelectorNode;
-	//UDMSEffect_ActivateEffect* AEffect;
-
-	//Selector from BP
-	//AEffect->Selectors.Add(NewObject<UDMSEffectElementSelectorWidget>(this));
-
-	//CostSelectorNode->EffectDefinitions.Add(AEffect);
-
-	//Card->GetCardDefinition()->CostAndPlayCondition;
-
-	// Static?
 	UDMSEffectNode_PlayCard* PlayCardDef = NewObject<UDMSEffectNode_PlayCard>(SeqMan);
 
 	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
 	Targets.Add(TScriptInterface<IDMSEffectorInterface>(Card));
-	//UDMSDataObjectSet* Datas = NewObject<UDMSDataObjectSet>();
-
-	//Datas->SetData(TEXT("Target"), Card);
-	//Datas->SetData(TEXT("Test"), 1);
 
 	SeqMan->RequestCreateSequence(this,this, PlayCardDef, Targets);
 }
@@ -116,12 +99,12 @@ void ADMSPlayerController::AttachEffectInstance(UDMSEffectInstance* EI)
 	EffectManagerComponent->AttachEffectInstance(EI);
 }
 
-void ADMSPlayerController::OnNotifyReceived(UDMSSequence* Seq,UObject* SourceTweak) 
+void ADMSPlayerController::OnNotifyReceived(bool iChainable,UDMSSequence* Seq,UObject* SourceTweak)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan,
-		FString::Printf(TEXT("%s : OnNotifyReceived"), *this->GetName())
-	);
-	EffectManagerComponent->OnNotifyReceived(Seq,this);
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan,
+	//	FString::Printf(TEXT("%s : OnNotifyReceived"), *this->GetName())
+	//);
+	EffectManagerComponent->OnNotifyReceived(iChainable,Seq,this);
 }
 
 inline UDMSAttribute* ADMSPlayerController::GetAttribute(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName); }

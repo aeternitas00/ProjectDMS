@@ -8,7 +8,7 @@ UDMSEffectNode_PlayCard::UDMSEffectNode_PlayCard()
 {
 	NodeKeyword = TEXT("PlayCard");
 
-	bIgnoreCost=false;
+	// bIgnoreCost=false;
 
 	//Activate
 

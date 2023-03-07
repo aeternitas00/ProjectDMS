@@ -12,16 +12,16 @@ void FDMSSelectorQueue::Initialize(UDMSSequence* OwnerSeq)
 	Owner = OwnerSeq;
 	for (auto Selector : SelectorQueue)
 	{
+		//NEED PARAM?
 		Selector->InitializeSelector_Internal([&](UDMSDataObjectSet* Data){
 			
-			//StoredData->MergeData(Data);
+			Owner->EIDatas->Merge(Data);		
 			RunNextSelector();
-
 			//...
 		},
 		[&]() {
 			//OwnerSeq->UpdateData(Data);
-			for ( auto sWidget : SelectorQueue ) {sWidget->RemoveFromParent();}
+			for ( auto sWidget : SelectorQueue ) {sWidget->CloseSelector();}
 			OnSelectorsCanceled.Execute(Owner);
 			//...
 		}, 
@@ -41,16 +41,17 @@ void FDMSSelectorQueue::RunSelectors(FuncCompleted&& iOnSelectorsCompleted, Func
 
 void FDMSSelectorQueue::RunNextSelector()
 {
-	if (SelectorQueue.Num() <= ++CurrentIndex) {
+	CurrentIndex++;
+	if (SelectorQueue.Num() == CurrentIndex ) {
 		OnSelectorsCompleted.Execute(Owner);
 		return;
 	}
-	if (!SelectorQueue[CurrentIndex]->SetupCandidates()) {
-		SelectorQueue[CurrentIndex]->RemoveFromParent();
+	if (!SelectorQueue[CurrentIndex]->PopupSelector()) {
+		SelectorQueue[CurrentIndex]->CloseSelector();
 		RunNextSelector();
 		return;
 	}
-	SelectorQueue[CurrentIndex]->AddToViewport();
+
 }
 
 //inline void FDMSSelectorQueue::AddSelector(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.Add(iWidget); }

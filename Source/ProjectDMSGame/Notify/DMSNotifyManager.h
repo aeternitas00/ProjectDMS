@@ -39,7 +39,7 @@ protected:
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void BroadCast(UDMSSequence* NotifyData);
+	void BroadCast(UDMSSequence* NotifyData,bool iChainable);
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 

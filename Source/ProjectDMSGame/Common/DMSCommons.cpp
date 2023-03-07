@@ -7,9 +7,22 @@ void UDMSDataObjectSet::Inherit(UDMSDataObjectSet* Parent,const bool& InheritAga
 	{
 		if (r.Value==nullptr) continue;
 		if (r.Value->IsInheriting()){
-			UDMSDataObject* tDS = DuplicateObject<UDMSDataObject>(r.Value,GetOuter());
+			UDMSDataObject* tDS = NewObject<UDMSDataObject>(GetOuter());
+			tDS->CopyValue(r.Value);
 			tDS->SetInheriting(InheritAgain);
-			DataMap.Add(r);
+			DataMap.Add(r.Key, tDS);
 		}
+	}
+}
+
+void UDMSDataObjectSet::Merge(UDMSDataObjectSet* iSet)
+{
+	if (iSet == nullptr)return;
+	for (auto r : iSet->DataMap)
+	{
+		if (r.Value == nullptr) continue;
+		// Handling confliction?
+		//UDMSDataObject* tDS = DuplicateObject<UDMSDataObject>(r.Value, GetOuter());
+		DataMap.Add(r);
 	}
 }

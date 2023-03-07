@@ -8,11 +8,10 @@
 UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill() 
 { 
 	TypeName = TEXT("Skill"); 
-
+	bForced=true;
 	UDMSTimingCondition* AfterEnteredPlayArea = NewObject<UDMSTimingCondition>();
 
 	AfterEnteredPlayArea->Timing=EDMSTimingFlag::T_After;
-	AfterEnteredPlayArea->bUserDecidable=false;
 	AfterEnteredPlayArea->EffectKeyword=TEXT("PlayCard");
 	
 	CheckerDefinition = CreateDefaultSubobject<UDMSNotifyCheckerDefinition_ObjectCompareBase>(TEXT("Skill_CheckerDefinition"));

@@ -24,6 +24,11 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FName ReferenceDataName;
 
+	UPROPERTY(EditDefaultsOnly)
+	FName EffectSetName;
+
+	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
+
 	virtual void Work_Implementation(UDMSEffectInstance* iEI) override; // temp
-	//virtual FString Literalize_Implementation() override { return Keyword.ToString(); };
+	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);;
 };

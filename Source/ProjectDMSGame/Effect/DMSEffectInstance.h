@@ -61,7 +61,7 @@ public:
 	AActor* SourceController;
 	UObject* SourceObject;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UDMSDataObjectSet* DataSet; 
 	UPROPERTY()
 	UDMSEffectNode* EffectNode;
@@ -74,7 +74,7 @@ public:
 
 	virtual UObject* GetObject() override { return this; } 
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual void OnNotifyReceived(UDMSSequence* Seq, UObject* SourceTweak) override;
+	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;
 	// 기본적으로 EI는 '어떤 효과' 그 자체를 객체화 하기 위해 만든 클래스이므로 이펙트셋을 소유한다는 개념은 조금 이상한 듯.
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
 };

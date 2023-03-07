@@ -28,17 +28,17 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	TArray<TScriptInterface<IDMSEffectorInterface>> Targets, 
 	UDMSDataObjectSet* Datas, 
 	UDMSSequence* ParentSequence, 
-	const EDMSTimingFlag& RelationFlag
+	EDMSTimingFlag RelationFlag
 )
 {
 	// TODO :: Root Seq Check and make Chain tree work / Cleanup
 
-	DMS_LOG_SCREEN(TEXT("%s : RequestCreateSequence"), *SourceObject->GetName());
+	DMS_LOG_SCREEN(TEXT("%s : Request Create Sequence of [%s]"), *SourceObject->GetName(),*EffectNode->NodeKeyword.ToString());
 
 	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 	if (EH==nullptr) { /*DMS_LOG("Invalid EH");*/ return nullptr; }
 
-	if (EffectNode==nullptr){ DMS_LOG_SCREEN(TEXT("%s : EffectNode is Null"), *SourceObject->GetName()); return nullptr;}
+	//if (EffectNode==nullptr){ DMS_LOG_SCREEN(TEXT("%s : EffectNode is Null"), *SourceObject->GetName()); return nullptr;}
 	
 	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>();
 	NewData->Inherit(Datas);
@@ -74,23 +74,28 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	
 	EH->CreateEffectInstance(Sequence, EffectNode);
 
-	// Lambda with capture doesn't work with simple conversion to function pointer.
-	// Using exact signature to param for a while. fix this when find proper way  
 	auto WidgetOwner = Cast<APlayerController>(SourceController);
+	
+	if (WidgetOwner==nullptr) { 
+		/*it's from GAMEMODE or SYSTEM THINGs. LEADER PLAYER own this selector */
+	}
 
 	EffectNode->CreateSelectors(WidgetOwner, Sequence);
 	
-	Sequence->RunSelectorQueue([&](UDMSSequence* Sequence){
-		RunSequence(Sequence);
-		// 실행했다고 가정
-		// RunSequence로 넘어감. ( RunSequence에서 노티파이 관련 진행 )
-		for (auto EI : Sequence->EIs)
+	Sequence->RunSelectorQueue([&](UDMSSequence* pSequence){
+
+		RunSequence(pSequence);
+
+		for (auto EI : pSequence->EIs)
 		{
 			EI->ChangeEIState(EDMSEIState::EIS_Default);
 		}
 		// ==>> 노티파이 결과로 추가적으로 생성되는 시퀀스는 이 메소드를 통해 진행.
 		// 최초로 들어온 ( Root EI ) 의 After 브로드캐스트가 끝나면서 재귀적 트리 진행 종료.
-	}, [&](UDMSSequence* Sequence){});
+	}, [&](UDMSSequence* pSequence){
+			//cleanup this seq
+		}
+	);
 	return Sequence;
 }
 
@@ -107,28 +112,23 @@ void UDMSSeqManager::RunSequence(UDMSSequence* Sequence)
 
 	Sequence->SetActive(true);
 
-	
-	if (Sequence->OriginalEffectNode->bIsChainableEffect)
-	{
-		// 이 방식 말고 받는 입장에서 알아서 생각 하게 하면 한번 뿌리는 것으로 해결 할 수 있을 듯?
-		DMS_LOG_SCREEN(TEXT("==-- BEFORE --=="));
-		NotifyManager->BroadCast(Sequence);
-		Sequence->Progress = EDMSTimingFlag::T_During;
+	// 이 방식 말고 받는 입장에서 알아서 생각 하게 하면 한번 뿌리는 것으로 해결 할 수 있을 듯?
+	//DMS_LOG_SCREEN(TEXT("==-- BEFORE --=="));
+	NotifyManager->BroadCast(Sequence, Sequence->OriginalEffectNode->bIsChainableEffect);
+	Sequence->Progress = EDMSTimingFlag::T_During;
 
-		DMS_LOG_SCREEN(TEXT("==-- DURING --=="));
-		EffectHandler->Resolve(Sequence);
-		NotifyManager->BroadCast(Sequence);
-
-		Sequence->Progress = EDMSTimingFlag::T_After;
-		DMS_LOG_SCREEN(TEXT("==-- AFTER --=="));
-		NotifyManager->BroadCast(Sequence);
-	}
-	else 
+	//DMS_LOG_SCREEN(TEXT("==-- DURING --=="));
+	EffectHandler->Resolve(Sequence);
+	NotifyManager->BroadCast(Sequence, Sequence->OriginalEffectNode->bIsChainableEffect);
+	if (Sequence->OriginalEffectNode->ChildEffect != nullptr && Sequence->OriginalEffectNode->AdvanceConditions.CheckCondition(Sequence->SourceObject, Sequence))
 	{
-		DMS_LOG_SCREEN(TEXT("==-- NOT CHAINABLE --=="));
-		Sequence->Progress = EDMSTimingFlag::T_After;
-		EffectHandler->Resolve(Sequence);
+		//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Advance"), *GetName());
+		RequestCreateSequence(Sequence->SourceObject, Sequence->SourceController, Sequence->OriginalEffectNode->ChildEffect->GetEffectNode(), Sequence->Targets, Sequence->EIDatas, Sequence);
 	}
+
+	Sequence->Progress = EDMSTimingFlag::T_After;
+	//DMS_LOG_SCREEN(TEXT("==-- AFTER --=="));
+	NotifyManager->BroadCast(Sequence, Sequence->OriginalEffectNode->bIsChainableEffect);
+
+	// cleanup Sequence;
 }
-
-// Global&Static GetSeqManager()

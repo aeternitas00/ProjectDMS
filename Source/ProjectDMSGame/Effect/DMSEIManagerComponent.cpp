@@ -23,6 +23,7 @@ void UDMSEIManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//DMS_LOG_SCREEN(TEXT("%s -> %s"), *GetOuter()->GetName(), *GetOwner()->GetName());
 	// ...
 	
 }
@@ -43,11 +44,11 @@ void UDMSEIManagerComponent::AttachEffectInstance(UDMSEffectInstance* EI)
 	EI->Rename(nullptr, this);
 }
 
-void UDMSEIManagerComponent::OnNotifyReceived(UDMSSequence* Seq, UObject* SourceTweak)
+void UDMSEIManagerComponent::OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 {
 	for (auto OwnEI : OwnEffectInstances)
 	{
-		OwnEI->OnNotifyReceived(Seq, SourceTweak);
+		OwnEI->OnNotifyReceived(iChainable,Seq, SourceTweak);
 	}
 }
 
@@ -95,22 +96,25 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
 		Node->EffectDefinitions.Add(AEffect);
 		Node->Conditions = Effect->Conditions;
 		Node->bIsChainableEffect = false;
-		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Data;
+		Node->bForced = Effect->bForced;
+		//Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Data;
+		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Self;
 		Node->AdvanceConditions = Effect->AdvanceConditions;
 		Node->ChildEffect = Effect->ChildEffect;
 
-
-		TArray<TScriptInterface<IDMSEffectorInterface>> PresetTarget;
-		PresetTarget.Add(TScriptInterface<IDMSEffectorInterface>(this));
+		// 왜이렇게했더라
+		// 
+		//TArray<TScriptInterface<IDMSEffectorInterface>> PresetTarget;
+		//PresetTarget.Add(TScriptInterface<IDMSEffectorInterface>(this));
 
 		DataSet->SetData("PresetTarget", PresetTarget, true);
 
 		AActor* CardOwner = const_cast<AActor*>(GetOwner()->GetNetOwner());
-		DMS_LOG_SCREEN(TEXT("%s : Card Owner"), *CardOwner->GetName());
+		//DMS_LOG_SCREEN(TEXT("%s : Card Owner"), *CardOwner->GetName());
 
-		auto EIs = EH->CreateEffectInstance(this, CardOwner, Node, DataSet);
+		auto EIs = EH->CreateEffectInstance(GetOwner(), CardOwner, Node, DataSet);
 		EIs[0]->ChangeEIState(EDMSEIState::EIS_Default);
-
+		EIs[0]->Rename(nullptr, GetOwner());
 		OwnEffectInstances.Add(EIs[0]);
 	}
 }

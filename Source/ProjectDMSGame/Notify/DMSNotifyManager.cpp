@@ -5,11 +5,11 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Sequence/DMSSequence.h"
 
-void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData)
+void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData,bool iChainable)
 {
 	for (auto Object : NotifyObjects)
 	{
-		Object->OnNotifyReceived(NotifyData);
+		Object->OnNotifyReceived(iChainable,NotifyData);
 	}
 }
 

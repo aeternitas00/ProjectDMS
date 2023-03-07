@@ -62,7 +62,7 @@ public:
 		TArray<TScriptInterface<IDMSEffectorInterface>> Targets/* = TArray<TScriptInterface<IDMSEffectorInterface>>()*/, 
 		UDMSDataObjectSet* Datas = nullptr, 
 		UDMSSequence* ParentSequence = nullptr,
-		const EDMSTimingFlag & RelationFlag = EDMSTimingFlag::T_Null
+		EDMSTimingFlag RelationFlag = EDMSTimingFlag::T_Null
 	);
 
 	//UFUNCTION()

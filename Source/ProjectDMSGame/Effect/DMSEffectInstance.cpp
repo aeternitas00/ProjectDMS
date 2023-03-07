@@ -7,6 +7,7 @@
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 #include "Effect/DMSEffectHandler.h"
 #include "Sequence/DMSSequence.h"
+#include "Card/DMSCardBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
 void UDMSEffectInstance::Apply()
@@ -28,12 +29,14 @@ void UDMSEffectInstance::AttachEffectInstance(UDMSEffectInstance* EI)
 	EI->Rename(nullptr,this);
 }
 
-void UDMSEffectInstance::OnNotifyReceived(UDMSSequence* Seq, UObject* SourceTweak)
+void UDMSEffectInstance::OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 {
-	DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived"), *GetName());
+	if (!iChainable)if(!EffectNode->bForced) return;
+
+	//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived"), *GetName());
 
 	if (CurrentState == EDMSEIState::EIS_Pending) {
-		DMS_LOG_SCREEN(TEXT("%s : Pending"), *GetName());
+		//DMS_LOG_SCREEN(TEXT("%s : Pending"), *GetName());
 		return;
 	}
 
@@ -42,16 +45,11 @@ void UDMSEffectInstance::OnNotifyReceived(UDMSSequence* Seq, UObject* SourceTwea
 
 	if ( EffectNode->Conditions.CheckCondition(SourceTweak, Seq) )
 	{
-		DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Notify Checked"), *GetName());
+		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetOuter()->GetOuter() !=nullptr ? *GetOuter()->GetOuter()->GetName():TEXT("NullOuter"), *GetName());
+		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<ADMSCardBase>() != nullptr ? *GetTypedOuter<ADMSCardBase>()->GetName() : TEXT("NullOuter"), *GetName());
 
 		// Inherit dataset is correct?
-		UDMSSequence* ParentSeq = SM->RequestCreateSequence(SourceTweak, SourceController, EffectNode, {}, DataSet, Seq, Seq->Progress);
-
-		if (EffectNode->ChildEffect != nullptr && EffectNode->AdvanceConditions.CheckCondition(SourceTweak, Seq))
-		{	
-			//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Advance"), *GetName());
-			SM->RequestCreateSequence(SourceTweak, SourceController, EffectNode->ChildEffect->GetEffectNode(), {}, DataSet , ParentSeq);
-		}
+		SM->RequestCreateSequence(SourceTweak, SourceController, EffectNode, {}, DataSet, Seq, Seq->Progress);
 	}
 	else
 	{
