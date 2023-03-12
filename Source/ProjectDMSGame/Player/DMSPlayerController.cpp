@@ -48,9 +48,9 @@ void ADMSPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	for (auto ContainerDef : CardContainerTypes)
+	for (auto ContainerDef : CardContainerTypes){
 		CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
-
+	}
 	// Will be changed with same way to above
 	AttributeComponent->MakeAttribute("Resource", 10);
 	AttributeComponent->MakeAttribute("ActionPoint", 10);
@@ -74,7 +74,9 @@ void ADMSPlayerController::InstigateObject(UObject* Object)
 
 void ADMSPlayerController::SelectObject(UObject* Object)
 {
-	SelectingObject = Object;
+	UObject* tFormer = SelectingObject;
+	SelectingObject=Object;
+	OnSelectedObject(tFormer);
 
 	//,,,
 }
@@ -107,8 +109,11 @@ void ADMSPlayerController::OnNotifyReceived(bool iChainable,UDMSSequence* Seq,UO
 	EffectManagerComponent->OnNotifyReceived(iChainable,Seq,this);
 }
 
-inline UDMSAttribute* ADMSPlayerController::GetAttribute(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName); }
+UDMSAttribute* ADMSPlayerController::GetAttribute(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName); }
 
-inline bool ADMSPlayerController::TryModAttribute(const FDMSAttributeModifier& Modifier) { return AttributeComponent->TryModAttribute(Modifier); }
+bool ADMSPlayerController::TryModAttribute(const FDMSAttributeModifier& Modifier) { return AttributeComponent->TryModAttribute(Modifier); }
 
-inline float ADMSPlayerController::GetAttributeValue(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName) ? AttributeComponent->GetAttribute(AttributeName)->GetValue() : -1.0f; }
+float ADMSPlayerController::GetAttributeValue(const FName& AttributeName) 
+{
+	return AttributeComponent->GetAttribute(AttributeName) ? AttributeComponent->GetAttribute(AttributeName)->GetValue() : -1.0f; 
+}

@@ -95,12 +95,8 @@ public:
 	FDMSObjectSelectionRules(){}
 
 	// Special rules;
-	UPROPERTY(EditDefaultsOnly,Instanced, Category = Selector)
+	UPROPERTY(EditDefaultsOnly,Instanced)
 	TArray<UDMSObjectSelectionComparer*> Comparers;
-
-	// For Sequence
-	//UPROPERTY(EditDefaultsOnly, Category = Selector)
-	//EDMSObjectSelectorFlag ComparerFlag;
 
 	FString ComparersCombinator;
 

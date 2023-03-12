@@ -31,7 +31,6 @@ class UDMSEffectorInterface;
  * 
  *	========================================
  */
-DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 UCLASS(ClassGroup = (Sequence))
 class PROJECTDMSGAME_API UDMSSeqManager : public UObject // or ActorComponent to attach GM
 {
@@ -67,6 +66,8 @@ public:
 
 	//UFUNCTION()
 	//void OnSelectorCompleted(UDMSSequence* Sequence);
+	
+	DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 
 	FOnSelectorFinished OnSelectorFinished;
 

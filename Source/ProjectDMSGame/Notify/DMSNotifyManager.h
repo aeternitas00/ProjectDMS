@@ -38,6 +38,7 @@ protected:
 
 public:
 
+	//이거 좀 더 전체순회 없이 하는 방법 있을까?
 	UFUNCTION(BlueprintCallable)
 	void BroadCast(UDMSSequence* NotifyData,bool iChainable);
 	UFUNCTION(BlueprintCallable)

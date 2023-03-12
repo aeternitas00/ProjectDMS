@@ -32,6 +32,9 @@ struct FDMSConditionContainer
 	GENERATED_BODY()
 
 public:
+
+	FDMSConditionContainer() : bEmptyTimingIsTrue(false), bEmptyStateIsTrue(false){}
+
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	TArray<UDMSTimingConditionWrapper*> TimingCondition;
 
@@ -43,6 +46,14 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	FString StateCombinator;
+
+	// For advancing effect or debug. use it carefully!
+	UPROPERTY(EditDefaultsOnly, Category = Condition)
+	bool bEmptyTimingIsTrue;
+
+	UPROPERTY(EditDefaultsOnly, Category = Condition)
+	bool bEmptyStateIsTrue;
+
 
 	void AddTimingCondition(UDMSTimingCondition* iCondition);
 	void AddTimingCondition(const TSubclassOf<UDMSTimingCondition>& iCondition);

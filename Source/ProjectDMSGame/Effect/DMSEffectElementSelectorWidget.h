@@ -30,6 +30,10 @@ class PROJECTDMSGAME_API UDMSEffectElementSelectorWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bForEachTarget;
+
 protected:
 	//Cache
 	UDMSSequence* OwnerSeq;
@@ -38,6 +42,8 @@ protected:
 	TArray<UDMSDataObject*> CandidatesData;
 
 	UDMSEffectDefinition* SourceEffectDefinition;
+
+
 public:
 	UDMSEffectElementSelectorWidget(const FObjectInitializer& ObjectInitializer) :UUserWidget(ObjectInitializer),bForEachTarget(false),SourceEffectDefinition(nullptr){}
 	// À§Ä¡? Effect handler or Here
@@ -85,8 +91,7 @@ public:
 	FOnSelectCompleted OnSelectCompleted;
 	FOnSelectCanceled OnSelectCanceled;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bForEachTarget;
+
 };
 
 UCLASS(Blueprintable, Abstract)

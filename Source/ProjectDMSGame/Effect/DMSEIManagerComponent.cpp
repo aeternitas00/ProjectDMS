@@ -107,7 +107,7 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
 		//TArray<TScriptInterface<IDMSEffectorInterface>> PresetTarget;
 		//PresetTarget.Add(TScriptInterface<IDMSEffectorInterface>(this));
 
-		DataSet->SetData("PresetTarget", PresetTarget, true);
+		//DataSet->SetData("PresetTarget", PresetTarget, true);
 
 		AActor* CardOwner = const_cast<AActor*>(GetOwner()->GetNetOwner());
 		//DMS_LOG_SCREEN(TEXT("%s : Card Owner"), *CardOwner->GetName());

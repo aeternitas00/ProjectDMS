@@ -68,6 +68,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = CardEffect)
 	TArray<UDMSEffectElementSelectorWidget*> Selectors; // sort of option
 
+	// NOTE ) 셀렉터한테 "Name,Type"의 명세를 넣어주는게 더 좋은 설계인가?
 	UFUNCTION(BlueprintNativeEvent)
 	bool GetCandidates(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj); // temp
 	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj) { return false; };
@@ -88,7 +89,7 @@ public:
  *	=========================================
  *	
  */
-UCLASS(/*HideDropdown,*/ Blueprintable, BlueprintType, ClassGroup = (Effect), DefaultToInstanced, EditInlineNew, meta = (DisplayName = "Effect Node Base"))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (Effect), DefaultToInstanced, EditInlineNew, meta = (DisplayName = "Effect Node Base"))
 class PROJECTDMSGAME_API UDMSEffectNode : public UObject
 {
 	GENERATED_BODY()

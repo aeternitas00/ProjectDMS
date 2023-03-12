@@ -41,7 +41,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	bool bAllowNull;
 
-	UPROPERTY(EditDefaultsOnly, Category = Selector)
+	UPROPERTY(EditDefaultsOnly)
 	EDMSObjectSelectorFlag CompareTargetFlag;
 
 public:

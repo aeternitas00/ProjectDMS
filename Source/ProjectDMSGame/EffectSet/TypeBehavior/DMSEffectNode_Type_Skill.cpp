@@ -26,6 +26,7 @@ UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill()
 
 	Conditions.AddTimingCondition(AfterEnteredPlayArea);
 
+	Conditions.bEmptyStateIsTrue=true;
 	//Effect Initialize
 	// 
 	//Effects.Add(CreateDefaultSubobject<UDMSEffect_ActivateCard>("Skill_ActivateCard"));

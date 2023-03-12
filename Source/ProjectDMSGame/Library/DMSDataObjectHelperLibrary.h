@@ -75,7 +75,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Data Object")
 	static void SetData_Name(UDMSDataObject* iObj, const FName& inData) { iObj->Set(inData); }
 
+	UFUNCTION(BlueprintCallable, Category = "Data Object", meta = (Displayname = "Get Data uint8 Array"))
+	static bool GetData_uint8Arr(UDMSDataObject* iObj, TArray<uint8>& outData);
 
+	UFUNCTION(BlueprintCallable, Category = "Data Object", meta = (Displayname = "Set Data uint8 Array"))
+	static void SetData_uint8Arr(UDMSDataObject* iObj, const TArray<uint8>& inData) { iObj->Set(inData); }
+
+	UFUNCTION(BlueprintCallable, Category = "Data Object", meta = (Displayname= "Get Data uint8"))
+	static bool GetData_uint8(UDMSDataObject* iObj, uint8& outData);
+
+	UFUNCTION(BlueprintCallable, Category = "Data Object", meta = (Displayname = "Set Data uint8"))
+	static void SetData_uint8(UDMSDataObject* iObj, const uint8& inData) { iObj->Set(inData); }
 
 
 };

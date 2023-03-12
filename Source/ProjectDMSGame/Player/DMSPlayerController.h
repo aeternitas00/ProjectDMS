@@ -43,10 +43,10 @@ class PROJECTDMSGAME_API ADMSPlayerController : public APlayerController, public
 	
 
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UObject* SelectingObject;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UObject* InstigatingObject;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -78,9 +78,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InstigateObject(UObject* Object);
 	
-	// 클릭해서 정보 조사 하는 용도로 사용 ( 우클릭 에 할당 ? )
+	// Sort of focusing 
 	UFUNCTION(BlueprintCallable)
 	void SelectObject(UObject* Object);
+
+	// BP Implements, Get new one from "SelectingObject"
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSelectedObject(UObject* FormerObject);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void PlayCard(ADMSCardBase* Card);

@@ -94,6 +94,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 		// 최초로 들어온 ( Root EI ) 의 After 브로드캐스트가 끝나면서 재귀적 트리 진행 종료.
 	}, [&](UDMSSequence* pSequence){
 			//cleanup this seq
+			RootSequence=nullptr;
 		}
 	);
 	return Sequence;

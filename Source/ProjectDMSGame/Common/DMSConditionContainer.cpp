@@ -36,12 +36,12 @@ void FDMSConditionContainer::AddStateCondition(const TSubclassOf<UDMSStateCondit
 bool FDMSConditionContainer::CheckCondition(UObject* Caller, UDMSSequence* iSeq)
 {
 	bool Timing = true;
-	
+	if(TimingCondition.Num()==0 && !bEmptyTimingIsTrue) Timing=false;
 	for (auto T : TimingCondition) Timing = Timing && T->CheckCondition(Caller, iSeq);
 
 	bool State = true;
-
-	for (auto S : StateCondition) Timing = Timing && S->CheckCondition(iSeq);
+	if (StateCondition.Num() == 0 && !bEmptyStateIsTrue) State = false;
+	for (auto S : StateCondition) State = State && S->CheckCondition(iSeq);
 
 	return (Timing&&State);
 

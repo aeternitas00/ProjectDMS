@@ -44,7 +44,7 @@ void UDMSCardComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	// ...
 }
 
-UDMSCardDefinition* UDMSCardComponent::GetCardDefinition()
+const UDMSCardDefinition* UDMSCardComponent::GetCardDefinition()
 {
 	return Cast<ADMSCardBase>(GetOwner())->GetCardDefinition();
 }

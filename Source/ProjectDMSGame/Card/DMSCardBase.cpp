@@ -17,6 +17,9 @@ ADMSCardBase::ADMSCardBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	bReplicates=true;
+	SetReplicateMovement(true);
+
 	EffectManagerComponent=CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
 
 }
@@ -36,18 +39,18 @@ void ADMSCardBase::Tick(float DeltaTime)
 
 }
 
-UDMSCardDefinition* ADMSCardBase::GetCardDefinition()
+const UDMSCardDefinition* ADMSCardBase::GetCardDefinition()
 {
 	return CardDefinition;
 }
 
-void ADMSCardBase::SetCardDefinition(UDMSCardDefinition* iCardDefinition)
+void ADMSCardBase::SetCardDefinition(const UDMSCardDefinition* iCardDefinition)
 {
 	CardDefinition = iCardDefinition;
 }
 
 
-void ADMSCardBase::InitializeCard(UDMSCardDefinition* iCardDefinition/*, Saved data...*/)
+void ADMSCardBase::InitializeCard_Implementation(const UDMSCardDefinition* iCardDefinition/*, Saved data...*/)
 {
 	// EffectManagerComponent->CleanupOwnEffect(); ?
 	SetCardDefinition(iCardDefinition);

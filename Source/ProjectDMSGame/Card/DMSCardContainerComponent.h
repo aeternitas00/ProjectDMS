@@ -44,7 +44,11 @@ UCLASS(Blueprintable, ClassGroup = (Card), meta = (BlueprintSpawnableComponent))
 class PROJECTDMSGAME_API UDMSCardContainerComponent : public UActorComponent
 {
 	GENERATED_BODY()
-	
+
+protected:
+	//UPROPERTY()
+	//FName ContainerName;
+
 public:
 	UPROPERTY()
 	FDMSCardList CardList;
@@ -68,6 +72,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSCardBase*> GetCards() {return CardList.Cards;}
 	
+	UFUNCTION(BlueprintPure,BlueprintCallable)
+	FName GetContainerName() const {return FName(*GetName())/*ContainerName */; }
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);
 	void OnContainerAdded_Implementation(const TArray<ADMSCardBase*>& AddedCards){}

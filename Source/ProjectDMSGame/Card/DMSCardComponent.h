@@ -33,7 +33,7 @@ public:
 
 //========================================================================================
 
-	UDMSCardDefinition* GetCardDefinition();
+	const UDMSCardDefinition* GetCardDefinition();
 	// Lookup CardDefinition Func
 	
 	// 위를 이용한 발동시 결과에 대한 미리보기 기능

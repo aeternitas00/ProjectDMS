@@ -35,6 +35,14 @@ bool UDMSDataObjectHelperLibrary::GetData_NameArr(UDMSDataObject* iObj, TArray<F
 	return true;
 }
 
+bool UDMSDataObjectHelperLibrary::GetData_uint8Arr(UDMSDataObject* iObj, TArray<uint8>& outData)
+{
+	if (iObj == nullptr || !iObj->TypeCheck<TArray<uint8>>())return false;
+
+	outData = iObj->Get<TArray<uint8>>();
+	return true;
+}
+
 bool UDMSDataObjectHelperLibrary::GetData_Object(UDMSDataObject* iObj, UObject*& outData)
 {
 	if (iObj == nullptr || !iObj->TypeCheck<UObject*>())return false;
@@ -64,5 +72,13 @@ bool UDMSDataObjectHelperLibrary::GetData_Name(UDMSDataObject* iObj, FName& outD
 	if (iObj == nullptr || !iObj->TypeCheck<FName>())return false;
 
 	outData = iObj->Get<FName>();
+	return true;
+}
+
+bool UDMSDataObjectHelperLibrary::GetData_uint8(UDMSDataObject* iObj, uint8& outData)
+{
+	if (iObj == nullptr || !iObj->TypeCheck<uint8>())return false;
+
+	outData = iObj->Get<uint8>();
 	return true;
 }

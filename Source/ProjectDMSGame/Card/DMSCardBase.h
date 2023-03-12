@@ -45,7 +45,7 @@ protected:
 
 	// Here?
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UDMSCardDefinition* CardDefinition;
+	const UDMSCardDefinition* CardDefinition;
 
 	UPROPERTY(BlueprintReadOnly)
 	UDMSCardContainerComponent* OwningContainer;
@@ -61,12 +61,13 @@ public:
 	virtual void OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
 
-	UFUNCTION(BlueprintCallable)
-	void InitializeCard(UDMSCardDefinition* iCardDefinition/*...*/);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void InitializeCard(const UDMSCardDefinition* iCardDefinition/*...*/);
+	void InitializeCard_Implementation(const UDMSCardDefinition* iCardDefinition/*...*/);
 
 	// Native Get,Setter
-	UDMSCardDefinition* GetCardDefinition();
-	void SetCardDefinition(UDMSCardDefinition* iCardDefinition); // Init
+	const UDMSCardDefinition* GetCardDefinition();
+	void SetCardDefinition(const UDMSCardDefinition* iCardDefinition); // Init
 
 	UDMSCardContainerComponent* GetOwningContainer() {return OwningContainer;}
 
