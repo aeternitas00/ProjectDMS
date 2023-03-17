@@ -9,7 +9,7 @@
 #include "DMSAttributeComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTDMSGAME_API UDMSAttributeComponent : public UActorComponent, public IDMSAttributeInterface
+class PROJECTDMSGAME_API UDMSAttributeComponent : public UActorComponent//, public IDMSAttributeInterface
 {
 	GENERATED_BODY()
 
@@ -32,7 +32,20 @@ public:
 	UPROPERTY()
 	TMap<FName,UDMSAttribute*> _Attributes; // Resources
 
+	UFUNCTION(BlueprintCallable)
 	void MakeAttribute(const FName& AttributeName, const float& DefValue =0.0f);
-	virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
-	virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
+
+	UFUNCTION(BlueprintCallable)
+	void BindOnModifiedToAttribute(const FName& AttributeName, const FOnAttributeModifiedSignature& iDelegate);
+
+	UFUNCTION(BlueprintCallable)
+	UDMSAttribute* GetAttribute(const FName& AttributeName) const;
+	
+	UFUNCTION(BlueprintCallable)
+	bool TryModAttribute(const FDMSAttributeModifier& Modifier);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetAttributeValue(const FName& AttributeName, float& outValue) const;
+
+//friend UDMSAttribute;
 };

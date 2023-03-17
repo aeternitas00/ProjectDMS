@@ -40,18 +40,31 @@ bool UDMSAttributeComponent::TryModAttribute(const FDMSAttributeModifier& Modifi
 	return _Attributes[Modifier.AttributeName]->ModAttribute(Modifier);
 }
 
+bool UDMSAttributeComponent::GetAttributeValue(const FName& AttributeName, float& outValue) const
+{
+	bool rv = GetAttribute(AttributeName)==nullptr;
+	outValue = rv ? GetAttribute(AttributeName)->GetValue() : -1.0f;
+	return rv;
+}
+
 void UDMSAttributeComponent::MakeAttribute(const FName& AttributeName, const float& DefValue)
 {
-
 	if (_Attributes.Contains(AttributeName)) return; // log or what\
 
-	UDMSAttribute* NewAtt = NewObject< UDMSAttribute>();
-	NewAtt->Value= DefValue;
+	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>();
+	NewAtt->Value = DefValue;
 
 	_Attributes.Add(AttributeName, NewAtt);
 }
 
-UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FName& AttributeName)
+void UDMSAttributeComponent::BindOnModifiedToAttribute(const FName& AttributeName, const FOnAttributeModifiedSignature& iDelegate)
+{
+	if (_Attributes.Contains(AttributeName)) return;
+
+	_Attributes[AttributeName]->BindOnModified(iDelegate);
+}
+
+UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FName& AttributeName) const
 {
 	if (!_Attributes.Contains(AttributeName)) return nullptr; // log or what\
 

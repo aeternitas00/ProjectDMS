@@ -16,7 +16,7 @@
 #include "Card/DMSCardManagerComponent.h"
 #include "Card/DMSCardBase.h"
 
-#include "Effect/DMSEffectElementSelectorWidget.h"
+#include "Selector/DMSEffectElementSelectorWidget.h"
 #include "Attribute/DMSAttributeComponent.h"
 
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -82,18 +82,23 @@ void ADMSPlayerController::SelectObject(UObject* Object)
 }
 
 
-void ADMSPlayerController::PlayCardDep(ADMSCardBase* Card)
+//void ADMSPlayerController::PlayCardDep(ADMSCardBase* Card)
+//{
+//	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
+//
+//	if(!SeqMan) return;
+//
+//	UDMSEffectNode_PlayCard* PlayCardDef = NewObject<UDMSEffectNode_PlayCard>(SeqMan);
+//
+//	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
+//	Targets.Add(TScriptInterface<IDMSEffectorInterface>(Card));
+//
+//	SeqMan->RequestCreateSequence(this,this, PlayCardDef, Targets);
+//}
+
+UDMSCardContainerComponent* ADMSPlayerController::SearchContainer(const FName& ContainerName)
 {
-	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
-
-	if(!SeqMan) return;
-
-	UDMSEffectNode_PlayCard* PlayCardDef = NewObject<UDMSEffectNode_PlayCard>(SeqMan);
-
-	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
-	Targets.Add(TScriptInterface<IDMSEffectorInterface>(Card));
-
-	SeqMan->RequestCreateSequence(this,this, PlayCardDef, Targets);
+	return CardManagerComponent ? CardManagerComponent->SearchContainer(ContainerName) : nullptr;
 }
 
 void ADMSPlayerController::AttachEffectInstance(UDMSEffectInstance* EI)
@@ -109,9 +114,9 @@ void ADMSPlayerController::OnNotifyReceived(bool iChainable,UDMSSequence* Seq,UO
 	EffectManagerComponent->OnNotifyReceived(iChainable,Seq,this);
 }
 
-UDMSAttribute* ADMSPlayerController::GetAttribute(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName); }
-
-bool ADMSPlayerController::TryModAttribute(const FDMSAttributeModifier& Modifier) { return AttributeComponent->TryModAttribute(Modifier); }
+//UDMSAttribute* ADMSPlayerController::GetAttribute(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName); }
+//bool ADMSPlayerController::TryModAttribute(const FDMSAttributeModifier& Modifier) { return AttributeComponent->TryModAttribute(Modifier); }
+//void ADMSPlayerController::MakeAttribute(const FName& AttributeName, const float& DefValue){ AttributeComponent->MakeAttribute(AttributeName,DefValue); }
 
 float ADMSPlayerController::GetAttributeValue(const FName& AttributeName) 
 {

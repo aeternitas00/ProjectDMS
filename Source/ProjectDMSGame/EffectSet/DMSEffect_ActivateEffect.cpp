@@ -17,6 +17,8 @@ UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() :EffectIdx(0)
 { 
 	Keyword = TEXT("ActivateEffect"); 
 	EffectSetName = TEXT("Effect");
+	bHasPairedSelector=true;
+	//PairedSelector = UDMSSelector_ActivateEffect::StaticClass();
 }
 
 void UDMSEffect_ActivateEffect::Work_Implementation(UDMSEffectInstance* iEI)
@@ -47,6 +49,14 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSEffectInstance* iEI)
 	SeqMan->RequestCreateSequence(iEI->SourceObject, iEI->SourceController,Node,{} );
 
 }
+
+void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
+{
+	auto CastedWidget = Cast<UDMSSelector_ActivateEffect>(WidgetInstance);
+	if (CastedWidget == nullptr) return;
+	CastedWidget->OutDataName = ReferenceDataName;
+}
+
 UDMSEffectSet* UDMSEffect_ActivateEffect::GetEffectSetFromOuter(UDMSEffectInstance* iEI)
 {
 	// Outer Validation

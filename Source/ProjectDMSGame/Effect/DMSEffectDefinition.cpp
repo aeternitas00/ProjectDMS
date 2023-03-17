@@ -2,6 +2,7 @@
 
 
 #include "Effect/DMSEffectDefinition.h"
+#include "Selector/DMSDecisionWidget.h"
 #include "Sequence/DMSSequence.h"
 
 
@@ -17,6 +18,17 @@
 //	
 //	return rv;
 //}
+
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateTarget_Implementation(UDMSSequence* iSequence)
+{
+	TArray<TScriptInterface<IDMSEffectorInterface>> rv;
+
+	//for (auto ED : EffectDefinitions)
+	//{
+	//	for (auto Target : ED->GenerateTarget())	rv.AddUnique(Target);
+	//}
+	return rv;
+}
 
 bool UDMSEffectNode::IsContainKeyword(const FName& iKeyword)
 {
@@ -42,30 +54,55 @@ bool UDMSEffectSet::IsContainKeyword(const FName & iKeyword)
 	return false; 
 }
 
-void UDMSEffectNode::CreateSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence)
+TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors()
 {
 	// TODO :: Callback and Queued Selectors
 
 	//DMS_LOG_SCREEN(TEXT("CreateSelectors"));
-
+	TArray<UDMSEffectElementSelectorWidget*> rv;
 	for (auto ED : EffectDefinitions)
 	{
-		ED->CreateSelectors_(WidgetOwner, inSequence);
+		//rv.Append(ED->CreateSelectors());
+		auto t= ED->CreatePairedSelector();	if(t==nullptr) continue;
+		rv.Add(t);
 	}
+	return rv;
 
-	inSequence->InitializeSelectorQueue();
 }
 
-void UDMSEffectDefinition::CreateSelectors_(APlayerController* WidgetOwner, UDMSSequence* inSequence)
+TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets()
 {
-	// TODO :: Callback and Queued Selectors
+	TArray<UDMSDecisionWidget*> rv;
+	for (auto WidgetClass : DecisionWidgetClasses)
+	rv.Add(NewObject<UDMSDecisionWidget>(this,WidgetClass));
 
-	//DMS_LOG_SCREEN(TEXT("CreateSelectors"));
-	for (auto Selector : Selectors)
-	{
-		auto NewWidget = DuplicateObject<UDMSEffectElementSelectorWidget>(Selector, WidgetOwner);
-		NewWidget->SetOwningPlayer(WidgetOwner);
-		NewWidget->SetSourceEffectDefinition(this);
-		inSequence->AddToSelectorQueue(NewWidget);
-	}
+	InitializeDecisionWidget(rv);
+	return rv;
+}
+
+//TArray<UDMSEffectElementSelectorWidget*> UDMSEffectDefinition::CreateSelectors()
+//{
+//	TArray<UDMSEffectElementSelectorWidget*> rv;
+//	for (auto Selector : Selectors)
+//	{
+//		auto NewWidget = DuplicateObject<UDMSEffectElementSelectorWidget>(Selector, this);
+//		NewWidget->SetSourceEffectDefinition(this);
+//		rv.Add(NewWidget);
+//	}
+//
+//	return rv;
+//}
+
+UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector()
+{
+	if(!bIsUsingSelector) return nullptr;
+	
+	auto rv = GetPairedSelector().Get() != nullptr ? NewObject<UDMSEffectElementSelectorWidget>(this, GetPairedSelector().Get()) : nullptr;
+	
+	// Never happen?
+	if (rv == nullptr) return nullptr;
+	rv->SetSourceEffectDefinition(this);
+	InitializePairedSelector(rv);
+
+	return rv;
 }

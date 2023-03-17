@@ -4,28 +4,28 @@
 #include "Selector/DMSSelectorQueue.h"
 #include "Sequence/DMSSequence.h"
 #include "DMSSelectorQueue.h"
-#include "Effect/DMSEffectElementSelectorWidget.h"
+#include "Selector/DMSEffectElementSelectorWidget.h"
 
 void FDMSSelectorQueue::Initialize(UDMSSequence* OwnerSeq)
 {
 	CurrentIndex = -1;
 	Owner = OwnerSeq;
-	for (auto Selector : SelectorQueue)
-	{
-		//NEED PARAM?
-		Selector->InitializeSelector_Internal([&](UDMSDataObjectSet* Data){
-			
-			Owner->EIDatas->Merge(Data);		
+
+	for (int32 i = SelectorQueue.Num() - 1; i >= 0; --i) {
+
+		SelectorQueue[i]->SetupWidgetDelegates([&](UDMSDataObjectSet* Data) {
+			// [ OK Bttn ]
+			Owner->EIDatas->Merge(Data);
 			RunNextSelector();
 			//...
-		},
-		[&]() {
+		},	[&]() {
+			// [ X Bttn ]
 			//OwnerSeq->UpdateData(Data);
-			for ( auto sWidget : SelectorQueue ) {sWidget->CloseSelector();}
+			for (auto sWidget : SelectorQueue) { sWidget->CloseSelector(); }
 			OnSelectorsCanceled.Execute(Owner);
 			//...
-		}, 
-		Owner);
+		},	Owner);
+
 	}
 }
 
@@ -46,12 +46,10 @@ void FDMSSelectorQueue::RunNextSelector()
 		OnSelectorsCompleted.Execute(Owner);
 		return;
 	}
-	if (!SelectorQueue[CurrentIndex]->PopupSelector()) {
+	SelectorQueue[CurrentIndex]->PopupSelector();
+	if (!SelectorQueue[CurrentIndex]->SetupWidget()) {
 		SelectorQueue[CurrentIndex]->CloseSelector();
 		RunNextSelector();
-		return;
 	}
 
 }
-
-//inline void FDMSSelectorQueue::AddSelector(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.Add(iWidget); }

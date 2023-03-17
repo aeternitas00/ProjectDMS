@@ -73,7 +73,7 @@ void UDMSCardManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	//DOREPLIFETIME(UDMSCardManagerComponent, DiscardPile);
 }
 
-UDMSCardContainerComponent* UDMSCardManagerComponent::SerachContainer(const FName& ContainerName)
+UDMSCardContainerComponent* UDMSCardManagerComponent::SearchContainer(const FName& ContainerName)
 {
 	return Containers.Contains(ContainerName) ? Containers[ContainerName] : nullptr;
 }

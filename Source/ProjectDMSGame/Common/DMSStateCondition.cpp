@@ -1,5 +1,5 @@
 #include "Common/DMSStateCondition.h"
-#include "Attribute/DMSAttributeInterface.h"
+#include "Attribute/DMSAttributeComponent.h"
 #include "Attribute/DMSAttribute.h"
 #include "Sequence/DMSSequence.h"
 
@@ -47,9 +47,16 @@ bool UDMSStateCondition::CheckCondition(UDMSSequence* Seq)
 
 bool UDMSAttributeCheckerDefinition::CheckState(UObject* CheckingObject)
 {
-	if (! CheckingObject->Implements<UDMSAttributeInterface>())return bNullIsTrue;
+	AActor* tOuter = Cast<AActor>(CheckingObject);
+	if (tOuter == nullptr) {
+		DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *GetName(), *CheckingObject->GetName());
+		return bNullIsTrue;
+	}
+	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
 
-	UDMSAttribute* Att = Cast<IDMSAttributeInterface>(CheckingObject)->GetAttribute(AttributeName);
+	if (AttComp==nullptr)return bNullIsTrue;
+
+	UDMSAttribute* Att = AttComp->GetAttribute(AttributeName);
 
 	if (Att == nullptr)return bNullIsTrue;
 
@@ -57,6 +64,14 @@ bool UDMSAttributeCheckerDefinition::CheckState(UObject* CheckingObject)
 	{
 		case EDMSComparisonOperator::BO_Equal:
 			return Att->GetValue() == Value;
+		case EDMSComparisonOperator::BO_Greater:
+			return Att->GetValue() > Value;
+		case EDMSComparisonOperator::BO_Less:
+			return Att->GetValue() < Value;
+		case EDMSComparisonOperator::BO_GreaterEqual:
+			return Att->GetValue() >= Value;
+		case EDMSComparisonOperator::BO_LessEqual:
+			return Att->GetValue() <= Value;
 		default : return true;
 	}
 }

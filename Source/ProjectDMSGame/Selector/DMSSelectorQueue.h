@@ -16,7 +16,7 @@
 #include "Common/DMSCommons.h"
 #include "DMSSelectorQueue.generated.h"
 
-class UDMSEffectElementSelectorWidget;
+class UDMSConfirmWidgetBase;
 
 USTRUCT()
 struct FDMSSelectorQueue
@@ -30,14 +30,14 @@ public:
 	class UDMSSequence* Owner;
 
 	UPROPERTY()
-	TArray<UDMSEffectElementSelectorWidget*> SelectorQueue;
+	TArray<UDMSConfirmWidgetBase*> SelectorQueue;
 
 	//UPROPERTY()
 	int8 CurrentIndex;
 
 	// Chained Delegates..
 	void Initialize(UDMSSequence* OwnerSeq);
-	FORCEINLINE void AddSelector(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.Add(iWidget); }
+	FORCEINLINE void AddSelector(UDMSConfirmWidgetBase* iWidget) { SelectorQueue.Add(iWidget); }
 	
 	template<typename FuncCompleted, typename FuncCanceled >
 	void RunSelectors(FuncCompleted&& iOnSelectorsCompleted, FuncCanceled&& iOnSelectorsCanceled);

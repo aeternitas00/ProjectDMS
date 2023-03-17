@@ -4,16 +4,16 @@
 #include "Sequence/DMSSequence.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
-#include "Effect/DMSEffectElementSelectorWidget.h"
+#include "Selector/DMSEffectElementSelectorWidget.h"
 
 
-//void UDMSSequence::InitializeSelectorQueue()
+//void UDMSSequence::InitializeWidgetQueue()
 //{
 //	SelectorQueue.Initialize(this);
 //}
 
 template<typename FuncFinished, typename FuncCanceled >
-void UDMSSequence::RunSelectorQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
+void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
 {
 	SelectorQueue.RunSelectors(
 		std::forward<FuncFinished&&>(iOnSelectorFinished),
@@ -22,3 +22,13 @@ void UDMSSequence::RunSelectorQueue(FuncFinished&& iOnSelectorFinished, FuncCanc
 }
 
 //void UDMSSequence::AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
+
+//FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
+
+void UDMSSequence::InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner)
+{ 
+	for(auto Widget : iWidgets) Widget->SetOwningPlayer(WidgetOwner);
+	SelectorQueue.SelectorQueue.Empty();
+	SelectorQueue.SelectorQueue.Append(iWidgets); 
+	SelectorQueue.Initialize(this); 
+}

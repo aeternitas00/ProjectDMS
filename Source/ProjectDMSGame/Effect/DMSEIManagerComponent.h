@@ -23,7 +23,7 @@ class UDMSEffectSet;
 /// EI 인터랙션을 필요로 하는 오브젝트에 부착하여 사용.
 /// SelfLogging System?
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTDMSGAME_API UDMSEIManagerComponent : public UActorComponent, public IDMSEffectorInterface, public IDMSAttributeInterface
+class PROJECTDMSGAME_API UDMSEIManagerComponent : public UActorComponent, public IDMSEffectorInterface//, public IDMSAttributeInterface
 {
 	GENERATED_BODY()
 
@@ -49,8 +49,8 @@ public:
 	virtual void OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
 
-	virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
-	virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
-
+	//virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
+	//virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
+	//virtual void MakeAttribute(const FName& AttributeName, const float& DefValue =0.0f);
 	void SetupOwnEffect(UDMSEffectSet* EffectSet);
 };

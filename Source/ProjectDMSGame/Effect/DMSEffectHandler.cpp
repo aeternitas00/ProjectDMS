@@ -33,9 +33,9 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 	{
 		//DMS_LOG_SCREEN(TEXT("EH: Generic CreateEI Meets no target %s"), *Sequence->SourceObject->GetName());
 		TArray<TScriptInterface<IDMSEffectorInterface>> TempTarget;
-		UDMSDataObject* TargetData;
-		FString DbgStr;
-//		bool txr;
+		//UDMSDataObject* TargetData;
+		//FString DbgStr;
+		//bool txr;
 		switch(EffectNode->PresetTargetFlag)
 		{
 			case EDMSPresetTargetFlag::PTF_Self:
@@ -50,13 +50,17 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 					DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *Sequence->GetName(), *Sequence->SourceController->GetName());
 				}
 				break;
-			case EDMSPresetTargetFlag::PTF_Data:
-				TargetData = Sequence->EIDatas->GetData("PresetTarget");
-				
-				TempTarget = (TargetData != nullptr && TargetData->TypeCheck<TArray<TScriptInterface<IDMSEffectorInterface>>>()) ? 
-					TargetData->Get<TArray<TScriptInterface<IDMSEffectorInterface>>>() : 
-					TArray<TScriptInterface<IDMSEffectorInterface>>();
-				DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To Data->PresetTarget (Num : %d)"), *Sequence->GetName(), TempTarget.Num());
+			//case EDMSPresetTargetFlag::PTF_Data:
+			//	TargetData = Sequence->EIDatas->GetData("PresetTarget");
+			//	
+			//	TempTarget = (TargetData != nullptr && TargetData->TypeCheck<TArray<TScriptInterface<IDMSEffectorInterface>>>()) ? 
+			//		TargetData->Get<TArray<TScriptInterface<IDMSEffectorInterface>>>() : 
+			//		TArray<TScriptInterface<IDMSEffectorInterface>>();
+			//	DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To Data->PresetTarget (Num : %d)"), *Sequence->GetName(), TempTarget.Num());
+			//	break;
+			case EDMSPresetTargetFlag::PTF_Effect:
+				TempTarget=EffectNode->GenerateTarget(Sequence);
+				DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To EN's target (Num : %d)"), *Sequence->GetName(), TempTarget.Num());
 				break;
 			default:
 				break;

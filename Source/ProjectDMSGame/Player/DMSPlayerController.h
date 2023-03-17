@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -37,7 +37,7 @@ class UDMSAttribute;
  *	========================================
  */
 UCLASS(Blueprintable)
-class PROJECTDMSGAME_API ADMSPlayerController : public APlayerController, public IDMSEffectorInterface, public IDMSAttributeInterface
+class PROJECTDMSGAME_API ADMSPlayerController : public APlayerController, public IDMSEffectorInterface//, public IDMSAttributeInterface
 {
 	GENERATED_BODY()
 	
@@ -74,7 +74,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void/**/ PopupSelectorWidget(TSubclassOf<UDMSEffectElementSelectorWidget> WidgetClass);
 
-	// ≈¨∏Ø«ÿº≠ ¡§∫∏ ¡∂ªÁ «œ¥¬ øÎµµ∑Œ ªÁøÎ ( øÏ≈¨∏Ø ø° «“¥Á ? )
+	// ÌÅ¥Î¶≠Ìï¥ÏÑú Ï†ïÎ≥¥ Ï°∞ÏÇ¨ ÌïòÎäî Ïö©ÎèÑÎ°ú ÏÇ¨Ïö© ( Ïö∞ÌÅ¥Î¶≠ Ïóê Ìï†Îãπ ? )
 	UFUNCTION(BlueprintCallable)
 	void InstigateObject(UObject* Object);
 	
@@ -90,16 +90,20 @@ public:
 	void PlayCard(ADMSCardBase* Card);
 
 	// Deprecated
+	//UFUNCTION(BlueprintCallable)
+	//void PlayCardDep(ADMSCardBase* Card);
+
 	UFUNCTION(BlueprintCallable)
-	void PlayCardDep(ADMSCardBase* Card);
+	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
 
 	// INTERFACE FUNCTIONS
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq,UObject* SourceTweak) override;
 	virtual UObject* GetObject() override { return this; }
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
-	virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
-	virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
+	//virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
+	//virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
+	//virtual void MakeAttribute(const FName& AttributeName, const float& DefValue = 0.0f);
 // ====================== TEST ====================== //
 
 	UPROPERTY()

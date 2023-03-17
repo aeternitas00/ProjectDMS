@@ -24,6 +24,9 @@ public:
 	float Value;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAttributeModifiedSignature, UDMSAttribute*, Attribute);
+
 UCLASS(BlueprintType)
 class PROJECTDMSGAME_API UDMSAttribute : public UObject
 {
@@ -39,14 +42,22 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	bool bIsDependOnOuter;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
+
 	DECLARE_DYNAMIC_DELEGATE_RetVal(float, FGetDependentValue);
 
 	UPROPERTY()
 	FGetDependentValue GetDependentValue;
 
-	//DECLARE_DYNAMIC_DELEGATE_RetVal(float, FOnAttributeModified);
-	//UPROPERTY()
-	//FOnAttributeModified OnAttributeModified;
+	/*
+	 * 
+	 */
+	//DECLARE_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*);
+	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
+	//DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAttributeModified, UDMSAttribute, Attribute, float, Delta);
+
+	UPROPERTY()
+	FOnAttributeModified OnAttributeModified;
 
 	UFUNCTION(BlueprintCallable)
 	float GetValue() { return bIsDependOnOuter ? GetDependentValue.Execute(): Value;  } ;
@@ -56,4 +67,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool ModAttribute(const FDMSAttributeModifier& Modifier);
+
+	UFUNCTION(BlueprintCallable)
+	void BindOnModified(const FOnAttributeModifiedSignature& iDelegate);
 };
+

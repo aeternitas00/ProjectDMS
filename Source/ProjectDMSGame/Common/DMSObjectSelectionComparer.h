@@ -29,26 +29,28 @@ class UDMSObjectSelectionComparer : public UObject
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintNativeEvent)
+	bool Compare(UObject* SourceObject, UObject* TargetObject);
 
-	virtual bool Compare(UObject* SourceObject, UObject* TargetObject ){return true;}
+	virtual bool Compare_Implementation(UObject* SourceObject, UObject* TargetObject ){return true;}
 
 };
 
-UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Notified Obj == Target"))
+UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Obj == Target"))
 class UDMSObjectSelectionComparer_IsSelf : public UDMSObjectSelectionComparer
 {
 	GENERATED_BODY()
 
 public:
 
-	virtual bool Compare(UObject* SourceObject, UObject* TargetObject) override { 
+	virtual bool Compare_Implementation(UObject* SourceObject, UObject* TargetObject) override {
 		//DMS_LOG_SCREEN(TEXT("%s == %s"),*SourceObject->GetName(), *TargetObject->GetName());
 		return SourceObject == TargetObject;
 	}
 
 };
 
-UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Class of Notified Obj == Class of Target"))
+UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Class of Obj == Class of Target"))
 class UDMSObjectSelectionComparer_IsSpecificType: public UDMSObjectSelectionComparer
 {
 	GENERATED_BODY()
@@ -75,7 +77,7 @@ protected:
 
 public:
 	UDMSObjectSelectionComparer_IsSpecificType(): SourceType(nullptr), TargetType(nullptr){}
-	virtual bool Compare(UObject* SourceObject, UObject* TargetObject) override { 
+	virtual bool Compare_Implementation(UObject* SourceObject, UObject* TargetObject) override {
 		bool A = (SourceType != nullptr) ? 
 		( bAllowSourceChildClass ? UKismetMathLibrary::ClassIsChildOf(SourceObject->GetClass(), SourceType) : SourceObject->GetClass() == SourceType) : true;
 		bool B = (TargetType != nullptr) ? 

@@ -25,7 +25,7 @@ class UDMSEffectInstance;
 class UDMSDataObjectSet;
 class UDMSEffectorInterface;
 class UDMSEffectNode;
-class UDMSEffectElementSelectorWidget;
+class UDMSConfirmWidgetBase;
 
 
 /** 
@@ -102,10 +102,10 @@ public:
 	UDMSSequence* AfterNode;
 
 	FORCEINLINE void SetActive(const bool& iAct) { bIsActive = iAct;}
-	FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
-	void InitializeSelectorQueue(){ SelectorQueue.Initialize(this); }
+	//FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
+	void InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner);
 
 	template<typename FuncFinished, typename FuncCanceled >
-	void RunSelectorQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
+	void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
 };
 

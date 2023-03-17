@@ -51,7 +51,8 @@ protected:
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
-	UDMSCardContainerComponent* SerachContainer(const FName& ContainerName);
+	//UFUNCTION(BlueprintCallable)
+	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
 
 	void ConstructContainer(const FName& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass);
 

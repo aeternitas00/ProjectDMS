@@ -61,3 +61,10 @@ void UDMSCardContainerComponent::Remove(TArray<ADMSCardBase*> iCards)
 	for (auto iCard : iCards) CardList.Cards.Remove(iCard);
 	OnContainerRemoved(iCards);
 }
+
+TArray<ADMSCardBase*> UDMSCardContainerComponent::GetTopNCards(int Num)
+{
+	if (CardList.Cards.Num() == 0 || Num <= 0) return TArray<ADMSCardBase*>();
+	if (CardList.Cards.Num() <= Num) Num = CardList.Cards.Num();
+	return TArray<ADMSCardBase*>(&CardList.Cards.GetData()[CardList.Cards.Num() - Num], Num);
+}

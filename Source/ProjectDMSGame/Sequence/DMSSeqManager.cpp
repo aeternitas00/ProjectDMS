@@ -10,6 +10,7 @@
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Notify/DMSNotifyManager.h"
+#include "Selector/DMSDecisionWidget.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
 
@@ -43,11 +44,6 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>();
 	NewData->Inherit(Datas);
 
-	// 셀렉터 실행
-	// 이 단계 ( 셀렉터에서 캔슬 실행 ) 에서 취소시 시퀀스 생성 단계로 진입 X
-	// 셀렉터가 없거나 완료 되면 DataSet 갱신하고 
-	// DataSet & EN 을 이용하여 EI를 생성.
-
 	UDMSSequence* Sequence = NewObject<UDMSSequence>(this);
 	Sequence->OriginalEffectNode = EffectNode;
 	Sequence->SourceObject = SourceObject;
@@ -71,35 +67,62 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 			break;
 		
 	};
+	auto WidgetOwner = Cast<APlayerController>(SourceController);	
 	
-	EH->CreateEffectInstance(Sequence, EffectNode);
-
-	auto WidgetOwner = Cast<APlayerController>(SourceController);
-	
-	if (WidgetOwner==nullptr) { 
-		/*it's from GAMEMODE or SYSTEM THINGs. LEADER PLAYER own this selector */
+	if (WidgetOwner == nullptr) {
+		//	it's from GAMEMODE or SYSTEM THINGs. LEADER PLAYER own this selector 
+		//	추후 멀티 플레이 환경에서 어떻게 할 지 생각해보기.
 	}
 
-	EffectNode->CreateSelectors(WidgetOwner, Sequence);
-	
-	Sequence->RunSelectorQueue([&](UDMSSequence* pSequence){
+	// ====== Decision Making Step ====== //
+	// ( ex. User Choose target, ... )
+	Sequence->InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*>(EffectNode->CreateDecisionWidgets()),WidgetOwner);
+	Sequence->RunWidgetQueue([&](UDMSSequence* pSequence) {
 
-		RunSequence(pSequence);
+		// Decision confirmed or no decision widget
 
-		for (auto EI : pSequence->EIs)
-		{
-			EI->ChangeEIState(EDMSEIState::EIS_Default);
+		// Create EI first for preview.
+		EH->CreateEffectInstance(Sequence, EffectNode);
+
+		// ====== Effect Data Selection Step ====== //
+		// ( ex. User set value of effect's damage amount , ... )
+		Sequence->InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*>(EffectNode->CreateSelectors()), WidgetOwner);
+		Sequence->RunWidgetQueue([&](UDMSSequence* pSequence){
+			// Selection completed
+
+			// Run sequence ( Notifying steps and apply )
+			RunSequence(pSequence);
+
+			for (auto EI : pSequence->EIs)
+			{
+				EI->ChangeEIState(EDMSEIState::EIS_Default);
+			}
+			// ==>> 노티파이 결과로 추가적으로 생성되는 시퀀스는 이 메소드를 통해 진행.
+			// 최초로 들어온 ( Root EI ) 의 After 브로드캐스트가 끝나면서 재귀적 트리 진행 종료.
+		}, [&](UDMSSequence* pSequence){
+			// Selection Canceled
+
+			// Cleanup this seq
+			CleanupSequenceTree();
 		}
-		// ==>> 노티파이 결과로 추가적으로 생성되는 시퀀스는 이 메소드를 통해 진행.
-		// 최초로 들어온 ( Root EI ) 의 After 브로드캐스트가 끝나면서 재귀적 트리 진행 종료.
-	}, [&](UDMSSequence* pSequence){
-			//cleanup this seq
-			RootSequence=nullptr;
-		}
+		);
+	}, [&](UDMSSequence* pSequence) {
+		// Decision canceled
+
+		// Cleanup this seq
+		CleanupSequenceTree();
+		//...
+	}
 	);
 	return Sequence;
 }
 
+void UDMSSeqManager::CleanupSequenceTree()
+{
+	//...
+	RootSequence = nullptr;
+	//...
+}
 
 void UDMSSeqManager::RunSequence(UDMSSequence* Sequence)
 {

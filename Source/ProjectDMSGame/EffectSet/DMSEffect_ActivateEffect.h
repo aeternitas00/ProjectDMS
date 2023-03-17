@@ -16,12 +16,11 @@ class UDMSEffect_ActivateEffect : public UDMSEffectDefinition
 public:
 	UDMSEffect_ActivateEffect();
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!bIsUsingSelector", EditConditionHides))
 	uint8 EffectIdx;
 
-	// 공백이 아닐 경우 EI데이터에서 이 이름의 데이터 값을 먼저 읽고, 이것을 EffectIdx 대신 사용함. 
-	// 값이 uint8형이 아니거나, 잘못된 값일 경우 ( OOR 등 ) EffectIdx를 사용.
-	UPROPERTY(EditDefaultsOnly)
+
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	FName ReferenceDataName;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -29,6 +28,26 @@ public:
 
 	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
 
-	virtual void Work_Implementation(UDMSEffectInstance* iEI) override; // temp
-	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);;
+	virtual void Work_Implementation(UDMSEffectInstance* iEI) override;
+	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
+	TSubclassOf<UDMSSelector_ActivateEffect> PairedWidgetClass;
+
+	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation() { return PairedWidgetClass.Get(); }
+
+	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance) override;
+
+};
+
+UCLASS(Blueprintable, Abstract)
+class UDMSSelector_ActivateEffect : public UDMSEffectElementSelectorWidget
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	FName OutDataName;
+
+	virtual	bool SetupWidget_Implementation() { return GetCandidatesFromED(); }
 };

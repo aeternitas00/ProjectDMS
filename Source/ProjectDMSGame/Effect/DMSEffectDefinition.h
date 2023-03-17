@@ -16,12 +16,12 @@
 #include "UObject/NoExportTypes.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Common/DMSConditionContainer.h"
-#include "Effect/DMSEffectElementSelectorWidget.h"
+#include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
 
 
 
-
+class UDMSDecisionWidget;
 class UDMSDataObjectSet;
 
 /**
@@ -51,7 +51,7 @@ public:
 	FName Keyword; // 단어 단위이므로 fstring 대신 fname
 
 public:
-	UDMSEffectDefinition() { /* Keyword = New Name */ };
+	UDMSEffectDefinition(): bIsUsingSelector(false), bHasPairedSelector(false){}
 
 	// 실행할 함수의 중복을 줄이기 위해 CardDefinition - DMSEffect에 실행부인 (Work)를 두는 것으로 하였음.
 	// 이것은 카드 종류 하나에 실행부 하나만을 두기 까지 압축하는 것을 의도
@@ -61,19 +61,34 @@ public:
 	virtual void Work_Implementation(UDMSEffectInstance* iEI) {};
 
 	// ===== For selector features ===== //
-	// 셀렉터를 쓰는 디피니션을 차일드 클래스로 하나 빼는게 좋을까?
-	// 리스트 구할 방법을 미리 해놓는 식으로.. TMap<Name, ENum ( Numeric, Object, String ...) > CandidatesFlag 같이...
+	//// Paired Selector class 를 마련해서 구현하는게 좋을 듯.
 
-	// SelectorDefinition??????
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = CardEffect)
-	TArray<UDMSEffectElementSelectorWidget*> Selectors; // sort of option
+	//	// == DEPRECATED == //
+	//	// SelectorDefinition??????
+	//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	//	TArray<UDMSEffectElementSelectorWidget*> Selectors; // sort of option
 
-	// NOTE ) 셀렉터한테 "Name,Type"의 명세를 넣어주는게 더 좋은 설계인가?
+	//	// NOTE ) 셀렉터한테 "Name,Type"의 명세를 넣어주는게 더 좋은 설계인가?
+
+	//	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors();
+	//	// ================ //
+
 	UFUNCTION(BlueprintNativeEvent)
-	bool GetCandidates(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj); // temp
-	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj) { return false; };
+	bool GetCandidates(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
+	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj) { return false; }
 
-	void CreateSelectors_(APlayerController* WidgetOwner, UDMSSequence* inSequence);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "bHasPairedSelector", EditConditionHides))
+	bool bIsUsingSelector;
+
+	UPROPERTY(VisibleAnywhere, meta = (EditCondition = false, EditConditionHides))
+	bool bHasPairedSelector;
+
+	UFUNCTION(BlueprintNativeEvent)
+	TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector();
+	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation(){return nullptr;}
+
+	UDMSEffectElementSelectorWidget* CreatePairedSelector();
+	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance){}
 };
 
 
@@ -95,45 +110,78 @@ class PROJECTDMSGAME_API UDMSEffectNode : public UObject
 	GENERATED_BODY()
 
 public:
-	UDMSEffectNode():NodeKeyword(""),PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true), bForced(false) {}
+	UDMSEffectNode():NodeKeyword(""), bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) {}
+	
 	// 이펙트 노드에 대한 대표 키워드
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	FName NodeKeyword;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
-	EDMSPresetTargetFlag PresetTargetFlag;
+	bool IsContainKeyword(const FName& iKeyword);
 
-	// 노드 실행시 발생할 코스트 
+//=================== Conditions and timing that check before activate main effect ===================//
+
+	// Effect's activatable timing.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	FDMSConditionContainer Conditions;
+
+	// Has a choice about triggering the effect? == true : Forced trigger when meet the conditions. / false : Can choose Y/N of trigger.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	bool bForced;
+
+	// Effect's Cost. It's different with cost of playing card.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
 	UDMSEffectSet* EffectCost;
 
-	// Effect's activatable timing
+//=================== Pre-activate ( Decision step ) ===================//
+
+	// Classes of decision widget what this effect will use.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
-	FDMSConditionContainer Conditions;
+	TArray<TSubclassOf<UDMSDecisionWidget>> DecisionWidgetClasses;
+
+	// Create decision widget with "DecisionWidgetClasses".
+	TArray<UDMSDecisionWidget*> CreateDecisionWidgets();
+
+	// Implements on BP. How to initializing decision widget's candidate or search range. 
+	// Param's order follows "DecisionWidgetClasses" property's one.
+	UFUNCTION(BlueprintNativeEvent)
+	void InitializeDecisionWidget(const TArray<UDMSDecisionWidget*>& iWidget);
+	virtual void InitializeDecisionWidget_Implementation(const TArray<UDMSDecisionWidget*>& iWidget) {};
+
+
+//=================== Main effect ===================//
 
 	// Actual effects that activatable in that timing
 	// Works in order to 0~n
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode, Instanced)
 	TArray<UDMSEffectDefinition*> EffectDefinitions;
 
-	// Effect's activatable timing
+	// Flag for the effect's predefined target.
+	// ex ) effect that Add some resource to "Actvivated player". 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	EDMSPresetTargetFlag PresetTargetFlag;
+
+	// Using with "PresetTargetFlag" property. 
+	// Use this when effect has to set targets with runtime data ( Sequence ).
+	UFUNCTION(BlueprintNativeEvent)
+	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget(UDMSSequence* iSequence);
+	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget_Implementation(UDMSSequence* iSequence);
+	
+	// Create paired selector widget from "EffectDefinitions".
+	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors();
+
+//=================== Child effect ===================//
+
+	// Conditions to advance to child effect.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	FDMSConditionContainer AdvanceConditions;
 
-	// 이펙트 발동 후 조건 체크를 한번 더 한다음 발동하는 서브 이펙트에 대한 구현?
+	// Effect's child(sub) effect
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
 	UDMSEffectNodeWrapper* ChildEffect;
 
+	// Flag of "Is this effect has chainable window?".
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	bool bIsChainableEffect;
-
-	// 효과 발동에 대한 선택권이 있는 효과인가? == true : 조건에 맞으면 강제 발동 / false : 조건에 맞으면 효과 발동에 대한 Y/N UI 띄우는 형태로
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
-	bool bForced;
-
-	bool IsContainKeyword(const FName& iKeyword);
-	void CreateSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence);
-	//void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*));
 };
 
 /** 
@@ -153,7 +201,7 @@ public:
 	UDMSEffectNode* GetEffectNodeBP() { return GetEffectNode(); }
 	virtual UDMSEffectNode* GetEffectNode(){return nullptr;}
 	virtual bool IsContainKeyword(const FName& iKeyword) {return false;}
-	virtual void CreateSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence){}
+	virtual void CreateSelectors(){}
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) {}
 };
 
@@ -170,12 +218,14 @@ UCLASS(BlueprintType, ClassGroup = (Effect), meta = (DisplayName = "Make Effect 
 class PROJECTDMSGAME_API UDMSEffectNodeWrapper_Manual : public UDMSEffectNodeWrapper
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Effect)
 	UDMSEffectNode* EffectNode;
+
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode; }
 	bool IsContainKeyword(const FName& iKeyword){return EffectNode->IsContainKeyword(iKeyword);}
-	virtual void CreateSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence){ EffectNode->CreateSelectors(WidgetOwner, inSequence); }
+	virtual void CreateSelectors(){ EffectNode->CreateSelectors(); }
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) { EffectNode->RunSelectors(WidgetOwner, inSequence,OnSelectorsFinished);}
 };
 
@@ -194,9 +244,10 @@ class PROJECTDMSGAME_API UDMSEffectNodeWrapper_Preset : public UDMSEffectNodeWra
 public:
 	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Effect Node Class"))
 	TSubclassOf<UDMSEffectNode> EffectNode; 
+
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode.GetDefaultObject(); }
 	bool IsContainKeyword(const FName& iKeyword) { return EffectNode.GetDefaultObject()->IsContainKeyword(iKeyword); }
-	virtual void CreateSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence){ EffectNode.GetDefaultObject()->CreateSelectors(WidgetOwner, inSequence); }
+	virtual void CreateSelectors(){ EffectNode.GetDefaultObject()->CreateSelectors(); }
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) { EffectNode.GetDefaultObject()->RunSelectors(WidgetOwner, inSequence,OnSelectorsFinished); }
 };
 

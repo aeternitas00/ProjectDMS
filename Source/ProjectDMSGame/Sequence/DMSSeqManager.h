@@ -52,6 +52,8 @@ public:
 	UPROPERTY()
 	UDMSSequence* RootSequence;
 
+	void CleanupSequenceTree();
+
 	// *FSeqHandle*/ 같은 시퀀스 핸들 구현? ( 넷코드 생각할때 다시 )
 	UFUNCTION(BlueprintCallable)
 	UDMSSequence* RequestCreateSequence(

@@ -45,8 +45,8 @@ void UDMSEffectInstance::OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UO
 
 	if ( EffectNode->Conditions.CheckCondition(SourceTweak, Seq) )
 	{
-		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetOuter()->GetOuter() !=nullptr ? *GetOuter()->GetOuter()->GetName():TEXT("NullOuter"), *GetName());
-		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<ADMSCardBase>() != nullptr ? *GetTypedOuter<ADMSCardBase>()->GetName() : TEXT("NullOuter"), *GetName());
+		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetOuter()->GetOuter() !=nullptr ? *GetOuter()->GetOuter()->GetName():TEXT("NullOuter"), *GetName());
+		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
 
 		// Inherit dataset is correct?
 		SM->RequestCreateSequence(SourceTweak, SourceController, EffectNode, {}, DataSet, Seq, Seq->Progress);

@@ -26,5 +26,13 @@ bool UDMSAttribute::ModAttribute(const FDMSAttributeModifier& Modifier)
 			return false;
 			break;
 	}
+	OnAttributeModified.Broadcast(this);
 	return true;
+}
+
+void UDMSAttribute::BindOnModified(const FOnAttributeModifiedSignature& iDelegate)
+{
+	//if (iObject==nullptr) return;
+	//OnAttributeModified.AddDynamic();
+	OnAttributeModified.Add(iDelegate);
 }

@@ -72,6 +72,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSCardBase*> GetCards() {return CardList.Cards;}
 	
+	// Get [Num] cards from container. if [Num] is greater than container's size, returns entire container.
+	UFUNCTION(BlueprintCallable)
+	TArray<ADMSCardBase*> GetTopNCards(int Num);
+
+
 	UFUNCTION(BlueprintPure,BlueprintCallable)
 	FName GetContainerName() const {return FName(*GetName())/*ContainerName */; }
 	UFUNCTION(BlueprintNativeEvent)
