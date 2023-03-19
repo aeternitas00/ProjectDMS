@@ -41,14 +41,14 @@ void FDMSSelectorQueue::RunSelectors(FuncCompleted&& iOnSelectorsCompleted, Func
 
 void FDMSSelectorQueue::RunNextSelector()
 {
-	CurrentIndex++;
-	if (SelectorQueue.Num() == CurrentIndex ) {
+	int8 LocalIdx = ++CurrentIndex;
+	if (SelectorQueue.Num() == LocalIdx) {
 		OnSelectorsCompleted.Execute(Owner);
 		return;
 	}
-	SelectorQueue[CurrentIndex]->PopupSelector();
-	if (!SelectorQueue[CurrentIndex]->SetupWidget()) {
-		SelectorQueue[CurrentIndex]->CloseSelector();
+	SelectorQueue[LocalIdx]->PopupSelector();
+	if (!SelectorQueue[LocalIdx]->SetupWidget()) {
+		SelectorQueue[LocalIdx]->CloseSelector();
 		RunNextSelector();
 	}
 

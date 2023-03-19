@@ -101,6 +101,10 @@ public:
 	UPROPERTY()
 	UDMSSequence* AfterNode;
 
+	// Noncopy setter?
+	UFUNCTION(BlueprintCallable)
+	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets){ Targets = iTargets;}
+
 	FORCEINLINE void SetActive(const bool& iAct) { bIsActive = iAct;}
 	//FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
 	void InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner);

@@ -110,7 +110,10 @@ class PROJECTDMSGAME_API UDMSEffectNode : public UObject
 	GENERATED_BODY()
 
 public:
-	UDMSEffectNode():NodeKeyword(""), bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) {}
+	UDMSEffectNode():NodeKeyword(""), bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) {
+		Conditions_ = CreateDefaultSubobject<UDMSConditionContainer_>("Conditions");
+		AdvanceConditions_ = CreateDefaultSubobject< UDMSConditionContainer_>("AdvanceConditions");
+	}
 	
 	// 이펙트 노드에 대한 대표 키워드
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
@@ -123,6 +126,9 @@ public:
 	// Effect's activatable timing.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	FDMSConditionContainer Conditions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
+	UDMSConditionContainer_* Conditions_;
 
 	// Has a choice about triggering the effect? == true : Forced trigger when meet the conditions. / false : Can choose Y/N of trigger.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
@@ -174,6 +180,9 @@ public:
 	// Conditions to advance to child effect.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	FDMSConditionContainer AdvanceConditions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
+	UDMSConditionContainer_* AdvanceConditions_;
 
 	// Effect's child(sub) effect
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)

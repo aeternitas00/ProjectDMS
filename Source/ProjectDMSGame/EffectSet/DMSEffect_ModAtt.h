@@ -52,7 +52,7 @@ public:
 	/**
 	 *	Effect's modifying value.
 	 */
-	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Modifying Value"))
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Modifying Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
 	FDMSAttributeModifier Value;
 	
 	/**

@@ -23,6 +23,7 @@ class UDMSEffectNode;
 class UDMSDataObjectSet;
 class UDMSSequence;
 class UDMSEffectorInterface;
+class UDMSDecisionWidget;
 
 /**
  *	========================================
@@ -51,6 +52,9 @@ public:
 	// leaf 시퀀스가 모두 종료되고 root seq의 after 타이밍이 최종적으로 종료되면 클린업 실행.
 	UPROPERTY()
 	UDMSSequence* RootSequence;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
 
 	void CleanupSequenceTree();
 

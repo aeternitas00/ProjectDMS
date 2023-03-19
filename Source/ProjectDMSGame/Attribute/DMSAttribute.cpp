@@ -23,7 +23,6 @@ bool UDMSAttribute::ModAttribute(const FDMSAttributeModifier& Modifier)
 				return false;
 			break;
 		default: 
-			return false;
 			break;
 	}
 	OnAttributeModified.Broadcast(this);

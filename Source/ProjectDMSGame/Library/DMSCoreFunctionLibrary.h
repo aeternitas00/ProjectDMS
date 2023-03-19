@@ -30,12 +30,12 @@ class PROJECTDMSGAME_API UDMSCoreFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable, Category = "Project DMS")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static ADMSGameMode* GetDMSGameMode();
-	UFUNCTION(BlueprintCallable, Category = "Project DMS")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSSeqManager* GetDMSSequenceManager();
-	UFUNCTION(BlueprintCallable, Category = "Project DMS")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSNotifyManager* GetDMSNotifyManager();
-	UFUNCTION(BlueprintCallable, Category = "Project DMS")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSEffectHandler* GetDMSEffectHandler();
 };

@@ -51,7 +51,7 @@ void UDMSAttributeComponent::MakeAttribute(const FName& AttributeName, const flo
 {
 	if (_Attributes.Contains(AttributeName)) return; // log or what\
 
-	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>();
+	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
 	NewAtt->Value = DefValue;
 
 	_Attributes.Add(AttributeName, NewAtt);
@@ -59,7 +59,7 @@ void UDMSAttributeComponent::MakeAttribute(const FName& AttributeName, const flo
 
 void UDMSAttributeComponent::BindOnModifiedToAttribute(const FName& AttributeName, const FOnAttributeModifiedSignature& iDelegate)
 {
-	if (_Attributes.Contains(AttributeName)) return;
+	if (!_Attributes.Contains(AttributeName)) return;
 
 	_Attributes[AttributeName]->BindOnModified(iDelegate);
 }

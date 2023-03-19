@@ -44,11 +44,11 @@ public:
 
 protected:
 	//private and getter()?
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Instanced)
 	UDMSEffectHandler* EffectHandler;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
 	UDMSSeqManager* SequenceManager;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Instanced)
 	UDMSNotifyManager* NotifyManager;
 
 public:

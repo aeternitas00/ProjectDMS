@@ -33,7 +33,7 @@ class PROJECTDMSGAME_API UDMSNotifyManager : public UObject
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetNotifyObjects)
 	TArray<TScriptInterface<IDMSEffectorInterface>> NotifyObjects;
 
 public:
@@ -43,6 +43,9 @@ public:
 	void BroadCast(UDMSSequence* NotifyData,bool iChainable);
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	TArray<TScriptInterface<IDMSEffectorInterface>> GetNotifyObjects(){return NotifyObjects;}
 
 };
 

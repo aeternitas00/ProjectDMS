@@ -95,24 +95,27 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
 	{
 		// Inefficient way??
 		UDMSEffectNode* Effect = EffectWrapper->GetEffectNode();
-		UDMSEffectNode* Node = NewObject<UDMSEffectNode>();
-		UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>();
-		UDMSDataObjectSet* DataSet = NewObject<UDMSDataObjectSet>();
+		UDMSEffectNode* Node = NewObject<UDMSEffectNode>(this, Effect->GetClass());
+		UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>(Node);
+		UDMSDataObjectSet* DataSet = NewObject<UDMSDataObjectSet>(this);
 
 		AEffect->EffectIdx = idx++;
 
 		// NODE INITIALIZER?
 		Node->EffectDefinitions.Add(AEffect);
 		Node->Conditions = Effect->Conditions;
+		Node->Conditions_ = DuplicateObject(Effect->Conditions_,Node);
 		Node->bIsChainableEffect = false;
 		Node->bForced = Effect->bForced;
-		//Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Data;
 		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Self;
 		Node->AdvanceConditions = Effect->AdvanceConditions;
+		Node->AdvanceConditions_ = DuplicateObject(Effect->AdvanceConditions_, Node);
 		Node->ChildEffect = Effect->ChildEffect;
+		Node->DecisionWidgetClasses = Effect->DecisionWidgetClasses;
 
 		// 왜이렇게했더라
 		// 
+		//Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Data;
 		//TArray<TScriptInterface<IDMSEffectorInterface>> PresetTarget;
 		//PresetTarget.Add(TScriptInterface<IDMSEffectorInterface>(this));
 

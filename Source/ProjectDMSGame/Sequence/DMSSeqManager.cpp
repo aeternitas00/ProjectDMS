@@ -76,37 +76,42 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 
 	// ====== Decision Making Step ====== //
 	// ( ex. User Choose target, ... )
-	Sequence->InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*>(EffectNode->CreateDecisionWidgets()),WidgetOwner);
-	Sequence->RunWidgetQueue([&](UDMSSequence* pSequence) {
+
+	TArray<UDMSConfirmWidgetBase*> Widgets;
+	if (!EffectNode->bForced && DefaultYNWidget != nullptr) 
+		Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
+	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(EffectNode->CreateDecisionWidgets()));
+	Sequence->InitializeWidgetQueue(Widgets,WidgetOwner);
+	Sequence->RunWidgetQueue([&,WidgetOwner](UDMSSequence* pSequence) {
 
 		// Decision confirmed or no decision widget
 
 		// Create EI first for preview.
-		EH->CreateEffectInstance(Sequence, EffectNode);
+		UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(pSequence, pSequence->OriginalEffectNode);
 
 		// ====== Effect Data Selection Step ====== //
 		// ( ex. User set value of effect's damage amount , ... )
-		Sequence->InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*>(EffectNode->CreateSelectors()), WidgetOwner);
-		Sequence->RunWidgetQueue([&](UDMSSequence* pSequence){
+		pSequence->InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors()), WidgetOwner);
+		pSequence->RunWidgetQueue([this](UDMSSequence* pSequenceN){
 			// Selection completed
 
 			// Run sequence ( Notifying steps and apply )
-			RunSequence(pSequence);
+			RunSequence(pSequenceN);
 
-			for (auto EI : pSequence->EIs)
+			for (auto EI : pSequenceN->EIs)
 			{
 				EI->ChangeEIState(EDMSEIState::EIS_Default);
 			}
 			// ==>> 노티파이 결과로 추가적으로 생성되는 시퀀스는 이 메소드를 통해 진행.
 			// 최초로 들어온 ( Root EI ) 의 After 브로드캐스트가 끝나면서 재귀적 트리 진행 종료.
-		}, [&](UDMSSequence* pSequence){
+		}, [this](UDMSSequence* pSequenceN){
 			// Selection Canceled
 
 			// Cleanup this seq
 			CleanupSequenceTree();
 		}
 		);
-	}, [&](UDMSSequence* pSequence) {
+	}, [this](UDMSSequence* pSequence) {
 		// Decision canceled
 
 		// Cleanup this seq
