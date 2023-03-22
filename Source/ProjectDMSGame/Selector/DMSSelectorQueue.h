@@ -18,6 +18,8 @@
 
 class UDMSConfirmWidgetBase;
 
+//	시퀀스에 종속적인 구조체로써 시퀀스가 돌아갈 때 띄울 위젯들을 관리하는데 사용.
+//	
 USTRUCT()
 struct FDMSSelectorQueue
 {

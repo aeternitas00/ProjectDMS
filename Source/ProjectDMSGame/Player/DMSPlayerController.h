@@ -29,6 +29,14 @@ class UDMSEIManagerComponent;
 class UDMSAttributeComponent;
 class UDMSAttribute;
 
+//UENUM(BlueprintType)
+//enum class EDMSCardInteractionMode : uint8
+//{
+//	//PIM_Block UMETA(DisplayName = "Can't interaction with cards"),
+//	PIM_Play UMETA(DisplayName = "Interaction with cards for play or activates"),
+//	PIM_Skill UMETA(DisplayName = "Interaction with cards for skill test commits"),
+//	//...
+//};
 /**
  * 	========================================
  *
@@ -55,21 +63,31 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UDMSEIManagerComponent* EffectManagerComponent;
 
-	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TMap<FName,TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TMap<FName, float> DefaultStats;
+
 	// TEST
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly,Instanced)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly,Instanced)
 	TMap<FName, UDMSEffectNode*> DefaultBasicActions;
 
 public:
+	// Is this player can interact with other game object ( cards, enemy etc... )
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsInteractable;
+
+	// Interaction method flag.
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//EDMSCardInteractionMode InteractionMode;
+
 	ADMSPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void BeginPlay() override;
 
 	virtual void PostInitializeComponents() override;
-	// GetDMSPS();
-	
+
 	// Return Responses
 	UFUNCTION(BlueprintCallable)
 	void/**/ PopupSelectorWidget(TSubclassOf<UDMSEffectElementSelectorWidget> WidgetClass);
@@ -89,9 +107,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void PlayCard(ADMSCardBase* Card);
 
-	// Deprecated
-	//UFUNCTION(BlueprintCallable)
-	//void PlayCardDep(ADMSCardBase* Card);
 
 	UFUNCTION(BlueprintCallable)
 	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);

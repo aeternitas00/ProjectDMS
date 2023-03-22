@@ -2,6 +2,8 @@
 
 #pragma once
 
+//
+
 #include "ProjectDMS.h"
 #include "Components/ActorComponent.h"
 #include "DMSCardComponent.generated.h"
@@ -9,7 +11,9 @@
 class UDMSEffectInstance;
 class UDMSCardDefinition;
 
-// 
+// ======================================
+// 이 컴포넌트의 실용성에 대해 재고해보기.
+// ======================================
 // Rename :: CardEffectComponent
 UCLASS( ClassGroup=(Card), meta=(BlueprintSpawnableComponent) )
 class PROJECTDMSGAME_API UDMSCardComponent : public UActorComponent

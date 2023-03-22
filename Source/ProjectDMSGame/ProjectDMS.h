@@ -4,6 +4,7 @@
 
 #include "EngineMinimal.h"
 #include "Engine/Engine.h"
+#include "GameplayTagContainer.h"
 #include "Net/UnrealNetwork.h"
 
 /// Debugger or logger module?

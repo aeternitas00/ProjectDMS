@@ -36,10 +36,12 @@ void UDMSConfirmWidgetBase::PopupSelector()
 	// if (Candidates.Num() == 1) { /*autoselect and close..*/ } 
 	//AddToViewport();
 	AddToPlayerScreen();
+	OnPopupSelector();
 }
 
 void UDMSConfirmWidgetBase::CloseSelector()
 {
 	//...
 	RemoveFromParent();
+	OnCloseSelector();
 }

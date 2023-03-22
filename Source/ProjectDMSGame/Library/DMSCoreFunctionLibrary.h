@@ -38,4 +38,14 @@ public:
 	static UDMSNotifyManager* GetDMSNotifyManager();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSEffectHandler* GetDMSEffectHandler();
+
+	// Helper function
+	// Attribute Library?
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	static bool GetAttributeFromActor(AActor* iActor, const FName& Name, float& outValue);
+
+	// Helper function
+	// Card Library?
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	static bool CheckCardIsCommitable(ADMSCardBase* iCard);
 };

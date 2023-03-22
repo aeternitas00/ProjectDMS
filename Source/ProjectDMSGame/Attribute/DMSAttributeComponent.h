@@ -2,12 +2,25 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE
+ *
+ *	Components to managing DMSAttributes.
+ *
+ *	========================================
+ */
+
+
 #include "ProjectDMS.h"
 #include "Attribute/DMSAttribute.h"
 #include "Attribute/DMSAttributeInterface.h"
 #include "Components/ActorComponent.h"
 #include "DMSAttributeComponent.generated.h"
 
+
+//
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTDMSGAME_API UDMSAttributeComponent : public UActorComponent//, public IDMSAttributeInterface
 {
@@ -17,27 +30,25 @@ public:
 	// Sets default values for this component's properties
 	UDMSAttributeComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	//Deprecated
 	UPROPERTY()
 	TMap<FName, float> Attributes; // Resources
 
+	// Attributes map
 	UPROPERTY()
 	TMap<FName,UDMSAttribute*> _Attributes; // Resources
 
+	// Make attribute. skip if Attributes contains AttributeName.
 	UFUNCTION(BlueprintCallable)
 	void MakeAttribute(const FName& AttributeName, const float& DefValue =0.0f);
 
+	// 
 	UFUNCTION(BlueprintCallable)
 	void BindOnModifiedToAttribute(const FName& AttributeName, const FOnAttributeModifiedSignature& iDelegate);
 
+	//
 	UFUNCTION(BlueprintCallable)
 	UDMSAttribute* GetAttribute(const FName& AttributeName) const;
 	

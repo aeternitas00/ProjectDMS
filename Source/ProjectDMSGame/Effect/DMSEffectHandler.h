@@ -23,7 +23,7 @@ class UDMSDataObjectSet;
 class IDMSEffectorInterface;
 
 /**
- *  working...
+ *	working...
  */
 UCLASS(/*ClassGroup = (Effect)*/)
 class PROJECTDMSGAME_API UDMSEffectHandler : public UObject // or ActorComponent to attach GM

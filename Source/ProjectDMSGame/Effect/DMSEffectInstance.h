@@ -36,10 +36,10 @@ enum class EDMSEIState : uint8
 /**
  * 	========================================
  *
- *	EffectInstance : ~~
- * 
- *	Will be attached to each target
- *	One EI per One Affected Object
+ *	EffectInstance : Class for objectification of 'effect'. Supports effect lifetime management, notify response, etc.
+ *	
+ *	EI Will be attached to each target and it'll be each EI's Outer.
+ *	One EI per One Affected Object.
  * 
  *	======================================== 
  *	Is it good enough? 
@@ -53,25 +53,37 @@ public:
 	UDMSEffectInstance():CurrentState(EDMSEIState::EIS_Default){}
 		
 protected:
+	// State flag of Effect instance. For preview or persistant things.
 	EDMSEIState CurrentState;
 
-	UPROPERTY()
+	// Effects that affect to effect. ( modifying values )
+	//UPROPERTY()
 	TArray<UDMSEffectInstance*> SubEI;
+
 public:
+	// Sources of effect
 	AActor* SourceController;
 	UObject* SourceObject;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UDMSDataObjectSet* DataSet; 
+	// Effect node that effect instance will run.
 	UPROPERTY()
 	UDMSEffectNode* EffectNode;
 
+	// Data needs to running effect node.
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UDMSDataObjectSet* DataSet; 
+
 public:
+	// Apply effect to Outer.
 	FORCEINLINE void Apply();
-	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet =nullptr);
+
+	// Sort of setup. Getting data from sequence or other source. ( ex. Setting up Owning effect. )
+	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet = nullptr);
 	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
+
 	FORCEINLINE void ChangeEIState(const EDMSEIState& NewState) { CurrentState = NewState; }
 
+	// =========== INTERFACE FUNCTION =========== // 
 	virtual UObject* GetObject() override { return this; } 
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;

@@ -19,13 +19,10 @@
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
 
-
-
 class UDMSDecisionWidget;
 class UDMSDataObjectSet;
 
 /**
- *
  * 	========================================
  *
  *	Effect Definition :: Minimal functor-like Object. Definition of what 'Effect' should do.
@@ -38,7 +35,6 @@ class UDMSDataObjectSet;
  *	Effect가 가져야할 기본적인 값 들은 프로퍼티로, 수치, 타겟등 유저 조작과 연계된 부분은 셀렉터를 사용하게 함.
  *	셀렉터가 없을 경우 -> 수치가 범위 기반이라면 랜덤 값, 타겟은 시전자가 되도록 구현
  *	Ex) BP_EffectTag_DealDamage ?
- * 
  */
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, ClassGroup = (Effect))
 class UDMSEffectDefinition : public UObject
@@ -47,8 +43,13 @@ class UDMSEffectDefinition : public UObject
 
 public:
 	// Discuss
+	// TO GPTag? ( 계층형 태그 구조가 지원 하는 기능이 좀 매력적이라고 생각함. )
 	UPROPERTY()
 	FName Keyword; // 단어 단위이므로 fstring 대신 fname
+
+	// TEST
+	UPROPERTY()
+	FGameplayTag TagKeyword;
 
 public:
 	UDMSEffectDefinition(): bIsUsingSelector(false), bHasPairedSelector(false){}
@@ -61,17 +62,6 @@ public:
 	virtual void Work_Implementation(UDMSEffectInstance* iEI) {};
 
 	// ===== For selector features ===== //
-	//// Paired Selector class 를 마련해서 구현하는게 좋을 듯.
-
-	//	// == DEPRECATED == //
-	//	// SelectorDefinition??????
-	//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	//	TArray<UDMSEffectElementSelectorWidget*> Selectors; // sort of option
-
-	//	// NOTE ) 셀렉터한테 "Name,Type"의 명세를 넣어주는게 더 좋은 설계인가?
-
-	//	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors();
-	//	// ================ //
 
 	UFUNCTION(BlueprintNativeEvent)
 	bool GetCandidates(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
@@ -181,7 +171,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	FDMSConditionContainer AdvanceConditions;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
+
+	// DO WE ACTUALLY NEED THIS?
+	// BETTER USE CHILD EFFECT's CONDITION?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode, meta = (EditCondition = "ChildEffect!=nullptr", EditConditionHides))
 	UDMSConditionContainer_* AdvanceConditions_;
 
 	// Effect's child(sub) effect
@@ -266,8 +259,8 @@ public:
  *	Effect Set :: 
  *	This class represents whole effect text.
  *	(ex.	1) [EffectNode 1 Desc]
-			2) [EffectNode 2 Desc]
-			...						)
+ *			2) [EffectNode 2 Desc]
+ *			...					)
  * 
  * =========================================
  */

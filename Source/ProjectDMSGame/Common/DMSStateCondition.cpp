@@ -4,7 +4,7 @@
 #include "Sequence/DMSSequence.h"
 
 
-bool UDMSStateCondition::CheckCondition(UDMSSequence* Seq)
+bool UDMSStateCondition::CheckCondition(UDMSSequence* Seq) const
 { 
 	if(StateConditions.Num()==0) return true;
 

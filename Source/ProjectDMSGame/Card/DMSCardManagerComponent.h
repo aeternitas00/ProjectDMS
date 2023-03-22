@@ -7,7 +7,7 @@
  *
  *	DMS_GAME_MODULE
  *
- *	Managementing cards in DMS GAME
+ *	Managementing card piles in DMS GAME
  *
  *	========================================
  */
@@ -38,22 +38,19 @@ public:
 	UDMSCardManagerComponent();
 
 protected:
-	virtual void BeginPlay() override;
-
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-protected:
 	// Set replicated in constructor
+	// 직접 생성할 이유는 별로 없고 외부에서 생성하게 될 것. ( DMS PC의 예 ) 
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FName,UDMSCardContainerComponent*> Containers; 
 
 public:
+	// Post Init 이후 생성된 카드 컨테이너들에 대해 레플리케이션 실행.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	//UFUNCTION(BlueprintCallable)
 	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
 
+	
 	void ConstructContainer(const FName& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass);
 
 	static void MigrateCard(UDMSCardContainerComponent* Origin, uint16 OrgIdx, uint16 Num, UDMSCardContainerComponent* Dest, uint16 DestIdx);

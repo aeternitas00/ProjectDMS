@@ -21,7 +21,8 @@
 class UDMSEffectDefinition;
 
 /**
- * 
+ *	시퀀스 진행 과정중에 플레이어 의사를 수집해야 하는 상황에 사용할 위젯들의 베이스.
+ *	용도에 맞게 디시전 위젯과 이펙트 엘리먼츠 셀렉터로 나누어서 세부적인 사양을 구현.
  */
 UCLASS()
 class PROJECTDMSGAME_API UDMSConfirmWidgetBase : public UUserWidget
@@ -36,8 +37,17 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PopupSelector();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnPopupSelector();
+	virtual void OnPopupSelector_Implementation(){}
+
 	UFUNCTION(BlueprintCallable)
 	void CloseSelector();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnCloseSelector();
+	virtual void OnCloseSelector_Implementation(){}
 
 	// Usage : Bind to Confirm Button
 	UFUNCTION(BlueprintCallable)

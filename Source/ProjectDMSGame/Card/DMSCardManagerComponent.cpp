@@ -21,23 +21,6 @@ UDMSCardManagerComponent::UDMSCardManagerComponent()
 }
 
 
-// Called when the game starts
-void UDMSCardManagerComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	//DMS_LOG_SCREEN(TEXT("%s"), *GetClass()->GetName());
-}
-
-
-// Called every frame
-void UDMSCardManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
 void UDMSCardManagerComponent::MigrateCard(UDMSCardContainerComponent* Origin, uint16 OrgIdx, uint16 Num, UDMSCardContainerComponent* Dest, uint16 DestIdx)
 {
 	Dest->Insert(Origin->PopAt(OrgIdx,Num),DestIdx);

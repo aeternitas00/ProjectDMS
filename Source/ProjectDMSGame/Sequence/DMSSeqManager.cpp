@@ -149,7 +149,8 @@ void UDMSSeqManager::RunSequence(UDMSSequence* Sequence)
 	//DMS_LOG_SCREEN(TEXT("==-- DURING --=="));
 	EffectHandler->Resolve(Sequence);
 	NotifyManager->BroadCast(Sequence, Sequence->OriginalEffectNode->bIsChainableEffect);
-	if (Sequence->OriginalEffectNode->ChildEffect != nullptr && Sequence->OriginalEffectNode->AdvanceConditions.CheckCondition(Sequence->SourceObject, Sequence))
+	// if (Sequence->OriginalEffectNode->ChildEffect != nullptr && Sequence->OriginalEffectNode->ChildEffect->Conditions_->CheckCondition(SourceTweak, Seq))
+	if (Sequence->OriginalEffectNode->ChildEffect != nullptr && Sequence->OriginalEffectNode->AdvanceConditions_->CheckCondition(Sequence->SourceObject, Sequence))
 	{
 		//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Advance"), *GetName());
 		RequestCreateSequence(Sequence->SourceObject, Sequence->SourceController, Sequence->OriginalEffectNode->ChildEffect->GetEffectNode(), Sequence->Targets, Sequence->EIDatas, Sequence);

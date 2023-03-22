@@ -96,6 +96,14 @@ bool UDMSConditionContainer_::CheckCondition(UObject* Caller, UDMSSequence* iSeq
 	//return true;
 }
 
+bool UDMSConditionContainer_::CheckCondition_(UObject* Caller, UDMSSequence* iSeq)
+{
+	bool Timing = TimingConditions != nullptr ? TimingConditions->CheckCondition(Caller, iSeq) : bEmptyTimingIsTrue;
+	bool State = StateConditions != nullptr ? StateConditions->CheckCondition(iSeq) : bEmptyStateIsTrue;
+	
+	return (Timing && State);
+}
+
 //void UDMSConditionContainer_::UpdateReferences()
 //{
 //	for (auto T : TimingCondition) T->Rename(nullptr,this);

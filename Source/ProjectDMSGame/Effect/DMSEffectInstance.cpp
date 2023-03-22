@@ -43,7 +43,7 @@ void UDMSEffectInstance::OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UO
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if (SM == nullptr) return;
 
-	if ( EffectNode->Conditions.CheckCondition(SourceTweak, Seq) )
+	if ( EffectNode->Conditions_->CheckCondition(SourceTweak, Seq) )
 	{
 		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetOuter()->GetOuter() !=nullptr ? *GetOuter()->GetOuter()->GetName():TEXT("NullOuter"), *GetName());
 		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());

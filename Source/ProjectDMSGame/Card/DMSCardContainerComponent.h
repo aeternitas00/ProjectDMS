@@ -2,6 +2,16 @@
 
 #pragma once
 
+/**
+ * 	========================================
+ *
+ *	DMS_GAME_MODULE
+ *
+ *	Component that represents each pile of cards, such as a deck or hand.
+ *
+ *	========================================
+ */
+
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSCardBase.h"
@@ -39,7 +49,14 @@ public:
 	const int Num() const {return Cards.Num();}
 };
 
-// DMSCardManagerComponent가 이것을 여러개 보유 
+/**
+ * 	========================================
+ *
+ *	각각의 카드 더미를 나타내는 컴포넌트. 이 카드 더미들을 DMSCardManagerComponent가 여러개 보유햐여 관리하게 됨.
+ *	기본적인 형태의 카드 입출력, 입출력시에 대한 반응 등을 가지며 카드 더미가 특수한 비해비어를 가져야 할 경우 상속 받은 커스텀 카드 컨테이너를 구현하여 사용하면 됨.
+ * 
+ *	========================================
+ */
 UCLASS(Blueprintable, ClassGroup = (Card), meta = (BlueprintSpawnableComponent))
 class PROJECTDMSGAME_API UDMSCardContainerComponent : public UActorComponent
 {
@@ -56,8 +73,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 public:
-	//generic card pile action
 
+	//Generic card pile actions
 	TArray<ADMSCardBase*> PopAt(uint16 Idx);
 	TArray<ADMSCardBase*> PopAt(uint16 Idx,uint16 Num);
 

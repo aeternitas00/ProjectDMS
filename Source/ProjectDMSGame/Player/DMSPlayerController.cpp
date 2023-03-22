@@ -24,7 +24,7 @@
 
 
 ADMSPlayerController::ADMSPlayerController(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer)/*, InteractionMode(EDMSCardInteractionMode::PIM_Play)*/
 {
 	bShowMouseCursor=true;
 	bEnableClickEvents=true;
@@ -34,6 +34,13 @@ ADMSPlayerController::ADMSPlayerController(const FObjectInitializer& ObjectIniti
 	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
 
+	DefaultStats.Add("Resource", 10);
+	DefaultStats.Add("ActionPoint", 10);
+	DefaultStats.Add("HP", 10);
+	DefaultStats.Add("STR", 5);
+	DefaultStats.Add("INT", 5);
+	DefaultStats.Add("DEX", 5);
+	DefaultStats.Add("SkillBonus", 0);
 }
 
 
@@ -52,10 +59,9 @@ void ADMSPlayerController::PostInitializeComponents()
 		CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
 	}
 	// Will be changed with same way to above
-	AttributeComponent->MakeAttribute("Resource", 10);
-	AttributeComponent->MakeAttribute("ActionPoint", 10);
-	AttributeComponent->MakeAttribute("HP", 10);
-
+	for (auto Stat : DefaultStats)	{
+		AttributeComponent->MakeAttribute(Stat.Key,Stat.Value);
+	}
 }
 
 void/**/ ADMSPlayerController::PopupSelectorWidget(TSubclassOf<UDMSEffectElementSelectorWidget> WidgetClass)
@@ -65,6 +71,7 @@ void/**/ ADMSPlayerController::PopupSelectorWidget(TSubclassOf<UDMSEffectElement
 void ADMSPlayerController::InstigateObject(UObject* Object)
 {
 	InstigatingObject = Object;
+
 	// Check 
 	// 
 	// Highlight or Outline
@@ -78,7 +85,16 @@ void ADMSPlayerController::SelectObject(UObject* Object)
 	SelectingObject=Object;
 	OnSelectedObject(tFormer);
 
-	//,,,
+	//Example of OnSelectedObject... 
+	//switch (InteractionMode)
+	//{
+	//	case EDMSCardInteractionMode::PIM_Block:
+	//		...;	break;
+	//	case EDMSCardInteractionMode::PIM_Play:
+	//		...
+	//	default:
+	//		break;
+	//}
 }
 
 

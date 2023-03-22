@@ -63,6 +63,9 @@ public:
 	bool CheckCondition(UObject* Caller, UDMSSequence* iSeq);
 };
 
+
+//	게임 내에서 사용 할 노티파이 데이터를 받아 왔을 때 이에 반응 여부를 이 클래스로 체크함.
+//	=> 조건 체크, 타이밍 체크등에 사용.
 UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew, ClassGroup = (Condition))
 class PROJECTDMSGAME_API UDMSConditionContainer_ : public UObject
 {
@@ -74,11 +77,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
 	TArray<UDMSTimingConditionWrapper*> TimingCondition;
 
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
+	UDMSConditionCombiner* TimingConditions;
+
+
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	FString TimingCombinator;
 
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
 	TArray<UDMSStateConditionWrapper*> StateCondition;
+
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
+	UDMSConditionCombiner* StateConditions;
 
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	FString StateCombinator;
@@ -90,12 +100,19 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	bool bEmptyStateIsTrue;
 
+	UPROPERTY(EditDefaultsOnly, Category = Condition, meta=(EditCondition = "TimingConditions==nullptr", EditConditionHides))
+	bool bEmptyTimingIsTrue_;
+
+	UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (EditCondition = "StateConditions==nullptr", EditConditionHides))
+	bool bEmptyStateIsTrue_;
+
 	void AddTimingCondition(UDMSTimingCondition* iCondition);
 	void AddTimingCondition(const TSubclassOf<UDMSTimingCondition>& iCondition);
 	void AddStateCondition(UDMSStateCondition* iCondition);
 	void AddStateCondition(const TSubclassOf<UDMSStateCondition>& iCondition);
 	void ClearConditions() { TimingCondition.Empty(); TimingCombinator = ""; StateCondition.Empty(); StateCombinator = ""; }
 	bool CheckCondition(UObject* Caller, UDMSSequence* iSeq);
+	bool CheckCondition_(UObject* Caller, UDMSSequence* iSeq);
 
 	//void UpdateReferences();
 };

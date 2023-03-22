@@ -10,7 +10,7 @@
  * =========================================
  */
 
-#include "ProjectDMS.h"
+#include "DMSConditionObject.h"
 #include "Common/DMSCommons.h"
 #include "DMSStateCondition.generated.h"
 
@@ -110,7 +110,7 @@ public:
  *	========================================
  */
 UCLASS(/*HideDropdown,*/ Blueprintable, BlueprintType, Const,EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "State Condition Base"))
-class PROJECTDMSGAME_API UDMSStateCondition : public UObject
+class PROJECTDMSGAME_API UDMSStateCondition : public UDMSConditionObject
 {
 	GENERATED_BODY()
 
@@ -124,7 +124,7 @@ public:
 	// TODO :: Make creating this automatically
 	FString StateCombinator;
 
-	bool CheckCondition(UDMSSequence* Seq);
+	virtual bool CheckCondition(UDMSSequence* Seq) const;
 };
 
 /**

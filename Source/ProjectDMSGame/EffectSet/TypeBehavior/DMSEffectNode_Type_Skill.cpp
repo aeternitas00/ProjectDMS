@@ -9,7 +9,7 @@ UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill()
 { 
 	TypeName = TEXT("Skill"); 
 	bForced=true;
-	UDMSTimingCondition* AfterEnteredPlayArea = NewObject<UDMSTimingCondition>();
+	UDMSTimingCondition* AfterEnteredPlayArea = NewObject<UDMSTimingCondition>(this);
 
 	AfterEnteredPlayArea->Timing=EDMSTimingFlag::T_After;
 	AfterEnteredPlayArea->EffectKeyword=TEXT("PlayCard");
@@ -25,8 +25,10 @@ UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill()
 	AfterEnteredPlayArea->Checkers.Add(CheckerDefinition);
 
 	Conditions.AddTimingCondition(AfterEnteredPlayArea);
+	Conditions_->AddTimingCondition(AfterEnteredPlayArea);
 
 	Conditions.bEmptyStateIsTrue=true;
+	Conditions_->bEmptyStateIsTrue = true;
 	//Effect Initialize
 	// 
 	//Effects.Add(CreateDefaultSubobject<UDMSEffect_ActivateCard>("Skill_ActivateCard"));
