@@ -45,17 +45,15 @@ public:
 	// Default Initializer
 	UDMSSequence( ) { 
 		Progress = EDMSTimingFlag::T_Before; //EDMSTimingFlag::T_Null;
-		bIsActive=false;
+		//bIsActive=false;
 		SourceObject = nullptr;
-		ParentNode = nullptr;
-		BeforeNode = nullptr;
-		DuringNode = nullptr;
-		AfterNode= nullptr;
+		ParentSequence = nullptr;
+		ChildSequence = nullptr;
 		// 
 	}
 
-	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	bool bIsActive;
+	//UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
+	//bool bIsActive;
 
 	// 어떠한 이펙트가 실제로 월드에 영향을 끼치기 까지의 과정 중에 간섭할 '타이밍'은 결론적으로 발동 전, 도중, 후 세가지로 크게 나눌 수 있음.
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
@@ -92,24 +90,36 @@ public:
 
 	// 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도 
 	// ++ 상위 시퀀스와 연관된 컨디션, 이펙트 같은 것을 구현 하기 위해
-	UPROPERTY()
-	UDMSSequence* ParentNode;
-	UPROPERTY()
-	UDMSSequence* BeforeNode;
-	UPROPERTY()
-	UDMSSequence* DuringNode;
-	UPROPERTY()
-	UDMSSequence* AfterNode;
+	UDMSSequence* ParentSequence;
+	
+	UDMSSequence* ChildSequence;
+
+	void AttachChildSequence(UDMSSequence* iSeq);
 
 	// Noncopy setter?
 	UFUNCTION(BlueprintCallable)
 	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets){ Targets = iTargets;}
 
-	FORCEINLINE void SetActive(const bool& iAct) { bIsActive = iAct;}
+	//FORCEINLINE void SetActive(const bool& iAct) { bIsActive = iAct;}
 	//FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
 	void InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner);
 
 	template<typename FuncFinished, typename FuncCanceled >
 	void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
+
+	__declspec(noinline) void OnSequenceFinish();
+
+	DECLARE_MULTICAST_DELEGATE(FOnSequenceFinished);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceFinished_Dynamic);
+	//DECLARE_DELEGATE_OneParam(FOnSequenceFinished, UDMSSequence*);
+
+protected:
+	FOnSequenceFinished OnSequenceFinished_Native;
+public:
+	template<typename FuncFinished>
+	void AddToOnSequenceFinished_Native(FuncFinished&& OnSequenceFinished);
+
+	//UPROPERTY(BlueprintReadWrite)
+	FOnSequenceFinished_Dynamic OnSequenceFinished;
 };
 

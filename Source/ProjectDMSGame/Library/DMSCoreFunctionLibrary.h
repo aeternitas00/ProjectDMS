@@ -42,7 +42,7 @@ public:
 	// Helper function
 	// Attribute Library?
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static bool GetAttributeFromActor(AActor* iActor, const FName& Name, float& outValue);
+	static bool GetAttributeFromActor(AActor* iActor, const FGameplayTag& Name, float& outValue);
 
 	// Helper function
 	// Card Library?

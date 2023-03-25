@@ -13,13 +13,14 @@
  */
 
 #include "ProjectDMS.h"
-#include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectorInterface.h"
+#include "Common/DMSCommonDelegates.h"
 #include "Common/DMSCommons.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSEffectInstance.generated.h"
 
 class ADMSPlayerController;
+class UDMSEffectNode;
 
 /**
  *	State flag of Effect instance.
@@ -44,6 +45,8 @@ enum class EDMSEIState : uint8
  *	======================================== 
  *	Is it good enough? 
  */
+
+
 UCLASS()
 class PROJECTDMSGAME_API UDMSEffectInstance : public UObject , public IDMSEffectorInterface
 {
@@ -60,6 +63,15 @@ protected:
 	//UPROPERTY()
 	TArray<UDMSEffectInstance*> SubEI;
 
+	struct FApplyDelegateCounter {
+		FOnApplyCompleted CompletedDelegate;
+		uint8 Index;
+		FOnWorkCompleted IteratingDelegate;
+	};
+
+	// 상호 발동형 이펙트를 통해 체인 내에 같은 EI가 Reapply 될 경우 꼬일 가능성 존재하므로 흐름 단위인 '시퀀스'를 키로 잡음.
+	TMap<UDMSSequence*, FApplyDelegateCounter> OnApplyCompletedMap;
+
 public:
 	// Sources of effect
 	AActor* SourceController;
@@ -75,7 +87,8 @@ public:
 
 public:
 	// Apply effect to Outer.
-	FORCEINLINE void Apply();
+
+	FORCEINLINE void Apply(UDMSSequence* Sequence,const FResolveIteratingDelegate& OnApplyCompleted);
 
 	// Sort of setup. Getting data from sequence or other source. ( ex. Setting up Owning effect. )
 	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet = nullptr);
@@ -83,10 +96,16 @@ public:
 
 	FORCEINLINE void ChangeEIState(const EDMSEIState& NewState) { CurrentState = NewState; }
 
+	UDMSSequence* CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence);
+
+	UFUNCTION()
+	void ApplyNextEffectDefinition(UDMSSequence* SourceSequence);
+
 	// =========== INTERFACE FUNCTION =========== // 
 	virtual UObject* GetObject() override { return this; } 
+	virtual AActor* GetOwningPlayer() { return SourceController; }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;
+	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;
 	// 기본적으로 EI는 '어떤 효과' 그 자체를 객체화 하기 위해 만든 클래스이므로 이펙트셋을 소유한다는 개념은 조금 이상한 듯.
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
 };

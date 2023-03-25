@@ -42,12 +42,13 @@ public:
 	// ( ex) EI Manager Comp 같은 경우 Outer(카드, 적 등등)를 반환 
 	virtual UObject* GetObject()=0; // RENAME?
 	
+	virtual AActor* GetOwningPlayer() = 0; // RENAME?
 	// EI 부착
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) = 0;
 	
 	// 객체가 노티파이를 받았을 때의 응답
 	// 이펙트의 발동 기능은 일반적으로 노티파이와 떨어질 수 없는 구조기도 하여 이 인터페이스에 노티 파이 관련도 통합.
-	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq, UObject* SourceTweak=nullptr) = 0;
+	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak=nullptr) = 0;
 	
 	// 객체가 자체적으로 소유한 이펙트 세트를 반환.
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName)=0;

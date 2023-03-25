@@ -3,11 +3,15 @@
 #pragma once
 
 #include "Effect/DMSEffectDefinition.h"
+
 #include "DMSEffect_ActivateEffect.generated.h"
 
 // 카드뿐만 아니고 이펙트 사용한 클래스 전반이 사용 가능하게? ( enemy 등등 )
 // Usage : IDMSEffectorInterface 를 구현한 Outer가 자신이 가지고 있는 이펙트들 중 하나를 발동 시키도록 함.
 // 
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ActivateEffect)
+
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect Base"))
 class UDMSEffect_ActivateEffect : public UDMSEffectDefinition
 {
@@ -19,16 +23,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!bIsUsingSelector", EditConditionHides))
 	uint8 EffectIdx;
 
-
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	FName ReferenceDataName;
-
 	UPROPERTY(EditDefaultsOnly)
 	FName EffectSetName;
 
 	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
 
-	virtual void Work_Implementation(UDMSEffectInstance* iEI) override;
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override;
 	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
@@ -47,7 +47,7 @@ class UDMSSelector_ActivateEffect : public UDMSEffectElementSelectorWidget
 
 public:
 	UPROPERTY(BlueprintReadOnly)
-	FName OutDataName;
+	FGameplayTag OutDataName;
 
 	virtual	bool SetupWidget_Implementation() { return GetCandidatesFromED(); }
 };

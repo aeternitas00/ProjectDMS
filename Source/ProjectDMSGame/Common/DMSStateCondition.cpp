@@ -56,7 +56,7 @@ bool UDMSAttributeCheckerDefinition::CheckState(UObject* CheckingObject)
 
 	if (AttComp==nullptr)return bNullIsTrue;
 
-	UDMSAttribute* Att = AttComp->GetAttribute(AttributeName);
+	UDMSAttribute* Att = AttComp->GetAttribute(AttributeTag);
 
 	if (Att == nullptr)return bNullIsTrue;
 
@@ -76,15 +76,15 @@ bool UDMSAttributeCheckerDefinition::CheckState(UObject* CheckingObject)
 	}
 }
 
-bool UDMSStateConditionWrapper_Manual::CheckCondition(UDMSSequence* iSeq) const
-{
-	return Condition->CheckCondition(iSeq);
-}
-
-bool UDMSStateConditionWrapper_Preset::CheckCondition(UDMSSequence* iSeq) const
-{
-	return Condition.GetDefaultObject()->CheckCondition(iSeq);
-}
+//bool UDMSStateConditionWrapper_Manual::CheckCondition(UDMSSequence* iSeq) const
+//{
+//	return Condition->CheckCondition(iSeq);
+//}
+//
+//bool UDMSStateConditionWrapper_Preset::CheckCondition(UDMSSequence* iSeq) const
+//{
+//	return Condition.GetDefaultObject()->CheckCondition(iSeq);
+//}
 
 template<typename T>
 bool UDMSDataCheckerDefinition::CheckState_Internal(UObject* Target, const T& Value)
@@ -92,7 +92,7 @@ bool UDMSDataCheckerDefinition::CheckState_Internal(UObject* Target, const T& Va
 	UDMSDataObjectSet* DataSet = Cast<UDMSDataObjectSet>(Target);
 	if (DataSet == nullptr) return bNullIsTrue;
 
-	UDMSDataObject* DataObj = DataSet->GetData(DataName);
+	UDMSDataObject* DataObj = DataSet->GetData(DataTag);
 	if (DataObj == nullptr) return bNullIsTrue;
 
 	if (!DataObj->TypeCheck<T>()) return false;
@@ -107,4 +107,23 @@ bool UDMSDataCheckerDefinition_Numeric::CheckState(UObject* Target)
 bool UDMSDataCheckerDefinition_Name::CheckState(UObject* Target)
 { 
 	return CheckState_Internal(Target, Data);
+}
+
+bool UDMSStateClassWrapper::CheckCondition(UDMSSequence* iSeq) const
+{
+	return Condition.GetDefaultObject()->CheckCondition(iSeq);
+}
+
+bool UDMSStateCombiner::CheckCondition(UDMSSequence* iSeq) const
+{
+	bool rv = bIsAnd;
+
+	if (Conditions.Num() == 0) return bEmptyStateIsTrue;
+
+	for (auto Condition : Conditions)
+	{
+		rv = bIsAnd ? rv && Condition->CheckCondition(iSeq) : rv || Condition->CheckCondition(iSeq);
+	}
+
+	return rv;
 }

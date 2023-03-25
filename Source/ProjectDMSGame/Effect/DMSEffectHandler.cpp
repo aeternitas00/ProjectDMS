@@ -11,6 +11,8 @@
 #include "GameModes/DMSGameMode.h"
 
 
+
+
 TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* SourceObject,AActor* SourceController, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
 {
 	TArray<UDMSEffectInstance*> rv;
@@ -33,9 +35,7 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 	{
 		//DMS_LOG_SCREEN(TEXT("EH: Generic CreateEI Meets no target %s"), *Sequence->SourceObject->GetName());
 		TArray<TScriptInterface<IDMSEffectorInterface>> TempTarget;
-		//UDMSDataObject* TargetData;
-		//FString DbgStr;
-		//bool txr;
+
 		switch(EffectNode->PresetTargetFlag)
 		{
 			case EDMSPresetTargetFlag::PTF_Self:
@@ -82,13 +82,28 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 	return Sequence->EIs;
 }
 
-void UDMSEffectHandler::Resolve(UDMSSequence* Sequence)
+template <typename FuncFinished>
+void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted)
 {
 	DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
-
-	for( auto EI : Sequence->EIs )
-	{
-		EI->Apply();
+	
+	if (Sequence->EIs.Num() == 0) {
+		OnResolveCompleted();
+		return;
 	}
-	// TODO :: ÀÌÆåÆ® °¡Áö°í ¾îÂ¼±¸ÀúÂ¼±¸
+
+	OnResolveCompletedMap.Add(Sequence);
+	OnResolveCompletedMap[Sequence].Delegate.BindLambda(OnResolveCompleted);
+	OnResolveCompletedMap[Sequence].Count = 0;
+	OnResolveCompletedMap[Sequence].IteratingDelegate.BindUObject(this,&UDMSEffectHandler::ApplyNextEffectInstance);
+	
+	ApplyNextEffectInstance(Sequence);
+}
+
+void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence)
+{
+	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->EIs.Num())
+		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound();
+	else
+		SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++]->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].IteratingDelegate);
 }

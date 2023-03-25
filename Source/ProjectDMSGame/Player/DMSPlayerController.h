@@ -66,8 +66,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TMap<FName,TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	//TMap<FName, float> DefaultStats;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<FName, float> DefaultStats;
+	TMap<FGameplayTag, float> DefaultStats;
 
 	// TEST
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly,Instanced)
@@ -113,8 +116,9 @@ public:
 
 	// INTERFACE FUNCTIONS
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual void OnNotifyReceived(bool iChainable,UDMSSequence* Seq,UObject* SourceTweak) override;
+	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq,UObject* SourceTweak) override;
 	virtual UObject* GetObject() override { return this; }
+	virtual AActor* GetOwningPlayer() { return this; }
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
 	//virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
 	//virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
@@ -125,7 +129,7 @@ public:
 	UDMSAttributeComponent* AttributeComponent;
 
 	UFUNCTION(BlueprintCallable)
-	float GetAttributeValue(const FName& AttributeName);
+	float GetAttributeValue(const FGameplayTag& AttributeName);
 
 // ================================================== //
 };

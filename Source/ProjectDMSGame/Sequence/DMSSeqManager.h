@@ -42,8 +42,8 @@ private:
 	//TArray<UDMSSequence*> SequenceFlow;
 
 protected:
-	void RunSequence(UDMSSequence* Sequence);
-
+	void ApplySequence(UDMSSequence* Sequence);
+	void CompleteSequence(UDMSSequence* Sequence);
 public:
 	UDMSSeqManager();
 
@@ -52,6 +52,9 @@ public:
 	// leaf 시퀀스가 모두 종료되고 root seq의 after 타이밍이 최종적으로 종료되면 클린업 실행.
 	UPROPERTY()
 	UDMSSequence* RootSequence;
+
+	UPROPERTY()
+	UDMSSequence* CurrentSequence;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
@@ -66,13 +69,13 @@ public:
 		UDMSEffectNode* EffectNode, 
 		TArray<TScriptInterface<IDMSEffectorInterface>> Targets/* = TArray<TScriptInterface<IDMSEffectorInterface>>()*/, 
 		UDMSDataObjectSet* Datas = nullptr, 
-		UDMSSequence* ParentSequence = nullptr,
-		EDMSTimingFlag RelationFlag = EDMSTimingFlag::T_Null
+		UDMSSequence* ParentSequence = nullptr
 	);
 
-	//UFUNCTION()
-	//void OnSelectorCompleted(UDMSSequence* Sequence);
+	UFUNCTION(BlueprintCallable)
+	void RunSequence(UDMSSequence* iSeq);
 	
+	int GetDepth(UDMSSequence* iSeq);
 	DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 
 	FOnSelectorFinished OnSelectorFinished;

@@ -44,12 +44,16 @@ void UDMSEIManagerComponent::AttachEffectInstance(UDMSEffectInstance* EI)
 	EI->Rename(nullptr, this);
 }
 
-void UDMSEIManagerComponent::OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 {
+	bool rv=false;
 	for (auto OwnEI : OwnEffectInstances)
 	{
-		OwnEI->OnNotifyReceived(iChainable,Seq, SourceTweak);
+		if (OwnEI->OnNotifyReceived(ResponsedObjects, iChainable, Seq, SourceTweak)){ 
+			rv=true;
+		}
 	}
+	return rv;
 }
 
 UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FName& iSetName)
@@ -85,10 +89,10 @@ UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FName& iSetName)
 
 void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
 {
-	if (EffectSet == nullptr) { DMS_LOG(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
+	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
 	auto EffectNodes = EffectSet->EffectNodes;
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
-	if (!EH) { DMS_LOG(Error, TEXT("No Effect Handler")); 	return; }
+	if (!EH) { DMS_LOG_DETAIL(Error, TEXT("No Effect Handler")); 	return; }
 
 	uint8 idx = 0;
 	for (auto EffectWrapper : EffectNodes)
@@ -103,13 +107,11 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
 
 		// NODE INITIALIZER?
 		Node->EffectDefinitions.Add(AEffect);
-		Node->Conditions = Effect->Conditions;
-		Node->Conditions_ = DuplicateObject(Effect->Conditions_,Node);
+		Node->Conditions = DuplicateObject(Effect->Conditions,Node);
 		Node->bIsChainableEffect = false;
 		Node->bForced = Effect->bForced;
 		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Self;
-		Node->AdvanceConditions = Effect->AdvanceConditions;
-		Node->AdvanceConditions_ = DuplicateObject(Effect->AdvanceConditions_, Node);
+		//Node->AdvanceConditions = DuplicateObject(Effect->AdvanceConditions, Node);
 		Node->ChildEffect = Effect->ChildEffect;
 		Node->DecisionWidgetClasses = Effect->DecisionWidgetClasses;
 

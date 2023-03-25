@@ -2,17 +2,22 @@
 
 
 #include "EffectSet/TypeBehavior/DMSEffectNode_Type_Skill.h"
-#include "EffectSet/DMSEffect_ActivateCard.h"
+
 #include "EffectSet/DMSEffect_MoveCard.h"
+
+
 
 UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill() 
 { 
 	TypeName = TEXT("Skill"); 
-	bForced=true;
-	UDMSTimingCondition* AfterEnteredPlayArea = NewObject<UDMSTimingCondition>(this);
+	bForced = true;
+
+	Conditions->TimingConditions = CreateDefaultSubobject<UDMSTimingCombiner>("TimingConditions");
+	
+	UDMSTimingCondition* AfterEnteredPlayArea = CreateDefaultSubobject<UDMSTimingCondition>("AfterEnteredPlayArea");
 
 	AfterEnteredPlayArea->Timing=EDMSTimingFlag::T_After;
-	AfterEnteredPlayArea->EffectKeyword=TEXT("PlayCard");
+	AfterEnteredPlayArea->EffectTagQuery = FGameplayTagQuery::MakeQuery_MatchTag(TAG_DMS_EffectKeyword_PlayCard);
 	
 	CheckerDefinition = CreateDefaultSubobject<UDMSNotifyCheckerDefinition_ObjectCompareBase>(TEXT("Skill_CheckerDefinition"));
 
@@ -24,11 +29,9 @@ UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill()
 
 	AfterEnteredPlayArea->Checkers.Add(CheckerDefinition);
 
-	Conditions.AddTimingCondition(AfterEnteredPlayArea);
-	Conditions_->AddTimingCondition(AfterEnteredPlayArea);
-
-	Conditions.bEmptyStateIsTrue=true;
-	Conditions_->bEmptyStateIsTrue = true;
+	//Conditions->AddTimingCondition(AfterEnteredPlayArea);
+	Conditions->TimingConditions->Conditions.Add(AfterEnteredPlayArea);
+	Conditions->StateConditions->bEmptyStateIsTrue=true;
 	//Effect Initialize
 	// 
 	//Effects.Add(CreateDefaultSubobject<UDMSEffect_ActivateCard>("Skill_ActivateCard"));

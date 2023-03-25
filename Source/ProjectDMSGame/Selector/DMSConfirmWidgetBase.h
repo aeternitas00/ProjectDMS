@@ -30,10 +30,12 @@ class PROJECTDMSGAME_API UDMSConfirmWidgetBase : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	UDMSSequence* OwnerSeq;
+
 public:
 	UDMSConfirmWidgetBase(const FObjectInitializer& ObjectInitializer) :UUserWidget(ObjectInitializer){}
+	
+	UPROPERTY(BlueprintReadOnly)
+	UDMSSequence* OwnerSeq;
 
 	UFUNCTION(BlueprintCallable)
 	void PopupSelector();

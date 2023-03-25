@@ -24,8 +24,7 @@ class UDMSNotifyCheckerDefinition;
  *
  *	Condition Object base
  *
- *	=========================================
- *
+ *	========================================
  */
 UCLASS(Abstract, Const, EditInlineNew, ClassGroup = (Condition))
 class PROJECTDMSGAME_API UDMSConditionObject : public UObject
@@ -39,6 +38,8 @@ public:
 	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const { return true; }
 };
 
+
+// 템플릿화하고싶긴한데 BP에 노출이 안돼서....
 UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Use BP Condition"))
 class PROJECTDMSGAME_API UDMSConditionClassWrapper : public UDMSConditionObject
 {
@@ -59,15 +60,17 @@ class PROJECTDMSGAME_API UDMSConditionCombiner : public UDMSConditionObject
 	GENERATED_BODY()
 
 public:
-	UDMSConditionCombiner():bIsAnd(true){}
+	UDMSConditionCombiner() :bIsAnd(true), bEmptyTimingIsTrue(true){}
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
 	TArray<UDMSConditionObject*> Conditions;
 
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	bool bIsAnd;
-	
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	bool bEmptyTimingIsTrue;
+
 	virtual bool CheckCondition(UDMSSequence* iSeq) const;
 	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
 };
-

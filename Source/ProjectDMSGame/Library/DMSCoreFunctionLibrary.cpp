@@ -27,7 +27,7 @@ UDMSSeqManager* UDMSCoreFunctionLibrary::GetDMSSequenceManager()
 UDMSNotifyManager* UDMSCoreFunctionLibrary::GetDMSNotifyManager()
 {
 	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
-
+	
 	return GM != nullptr ? GM->GetNotifyManager() : nullptr;
 }
 
@@ -38,7 +38,7 @@ UDMSEffectHandler* UDMSCoreFunctionLibrary::GetDMSEffectHandler()
 	return GM != nullptr ? GM->GetEffectHandler() : nullptr;
 }
 
-bool UDMSCoreFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FName& Name, float& outValue)
+bool UDMSCoreFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FGameplayTag& Name, float& outValue)
 {
 	if (iActor == nullptr) goto INVSOURCE;
 

@@ -21,9 +21,23 @@ void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCancel
 	);
 }
 
+template<typename FuncFinished>
+void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& OnSequenceFinished)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
+
+	OnSequenceFinished_Native.AddLambda(OnSequenceFinished);
+}
+
 //void UDMSSequence::AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
 
 //FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
+
+void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq) 
+{
+	iSeq->ParentSequence = this;
+	ChildSequence = iSeq;
+}
 
 void UDMSSequence::InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner)
 { 
@@ -31,4 +45,14 @@ void UDMSSequence::InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets
 	SelectorQueue.SelectorQueue.Empty();
 	SelectorQueue.SelectorQueue.Append(iWidgets); 
 	SelectorQueue.Initialize(this); 
+}
+
+void UDMSSequence::OnSequenceFinish()
+{
+	OnSequenceFinished.Broadcast();	
+	OnSequenceFinished_Native.Broadcast();
+
+	// Cleanup 
+	OnSequenceFinished.Clear();
+	OnSequenceFinished_Native.Clear();
 }

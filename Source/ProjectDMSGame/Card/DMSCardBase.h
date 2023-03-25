@@ -58,8 +58,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual UObject* GetObject() override { return this; }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual void OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
+	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
+	virtual AActor* GetOwningPlayer() { return GetOwner(); }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void InitializeCard(const UDMSCardDefinition* iCardDefinition/*...*/);

@@ -16,6 +16,69 @@
 
 class UDMSSequence;
 
+UCLASS()
+class PROJECTDMSGAME_API UDMSStateConditionBase : public UDMSConditionObject
+{
+	GENERATED_BODY()
+};
+
+/**
+ *	========================================
+ *
+ *	A simple container that collect single conditions and compose them like commonly used boolean expressions.
+ *
+ *	========================================
+ */
+UCLASS(/*HideDropdown,*/ Blueprintable, BlueprintType, Const,EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "State Condition Base"))
+class PROJECTDMSGAME_API UDMSStateCondition : public UDMSStateConditionBase
+{
+	GENERATED_BODY()
+
+public:
+	UDMSStateCondition(){}
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
+	TArray<UDMSStateCheckerDefinition*> StateConditions;
+
+
+	virtual bool CheckCondition(UDMSSequence* Seq) const;
+};
+
+UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Use BP Condition"))
+class PROJECTDMSGAME_API UDMSStateClassWrapper : public UDMSStateConditionBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Condition Class"))
+	TSubclassOf<UDMSStateCondition> Condition;
+
+	virtual bool CheckCondition(UDMSSequence* iSeq) const override;
+};
+
+
+UCLASS(BlueprintType, ClassGroup = (Condition))
+class PROJECTDMSGAME_API UDMSStateCombiner : public UDMSStateConditionBase
+{
+	GENERATED_BODY()
+
+public:
+	UDMSStateCombiner() :bIsAnd(true), bEmptyStateIsTrue(false) {}
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
+	TArray<UDMSStateConditionBase*> Conditions;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	bool bIsAnd;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	bool bEmptyStateIsTrue;
+
+
+	virtual bool CheckCondition(UDMSSequence* iSeq) const override;
+};
+
+
+
+
 /**
  *	========================================
  *
@@ -31,7 +94,7 @@ class PROJECTDMSGAME_API UDMSStateCheckerDefinition : public UObject
 	GENERATED_BODY()
 
 public:
-	UDMSStateCheckerDefinition(): bNullIsTrue(true),CheckerTargetFlag(EDMSObjectSelectorFlag::OSF_SourceObj) {};
+	UDMSStateCheckerDefinition() : bNullIsTrue(true), CheckerTargetFlag(EDMSObjectSelectorFlag::OSF_SourceObj) {};
 
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	bool bNullIsTrue;
@@ -39,7 +102,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	EDMSObjectSelectorFlag CheckerTargetFlag;
 
-	virtual bool CheckState(UObject* Target){return bNullIsTrue;}
+	virtual bool CheckState(UObject* Target) { return bNullIsTrue; }
 };
 
 UCLASS(BlueprintType)
@@ -48,8 +111,11 @@ class PROJECTDMSGAME_API UDMSAttributeCheckerDefinition : public UDMSStateChecke
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly, Category = Condition)
-	FName AttributeName;
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
+	//FName AttributeName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	FGameplayTag AttributeTag;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 	EDMSComparisonOperator Operator;
@@ -66,8 +132,11 @@ class PROJECTDMSGAME_API UDMSDataCheckerDefinition : public UDMSStateCheckerDefi
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
-	FName DataName;
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
+	//FName DataName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	FGameplayTag DataTag;
 
 	// 플래그를 통한 프로퍼티의 에디터 노출 ON OFF가 가능했나?
 	// 상속 없이 구현하는게 더 깔끔해 보이지만 다른 수가 없으니 일단은.
@@ -102,65 +171,3 @@ public:
 	virtual bool CheckState(UObject* Target);
 };
 
-/**
- *	========================================
- *
- *	A simple container that collect single conditions and compose them like commonly used boolean expressions.
- *
- *	========================================
- */
-UCLASS(/*HideDropdown,*/ Blueprintable, BlueprintType, Const,EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "State Condition Base"))
-class PROJECTDMSGAME_API UDMSStateCondition : public UDMSConditionObject
-{
-	GENERATED_BODY()
-
-public:
-	UDMSStateCondition(){}
-	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
-	TArray<UDMSStateCheckerDefinition*> StateConditions;
-
-	// USE '(' ')' '&' '|' and "[0~n]" : StateConditions[n]
-	// follows common boolean expression
-	// TODO :: Make creating this automatically
-	FString StateCombinator;
-
-	virtual bool CheckCondition(UDMSSequence* Seq) const;
-};
-
-/**
- * 	========================================
- *
- *	State Condition Wrapper :: Wrapper for exposing condition object to Blueprint in various ways.
- *	Similar to Effect Node Wrapper.
- *
- *	=========================================
- */
-UCLASS(Abstract, Const, DefaultToInstanced, EditInlineNew, ClassGroup = (Condition))
-class PROJECTDMSGAME_API UDMSStateConditionWrapper : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	virtual bool CheckCondition(UDMSSequence* iSeq) const { return false; };
-};
-
-UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Make State Condition in def"))
-class PROJECTDMSGAME_API UDMSStateConditionWrapper_Manual : public UDMSStateConditionWrapper
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
-	UDMSStateCondition* Condition;
-	virtual bool CheckCondition(UDMSSequence* iSeq) const override;
-};
-
-UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Use BP State Condition"))
-class PROJECTDMSGAME_API UDMSStateConditionWrapper_Preset : public UDMSStateConditionWrapper
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditDefaultsOnly, Category = Condition)
-	TSubclassOf<UDMSStateCondition> Condition;
-
-	virtual bool CheckCondition(UDMSSequence* iSeq) const override;
-};

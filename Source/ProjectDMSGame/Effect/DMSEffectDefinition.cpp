@@ -30,28 +30,23 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateTarget_I
 	return rv;
 }
 
-bool UDMSEffectNode::IsContainKeyword(const FName& iKeyword)
+bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 {
-	if (NodeKeyword == iKeyword) return true;
+	FGameplayTagContainer ctn;
+	ctn.AddTagFast(NodeTag);
+	for (auto fx : EffectDefinitions)	ctn.AddTag(fx->EffectTag);
+	
+	return ctn.MatchesQuery(EffectTagQuery);
+}
 
-	for (auto fx : EffectDefinitions)
+bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
+{
+	for (auto node : EffectNodes)
 	{
-		if (fx->Keyword == iKeyword) return true;
-		// some detail string comparer 
+		if (node->GetEffectNode()->ExecuteTagQuery(EffectTagQuery)) return true;
 	}
 
 	return false;
-}
-
-
-bool UDMSEffectSet::IsContainKeyword(const FName & iKeyword) 
-{ 
-	for (auto node : EffectNodes)
-	{
-		if (node->IsContainKeyword(iKeyword)) return true;
-	}
-
-	return false; 
 }
 
 TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors()
@@ -79,19 +74,6 @@ TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets()
 	InitializeDecisionWidget(rv);
 	return rv;
 }
-
-//TArray<UDMSEffectElementSelectorWidget*> UDMSEffectDefinition::CreateSelectors()
-//{
-//	TArray<UDMSEffectElementSelectorWidget*> rv;
-//	for (auto Selector : Selectors)
-//	{
-//		auto NewWidget = DuplicateObject<UDMSEffectElementSelectorWidget>(Selector, this);
-//		NewWidget->SetSourceEffectDefinition(this);
-//		rv.Add(NewWidget);
-//	}
-//
-//	return rv;
-//}
 
 UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector()
 {

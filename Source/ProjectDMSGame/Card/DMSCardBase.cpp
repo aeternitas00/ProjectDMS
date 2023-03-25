@@ -64,10 +64,10 @@ void ADMSCardBase::AttachEffectInstance(UDMSEffectInstance* EI)
 	EffectManagerComponent->AttachEffectInstance(EI);
 }
 
-void ADMSCardBase::OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweaker)
+bool ADMSCardBase::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweaker)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived"), *this->GetName());
-	EffectManagerComponent->OnNotifyReceived(iChainable,Seq,this);
+	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects,iChainable,Seq,this);
 }
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FName& iSetName)

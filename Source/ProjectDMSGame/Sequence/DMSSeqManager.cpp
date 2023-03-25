@@ -15,7 +15,7 @@
 
 
 
-UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr)
+UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr), CurrentSequence(nullptr)
 {
 
 }
@@ -28,62 +28,64 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UDMSEffectNode* EffectNode, 
 	TArray<TScriptInterface<IDMSEffectorInterface>> Targets, 
 	UDMSDataObjectSet* Datas, 
-	UDMSSequence* ParentSequence, 
-	EDMSTimingFlag RelationFlag
+	UDMSSequence* ParentSequence
 )
 {
 	// TODO :: Root Seq Check and make Chain tree work / Cleanup
 
-	DMS_LOG_SCREEN(TEXT("%s : Request Create Sequence of [%s]"), *SourceObject->GetName(),*EffectNode->NodeKeyword.ToString());
+	DMS_LOG_SCREEN(TEXT("%s : Request Create Sequence of [%s]"), *SourceObject->GetName(),*EffectNode->NodeTag.ToString());
 
 	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
-	if (EH==nullptr) { /*DMS_LOG("Invalid EH");*/ return nullptr; }
+	if (EH==nullptr) { /*DMS_LOG_DETAIL("Invalid EH");*/ return nullptr; }
 
 	//if (EffectNode==nullptr){ DMS_LOG_SCREEN(TEXT("%s : EffectNode is Null"), *SourceObject->GetName()); return nullptr;}
 	
-	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>();
-	NewData->Inherit(Datas);
-
 	UDMSSequence* Sequence = NewObject<UDMSSequence>(this);
+	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(Sequence);
+	NewData->Inherit(Datas);
 	Sequence->OriginalEffectNode = EffectNode;
 	Sequence->SourceObject = SourceObject;
 	Sequence->SourceController = SourceController;
 	Sequence->EIDatas = NewData;
 	Sequence->Targets = Targets;
-	switch(RelationFlag)	{
-		case EDMSTimingFlag::T_Before:
-			Sequence->BeforeNode = ParentSequence;
-			break;
-		case EDMSTimingFlag::T_During:
-			Sequence->DuringNode = ParentSequence;
-			break;
-		case EDMSTimingFlag::T_After:
-			Sequence->AfterNode = ParentSequence;
-			break;
-		case EDMSTimingFlag::T_Null:
-		default:
-			if (RootSequence==nullptr) RootSequence = ParentSequence;
-			else Sequence->ParentNode = ParentSequence;
-			break;
-		
-	};
-	auto WidgetOwner = Cast<APlayerController>(SourceController);	
-	
+	if (ParentSequence == nullptr) {
+		if (RootSequence == nullptr) RootSequence = Sequence;
+		else if (CurrentSequence != nullptr){
+			CurrentSequence->AttachChildSequence(Sequence);
+		}
+	}
+	else {
+		ParentSequence->AttachChildSequence(Sequence);
+	}
+
+	return Sequence;
+}
+
+
+void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
+
+	auto WidgetOwner = Cast<APlayerController>(iSeq->SourceController);
+
 	if (WidgetOwner == nullptr) {
 		//	it's from GAMEMODE or SYSTEM THINGs. LEADER PLAYER own this selector 
 		//	추후 멀티 플레이 환경에서 어떻게 할 지 생각해보기.
 	}
 
+	CurrentSequence = iSeq;
+
 	// ====== Decision Making Step ====== //
 	// ( ex. User Choose target, ... )
 
 	TArray<UDMSConfirmWidgetBase*> Widgets;
-	if (!EffectNode->bForced && DefaultYNWidget != nullptr) 
-		Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
-	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(EffectNode->CreateDecisionWidgets()));
-	Sequence->InitializeWidgetQueue(Widgets,WidgetOwner);
-	Sequence->RunWidgetQueue([&,WidgetOwner](UDMSSequence* pSequence) {
+	//if (!iSeq->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
+	//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
+	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets()));
+	iSeq->InitializeWidgetQueue(Widgets, WidgetOwner);
 
+	iSeq->RunWidgetQueue(
+	[&, WidgetOwner](UDMSSequence* pSequence) {
 		// Decision confirmed or no decision widget
 
 		// Create EI first for preview.
@@ -92,73 +94,166 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 		// ====== Effect Data Selection Step ====== //
 		// ( ex. User set value of effect's damage amount , ... )
 		pSequence->InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors()), WidgetOwner);
-		pSequence->RunWidgetQueue([this](UDMSSequence* pSequenceN){
+		pSequence->RunWidgetQueue(
+		[this](UDMSSequence* pSequenceN) {
 			// Selection completed
 
 			// Run sequence ( Notifying steps and apply )
-			RunSequence(pSequenceN);
+			DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="),*pSequenceN->GetName());
+			ApplySequence(pSequenceN);
 
 			for (auto EI : pSequenceN->EIs)
 			{
 				EI->ChangeEIState(EDMSEIState::EIS_Default);
 			}
-			// ==>> 노티파이 결과로 추가적으로 생성되는 시퀀스는 이 메소드를 통해 진행.
-			// 최초로 들어온 ( Root EI ) 의 After 브로드캐스트가 끝나면서 재귀적 트리 진행 종료.
-		}, [this](UDMSSequence* pSequenceN){
+		}, 
+		[this](UDMSSequence* pSequenceN) {
 			// Selection Canceled
-
+			DMS_LOG_SIMPLE(TEXT("Selection Canceled"));
+			CompleteSequence(pSequenceN);
 			// Cleanup this seq
-			CleanupSequenceTree();
-		}
+		} // Runwidgetqueue end.
 		);
-	}, [this](UDMSSequence* pSequence) {
-		// Decision canceled
+	}, 
 
+	[this](UDMSSequence* pSequence) {
+		// Decision canceled
+		DMS_LOG_SIMPLE(TEXT("Decision canceled"));
 		// Cleanup this seq
-		CleanupSequenceTree();
+		CompleteSequence(pSequence);
 		//...
 	}
 	);
-	return Sequence;
+
 }
+
+int UDMSSeqManager::GetDepth(UDMSSequence* iSeq) {
+	if (iSeq == RootSequence) return 0;
+	return GetDepth(iSeq->ParentSequence)+1;
+}
+
+void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : Apply Sequence  ===="), *Sequence->GetName());
+
+	DMS_LOG_SCREEN(TEXT("%s : ApplySequence [%s]"), *Sequence->SourceObject->GetName(), 
+	Sequence->OriginalEffectNode->NodeTag == FGameplayTag::EmptyTag ? 
+	*Sequence->OriginalEffectNode->EffectDefinitions[0]->EffectTag.ToString() :
+	*Sequence->OriginalEffectNode->NodeTag.ToString());
+	// Before Notify
+
+	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+	auto EffectHandler = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+	check(NotifyManager);
+	check(EffectHandler);
+
+	//Sequence->SetActive(true);
+
+	// 이 방식 말고 받는 입장에서 알아서 생각 하게 하면 한번 뿌리는 것으로 해결 할 수 있을 듯?
+
+	DMS_LOG_SCREEN(TEXT("==-- BEFORE [ Depth : %d ] --=="),GetDepth(Sequence));
+	// 'Before Timing' broadcast starts.
+	NotifyManager->BroadCast(Sequence, 
+	[=, BeforeSequence=Sequence]() {
+			// ==== ON BEFORE TIMING RESPONSE ENDED ====
+		DMS_LOG_SIMPLE(TEXT("==== %s : ON BEFORE TIMING RESPONSE ENDED ===="), *BeforeSequence->GetName());
+		// Proceed to 'During Timing'
+		BeforeSequence->Progress = EDMSTimingFlag::T_During;
+
+		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
+		DMS_LOG_SCREEN(TEXT("==-- DURING [ Depth : %d ] --=="), SeqManager->GetDepth(BeforeSequence));
+		
+		// Resolve First
+		EffectHandler->Resolve(BeforeSequence,
+		[=, DuringSequence=BeforeSequence]() {
+				// ==== ON RESOLVE COMPLETED ====
+
+			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED ===="), *DuringSequence->GetName());
+			
+			// Check advance condition for child effect.
+			if (DuringSequence->OriginalEffectNode->ChildEffect != nullptr &&
+				DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(DuringSequence->SourceObject, DuringSequence))
+			{
+				// Proceed to run child effect sequence.
+				DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Advance"), *DuringSequence->SourceObject->GetName());
+				
+				auto NewSeq = RequestCreateSequence(DuringSequence->SourceObject, DuringSequence->SourceController, // follows parents data. 
+					DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode(), DuringSequence->Targets, DuringSequence->EIDatas, DuringSequence);
+				
+				// Set delegates when child effect sequence completed.
+				NewSeq->AddToOnSequenceFinished_Native(
+				[=, ParentSequence=DuringSequence]() __declspec(noinline) {
+						// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
+					DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED ==== "), *ParentSequence->GetName());
+
+					auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+					
+					// If it has no need to replay Respondent selcting then resume.
+
+					// If it has no need to replay Respondent selcting, Resume parent sequence.
+					// 'During Timing' broadcast starts.
+					NotifyManager->BroadCast(ParentSequence,
+					[=, DuringSequence= ParentSequence]() __declspec(noinline) {
+							// ==== ON DURING TIMING RESPONSE ENDED ====
+						DMS_LOG_SIMPLE(TEXT("==== %s : ON PARENT DURING TIMING RESPONSE ENDED ===="), *DuringSequence->GetName());
+						// Proceed to 'After Timing'
+						DuringSequence->Progress = EDMSTimingFlag::T_After;
+
+						DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DuringSequence));
+						
+						// 'After Timing' broadcast starts.
+						NotifyManager->BroadCast(DuringSequence, [=, AfterSequence = DuringSequence]() __declspec(noinline) {
+								// ==== ON AFTER TIMING RESPONSE ENDED ====
+							DMS_LOG_SIMPLE(TEXT("==== %s : ON PARENT AFTER TIMING RESPONSE ENDED ===="), *AfterSequence->GetName());
+							//Complete this sequence.
+							SeqManager->CompleteSequence(AfterSequence);
+						});
+					});
+				});
+
+				// Run setuped child effect sequence.
+				SeqManager->RunSequence(NewSeq);
+			}
+			else // if No proper child effect.
+			{
+				// 'During Timing' broadcast starts.
+				auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+				NotifyManager->BroadCast(BeforeSequence, 
+				[=, DurningSequence = BeforeSequence]() __declspec(noinline) {
+						// ==== ON DURING TIMING RESPONSE ENDED ====
+					DMS_LOG_SIMPLE(TEXT("==== %s : LEAF ON DURING TIMING RESPONSE ENDED ===="), *DurningSequence->GetName());
+					// Proceed to 'After Timing'
+					DurningSequence->Progress = EDMSTimingFlag::T_After;
+
+					DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
+
+					// 'After Timing' broadcast starts.
+					NotifyManager->BroadCast(DurningSequence, 
+					[=, AfterSequence = DurningSequence]() __declspec(noinline) {
+							// ==== ON AFTER TIMING RESPONSE ENDED ====
+						DMS_LOG_SIMPLE(TEXT("==== %s : LEAF ON AFTER TIMING RESPONSE ENDED ===="), *AfterSequence->GetName());
+						//Complete this sequence.
+						SeqManager->CompleteSequence(AfterSequence);
+					});
+				});
+			}
+		});
+	});
+
+}
+
+void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : Complete Sequence ===="), *Sequence->GetName());
+	Sequence->OnSequenceFinish();
+	CurrentSequence = Sequence->ParentSequence;
+}
+
 
 void UDMSSeqManager::CleanupSequenceTree()
 {
 	//...
 	RootSequence = nullptr;
+	CurrentSequence=nullptr;
 	//...
-}
-
-void UDMSSeqManager::RunSequence(UDMSSequence* Sequence)
-{
-	DMS_LOG_SCREEN(TEXT("%s : RunSequence [%s]"), *Sequence->SourceObject->GetName(), Sequence->OriginalEffectNode->NodeKeyword == "" ? *Sequence->OriginalEffectNode->EffectDefinitions[0]->Keyword.ToString() : *Sequence->OriginalEffectNode->NodeKeyword.ToString());
-	// Before Notify
-	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
-	auto EffectHandler = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
-
-	check(NotifyManager);
-	check(EffectHandler);
-
-	Sequence->SetActive(true);
-
-	// 이 방식 말고 받는 입장에서 알아서 생각 하게 하면 한번 뿌리는 것으로 해결 할 수 있을 듯?
-	//DMS_LOG_SCREEN(TEXT("==-- BEFORE --=="));
-	NotifyManager->BroadCast(Sequence, Sequence->OriginalEffectNode->bIsChainableEffect);
-	Sequence->Progress = EDMSTimingFlag::T_During;
-
-	//DMS_LOG_SCREEN(TEXT("==-- DURING --=="));
-	EffectHandler->Resolve(Sequence);
-	NotifyManager->BroadCast(Sequence, Sequence->OriginalEffectNode->bIsChainableEffect);
-	// if (Sequence->OriginalEffectNode->ChildEffect != nullptr && Sequence->OriginalEffectNode->ChildEffect->Conditions_->CheckCondition(SourceTweak, Seq))
-	if (Sequence->OriginalEffectNode->ChildEffect != nullptr && Sequence->OriginalEffectNode->AdvanceConditions_->CheckCondition(Sequence->SourceObject, Sequence))
-	{
-		//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Advance"), *GetName());
-		RequestCreateSequence(Sequence->SourceObject, Sequence->SourceController, Sequence->OriginalEffectNode->ChildEffect->GetEffectNode(), Sequence->Targets, Sequence->EIDatas, Sequence);
-	}
-
-	Sequence->Progress = EDMSTimingFlag::T_After;
-	//DMS_LOG_SCREEN(TEXT("==-- AFTER --=="));
-	NotifyManager->BroadCast(Sequence, Sequence->OriginalEffectNode->bIsChainableEffect);
-
-	// cleanup Sequence;
 }

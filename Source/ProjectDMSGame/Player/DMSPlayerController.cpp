@@ -8,7 +8,6 @@
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "Effect/DMSEffectorInterface.h"
-#include "EffectSet/DMSEffectNode_PlayCard.h"
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 
 #include "Card/DMSCardDefinition.h"
@@ -34,13 +33,13 @@ ADMSPlayerController::ADMSPlayerController(const FObjectInitializer& ObjectIniti
 	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
 
-	DefaultStats.Add("Resource", 10);
-	DefaultStats.Add("ActionPoint", 10);
-	DefaultStats.Add("HP", 10);
-	DefaultStats.Add("STR", 5);
-	DefaultStats.Add("INT", 5);
-	DefaultStats.Add("DEX", 5);
-	DefaultStats.Add("SkillBonus", 0);
+	DefaultStats.Add(TAG_DMS_Attribute_Resource, 10);
+	DefaultStats.Add(TAG_DMS_Attribute_ActionPoint, 10);
+	DefaultStats.Add(TAG_DMS_Attribute_HP, 10);
+	DefaultStats.Add(TAG_DMS_Attribute_STR, 5);
+	DefaultStats.Add(TAG_DMS_Attribute_INT, 5);
+	DefaultStats.Add(TAG_DMS_Attribute_DEX, 5);
+	DefaultStats.Add(TAG_DMS_Attribute_SavedSkillBonus, 0);
 }
 
 
@@ -59,10 +58,15 @@ void ADMSPlayerController::PostInitializeComponents()
 		CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
 	}
 	// Will be changed with same way to above
-	for (auto Stat : DefaultStats)	{
-		AttributeComponent->MakeAttribute(Stat.Key,Stat.Value);
+	//for (auto Stat : DefaultStats)	{
+	//	AttributeComponent->MakeAttribute(Stat.Key,Stat.Value);
+	//}
+
+	for (auto Stat : DefaultStats) {
+		AttributeComponent->MakeAttribute(Stat.Key, Stat.Value);
 	}
 }
+
 
 void/**/ ADMSPlayerController::PopupSelectorWidget(TSubclassOf<UDMSEffectElementSelectorWidget> WidgetClass)
 {
@@ -84,33 +88,8 @@ void ADMSPlayerController::SelectObject(UObject* Object)
 	UObject* tFormer = SelectingObject;
 	SelectingObject=Object;
 	OnSelectedObject(tFormer);
-
-	//Example of OnSelectedObject... 
-	//switch (InteractionMode)
-	//{
-	//	case EDMSCardInteractionMode::PIM_Block:
-	//		...;	break;
-	//	case EDMSCardInteractionMode::PIM_Play:
-	//		...
-	//	default:
-	//		break;
-	//}
 }
 
-
-//void ADMSPlayerController::PlayCardDep(ADMSCardBase* Card)
-//{
-//	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
-//
-//	if(!SeqMan) return;
-//
-//	UDMSEffectNode_PlayCard* PlayCardDef = NewObject<UDMSEffectNode_PlayCard>(SeqMan);
-//
-//	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
-//	Targets.Add(TScriptInterface<IDMSEffectorInterface>(Card));
-//
-//	SeqMan->RequestCreateSequence(this,this, PlayCardDef, Targets);
-//}
 
 UDMSCardContainerComponent* ADMSPlayerController::SearchContainer(const FName& ContainerName)
 {
@@ -122,19 +101,20 @@ void ADMSPlayerController::AttachEffectInstance(UDMSEffectInstance* EI)
 	EffectManagerComponent->AttachEffectInstance(EI);
 }
 
-void ADMSPlayerController::OnNotifyReceived(bool iChainable,UDMSSequence* Seq,UObject* SourceTweak)
+bool ADMSPlayerController::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects,
+	bool iChainable,UDMSSequence* Seq,UObject* SourceTweak)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan,
 	//	FString::Printf(TEXT("%s : OnNotifyReceived"), *this->GetName())
 	//);
-	EffectManagerComponent->OnNotifyReceived(iChainable,Seq,this);
+	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable,Seq,this);
 }
 
 //UDMSAttribute* ADMSPlayerController::GetAttribute(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName); }
 //bool ADMSPlayerController::TryModAttribute(const FDMSAttributeModifier& Modifier) { return AttributeComponent->TryModAttribute(Modifier); }
 //void ADMSPlayerController::MakeAttribute(const FName& AttributeName, const float& DefValue){ AttributeComponent->MakeAttribute(AttributeName,DefValue); }
 
-float ADMSPlayerController::GetAttributeValue(const FName& AttributeName) 
+float ADMSPlayerController::GetAttributeValue(const FGameplayTag& AttributeName) 
 {
 	return AttributeComponent->GetAttribute(AttributeName) ? AttributeComponent->GetAttribute(AttributeName)->GetValue() : -1.0f; 
 }

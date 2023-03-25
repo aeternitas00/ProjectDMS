@@ -15,5 +15,5 @@ class PROJECTDMSGAME_API UDMSEffectNode_Type_Equipment : public UDMSEffectNode_T
 	GENERATED_BODY()
 	
 public:
-	UDMSEffectNode_Type_Equipment() { TypeName = TEXT("Equipment"); }
+	UDMSEffectNode_Type_Equipment() { bForced=true; TypeName = TEXT("Equipment"); }
 };

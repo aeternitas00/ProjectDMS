@@ -6,13 +6,17 @@
 #include "Effect/DMSEffectDefinition.h"
 #include "DMSEffect_SkillTest.generated.h"
 
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_SkillTest)
+
+
 USTRUCT(BlueprintType)
 struct FDMSSelectorData_SkillTest
 {
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	FName StatName;
+	FGameplayTag StatName;
 
 	// Get stat from ( true == SourceController / false == SourceObject ) 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -38,7 +42,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FDMSSelectorData_SkillTest SkillTestData;
 
-	static const FName SkillBonusName;
+	static const FGameplayTag SkillBonusName;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	TSubclassOf<UDMSSelector_SkillTest> PairedWidgetClass;
@@ -48,7 +52,7 @@ public:
 	// 2. Test with ( Source[StatName] + Target[StatName] )
 	// 3. Custom? ( Multiple stat )
 
-	virtual void Work_Implementation(UDMSEffectInstance* iEI) override; 
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override;
 
 	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation() { return PairedWidgetClass.Get(); }
 

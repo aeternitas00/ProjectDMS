@@ -23,12 +23,13 @@ void UDMSConfirmWidgetBase::SetupWidgetDelegates(FuncCompleted&& iOnCompleted, F
 void UDMSConfirmWidgetBase::CompleteSelect(UDMSDataObjectSet* OutData)
 {
 	OnSelectCompleted.ExecuteIfBound(OutData);
-	CloseSelector();
+	//CloseSelector();
 }
 
 void UDMSConfirmWidgetBase::CancelSelect()
 {
 	OnSelectCanceled.ExecuteIfBound();
+	//CloseSelector();
 }
 
 void UDMSConfirmWidgetBase::PopupSelector()

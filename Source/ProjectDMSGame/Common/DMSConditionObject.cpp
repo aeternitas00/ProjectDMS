@@ -15,7 +15,7 @@ bool UDMSConditionCombiner::CheckCondition(UDMSSequence* iSeq) const
 { 
 	bool rv = bIsAnd;
 
-	if (Conditions.Num() == 0)return true;
+	if (Conditions.Num() == 0)return bEmptyTimingIsTrue;
 
 	for (auto Condition : Conditions)
 	{
@@ -29,7 +29,7 @@ bool UDMSConditionCombiner::CheckCondition(UObject* Caller, UDMSSequence* iSeq) 
 { 
 	bool rv = bIsAnd;
 
-	if (Conditions.Num()==0)return true;
+	if (Conditions.Num()==0) return bEmptyTimingIsTrue;
 
 	for (auto Condition : Conditions)
 	{

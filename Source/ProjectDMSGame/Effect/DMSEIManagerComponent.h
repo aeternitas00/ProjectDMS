@@ -46,9 +46,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual UObject* GetObject() { return Cast<UObject>(GetOwner()); }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual void OnNotifyReceived(bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
+	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
-
+	virtual AActor* GetOwningPlayer() { return GetOwner()->GetOwner(); }
 	//virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
 	//virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
 	//virtual void MakeAttribute(const FName& AttributeName, const float& DefValue =0.0f);

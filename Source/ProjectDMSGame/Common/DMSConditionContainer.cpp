@@ -1,105 +1,42 @@
 #include "Common/DMSConditionContainer.h"
 #include "Sequence/DMSSequence.h"
 
-void FDMSConditionContainer::AddTimingCondition(UDMSTimingCondition* iCondition)
+//void UDMSConditionContainer::AddTimingCondition(UDMSTimingCondition* iCondition)
+//{
+//	auto temp = NewObject<UDMSTimingConditionWrapper_Manual>(this);
+//	temp->Condition = iCondition;
+//	//TimingCondition.Empty();
+//	TimingCondition.Add(temp);
+//}
+//
+//void UDMSConditionContainer::AddTimingCondition(const TSubclassOf<UDMSTimingCondition>& iCondition)
+//{
+//	auto* temp = NewObject<UDMSTimingConditionWrapper_Preset>(this);
+//	temp->Condition = iCondition;
+//	//TimingCondition.Empty();
+//	TimingCondition.Add(temp);
+//}
+//
+//void UDMSConditionContainer::AddStateCondition(UDMSStateCondition* iCondition)
+//{
+//	auto temp = NewObject<UDMSStateConditionWrapper_Manual>(this);
+//	temp->Condition = iCondition;
+//	//StateCondition.Empty();
+//	StateCondition.Add(temp);
+//}
+//
+//void UDMSConditionContainer::AddStateCondition(const TSubclassOf<UDMSStateCondition>& iCondition)
+//{
+//	auto temp = NewObject<UDMSStateConditionWrapper_Preset>(this);
+//	temp->Condition = iCondition;
+//	//StateCondition.Empty();
+//	StateCondition.Add(temp);
+//}
+
+bool UDMSConditionContainer::CheckCondition(UObject* Caller, UDMSSequence* iSeq)
 {
-	auto temp = NewObject<UDMSTimingConditionWrapper_Manual>();
-	temp->Condition = iCondition;
-	//TimingCondition.Empty();
-	TimingCondition.Add(temp);
-}
-
-void FDMSConditionContainer::AddTimingCondition(const TSubclassOf<UDMSTimingCondition>& iCondition)
-{
-	UDMSTimingConditionWrapper_Preset* temp = NewObject<UDMSTimingConditionWrapper_Preset>();
-	temp->Condition = iCondition;
-	//TimingCondition.Empty();
-	TimingCondition.Add(temp);
-}
-
-void FDMSConditionContainer::AddStateCondition(UDMSStateCondition* iCondition)
-{
-	auto temp = NewObject<UDMSStateConditionWrapper_Manual>();
-	temp->Condition = iCondition;
-	//StateCondition.Empty();
-	StateCondition.Add(temp);
-}
-
-void FDMSConditionContainer::AddStateCondition(const TSubclassOf<UDMSStateCondition>& iCondition)
-{
-	auto temp = NewObject<UDMSStateConditionWrapper_Preset>();
-	temp->Condition = iCondition;
-	//StateCondition.Empty();
-	StateCondition.Add(temp);
-}
-
-bool FDMSConditionContainer::CheckCondition(UObject* Caller, UDMSSequence* iSeq)
-{
-	bool Timing = true;
-	if(TimingCondition.Num()==0 && !bEmptyTimingIsTrue) Timing=false;
-	for (auto T : TimingCondition) Timing = Timing && T->CheckCondition(Caller, iSeq);
-
-	bool State = true;
-	if (StateCondition.Num() == 0 && !bEmptyStateIsTrue) State = false;
-	for (auto S : StateCondition) State = State && S->CheckCondition(iSeq);
-
-	return (Timing&&State);
-
-	//return true;
-}
-
-
-void UDMSConditionContainer_::AddTimingCondition(UDMSTimingCondition* iCondition)
-{
-	auto temp = NewObject<UDMSTimingConditionWrapper_Manual>(this);
-	temp->Condition = iCondition;
-	//TimingCondition.Empty();
-	TimingCondition.Add(temp);
-}
-
-void UDMSConditionContainer_::AddTimingCondition(const TSubclassOf<UDMSTimingCondition>& iCondition)
-{
-	auto* temp = NewObject<UDMSTimingConditionWrapper_Preset>(this);
-	temp->Condition = iCondition;
-	//TimingCondition.Empty();
-	TimingCondition.Add(temp);
-}
-
-void UDMSConditionContainer_::AddStateCondition(UDMSStateCondition* iCondition)
-{
-	auto temp = NewObject<UDMSStateConditionWrapper_Manual>(this);
-	temp->Condition = iCondition;
-	//StateCondition.Empty();
-	StateCondition.Add(temp);
-}
-
-void UDMSConditionContainer_::AddStateCondition(const TSubclassOf<UDMSStateCondition>& iCondition)
-{
-	auto temp = NewObject<UDMSStateConditionWrapper_Preset>(this);
-	temp->Condition = iCondition;
-	//StateCondition.Empty();
-	StateCondition.Add(temp);
-}
-
-bool UDMSConditionContainer_::CheckCondition(UObject* Caller, UDMSSequence* iSeq)
-{
-	bool Timing = true;
-	if (TimingCondition.Num() == 0 && !bEmptyTimingIsTrue) Timing = false;
-	for (auto T : TimingCondition) Timing = Timing && T->CheckCondition(Caller, iSeq);
-
-	bool State = true;
-	if (StateCondition.Num() == 0 && !bEmptyStateIsTrue) State = false;
-	for (auto S : StateCondition) State = State && S->CheckCondition(iSeq);
-
-	return (Timing && State);
-
-	//return true;
-}
-
-bool UDMSConditionContainer_::CheckCondition_(UObject* Caller, UDMSSequence* iSeq)
-{
-	bool Timing = TimingConditions != nullptr ? TimingConditions->CheckCondition(Caller, iSeq) : bEmptyTimingIsTrue;
-	bool State = StateConditions != nullptr ? StateConditions->CheckCondition(iSeq) : bEmptyStateIsTrue;
+	bool Timing = TimingConditions->CheckCondition(Caller, iSeq);
+	bool State = StateConditions->CheckCondition(iSeq);
 	
 	return (Timing && State);
 }

@@ -16,9 +16,20 @@
 #include <any>
 #include "DMSCommons.generated.h"
 
-/**
- * 
- */
+//	========================================
+//			SOME COMMON KEYWORD TAGS
+//	========================================
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_EffectKeyword_PlayCard)
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Attribute_Resource)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Attribute_ActionPoint)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Attribute_HP)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Attribute_STR)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Attribute_INT)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Attribute_DEX)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Attribute_SavedSkillBonus)
+
 
 class UDMSAttributeComponent;
 class UDMSSequence;
@@ -127,37 +138,40 @@ class PROJECTDMSGAME_API UDMSDataObjectSet : public UObject
 	GENERATED_BODY()
 
 protected:
-	TMap<FName, UDMSDataObject*> DataMap;
+	TMap<FGameplayTag, UDMSDataObject*> DataMap;
 
 public:
 
-	// T&& , forward?
-	FORCEINLINE void SetData(FName Name, const std::any& Data, const bool& Inheriting = false) {
+	FORCEINLINE void SetData(const FGameplayTag& Tag, const std::any& Data, const bool& Inheriting = false) {
 		UDMSDataObject* DataObject = NewObject<UDMSDataObject>();
 		DataObject->Set(Data);
 		DataObject->SetInheriting(Inheriting);
-		DataMap.Add(Name, DataObject);
+		DataMap.Add(Tag, DataObject);
 	}
 
-	FORCEINLINE void SetData(FName Name, std::any&& Data, const bool& Inheriting = false) {
+	FORCEINLINE void SetData(const FGameplayTag& Tag, std::any&& Data, const bool& Inheriting = false) {
 		UDMSDataObject* DataObject = NewObject<UDMSDataObject>();
 		DataObject->Set(std::move(Data));
 		DataObject->SetInheriting(Inheriting);
-		DataMap.Add(Name, DataObject);
+		DataMap.Add(Tag, DataObject);
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AddData(FName Name, UDMSDataObject* Data,const bool& Inheriting=false) { 
-		if(Data==nullptr) return;
-		Data->SetInheriting(Inheriting); 
-		DataMap.Add(Name, Data);
+	FORCEINLINE void AddData(const FGameplayTag& Tag, UDMSDataObject* Data, const bool& Inheriting = false) {
+		if (Data == nullptr) return;
+		Data->SetInheriting(Inheriting);
+		DataMap.Add(Tag, Data);
 	}
 
-	UFUNCTION(BlueprintCallable,BlueprintPure)
-	FORCEINLINE bool ContainData(const FName& Name) const { return DataMap.Contains(Name); }
-	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE bool ContainData(const FGameplayTag& Tag) const {
+		return DataMap.Contains(Tag);
+	}
+
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE UDMSDataObject* GetData(/*const*/FName/*&*/ Name) { return ContainData(Name) ? DataMap[Name] : nullptr; }
+	FORCEINLINE UDMSDataObject* GetData(const FGameplayTag& Tag) {
+		return ContainData(Tag) ? DataMap[Tag] : nullptr;
+	}
 
 	void Inherit(UDMSDataObjectSet* Parent, const bool& InheritAgain=false);
 

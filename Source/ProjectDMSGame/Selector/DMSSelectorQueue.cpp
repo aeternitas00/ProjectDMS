@@ -13,9 +13,10 @@ void FDMSSelectorQueue::Initialize(UDMSSequence* OwnerSeq)
 
 	for (int32 i = SelectorQueue.Num() - 1; i >= 0; --i) {
 
-		SelectorQueue[i]->SetupWidgetDelegates([&](UDMSDataObjectSet* Data) {
+		SelectorQueue[i]->SetupWidgetDelegates([&, Self=SelectorQueue[i]](UDMSDataObjectSet* Data) {
 			// [ OK Bttn ]
 			Owner->EIDatas->Merge(Data);
+			Self->CloseSelector();
 			RunNextSelector();
 			//...
 		},	[&]() {

@@ -6,6 +6,9 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "DMSEffect_ModAtt.generated.h"
 
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute)
+
 // BP에서 기본적인 것들 외의 커스텀 이펙트 원형 생성 가능하게
 // Ex) BP_EffectInstance_DealDamage ?
 USTRUCT(BlueprintType)
@@ -64,7 +67,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	FDMSSelectorData_ModAtt SelectorData;
 
-	virtual void Work_Implementation(UDMSEffectInstance* iEI) override; // temp
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override; // temp
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	TSubclassOf<UDMSSelector_ModAtt> PairedWidgetClass;

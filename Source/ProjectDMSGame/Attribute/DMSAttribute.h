@@ -26,8 +26,11 @@ struct FDMSAttributeModifier
 	GENERATED_BODY()
 
 public:
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	//FName AttributeName;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-	FName AttributeName;
+	FGameplayTag AttributeTag;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	EDMSModifierType ModifierType;
@@ -49,9 +52,12 @@ class PROJECTDMSGAME_API UDMSAttribute : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-	FName AttributeName;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	//FName AttributeName;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	FGameplayTag AttributeTag;
+	
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute) // 태그 더 생각해보기
 	float Value;
 

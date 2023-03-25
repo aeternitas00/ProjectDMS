@@ -14,23 +14,23 @@ bool UDMSNotifyCheckerDefinition_Numeric::Check(UObject* Caller, TArray<UObject*
 	return bAllowNull;
 }
 
-bool UDMSTimingCondition::isChildOf(const UDMSTimingCondition& i) const
-{
-	TArray<FString> OrgC = {}, iC = {};
-	bool rv = true;
-
-	if (Timing != i.Timing) return false;
-
-	EffectKeyword.ToString().ParseIntoArray(OrgC, TEXT("."));
-	i.EffectKeyword.ToString().ParseIntoArray(iC, TEXT("."));
-
-	for (char n = 0; n < iC.Num(); n++)
-	{
-		if (OrgC[n] != iC[n]) { rv = false; break; }
-	}
-
-	return rv;
-}
+//bool UDMSTimingCondition::isChildOf(const UDMSTimingCondition& i) const
+//{
+//	TArray<FString> OrgC = {}, iC = {};
+//	bool rv = true;
+//
+//	if (Timing != i.Timing) return false;
+//
+//	EffectKeyword.ToString().ParseIntoArray(OrgC, TEXT("."));
+//	i.EffectKeyword.ToString().ParseIntoArray(iC, TEXT("."));
+//
+//	for (char n = 0; n < iC.Num(); n++)
+//	{
+//		if (OrgC[n] != iC[n]) { rv = false; break; }
+//	}
+//
+//	return rv;
+//}
 
 
 bool UDMSTimingCondition::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
@@ -43,10 +43,15 @@ bool UDMSTimingCondition::CheckCondition(UObject* Caller, UDMSSequence* iSeq) co
 		auto Targets = GetCompareTarget(Caller, iSeq, Check->CompareTargetFlag);
 		CheckerRs = CheckerRs && Check->Check(Caller, Targets);
 	}
-	return iSeq->Progress == Timing 
-		&& iSeq->OriginalEffectNode->IsContainKeyword(EffectKeyword) 
+	//return iSeq->Progress == Timing 
+	//	&& iSeq->OriginalEffectNode->IsContainKeyword(EffectKeyword) 
+	//	&& CheckerRs
+	//;
+	return iSeq->Progress == Timing
+		&& iSeq->OriginalEffectNode->ExecuteTagQuery(EffectTagQuery)
 		&& CheckerRs
 	;
+
 }
 
 TArray<UObject*> UDMSTimingCondition::GetCompareTarget(UObject* Caller, UDMSSequence* iSeq,  const EDMSObjectSelectorFlag& Flag) const
@@ -78,20 +83,27 @@ TArray<UObject*> UDMSTimingCondition::GetCompareTarget(UObject* Caller, UDMSSequ
 }
 
 // UFUNCTION + _Implements
-
+//
 bool UDMSNotifyCheckerDefinition_ObjectCompareBase::Check(UObject* Caller, TArray<UObject*> CompareTarget)
 { 
 	return CompareTarget.Num() == 0 ? bAllowNull : SelectionRules.CompareObject(Caller, CompareTarget);
 }
 
-/// TODO :: USE Combinator
-
-bool UDMSTimingConditionWrapper_Manual::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const 
+bool UDMSTimingClassWrapper::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
-	return Condition->CheckCondition(Caller, iSeq);
+	return Condition.GetDefaultObject()->CheckCondition(Caller, iSeq);
 }
 
-bool UDMSTimingConditionWrapper_Preset::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const 
-{ 
-	return Condition.GetDefaultObject()->CheckCondition(Caller, iSeq);
+bool UDMSTimingCombiner::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+{
+	bool rv = bIsAnd;
+
+	if (Conditions.Num() == 0)return bEmptyTimingIsTrue;
+
+	for (auto Condition : Conditions)
+	{
+		rv = bIsAnd ? rv && Condition->CheckCondition(Caller, iSeq) : rv || Condition->CheckCondition(Caller, iSeq);
+	}
+
+	return rv;
 }

@@ -20,6 +20,12 @@
 
 class UDMSNotifyCheckerDefinition;
 
+UCLASS()
+class PROJECTDMSGAME_API UDMSTimingConditionBase : public UDMSConditionObject
+{
+	GENERATED_BODY()
+};
+
  /**
   * ========================================
   *
@@ -32,8 +38,9 @@ class UDMSNotifyCheckerDefinition;
   *	노티파이 매니저가 노티파이 리시버들에게 [ "SourceObjectClass"가 "EffectKeyword"를 (어떻게) "TargetObjectClass"에게 "Timing"(하기전/하는중/한후) ]
   *	추가적으로 소스 오브젝트나 타겟 오브젝트들의 클래스 단위가 아닌 객체 단위의 캔디데이트를 제공 하려면 어찌 해야할까?
   */
-UCLASS(/*HideDropdown,*/ Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "Timing Condition Base"))
-class PROJECTDMSGAME_API UDMSTimingCondition : public UDMSConditionObject
+
+UCLASS(Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "Timing Condition Base"))
+class PROJECTDMSGAME_API UDMSTimingCondition : public UDMSTimingConditionBase
 {
 	GENERATED_BODY()
 
@@ -45,24 +52,63 @@ public:
 	EDMSTimingFlag Timing;
 
 	// 'What'
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
+	//FName EffectKeyword;
+
+	// 'What'
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
-	FName EffectKeyword;
+	FGameplayTagQuery EffectTagQuery;
 
 	// 'How' 'Who' 'To who'
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
 	TArray<UDMSNotifyCheckerDefinition*> Checkers;
 
-	UPROPERTY(EditDefaultsOnly, Category = Condition)
-	FString CheckersCombinator;
+	//UPROPERTY(EditDefaultsOnly, Category = Condition)
+	//FString CheckersCombinator;
 
 	// Deprecated
-	bool isChildOf(const UDMSTimingCondition& i) const;
+	//bool isChildOf(const UDMSTimingCondition& i) const;
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
+	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const override;
 
 	// TODO :: Move to library 
 	TArray<UObject*> GetCompareTarget(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& Flag) const;
 };
+
+UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Use BP Condition"))
+class PROJECTDMSGAME_API UDMSTimingClassWrapper : public UDMSTimingConditionBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Condition Class"))
+	TSubclassOf<UDMSTimingCondition> Condition;
+
+	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const override;
+};
+
+
+UCLASS(BlueprintType, ClassGroup = (Condition))
+class PROJECTDMSGAME_API UDMSTimingCombiner : public UDMSTimingConditionBase
+{
+	GENERATED_BODY()
+
+public:
+	UDMSTimingCombiner() :bIsAnd(true), bEmptyTimingIsTrue(false) {}
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
+	TArray<UDMSTimingConditionBase*> Conditions;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	bool bIsAnd;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	bool bEmptyTimingIsTrue;
+
+	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const override;
+};
+
+
+
 
 
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, EditInlineNew, meta=(DisplayName="Create Custom Notify Checker"))
@@ -112,42 +158,4 @@ public:
 public:
 	// UFUNCTION + _Implements
 	virtual bool Check(UObject* Caller, TArray<UObject*> CompareTarget);
-};
-
-/**
- * 	========================================
- *
- *	Timing Condition Wrapper :: Wrapper for exposing condition object to Blueprint in various ways.
- *	Similar to Effect Node Wrapper. 
- *	 
- *	=========================================
- */
-UCLASS(Abstract, Const, DefaultToInstanced, EditInlineNew, ClassGroup = (Condition))
-class PROJECTDMSGAME_API UDMSTimingConditionWrapper : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const{return false;};
-};
-
-UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Make Timing Condition in def"))
-class PROJECTDMSGAME_API UDMSTimingConditionWrapper_Manual : public UDMSTimingConditionWrapper
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditDefaultsOnly,Instanced, Category = Condition)
-	UDMSTimingCondition* Condition;
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const override;
-};
-
-UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Use BP Timing Condition"))
-class PROJECTDMSGAME_API UDMSTimingConditionWrapper_Preset : public UDMSTimingConditionWrapper
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Condition Class"))
-	TSubclassOf<UDMSTimingCondition> Condition;
-
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const override;
 };

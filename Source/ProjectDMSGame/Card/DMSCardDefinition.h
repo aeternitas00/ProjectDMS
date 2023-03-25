@@ -60,24 +60,6 @@ public:
 	
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	//FBrush Image;
-		
-	// ----------------------------------------------------------------------------------------- //
-	// DEPRECATED
-	
-	// UI 연동하는 부분과 연결 필요성 있음. ( 타겟등 플레이 전에 리버트 가능한 Status condition check 구현 )
-
-	// Card's Effect.
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
-	//UDMSEffectSet* CardEffects;
-
-	// Card's Play Cost -> visualizing info
-	// 플레이 '전'에 선택해야 요소들에 대한 셀렉터들도 여기에
-	// 사용 가능한 코스트의 종류가 여러개일 경우를 대비해 Node 대신 Set
-	// 코스트 구현 방식에 대해 재고? (지불 가능 할지에 대한 예측이 가능해야 함 => 별도의 클래스화가 맞는가? Effect의 파생클래스 )
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
-	//UDMSEffectSet* CostAndPlayCondition;
-
-	// ----------------------------------------------------------------------------------------- //
 
 	// enum for key?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)

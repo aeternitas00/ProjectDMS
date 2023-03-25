@@ -14,6 +14,7 @@
 
 #include "ProjectDMS.h"
 #include "UObject/NoExportTypes.h"
+#include "Common/DMSCommonDelegates.h"
 #include "DMSEffectHandler.generated.h"
 
 class UDMSEffectInstance;
@@ -35,14 +36,24 @@ protected:
 	UPROPERTY()
 	TArray<UDMSEffectInstance*> EIList;
 
+	struct FResolveDelegateCounter {
+		FOnResolveCompleted Delegate;
+		uint8 Count=0;
+		FResolveIteratingDelegate IteratingDelegate;
+	};
+
+	TMap<UDMSSequence*, FResolveDelegateCounter> OnResolveCompletedMap;
+
+	void ApplyNextEffectInstance(UDMSSequence* Sequence);
+
 public:
 	// Create from setup
 	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UObject* SourceObject, AActor* SourceController, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
 	// Create from seq
 	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode);
 
-
-	void Resolve(UDMSSequence* Sequence);
+	template <typename FuncFinished>
+	void Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted);
 
 };
 
