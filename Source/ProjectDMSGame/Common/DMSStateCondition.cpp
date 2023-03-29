@@ -4,7 +4,7 @@
 #include "Sequence/DMSSequence.h"
 
 
-bool UDMSStateCondition::CheckCondition(UDMSSequence* Seq) const
+bool UDMSStateCondition::CheckCondition(UObject* Caller, UDMSSequence* Seq) const
 { 
 	if(StateConditions.Num()==0) return true;
 
@@ -17,6 +17,9 @@ bool UDMSStateCondition::CheckCondition(UDMSSequence* Seq) const
 	{
 		switch (State->CheckerTargetFlag)
 		{
+			case EDMSObjectSelectorFlag::OSF_Default:
+				tempVal = State->CheckState(Caller);
+				break;
 			case EDMSObjectSelectorFlag::OSF_SourceObj:
 				tempVal = State->CheckState(Seq->SourceObject);
 				break;
@@ -109,12 +112,12 @@ bool UDMSDataCheckerDefinition_Name::CheckState(UObject* Target)
 	return CheckState_Internal(Target, Data);
 }
 
-bool UDMSStateClassWrapper::CheckCondition(UDMSSequence* iSeq) const
+bool UDMSStateClassWrapper::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
-	return Condition.GetDefaultObject()->CheckCondition(iSeq);
+	return Condition.GetDefaultObject()->CheckCondition(Caller,iSeq);
 }
 
-bool UDMSStateCombiner::CheckCondition(UDMSSequence* iSeq) const
+bool UDMSStateCombiner::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
 	bool rv = bIsAnd;
 
@@ -122,7 +125,7 @@ bool UDMSStateCombiner::CheckCondition(UDMSSequence* iSeq) const
 
 	for (auto Condition : Conditions)
 	{
-		rv = bIsAnd ? rv && Condition->CheckCondition(iSeq) : rv || Condition->CheckCondition(iSeq);
+		rv = bIsAnd ? rv && Condition->CheckCondition(Caller,iSeq) : rv || Condition->CheckCondition(Caller,iSeq);
 	}
 
 	return rv;

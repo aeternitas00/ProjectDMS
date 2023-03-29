@@ -23,7 +23,7 @@
 class UDMSDecisionWidget;
 class UDMSDataObjectSet;
 class UDMSSequence;
-
+class UDMSConditionCombiner_;
 
 /**
  * 	========================================
@@ -111,8 +111,7 @@ class PROJECTDMSGAME_API UDMSEffectNode : public UObject
 
 public:
 	UDMSEffectNode(): bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) {
-		Conditions = CreateDefaultSubobject<UDMSConditionContainer>("Conditions");
-		//AdvanceConditions = CreateDefaultSubobject<UDMSConditionContainer>("AdvanceConditions");
+		__Conditions = CreateDefaultSubobject<UDMSConditionCombiner_>("Conditions_");
 	}
 	
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
@@ -122,18 +121,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	FGameplayTag NodeTag;
 
-	//bool IsContainKeyword(const FName& iKeyword);
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	//FGameplayTagContainer NodeTags;
 
 	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
 
 //=================== Conditions and timing that check before activate main effect ===================//
 
 	// Effect's activatable timing.
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
-	//FDMSConditionContainer Conditions;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
-	UDMSConditionContainer* Conditions;
+	UDMSConditionCombiner_* __Conditions;
 
 	// Has a choice about triggering the effect? == true : Forced trigger when meet the conditions. / false : Can choose Y/N of trigger.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)

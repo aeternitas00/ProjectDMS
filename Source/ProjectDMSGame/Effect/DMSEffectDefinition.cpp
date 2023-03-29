@@ -4,7 +4,7 @@
 #include "Effect/DMSEffectDefinition.h"
 #include "Selector/DMSDecisionWidget.h"
 #include "Sequence/DMSSequence.h"
-
+#include "Conditions/DMSConditionObject_.h"
 
 //TArray<UDMSEffectNode*> UDMSEffectSet::SearchEffects(UDMSSequence* iSeq)
 //{ 

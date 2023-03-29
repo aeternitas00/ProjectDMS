@@ -5,11 +5,12 @@
 #include "Card/DMSCardDefinition.h"
 #include "Card/DMSCardContainerComponent.h"
 #include "GameModes/DMSGameMode.h"
-
+#include "Library/DMSCoreFunctionLibrary.h"
 #include "Effect/DMSEffectHandler.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "Effect/DMSEffectorInterface.h"
-
+#include "EffectSet/DMSEffect_ActivateEffect.h"
+#include "EffectSet/DMSEffectNode_PlayCard.h"
 
 // Sets default values
 ADMSCardBase::ADMSCardBase()
@@ -56,7 +57,34 @@ void ADMSCardBase::InitializeCard_Implementation(const UDMSCardDefinition* iCard
 	SetCardDefinition(iCardDefinition);
 
 	// ¿ì¸®²¨¸¸?
-	EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Effect"]);
+	if (CardDefinition->CardEffectSets.Contains("Effect"))
+		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Effect"], "Effect", [](UDMSEffectNodeWrapper* EffectWrapper,const int& idx)->UDMSEffectNode* {
+			auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+			//UDMSEffectNode* Effect = EffectWrapper->GetEffectNode();
+			UDMSEffectNode* Node = NewObject<UDMSEffectNode>();
+			UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>(Node);
+			//UDMSDataObjectSet* DataSet = NewObject<UDMSDataObjectSet>(this);
+
+			AEffect->EffectIdx = idx;
+			AEffect->EffectSetName = "Effect";
+			// NODE INITIALIZER?
+			Node->EffectDefinitions.Add(AEffect);
+
+			return Node;
+		});
+
+	if (CardDefinition->CardEffectSets.Contains("Cost"))
+		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Cost"],"Cost", [this](UDMSEffectNodeWrapper* EffectWrapper, const int& idx)->UDMSEffectNode* {
+			auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+			//UDMSEffectNode* OriginalEffect = EffectWrapper->GetEffectNode();
+			UDMSEffectNode_PlayCard* Node = NewObject<UDMSEffectNode_PlayCard>();
+			UDMSEffect_ActivateEffect* AEffect = Cast<UDMSEffect_ActivateEffect>(Node->EffectDefinitions[0]);
+
+			AEffect->EffectIdx = idx;
+			AEffect->EffectSetName = "Cost";
+
+			return Node;
+		});
 }
 
 void ADMSCardBase::AttachEffectInstance(UDMSEffectInstance* EI)

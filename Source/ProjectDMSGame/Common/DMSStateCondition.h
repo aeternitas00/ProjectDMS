@@ -40,7 +40,7 @@ public:
 	TArray<UDMSStateCheckerDefinition*> StateConditions;
 
 
-	virtual bool CheckCondition(UDMSSequence* Seq) const;
+	virtual bool CheckCondition(UObject* Caller, UDMSSequence* Seq) const;
 };
 
 UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Use BP Condition"))
@@ -51,7 +51,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Condition Class"))
 	TSubclassOf<UDMSStateCondition> Condition;
 
-	virtual bool CheckCondition(UDMSSequence* iSeq) const override;
+	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const override;
 };
 
 
@@ -73,7 +73,7 @@ public:
 	bool bEmptyStateIsTrue;
 
 
-	virtual bool CheckCondition(UDMSSequence* iSeq) const override;
+	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const override;
 };
 
 

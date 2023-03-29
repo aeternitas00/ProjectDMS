@@ -5,9 +5,9 @@
 
 
 template<typename FuncCompleted, typename FuncCanceled>
-void UDMSConfirmWidgetBase::SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled, UDMSSequence* iOwnerSeq) {
+void UDMSConfirmWidgetBase::SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled/*, UDMSSequence* iOwnerSeq*/) {
 
-	OwnerSeq = iOwnerSeq;
+	//OwnerSeq = iOwnerSeq;
 	//if (!SetupWidget()){return false;};
 
 	OnSelectCompleted.Unbind();

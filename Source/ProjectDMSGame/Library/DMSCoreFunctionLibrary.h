@@ -20,7 +20,7 @@ class ADMSGameMode;
 class UDMSSeqManager;
 class UDMSNotifyManager;
 class UDMSEffectHandler;
-
+class UDMSConditionObjectBase;
 /**
  * 
  */
@@ -48,4 +48,7 @@ public:
 	// Card Library?
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static bool CheckCardIsCommitable(ADMSCardBase* iCard);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	static bool CheckCondition(UDMSConditionObjectBase* Condition, UObject* Caller, UDMSSequence* iSeq);
 };

@@ -49,8 +49,9 @@ public:
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
 	virtual AActor* GetOwningPlayer() { return GetOwner()->GetOwner(); }
-	//virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
-	//virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
-	//virtual void MakeAttribute(const FName& AttributeName, const float& DefValue =0.0f);
-	void SetupOwnEffect(UDMSEffectSet* EffectSet);
+
+	
+	// concepts????
+	template <typename FuncNodeInitializer>
+	void SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName, FuncNodeInitializer&& NodeInitializer = [](UDMSEffectNodeWrapper* iNode, const int& idx)->UDMSEffectNode* {return iNode->GetEffectNode();});
 };

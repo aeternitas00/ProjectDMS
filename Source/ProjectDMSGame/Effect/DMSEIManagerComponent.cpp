@@ -87,7 +87,8 @@ UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FName& iSetName)
 //	Owner->MakeAttribute(AttributeName, DefValue);
 //}
 
-void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
+template <typename FuncNodeInitializer>	
+void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName, FuncNodeInitializer&& NodeInitializer )
 {
 	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
 	auto EffectNodes = EffectSet->EffectNodes;
@@ -97,36 +98,17 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet)
 	uint8 idx = 0;
 	for (auto EffectWrapper : EffectNodes)
 	{
-		// Inefficient way??
-		UDMSEffectNode* Effect = EffectWrapper->GetEffectNode();
-		UDMSEffectNode* Node = NewObject<UDMSEffectNode>(this, Effect->GetClass());
-		UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>(Node);
-		UDMSDataObjectSet* DataSet = NewObject<UDMSDataObjectSet>(this);
-
-		AEffect->EffectIdx = idx++;
-
-		// NODE INITIALIZER?
-		Node->EffectDefinitions.Add(AEffect);
-		Node->Conditions = DuplicateObject(Effect->Conditions,Node);
+		UDMSEffectNode* Node = NodeInitializer(EffectWrapper,idx++);
+		auto Effect = EffectWrapper->GetEffectNode();
+		Node->Rename(nullptr,this);
+		Node->__Conditions = DuplicateObject(Effect->__Conditions, Node);
 		Node->bIsChainableEffect = false;
 		Node->bForced = Effect->bForced;
 		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Self;
-		//Node->AdvanceConditions = DuplicateObject(Effect->AdvanceConditions, Node);
-		Node->ChildEffect = Effect->ChildEffect;
-		Node->DecisionWidgetClasses = Effect->DecisionWidgetClasses;
-
-		// 왜이렇게했더라
-		// 
-		//Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Data;
-		//TArray<TScriptInterface<IDMSEffectorInterface>> PresetTarget;
-		//PresetTarget.Add(TScriptInterface<IDMSEffectorInterface>(this));
-
-		//DataSet->SetData("PresetTarget", PresetTarget, true);
 
 		AActor* CardOwner = const_cast<AActor*>(GetOwner()->GetNetOwner());
-		//DMS_LOG_SCREEN(TEXT("%s : Card Owner"), *CardOwner->GetName());
 
-		auto EIs = EH->CreateEffectInstance(GetOwner(), CardOwner, Node, DataSet);
+		auto EIs = EH->CreateEffectInstance(GetOwner(), CardOwner, Node);
 		EIs[0]->ChangeEIState(EDMSEIState::EIS_Default);
 		EIs[0]->Rename(nullptr, GetOwner());
 		OwnEffectInstances.Add(EIs[0]);

@@ -59,7 +59,7 @@ public:
 	void CancelSelect();
 
 	template<typename FuncCompleted, typename FuncCanceled > // 나중에 universal reference 읽어보기
-	void SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled, UDMSSequence* iOwnerSeq);
+	void SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled/*, UDMSSequence* iOwnerSeq*/);
 
 	// Do something with "OwnerSeq"
 	// Return "Setup widget was Successful"

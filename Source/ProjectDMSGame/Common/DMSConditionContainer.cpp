@@ -36,7 +36,7 @@
 bool UDMSConditionContainer::CheckCondition(UObject* Caller, UDMSSequence* iSeq)
 {
 	bool Timing = TimingConditions->CheckCondition(Caller, iSeq);
-	bool State = StateConditions->CheckCondition(iSeq);
+	bool State = StateConditions->CheckCondition(Caller, iSeq);
 	
 	return (Timing && State);
 }

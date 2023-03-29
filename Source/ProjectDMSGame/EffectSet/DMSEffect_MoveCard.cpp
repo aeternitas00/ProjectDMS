@@ -7,12 +7,13 @@
 #include "Card/DMSCardManagerComponent.h"
 #include "Card/DMSCardContainerComponent.h"
 #include "Card/DMSCardBase.h"
+#include "Sequence/DMSSequence.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_MoveCard, "Effect.MoveCard");
 
 UDMSEffect_MoveCard::UDMSEffect_MoveCard() 
 { 
-
+	EffectTag = TAG_DMS_Effect_MoveCard;
 }
 
 void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)

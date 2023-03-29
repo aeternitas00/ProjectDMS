@@ -6,6 +6,7 @@
 #include "EffectSet/TypeBehavior/DMSEffectNode_TypeBehavior.h"
 #include "DMSEffectNode_Type_Skill.generated.h"
 
+//UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_EffectKeyword_Play_Card_)
 
 /**
  * 

@@ -17,6 +17,9 @@ void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s [%d] : BROADCASTING  ===="), *NotifyData->GetName(), NotifyData->Progress);
 
+	// Check non relative first
+
+	// Check all relatives
 	TMultiMap<TScriptInterface<IDMSEffectorInterface>,UDMSEffectInstance*> ResponsedObjects;
 	for (auto Object : NotifyObjects)
 	{
@@ -39,11 +42,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 	if (ResponsedObjects.Num() == 0) {
 
 		DMS_LOG_SIMPLE(TEXT("==== %s [%d] : NO Respondent / EXE OnResponseCompleted ===="), *CurrentSequence->GetName(), CurrentSequence->Progress);
-
-		auto temp = std::move(OnResponseCompleted[CurrentSequence]);
-		OnResponseCompleted.Remove(CurrentSequence);
-		temp.ExecuteIfBound();
-		temp.Unbind();
+		CallResponseCompleted(CurrentSequence);
 		return;
 	}
 	// PC Getter?
@@ -54,6 +53,14 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 	UDMSNotifyRespondentSelector* InstancedWidget = CreateWidget<UDMSNotifyRespondentSelector>(LocalPC, ResponsedObjectSelector);
 
 	InstancedWidget->ResponsedObjects = ResponsedObjects;
+	InstancedWidget->OwnerSeq = CurrentSequence;
+
+	if (!InstancedWidget->SetupWidget()) {
+		//Something goes wrong
+		CallResponseCompleted(CurrentSequence);
+		return;
+	}
+
 	InstancedWidget->SetupWidgetDelegates([InstancedWidget, NotifyManager=this](UDMSDataObjectSet* Data) {
 		// [ OK Bttn ]
 		TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
@@ -90,18 +97,25 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 			// [ X Bttn ]
 
 			// Player choose to not run EI
-			OnResponseCompleted[CurrentSequence].ExecuteIfBound();
-			OnResponseCompleted[CurrentSequence].Unbind();
-			OnResponseCompleted.Remove(CurrentSequence);
+			CallResponseCompleted(CurrentSequence);
 			//InstancedWidget->OwnerSeq->OnSequenceFinish();
 			InstancedWidget->CloseSelector();
 
-		}, CurrentSequence);
+		}
+	);
 
 	ResponsedObjects.GetKeys(InstancedWidget->Respondents);
 	//InstancedWidget->OutTag=TAG_DMS_System_NotifyRespondent;
+	
 	InstancedWidget->PopupSelector();
-	if (!InstancedWidget->SetupWidget()) InstancedWidget->CloseSelector();
+}
+
+void UDMSNotifyManager::CallResponseCompleted(UDMSSequence* CurrentSequence)
+{
+	auto temp = std::move(OnResponseCompleted[CurrentSequence]);
+	OnResponseCompleted.Remove(CurrentSequence);
+	temp.ExecuteIfBound();
+	temp.Unbind();
 }
 
 UDMSDataObjectSet* UDMSNotifyRespondentSelector::MakeOutputDatas(UObject* Respondent, UObject* EffectInstance)
@@ -111,6 +125,7 @@ UDMSDataObjectSet* UDMSNotifyRespondentSelector::MakeOutputDatas(UObject* Respon
 	NewSet->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
 	return NewSet;
 }
+
 
 void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<UDMSEffectInstance*>& outArray)
 {

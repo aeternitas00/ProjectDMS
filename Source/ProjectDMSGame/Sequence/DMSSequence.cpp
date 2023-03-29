@@ -6,12 +6,6 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
 
-
-//void UDMSSequence::InitializeWidgetQueue()
-//{
-//	SelectorQueue.Initialize(this);
-//}
-
 template<typename FuncFinished, typename FuncCanceled >
 void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
 {
@@ -22,16 +16,16 @@ void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCancel
 }
 
 template<typename FuncFinished>
-void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& OnSequenceFinished)
+void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
 
-	OnSequenceFinished_Native.AddLambda(OnSequenceFinished);
+	if (OnSequenceFinished.IsBound()) {
+		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
+	}
+	OnSequenceFinished.AddLambda(iOnSequenceFinished);
+
 }
-
-//void UDMSSequence::AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
-
-//FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
 
 void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq) 
 {
@@ -39,20 +33,20 @@ void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq)
 	ChildSequence = iSeq;
 }
 
-void UDMSSequence::InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner)
+bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner)
 { 
 	for(auto Widget : iWidgets) Widget->SetOwningPlayer(WidgetOwner);
 	SelectorQueue.SelectorQueue.Empty();
 	SelectorQueue.SelectorQueue.Append(iWidgets); 
-	SelectorQueue.Initialize(this); 
+	bool rv= SelectorQueue.SetupQueue(this);
+	return rv;
 }
 
 void UDMSSequence::OnSequenceFinish()
 {
-	OnSequenceFinished.Broadcast();	
-	OnSequenceFinished_Native.Broadcast();
-
+	auto temp = std::move(OnSequenceFinished);
+	OnSequenceFinished = FOnSequenceFinished();
+	temp.Broadcast();
 	// Cleanup 
-	OnSequenceFinished.Clear();
-	OnSequenceFinished_Native.Clear();
+	
 }

@@ -9,6 +9,7 @@
 #include "Effect/DMSEffectHandler.h"
 #include "Card/DMSCardBase.h"
 #include "Card/DMSCardDefinition.h"
+#include "Conditions/DMSConditionObject_.h"
 
 ADMSGameMode* UDMSCoreFunctionLibrary::GetDMSGameMode()
 {
@@ -61,4 +62,9 @@ bool UDMSCoreFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FGamep
 bool UDMSCoreFunctionLibrary::CheckCardIsCommitable(ADMSCardBase* iCard)
 {
 	return iCard->GetCardDefinition()->CardEffectSets.Contains("Commit");
+}
+
+bool UDMSCoreFunctionLibrary::CheckCondition(UDMSConditionObjectBase* Condition, UObject* Caller, UDMSSequence* iSeq)
+{
+	return Condition->CheckCondition(Caller,iSeq);
 }

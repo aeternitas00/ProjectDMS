@@ -79,6 +79,8 @@ public:
 
 	void CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects);
 
+	void CallResponseCompleted(UDMSSequence* CurrentSequence);
+
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	TArray<TScriptInterface<IDMSEffectorInterface>> GetNotifyObjects(){return NotifyObjects;}
 

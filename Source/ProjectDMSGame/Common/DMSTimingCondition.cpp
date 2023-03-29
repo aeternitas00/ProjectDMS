@@ -2,35 +2,8 @@
 #include "Common/DMSCommons.h"
 #include "Common/DMSObjectSelectionComparer.h"
 #include "Effect/DMSEffectInstance.h"
+#include "Effect/DMSEffectDefinition.h"
 #include "Sequence/DMSSequence.h"
-
-bool UDMSNotifyCheckerDefinition_Numeric::Check(UObject* Caller, TArray<UObject*> CompareTarget)
-{
-	//if (iSeq->EIDatas->GetData(DataName)->TypeCheck<float>()) return false;
-
-	//float Value=iSeq->EIDatas->GetData(DataName)->Get<float>();
-	//return bIsRanged ? (Value>=MinValue && Value <= MaxValue): Value==ExactValue;
-
-	return bAllowNull;
-}
-
-//bool UDMSTimingCondition::isChildOf(const UDMSTimingCondition& i) const
-//{
-//	TArray<FString> OrgC = {}, iC = {};
-//	bool rv = true;
-//
-//	if (Timing != i.Timing) return false;
-//
-//	EffectKeyword.ToString().ParseIntoArray(OrgC, TEXT("."));
-//	i.EffectKeyword.ToString().ParseIntoArray(iC, TEXT("."));
-//
-//	for (char n = 0; n < iC.Num(); n++)
-//	{
-//		if (OrgC[n] != iC[n]) { rv = false; break; }
-//	}
-//
-//	return rv;
-//}
 
 
 bool UDMSTimingCondition::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
@@ -47,7 +20,7 @@ bool UDMSTimingCondition::CheckCondition(UObject* Caller, UDMSSequence* iSeq) co
 	//	&& iSeq->OriginalEffectNode->IsContainKeyword(EffectKeyword) 
 	//	&& CheckerRs
 	//;
-	return iSeq->Progress == Timing
+	return (iSeq->Progress == Timing || Timing == EDMSTimingFlag::T_Null)
 		&& iSeq->OriginalEffectNode->ExecuteTagQuery(EffectTagQuery)
 		&& CheckerRs
 	;
@@ -82,13 +55,6 @@ TArray<UObject*> UDMSTimingCondition::GetCompareTarget(UObject* Caller, UDMSSequ
 	return Rv;
 }
 
-// UFUNCTION + _Implements
-//
-bool UDMSNotifyCheckerDefinition_ObjectCompareBase::Check(UObject* Caller, TArray<UObject*> CompareTarget)
-{ 
-	return CompareTarget.Num() == 0 ? bAllowNull : SelectionRules.CompareObject(Caller, CompareTarget);
-}
-
 bool UDMSTimingClassWrapper::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
 	return Condition.GetDefaultObject()->CheckCondition(Caller, iSeq);
@@ -106,4 +72,9 @@ bool UDMSTimingCombiner::CheckCondition(UObject* Caller, UDMSSequence* iSeq) con
 	}
 
 	return rv;
+}
+
+bool UDMSNotifyCheckerDefinition_ObjectCompareBase::Check_Implementation(UObject* Caller, const TArray<UObject*>& CompareTarget)
+{
+	return CompareTarget.Num() == 0 ? bAllowNull : SelectionRules.CompareObject(Caller, CompareTarget);
 }

@@ -103,6 +103,6 @@ public:
 	FString ComparersCombinator;
 
 	//UPROPERTY 노출 가능한 구조?
-	bool CompareObject(UObject* Caller, TArray<UObject*> Targets);
+	bool CompareObject(UObject* Caller, const TArray<UObject*>& Targets);
 	bool CompareObject(UObject* iObj) { return false; }
 };

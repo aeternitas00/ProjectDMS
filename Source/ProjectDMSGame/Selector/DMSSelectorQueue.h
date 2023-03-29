@@ -38,7 +38,7 @@ public:
 	int8 CurrentIndex;
 
 	// Chained Delegates..
-	void Initialize(UDMSSequence* OwnerSeq);
+	__declspec(noinline) bool SetupQueue(UDMSSequence* OwnerSeq) ;
 	FORCEINLINE void AddSelector(UDMSConfirmWidgetBase* iWidget) { SelectorQueue.Add(iWidget); }
 	
 	template<typename FuncCompleted, typename FuncCanceled >

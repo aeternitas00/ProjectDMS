@@ -102,7 +102,7 @@ public:
 
 	//FORCEINLINE void SetActive(const bool& iAct) { bIsActive = iAct;}
 	//FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
-	void InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner);
+	bool SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner);
 
 	template<typename FuncFinished, typename FuncCanceled >
 	void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
@@ -110,16 +110,14 @@ public:
 	__declspec(noinline) void OnSequenceFinish();
 
 	DECLARE_MULTICAST_DELEGATE(FOnSequenceFinished);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceFinished_Dynamic);
-	//DECLARE_DELEGATE_OneParam(FOnSequenceFinished, UDMSSequence*);
+	//DECLARE_DYNAMIC_DELEGATE(FOnSequenceFinished_Dynamic);
 
 protected:
-	FOnSequenceFinished OnSequenceFinished_Native;
+	FOnSequenceFinished OnSequenceFinished;
 public:
 	template<typename FuncFinished>
 	void AddToOnSequenceFinished_Native(FuncFinished&& OnSequenceFinished);
 
-	//UPROPERTY(BlueprintReadWrite)
-	FOnSequenceFinished_Dynamic OnSequenceFinished;
+
 };
 

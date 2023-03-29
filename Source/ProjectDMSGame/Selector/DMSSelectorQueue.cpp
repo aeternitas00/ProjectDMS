@@ -6,10 +6,17 @@
 #include "DMSSelectorQueue.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
 
-void FDMSSelectorQueue::Initialize(UDMSSequence* OwnerSeq)
+bool FDMSSelectorQueue::SetupQueue(UDMSSequence* OwnerSeq)
 {
-	CurrentIndex = -1;
 	Owner = OwnerSeq;
+	if (SelectorQueue.Num()==0) return true;
+	CurrentIndex = -1;
+
+	for (auto Selector : SelectorQueue){
+		Selector->OwnerSeq= Owner;
+		if (!Selector->SetupWidget() ) 
+			return false;
+	}
 
 	for (int32 i = SelectorQueue.Num() - 1; i >= 0; --i) {
 
@@ -25,9 +32,10 @@ void FDMSSelectorQueue::Initialize(UDMSSequence* OwnerSeq)
 			for (auto sWidget : SelectorQueue) { sWidget->CloseSelector(); }
 			OnSelectorsCanceled.Execute(Owner);
 			//...
-		},	Owner);
+		});
 
 	}
+	return true;
 }
 
 template<typename FuncCompleted, typename FuncCanceled >
@@ -43,14 +51,14 @@ void FDMSSelectorQueue::RunSelectors(FuncCompleted&& iOnSelectorsCompleted, Func
 void FDMSSelectorQueue::RunNextSelector()
 {
 	int8 LocalIdx = ++CurrentIndex;
-	if (SelectorQueue.Num() == LocalIdx) {
+	if (SelectorQueue.Num() <= LocalIdx) {
 		OnSelectorsCompleted.Execute(Owner);
 		return;
 	}
 	SelectorQueue[LocalIdx]->PopupSelector();
-	if (!SelectorQueue[LocalIdx]->SetupWidget()) {
-		SelectorQueue[LocalIdx]->CloseSelector();
-		RunNextSelector();
-	}
+	//if (!SelectorQueue[LocalIdx]->SetupWidget()) {
+	//	SelectorQueue[LocalIdx]->CloseSelector();
+	//	RunNextSelector();
+	//}
 
 }

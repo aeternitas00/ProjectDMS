@@ -9,6 +9,7 @@
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectorInterface.h"
+#include "Conditions/DMSConditionObject_.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Selector/DMSDecisionWidget.h"
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -50,9 +51,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->Targets = Targets;
 	if (ParentSequence == nullptr) {
 		if (RootSequence == nullptr) RootSequence = Sequence;
-		else if (CurrentSequence != nullptr){
-			CurrentSequence->AttachChildSequence(Sequence);
-		}
+		else if (CurrentSequence != nullptr)CurrentSequence->AttachChildSequence(Sequence);
 	}
 	else {
 		ParentSequence->AttachChildSequence(Sequence);
@@ -82,7 +81,12 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 	//if (!iSeq->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
 	//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
 	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets()));
-	iSeq->InitializeWidgetQueue(Widgets, WidgetOwner);
+	if (!iSeq->SetupWidgetQueue(Widgets, WidgetOwner))
+	{
+		DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
+		CompleteSequence(iSeq);
+		return;
+	}
 
 	iSeq->RunWidgetQueue(
 	[&, WidgetOwner](UDMSSequence* pSequence) {
@@ -93,7 +97,13 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 
 		// ====== Effect Data Selection Step ====== //
 		// ( ex. User set value of effect's damage amount , ... )
-		pSequence->InitializeWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors()), WidgetOwner);
+		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors()), WidgetOwner))
+		{
+			DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
+			CompleteSequence(pSequence);
+			return;
+		}
+
 		pSequence->RunWidgetQueue(
 		[this](UDMSSequence* pSequenceN) {
 			// Selection completed
@@ -128,6 +138,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 }
 
 int UDMSSeqManager::GetDepth(UDMSSequence* iSeq) {
+	if (iSeq == nullptr) return -1;
 	if (iSeq == RootSequence) return 0;
 	return GetDepth(iSeq->ParentSequence)+1;
 }
@@ -172,7 +183,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 			
 			// Check advance condition for child effect.
 			if (DuringSequence->OriginalEffectNode->ChildEffect != nullptr &&
-				DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(DuringSequence->SourceObject, DuringSequence))
+				DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->__Conditions->CheckCondition(DuringSequence->SourceObject, DuringSequence))
 			{
 				// Proceed to run child effect sequence.
 				DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Advance"), *DuringSequence->SourceObject->GetName());
@@ -246,7 +257,15 @@ void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Complete Sequence ===="), *Sequence->GetName());
 	Sequence->OnSequenceFinish();
-	CurrentSequence = Sequence->ParentSequence;
+
+	// 이렇게 분기 안걸어도 되는데 혹시 몰라서 일단.
+	if (CurrentSequence == RootSequence) {
+		CurrentSequence = nullptr;
+		RootSequence = nullptr;
+	}
+	else
+		CurrentSequence = Sequence->ParentSequence;
+
 }
 
 
@@ -254,6 +273,5 @@ void UDMSSeqManager::CleanupSequenceTree()
 {
 	//...
 	RootSequence = nullptr;
-	CurrentSequence=nullptr;
 	//...
 }

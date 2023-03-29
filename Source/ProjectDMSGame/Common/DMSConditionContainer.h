@@ -45,5 +45,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Condition)
 	UDMSStateCombiner* StateConditions;
 
+	UFUNCTION(BlueprintCallable)
 	bool CheckCondition(UObject* Caller, UDMSSequence* iSeq);
 };

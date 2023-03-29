@@ -7,6 +7,8 @@
 #include "Sequence/DMSSeqManager.h"
 #include "Sequence/DMSSequence.h"
 
+#include "Conditions/DMSConditionObject_.h"
+
 #include "GameModes/DMSGameMode.h"
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 #include "Card/DMSCardBase.h"
@@ -72,7 +74,8 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 		return rv;
 	}
 
-	if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
+	if (EffectNode->__Conditions->CheckCondition(SourceTweak, Seq))
+	//if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{
 		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetOuter()->GetOuter() !=nullptr ? *GetOuter()->GetOuter()->GetName():TEXT("NullOuter"), *GetName());
 		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());

@@ -17,7 +17,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "DMSConditionObject.generated.h"
 
-class UDMSNotifyCheckerDefinition;
 
 /**
  *	========================================
@@ -33,6 +32,9 @@ class PROJECTDMSGAME_API UDMSConditionObject : public UObject
 
 public:
 	UDMSConditionObject(){}
+	
+	//UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Is will be checked for every notified object"))
+	//bool bIsRelative;
 
 	virtual bool CheckCondition(UDMSSequence* iSeq) const {return true;}
 	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const { return true; }
@@ -74,3 +76,4 @@ public:
 	virtual bool CheckCondition(UDMSSequence* iSeq) const;
 	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
 };
+

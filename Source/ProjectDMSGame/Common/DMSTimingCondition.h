@@ -108,9 +108,6 @@ public:
 };
 
 
-
-
-
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, EditInlineNew, meta=(DisplayName="Create Custom Notify Checker"))
 class UDMSNotifyCheckerDefinition : public UObject
 {
@@ -125,25 +122,11 @@ public:
 	EDMSObjectSelectorFlag CompareTargetFlag;
 
 public:
-	virtual bool Check(UObject* Caller, TArray<UObject*> CompareTarget) { return bAllowNull; }
-};
 
-UCLASS(meta = (DisplayName = "Notify Checker : Numeric Check Base"))
-class UDMSNotifyCheckerDefinition_Numeric : public UDMSNotifyCheckerDefinition
-{
-	GENERATED_BODY()
+	UFUNCTION(BlueprintNativeEvent)
+	bool Check(UObject* Caller, const TArray<UObject*>& CompareTarget);
 
-public:
-	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	FName DataName;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	EDMSComparisonOperator Comparer;
-
-public:
-	// UFUNCTION + _Implements
-	virtual bool Check(UObject* Caller, TArray<UObject*> CompareTarget);
+	virtual bool Check_Implementation(UObject* Caller, const TArray<UObject*>& CompareTarget) { return bAllowNull; }
 };
 
 UCLASS(/*Abstract, */meta = (DisplayName = "Notify Checker : Object Check Base"))
@@ -157,5 +140,5 @@ public:
 
 public:
 	// UFUNCTION + _Implements
-	virtual bool Check(UObject* Caller, TArray<UObject*> CompareTarget);
+	virtual bool Check_Implementation(UObject* Caller, const TArray<UObject*>& CompareTarget);
 };
