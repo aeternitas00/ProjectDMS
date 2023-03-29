@@ -2,7 +2,7 @@
 
 
 #include "EffectSet/TypeBehavior/DMSEffectNode_Type_Skill.h"
-#include "Conditions/DMSConditionObject_.h"
+#include "Conditions/DMSConditionObject.h"
 #include "Conditions/DMSSequenceCondition.h"
 #include "Conditions/ObjectConditions/DMSObjectCompareCondition.h"
 #include "EffectSet/DMSEffectNode_PlayCard.h"
@@ -19,15 +19,15 @@ UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill()
 	TC->Timing=EDMSTimingFlag::T_After;
 	TC->EffectTagQuery = FGameplayTagQuery::MakeQuery_MatchTag(TAG_DMS_EffectKeyword_PlayCard);
 
-	__Conditions->Conditions.Add(TC);
+	Conditions->Conditions.Add(TC);
 
 	UDMSObjectCompareCondition* OC = CreateDefaultSubobject<UDMSObjectCompareCondition>("OC");
-	UDMSObjectSelectionComparer_IsSelf_* IsSelf = CreateDefaultSubobject<UDMSObjectSelectionComparer_IsSelf_>("IsSelf");
+	UDMSObjectComparer_IsTarget* IsSelf = CreateDefaultSubobject<UDMSObjectComparer_IsTarget>("IsSelf");
 	OC->bAllObjectMustPassed=true;
 	OC->TargetFlag = EDMSObjectSelectorFlag::OSF_Target;
 	OC->Comparer= IsSelf;
 
-	__Conditions->Conditions.Add(OC);
+	Conditions->Conditions.Add(OC);
 
 
 	//Conditions->TimingConditions = CreateDefaultSubobject<UDMSTimingCombiner>("TimingConditions");

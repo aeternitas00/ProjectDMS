@@ -17,8 +17,6 @@ class PROJECTDMSGAME_API UDMSEffectNode_Type_Skill : public UDMSEffectNode_TypeB
 	GENERATED_BODY()
 	
 private:
-	UPROPERTY()
-	UDMSNotifyCheckerDefinition_ObjectCompareBase* CheckerDefinition;
 
 public:
 	UDMSEffectNode_Type_Skill();

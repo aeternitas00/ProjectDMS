@@ -9,7 +9,7 @@
 #include "Effect/DMSEffectHandler.h"
 #include "Card/DMSCardBase.h"
 #include "Card/DMSCardDefinition.h"
-#include "Conditions/DMSConditionObject_.h"
+#include "Conditions/DMSConditionObject.h"
 
 ADMSGameMode* UDMSCoreFunctionLibrary::GetDMSGameMode()
 {

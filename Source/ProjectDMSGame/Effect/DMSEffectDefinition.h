@@ -15,7 +15,6 @@
 #include "ProjectDMS.h"
 #include "UObject/NoExportTypes.h"
 #include "Sequence/DMSSeqManager.h"
-#include "Common/DMSConditionContainer.h"
 #include "Common/DMSCommonDelegates.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
@@ -23,7 +22,7 @@
 class UDMSDecisionWidget;
 class UDMSDataObjectSet;
 class UDMSSequence;
-class UDMSConditionCombiner_;
+class UDMSConditionCombiner;
 
 /**
  * 	========================================
@@ -111,7 +110,7 @@ class PROJECTDMSGAME_API UDMSEffectNode : public UObject
 
 public:
 	UDMSEffectNode(): bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) {
-		__Conditions = CreateDefaultSubobject<UDMSConditionCombiner_>("Conditions_");
+		Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 	}
 	
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
@@ -131,7 +130,7 @@ public:
 	// Effect's activatable timing.
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
-	UDMSConditionCombiner_* __Conditions;
+	UDMSConditionCombiner* Conditions;
 
 	// Has a choice about triggering the effect? == true : Forced trigger when meet the conditions. / false : Can choose Y/N of trigger.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)

@@ -101,7 +101,7 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FName
 		UDMSEffectNode* Node = NodeInitializer(EffectWrapper,idx++);
 		auto Effect = EffectWrapper->GetEffectNode();
 		Node->Rename(nullptr,this);
-		Node->__Conditions = DuplicateObject(Effect->__Conditions, Node);
+		Node->Conditions = DuplicateObject(Effect->Conditions, Node);
 		Node->bIsChainableEffect = false;
 		Node->bForced = Effect->bForced;
 		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Self;

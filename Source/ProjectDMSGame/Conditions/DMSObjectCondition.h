@@ -10,7 +10,7 @@
  * =========================================
  */
 
-#include "Conditions/DMSConditionObject_.h"
+#include "Conditions/DMSConditionObject.h"
 #include "Common/DMSCommons.h"
 #include "DMSObjectCondition.generated.h"
 
@@ -24,7 +24,7 @@ class UDMSSequence;
  *	========================================
  */
 UCLASS(Abstract, Blueprintable, BlueprintType, Const,EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "State Condition Base"))
-class PROJECTDMSGAME_API UDMSObjectConditionBase : public UDMSConditionObject_
+class PROJECTDMSGAME_API UDMSObjectConditionBase : public UDMSConditionObject
 {
 	GENERATED_BODY()
 

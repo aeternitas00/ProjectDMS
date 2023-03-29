@@ -4,7 +4,7 @@
 #include "EffectSet/DMSEffectNode_PlayCard.h"
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 #include "EffectSet/DMSEffect_MoveCard.h"
-#include "Conditions/DMSConditionObject_.h"
+#include "Conditions/DMSConditionObject.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_EffectKeyword_Play_Card, "EffectKeyword.Play.Card");
 
@@ -28,7 +28,7 @@ UDMSEffectNode_PlayCard::UDMSEffectNode_PlayCard():UDMSEffectNode()
 	MoveCardNode->bIsChainableEffect = false;
 
 	MoveCardNode->EffectDefinitions.Add(MoveCardEffect);
-	MoveCardNode->__Conditions->bEmptyIsTrue=true;
+	MoveCardNode->Conditions->bEmptyIsTrue=true;
 	ChildWrapper->EffectNode = MoveCardNode;
 
 	ChildEffect = ChildWrapper;

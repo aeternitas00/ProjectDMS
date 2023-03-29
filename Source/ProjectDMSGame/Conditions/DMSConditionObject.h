@@ -15,7 +15,7 @@
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "DMSConditionObject_.generated.h"
+#include "DMSConditionObject.generated.h"
 
 /**
  *	========================================
@@ -39,12 +39,12 @@ public:
 };
 
 UCLASS(BlueprintType, ClassGroup = (Condition))
-class PROJECTDMSGAME_API UDMSConditionObject_ : public UDMSConditionObjectBase
+class PROJECTDMSGAME_API UDMSConditionObject : public UDMSConditionObjectBase
 {
 	GENERATED_BODY()
 
 public:
-	UDMSConditionObject_() :bIsRelative(false), bNullIsTrue(false) {}
+	UDMSConditionObject() :bIsRelative(false), bNullIsTrue(false) {}
 
 	// For test now
 	//UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Is will be checked for every notified object"))
@@ -58,7 +58,7 @@ public:
 };
 
 UCLASS(BlueprintType, ClassGroup = (Condition), meta = (DisplayName = "Use BP Condition"))
-class PROJECTDMSGAME_API UDMSConditionClassWrapper_ : public UDMSConditionObjectBase
+class PROJECTDMSGAME_API UDMSConditionClassWrapper : public UDMSConditionObjectBase
 {
 	GENERATED_BODY()
 public:
@@ -71,12 +71,12 @@ public:
 
 
 UCLASS(Blueprintable,BlueprintType, ClassGroup = (Condition))
-class PROJECTDMSGAME_API UDMSConditionCombiner_ : public UDMSConditionObjectBase
+class PROJECTDMSGAME_API UDMSConditionCombiner : public UDMSConditionObjectBase
 {
 	GENERATED_BODY()
 
 public:
-	UDMSConditionCombiner_() :bIsAnd(true), bEmptyIsTrue(false){}
+	UDMSConditionCombiner() :bIsAnd(true), bEmptyIsTrue(false){}
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
 	TArray<UDMSConditionObjectBase*> Conditions;

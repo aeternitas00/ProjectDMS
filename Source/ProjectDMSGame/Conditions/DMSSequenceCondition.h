@@ -12,7 +12,7 @@
  * =========================================
  */
 
-#include "Conditions/DMSConditionObject_.h"
+#include "Conditions/DMSConditionObject.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/DataAsset.h"
 #include "DMSSequenceCondition.generated.h"
@@ -32,7 +32,7 @@
   */
 
 UCLASS(Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "Timing Condition Base"))
-class PROJECTDMSGAME_API UDMSSeqTimingCondition : public UDMSConditionObject_
+class PROJECTDMSGAME_API UDMSSeqTimingCondition : public UDMSConditionObject
 {
 	GENERATED_BODY()
 

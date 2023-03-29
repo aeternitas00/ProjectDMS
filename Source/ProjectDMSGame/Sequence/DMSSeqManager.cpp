@@ -9,7 +9,7 @@
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectorInterface.h"
-#include "Conditions/DMSConditionObject_.h"
+#include "Conditions/DMSConditionObject.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Selector/DMSDecisionWidget.h"
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -183,7 +183,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 			
 			// Check advance condition for child effect.
 			if (DuringSequence->OriginalEffectNode->ChildEffect != nullptr &&
-				DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->__Conditions->CheckCondition(DuringSequence->SourceObject, DuringSequence))
+				DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(DuringSequence->SourceObject, DuringSequence))
 			{
 				// Proceed to run child effect sequence.
 				DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Advance"), *DuringSequence->SourceObject->GetName());

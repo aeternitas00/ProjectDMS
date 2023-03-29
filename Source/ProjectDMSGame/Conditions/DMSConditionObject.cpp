@@ -1,16 +1,16 @@
-#include "Conditions/DMSConditionObject_.h"
+#include "Conditions/DMSConditionObject.h"
 
-bool UDMSConditionClassWrapper_::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSConditionClassWrapper::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
 	return Condition.GetDefaultObject()->CheckCondition(Caller, iSeq);
 }
 
-bool UDMSConditionObject_::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSConditionObject::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
 	return bNullIsTrue;
 }
 
-bool UDMSConditionCombiner_::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSConditionCombiner::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
 	if (Conditions.Num() == 0) 
 		return bEmptyIsTrue;
@@ -35,17 +35,17 @@ bool UDMSConditionCombiner_::CheckCondition(UObject* Caller, UDMSSequence* iSeq)
 
 //=============TEST===============//
 
-const UDMSConditionObjectBase* UDMSConditionClassWrapper_::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
+const UDMSConditionObjectBase* UDMSConditionClassWrapper::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
 {
 	return Condition.GetDefaultObject()->CheckCondition_(Caller, iSeq, outResult);
 }
 
-const UDMSConditionObjectBase* UDMSConditionObject_::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
+const UDMSConditionObjectBase* UDMSConditionObject::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
 { 
 	outResult = true; return bIsRelative ? this : nullptr; 
 }
 
-const UDMSConditionObjectBase* UDMSConditionCombiner_::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
+const UDMSConditionObjectBase* UDMSConditionCombiner::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
 {
 	if (Conditions.Num() == 0) {
 		outResult = bEmptyIsTrue;
@@ -54,7 +54,7 @@ const UDMSConditionObjectBase* UDMSConditionCombiner_::CheckCondition_(UObject* 
 	
 	outResult = bIsAnd;
 
-	UDMSConditionCombiner_* Rv = DuplicateObject<UDMSConditionCombiner_>(this,GetOuter());
+	UDMSConditionCombiner* Rv = DuplicateObject<UDMSConditionCombiner>(this,GetOuter());
 
 	for (int idx = Conditions.Num(); idx>=0 ; idx--)
 	{
