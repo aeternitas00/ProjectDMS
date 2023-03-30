@@ -21,9 +21,15 @@ class PROJECTDMSGAME_API UDMSObjectCompareCondition : public UDMSObjectCondition
 	GENERATED_BODY()
 
 public:
+	//UDMSObjectCompareCondition(){}
+
+	UPROPERTY(EditDefaultsOnly, Category = Condition)
+	EDMSObjectSelectorFlag SourceFlag;
+
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced)
 	UDMSObjectComparer* Comparer;
 
+	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
 	virtual bool CheckCondition_Single(UObject* Caller, UDMSSequence* iSeq, UObject* CompareTarget ) const;
 };
 
@@ -40,7 +46,7 @@ public:
 
 };
 
-UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Obj == CompareTarget"))
+UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Targets have Source Objects"))
 class UDMSObjectComparer_IsTarget : public UDMSObjectComparer
 {
 	GENERATED_BODY()
@@ -54,7 +60,7 @@ public:
 
 };
 
-UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Class of Obj == Class of CompareTarget"))
+UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Class of Source Obj == Class of CompareTarget"))
 class UDMSObjectComparer_IsSpecificType : public UDMSObjectComparer
 {
 	GENERATED_BODY()

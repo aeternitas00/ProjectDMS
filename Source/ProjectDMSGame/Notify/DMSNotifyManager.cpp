@@ -52,8 +52,10 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 	APlayerController* LocalPC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	UDMSNotifyRespondentSelector* InstancedWidget = CreateWidget<UDMSNotifyRespondentSelector>(LocalPC, ResponsedObjectSelector);
 
-	InstancedWidget->ResponsedObjects = ResponsedObjects;
+	InstancedWidget->ResponsedObjects = ResponsedObjects; 
+	ResponsedObjects.GetKeys(InstancedWidget->Respondents);
 	InstancedWidget->OwnerSeq = CurrentSequence;
+	//InstancedWidget->OutTag=TAG_DMS_System_NotifyRespondent;
 
 	if (!InstancedWidget->SetupWidget()) {
 		//Something goes wrong
@@ -79,13 +81,13 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->OwnerSeq);
 		
-		NewSeq->AddToOnSequenceFinished_Native([NotifyManager, ResumingSequence= InstancedWidget->OwnerSeq,NewResponsedObjects](){
+		NewSeq->AddToOnSequenceFinished_Native([ ResumingSequence= InstancedWidget->OwnerSeq,NewResponsedObjects](){
 			// Replay response 
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : RESUME RESPONSE ===="), *ResumingSequence->GetName());
 
 			auto LocalNRO = std::move(NewResponsedObjects);
-			NotifyManager->CreateRespondentSelector(ResumingSequence, LocalNRO);
+			UDMSCoreFunctionLibrary::GetDMSNotifyManager()->CreateRespondentSelector(ResumingSequence, LocalNRO);
 		});		
 
 		UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
@@ -97,21 +99,26 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 			// [ X Bttn ]
 
 			// Player choose to not run EI
-			CallResponseCompleted(CurrentSequence);
+			CallResponseCompleted(InstancedWidget->OwnerSeq);
 			//InstancedWidget->OwnerSeq->OnSequenceFinish();
 			InstancedWidget->CloseSelector();
 
 		}
 	);
 
-	ResponsedObjects.GetKeys(InstancedWidget->Respondents);
-	//InstancedWidget->OutTag=TAG_DMS_System_NotifyRespondent;
+	
 	
 	InstancedWidget->PopupSelector();
 }
 
 void UDMSNotifyManager::CallResponseCompleted(UDMSSequence* CurrentSequence)
 {
+	if (!OnResponseCompleted.Contains(CurrentSequence))
+	{
+		DMS_LOG_SIMPLE(TEXT("==== %s : Accessing to Closed OnResponseCompleted ===="), *CurrentSequence->GetName());
+		return;
+	}
+	DMS_LOG_SIMPLE(TEXT("==== %s : Calling to OnResponseCompleted ===="), *CurrentSequence->GetName());
 	auto temp = std::move(OnResponseCompleted[CurrentSequence]);
 	OnResponseCompleted.Remove(CurrentSequence);
 	temp.ExecuteIfBound();

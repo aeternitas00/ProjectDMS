@@ -37,7 +37,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	bool bAllObjectMustPassed;
 
-	TArray<UObject*> GetCompareTarget(UObject* Caller, UDMSSequence* iSeq) const;
+	TArray<UObject*> GetCompareTarget(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& iTargetFlag) const;
 
 	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
 

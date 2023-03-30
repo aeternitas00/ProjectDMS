@@ -41,7 +41,7 @@ public:
 	//UPROPERTY(BlueprintReadOnly)
 	//FGameplayTag OutTag;
 
-	UDMSSequence* CurrentSequence;
+	//UDMSSequence* CurrentSequence;
 
 	UFUNCTION(BlueprintCallable)
 	UDMSDataObjectSet* MakeOutputDatas(UObject* Respondent, UObject* EffectInstance);

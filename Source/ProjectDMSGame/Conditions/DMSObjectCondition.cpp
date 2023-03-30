@@ -4,10 +4,10 @@
 #include "Sequence/DMSSequence.h"
 #include "DMSObjectCondition.h"
 
-TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMSSequence* iSeq) const
+TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& iTargetFlag) const
 {
 	TArray<UObject*> Rv;
-	switch (TargetFlag)
+	switch (iTargetFlag)
 	{
 	case EDMSObjectSelectorFlag::OSF_Default:
 		Rv.Add(Caller);
@@ -34,7 +34,7 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 
 bool UDMSObjectConditionBase::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
 {
-	auto CheckingObjects = GetCompareTarget(Caller, iSeq);
+	auto CheckingObjects = GetCompareTarget(Caller, iSeq, TargetFlag);
 	bool outResult = bAllObjectMustPassed;
 
 	for (auto CheckingObject : CheckingObjects) {
