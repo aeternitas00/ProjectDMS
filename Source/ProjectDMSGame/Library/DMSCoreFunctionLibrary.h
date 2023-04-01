@@ -30,6 +30,8 @@ class PROJECTDMSGAME_API UDMSCoreFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 	
 public:
+	static FString GetTimingString(const EDMSTimingFlag& Flag);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static ADMSGameMode* GetDMSGameMode();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
@@ -50,5 +52,5 @@ public:
 	static bool CheckCardIsCommitable(ADMSCardBase* iCard);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static bool CheckCondition(UDMSConditionObjectBase* Condition, UObject* Caller, UDMSSequence* iSeq);
+	static bool CheckCondition(UDMSConditionObjectBase* Condition, UObject* CheckingGameObject, UDMSSequence* CurrentSequence);
 };

@@ -27,6 +27,16 @@ void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFini
 
 }
 
+void UDMSSequence::AddToOnSequenceFinished(const FSimpleEventSignature& iOnSequenceFinished)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
+
+	if (OnSequenceFinished.IsBound()) {
+		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
+	}
+	OnSequenceFinished.Add(iOnSequenceFinished);
+}
+
 void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq) 
 {
 	iSeq->ParentSequence = this;
@@ -50,3 +60,4 @@ void UDMSSequence::OnSequenceFinish()
 	// Cleanup 
 	
 }
+

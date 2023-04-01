@@ -34,8 +34,12 @@ class PROJECTDMSGAME_API UDMSConditionObjectBase : public UObject
 public:
 	UDMSConditionObjectBase() {}
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const {return true;}
-	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const { outResult = true; return nullptr; }
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	bool CheckCondition(UObject* CheckingGameObject,UDMSSequence* CurrentSequence) const;
+
+	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const {return true;}
+	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, bool& outResult) const { outResult = true; return nullptr; }
 };
 
 UCLASS(BlueprintType, ClassGroup = (Condition))
@@ -53,7 +57,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	bool bNullIsTrue;
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
+	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* Caller, UDMSSequence* iSeq,bool& outResult) const;
 };
 
@@ -65,7 +69,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Condition Class"))
 	TSubclassOf<UDMSConditionObjectBase> Condition;
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
+	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const override;
 };
 
@@ -87,6 +91,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	bool bEmptyIsTrue;
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
+	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const;
 };

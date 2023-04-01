@@ -65,6 +65,21 @@ protected:
 	UPROPERTY(BlueprintGetter = GetNotifyObjects)
 	TArray<TScriptInterface<IDMSEffectorInterface>> NotifyObjects;
 
+
+
+	DECLARE_DELEGATE_OneParam(FOnForcedSequenceCompleted, UDMSSequence*);
+	DECLARE_DELEGATE_OneParam(FForcedEIIteratingDelegate, UDMSSequence*);
+
+	struct FForcedEICounter {
+		FOnForcedSequenceCompleted Delegate;
+		uint8 Count = 0;
+		TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> NonForcedObjects;
+		TArray<TPair<UObject*, UDMSEffectInstance*>> ForcedObjects;
+		FForcedEIIteratingDelegate IteratingDelegate;
+	};
+
+	TMap<UDMSSequence*, FForcedEICounter> ForcedEIMap;
+
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TSubclassOf<UDMSNotifyRespondentSelector> ResponsedObjectSelector;
 public:

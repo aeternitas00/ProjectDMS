@@ -1,16 +1,16 @@
 #include "Conditions/DMSConditionObject.h"
 
-bool UDMSConditionClassWrapper::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSConditionClassWrapper::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
-	return Condition.GetDefaultObject()->CheckCondition(Caller, iSeq);
+	return Condition.GetDefaultObject()->CheckCondition(CheckingGameObject,  CurrentSequence);
 }
 
-bool UDMSConditionObject::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSConditionObject::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
 	return bNullIsTrue;
 }
 
-bool UDMSConditionCombiner::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSConditionCombiner::CheckCondition_Implementation(UObject* CheckingGameObject,  UDMSSequence* CurrentSequence) const
 {
 	if (Conditions.Num() == 0) 
 		return bEmptyIsTrue;
@@ -19,7 +19,7 @@ bool UDMSConditionCombiner::CheckCondition(UObject* Caller, UDMSSequence* iSeq) 
 
 	for (auto CO : Conditions)
 	{
-		bool Value = CO->CheckCondition(Caller, iSeq);
+		bool Value = CO->CheckCondition(CheckingGameObject,  CurrentSequence);
 		
 		outResult = bIsAnd ? outResult && Value : outResult || Value;
 		// No need to check others (no need to check relative conditions).

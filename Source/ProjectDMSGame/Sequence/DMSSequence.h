@@ -15,6 +15,7 @@
 
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
+#include "Common/DMSCommonDelegates.h"
 #include "Selector/DMSSelectorQueue.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSSequence.generated.h"
@@ -118,6 +119,6 @@ public:
 	template<typename FuncFinished>
 	void AddToOnSequenceFinished_Native(FuncFinished&& OnSequenceFinished);
 
-
+	void AddToOnSequenceFinished(const FSimpleEventSignature& OnSequenceFinished);
 };
 

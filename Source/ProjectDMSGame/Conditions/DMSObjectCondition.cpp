@@ -2,6 +2,7 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "Attribute/DMSAttribute.h"
 #include "Sequence/DMSSequence.h"
+#include "Effect/DMSEffectInstance.h"
 #include "DMSObjectCondition.h"
 
 TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& iTargetFlag) const
@@ -32,14 +33,14 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 	return Rv;
 }
 
-bool UDMSObjectConditionBase::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSObjectConditionBase::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
-	auto CheckingObjects = GetCompareTarget(Caller, iSeq, TargetFlag);
+	auto CheckingObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, TargetFlag);
 	bool outResult = bAllObjectMustPassed;
 
 	for (auto CheckingObject : CheckingObjects) {
 
-		UpdateResult(outResult, CheckCondition_Single(Caller, iSeq, CheckingObject));
+		UpdateResult(outResult, SingleCheckCondition(CheckingGameObject, CurrentSequence, CheckingObject));
 
 		if (outResult != bAllObjectMustPassed) return outResult;
 	}
@@ -47,7 +48,7 @@ bool UDMSObjectConditionBase::CheckCondition(UObject* Caller, UDMSSequence* iSeq
 	return outResult;
 }
 
-bool UDMSObjectAttributeCondition::CheckCondition_Single(UObject* Caller, UDMSSequence* iSeq, UObject* Target) const
+bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
 {
 	AActor* tOuter = Cast<AActor>(Target);
 	if (tOuter == nullptr) {
@@ -79,3 +80,15 @@ bool UDMSObjectAttributeCondition::CheckCondition_Single(UObject* Caller, UDMSSe
 
 	//return bNullIsTrue;
 }
+
+//bool UDMSNoSelfTriggerCondition::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+//{
+//	bool rv = false;
+//	for (auto EI : CurrentSequence->EIs)
+//	{
+//		if (CurrentSequence->OriginalEffectNode == EI->EffectNode)
+//			rv=true;
+//
+//	}
+//	return rv;
+//}

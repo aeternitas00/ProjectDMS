@@ -29,8 +29,8 @@ public:
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced)
 	UDMSObjectComparer* Comparer;
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
-	virtual bool CheckCondition_Single(UObject* Caller, UDMSSequence* iSeq, UObject* CompareTarget ) const;
+	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* CompareTarget ) const;
 };
 
 UCLASS(Blueprintable, Abstract, EditInlineNew)
@@ -40,7 +40,7 @@ class UDMSObjectComparer : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent)
-	bool Compare(UObject* SourceObject, UDMSSequence* iSeq, UObject* CompareTarget);
+	bool Compare(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject);
 
 	virtual bool Compare_Implementation(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject) { return true; }
 
@@ -96,3 +96,4 @@ public:
 		return bIsAndOperator ? (A && B) : (A || B);
 	}
 };
+

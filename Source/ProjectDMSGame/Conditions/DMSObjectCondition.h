@@ -37,11 +37,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	bool bAllObjectMustPassed;
 
-	TArray<UObject*> GetCompareTarget(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& iTargetFlag) const;
+	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const EDMSObjectSelectorFlag& iTargetFlag) const;
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
+	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 
-	virtual bool CheckCondition_Single(UObject* Caller, UDMSSequence* iSeq, UObject* Target) const {
+	UFUNCTION(BlueprintNativeEvent, BlueprintPure)
+	bool SingleCheckCondition(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const {
 		return bNullIsTrue;
 	}
 
@@ -74,5 +76,19 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 	int Value; // float? 
 
-	virtual bool CheckCondition_Single(UObject* Caller, UDMSSequence* iSeq, UObject* Target) const;
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
 };
+
+//
+//UCLASS(Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "CO No self trigger"))
+//class PROJECTDMSGAME_API UDMSNoSelfTriggerCondition : public UDMSConditionObjectBase
+//{
+//	GENERATED_BODY()
+//
+//public:
+//
+//	UPROPERTY(EditDefaultsOnly, Category = Condition)
+//	bool bAllObjectMustPassed;
+//
+//	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+//};

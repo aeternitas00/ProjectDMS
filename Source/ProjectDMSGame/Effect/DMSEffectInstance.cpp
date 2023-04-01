@@ -74,24 +74,23 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 		return rv;
 	}
 
+	//if (Seq->OriginalEffectNode == EffectNode) {
+	//	DMS_LOG_SIMPLE(TEXT("Recursive Response Occured"));
+
+	//	return rv;
+	//}
 	if (EffectNode->Conditions->CheckCondition(SourceTweak, Seq))
-	//if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{
 		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetOuter()->GetOuter() !=nullptr ? *GetOuter()->GetOuter()->GetName():TEXT("NullOuter"), *GetName());
 		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
-		
+		outResponsedObjects.Add(SourceTweak, this);
 		rv=true;
-		if ( !EffectNode->bForced ) outResponsedObjects.Add(SourceTweak, this);
-
-		// Inherit dataset is correct?
-		else {
-			UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(CreateSequenceFromNode(SourceTweak, Seq));
-		}
+	
 	}
 	else
-	{
-		rv=false;
+	{		
 		//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Notify Passed"), *GetName());
+		rv=false;
 	}
 	return rv;
 }

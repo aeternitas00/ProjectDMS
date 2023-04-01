@@ -11,6 +11,16 @@
 #include "Card/DMSCardDefinition.h"
 #include "Conditions/DMSConditionObject.h"
 
+FString UDMSCoreFunctionLibrary::GetTimingString(const EDMSTimingFlag& Flag)
+{
+	switch (Flag)	{
+		case EDMSTimingFlag::T_Before:	return "BEFORE";
+		case EDMSTimingFlag::T_During:return "DURING"; ;
+		case EDMSTimingFlag::T_After:return "AFTER"; 
+		default: return "";
+	}
+}
+
 ADMSGameMode* UDMSCoreFunctionLibrary::GetDMSGameMode()
 {
 	UWorld* tWorld = GEngine->GameViewport->GetWorld();
@@ -64,7 +74,7 @@ bool UDMSCoreFunctionLibrary::CheckCardIsCommitable(ADMSCardBase* iCard)
 	return iCard->GetCardDefinition()->CardEffectSets.Contains("Commit");
 }
 
-bool UDMSCoreFunctionLibrary::CheckCondition(UDMSConditionObjectBase* Condition, UObject* Caller, UDMSSequence* iSeq)
+bool UDMSCoreFunctionLibrary::CheckCondition(UDMSConditionObjectBase* Condition, UObject* CheckingGameObject, UDMSSequence* CurrentSequence)
 {
-	return Condition->CheckCondition(Caller,iSeq);
+	return Condition->CheckCondition(CheckingGameObject, CurrentSequence);
 }

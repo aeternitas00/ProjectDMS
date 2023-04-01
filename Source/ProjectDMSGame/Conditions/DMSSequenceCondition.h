@@ -31,7 +31,7 @@
   *	추가적으로 소스 오브젝트나 타겟 오브젝트들의 클래스 단위가 아닌 객체 단위의 캔디데이트를 제공 하려면 어찌 해야할까?
   */
 
-UCLASS(Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "Timing Condition Base"))
+UCLASS(Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "CO Timing Condition"))
 class PROJECTDMSGAME_API UDMSSeqTimingCondition : public UDMSConditionObject
 {
 	GENERATED_BODY()
@@ -45,5 +45,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
 	FGameplayTagQuery EffectTagQuery;
 
-	virtual bool CheckCondition(UObject* Caller, UDMSSequence* iSeq) const;
+	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 };
+
+

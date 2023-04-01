@@ -1,16 +1,16 @@
 #include "Conditions/ObjectConditions/DMSObjectCompareCondition.h"
 #include "DMSObjectCompareCondition.h"
 
-bool UDMSObjectCompareCondition::CheckCondition(UObject* Caller, UDMSSequence* iSeq) const
+bool UDMSObjectCompareCondition::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
-	auto SourceObjects = GetCompareTarget(Caller, iSeq, SourceFlag);
-	auto TargetObjects = GetCompareTarget(Caller, iSeq, TargetFlag);
+	auto SourceObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, SourceFlag);
+	auto TargetObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, TargetFlag);
 	bool outResult = bAllObjectMustPassed;
 
 	for (auto SourceObject : SourceObjects) {
 		bool currentResult= false;
 		for (auto TargetObject : TargetObjects){
-			currentResult = CheckCondition_Single(SourceObject, iSeq, TargetObject);
+			currentResult = SingleCheckCondition(SourceObject, CurrentSequence, TargetObject);
 			if (currentResult) break;
 		}
 		UpdateResult(outResult, currentResult);
@@ -20,7 +20,8 @@ bool UDMSObjectCompareCondition::CheckCondition(UObject* Caller, UDMSSequence* i
 	return outResult;
 }
 
-bool UDMSObjectCompareCondition::CheckCondition_Single(UObject* Caller, UDMSSequence* iSeq, UObject* Target) const
+bool UDMSObjectCompareCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
 {
-	return Comparer->Compare(Caller, iSeq, Target);
+	return Comparer->Compare(CheckingGameObject, CurrentSequence, Target);
 }
+

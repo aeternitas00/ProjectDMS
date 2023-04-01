@@ -15,19 +15,74 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_ActivatingEffect, "System.Notify.Ac
 template<typename FuncCompleted>
 void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted)
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s [%d] : BROADCASTING  ===="), *NotifyData->GetName(), NotifyData->Progress);
-
+	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : BROADCASTING  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+	TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> ResponsedObjects;
 	// Check non relative first
 
 	// Check all relatives
-	TMultiMap<TScriptInterface<IDMSEffectorInterface>,UDMSEffectInstance*> ResponsedObjects;
-	for (auto Object : NotifyObjects)
+
+	for (auto& Object : NotifyObjects)
 	{
 		Object->OnNotifyReceived(ResponsedObjects, NotifyData->OriginalEffectNode->bIsChainableEffect,NotifyData);
 	}
-	OnResponseCompleted.Add(NotifyData);
+
+	OnResponseCompleted.Add(NotifyData);	ForcedEIMap.Add(NotifyData);
 	OnResponseCompleted[NotifyData].BindLambda(ResponseCompleted);
-	CreateRespondentSelector(NotifyData, ResponsedObjects);
+
+	// DO FORCED FIRST
+	TArray<TScriptInterface<IDMSEffectorInterface>> Keys;
+	ResponsedObjects.GetKeys(Keys);
+	for (auto& ResponsedObject : Keys)	{
+		TArray<UDMSEffectInstance*> EffectInstances;
+		ResponsedObjects.MultiFind(ResponsedObject, EffectInstances, true);
+
+		for (auto EI : EffectInstances) {
+			if (EI->EffectNode->bForced) {
+				TPair<UObject*, UDMSEffectInstance*> NewValue;
+				NewValue.Key= ResponsedObject.GetObject(); NewValue.Value= EI;
+				ForcedEIMap[NotifyData].ForcedObjects.Add(std::move(NewValue));
+				ResponsedObjects.Remove(ResponsedObject, EI);
+			}
+		}
+	}
+
+
+	if (ForcedEIMap[NotifyData].ForcedObjects.Num()==0)
+	{
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+
+		ForcedEIMap.Remove(NotifyData);
+		CreateRespondentSelector(NotifyData, ResponsedObjects);
+	}
+	else {	
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATING FORCED EFFECT START  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+
+		ForcedEIMap[NotifyData].NonForcedObjects = ResponsedObjects;
+
+		ForcedEIMap[NotifyData].Delegate.BindLambda([this](UDMSSequence* Sequence) {
+			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->Progress));
+			auto temp = std::move(ForcedEIMap[Sequence]);
+			ForcedEIMap.Remove(Sequence);
+			CreateRespondentSelector(Sequence, temp.NonForcedObjects);
+		});
+		ForcedEIMap[NotifyData].IteratingDelegate.BindLambda([this](UDMSSequence* Sequence) {
+				
+			if (ForcedEIMap[Sequence].Count == ForcedEIMap[Sequence].ForcedObjects.Num()){
+				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->Progress));
+				ForcedEIMap[Sequence].Delegate.ExecuteIfBound(Sequence);
+			}
+			else{
+				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->Progress));
+
+				auto NewSeq = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Value->CreateSequenceFromNode(ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Key, Sequence);
+				NewSeq->AddToOnSequenceFinished_Native([this,Sequence](){ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence);});
+				ForcedEIMap[Sequence].Count++;
+				UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
+			}
+		});
+
+		ForcedEIMap[NotifyData].IteratingDelegate.ExecuteIfBound(NotifyData);
+	}
 }
 
 void UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object)
@@ -37,17 +92,18 @@ void UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterf
 
 void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects)
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s [%d] : Create Respondent Selector  ===="), *CurrentSequence->GetName(), CurrentSequence->Progress);
+	FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->Progress);
+	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : Create Respondent Selector  ===="), *CurrentSequence->GetName(), *TimingStr);
 
 	if (ResponsedObjects.Num() == 0) {
 
-		DMS_LOG_SIMPLE(TEXT("==== %s [%d] : NO Respondent / EXE OnResponseCompleted ===="), *CurrentSequence->GetName(), CurrentSequence->Progress);
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO Respondent / EXE OnResponseCompleted ===="), *CurrentSequence->GetName(), *TimingStr);
 		CallResponseCompleted(CurrentSequence);
 		return;
 	}
 	// PC Getter?
 
-	DMS_LOG_SIMPLE(TEXT("==== %s [%d] : %d Respondent(s) ===="), *CurrentSequence->GetName(), CurrentSequence->Progress, ResponsedObjects.Num());
+	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : %d Respondent(s) ===="), *CurrentSequence->GetName(), *TimingStr, ResponsedObjects.Num());
 
 	APlayerController* LocalPC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	UDMSNotifyRespondentSelector* InstancedWidget = CreateWidget<UDMSNotifyRespondentSelector>(LocalPC, ResponsedObjectSelector);
@@ -76,6 +132,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		InstancedWidget->ResponsedObjects.GetKeys(NewRespondents);
 		for (auto Object : NewRespondents)
 		{
+			// 이거 말고 그냥 체크만 하는 함수로 재구성 하던가 포스드 일 때 강제실행을 여기서 노티파이 매니저가 하도록 해서 순차적으로 실행하게 해야함 ( 기다려주면서 ) 해야함.
 			Object->OnNotifyReceived(NewResponsedObjects, InstancedWidget->OwnerSeq->OriginalEffectNode->bIsChainableEffect, InstancedWidget->OwnerSeq);
 		}
 
@@ -137,6 +194,6 @@ UDMSDataObjectSet* UDMSNotifyRespondentSelector::MakeOutputDatas(UObject* Respon
 void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<UDMSEffectInstance*>& outArray)
 {
 	ResponsedObjects.MultiFind(iObject, outArray,true);
-	//(*ResponsedObjects.Find(iObject))->CreateSequenceFromNode(iObject.GetObject(), OwnerSeq);
+	//(*ForcedObjects.Find(iObject))->CreateSequenceFromNode(iObject.GetObject(), OwnerSeq);
 	//return;
 }
