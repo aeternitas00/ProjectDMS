@@ -1,7 +1,7 @@
 #include "Conditions/ObjectConditions/DMSObjectCompareCondition.h"
 #include "DMSObjectCompareCondition.h"
 
-bool UDMSObjectCompareCondition::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSObjectCompareCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
 	auto SourceObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, SourceFlag);
 	auto TargetObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, TargetFlag);

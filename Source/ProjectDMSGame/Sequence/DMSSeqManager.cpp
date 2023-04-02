@@ -190,73 +190,54 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 				// ==== ON RESOLVE COMPLETED ====
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *DuringSequence->GetName(), SeqManager->GetDepth(DuringSequence));
-			
-			// Check advance condition for child effect.
-			if (DuringSequence->OriginalEffectNode->ChildEffect != nullptr &&
-				DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(DuringSequence->SourceObject, DuringSequence))
-			{
-				// Proceed to run child effect sequence.
-				DMS_LOG_SIMPLE(TEXT("==== %s : OnNotifyReceived -> Advance ===="), *DuringSequence->GetName());
-				auto ChildNode = DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
-				// follows parents data. 
-				auto NewSeq = RequestCreateSequence(DuringSequence->SourceObject, DuringSequence->SourceController, ChildNode,
-					TArray<TScriptInterface<IDMSEffectorInterface>>(), DuringSequence->EIDatas, DuringSequence);
-				
-				// Set delegates when child effect sequence completed.
-				NewSeq->AddToOnSequenceFinished_Native(
-				[=, ParentSequence=DuringSequence]() __declspec(noinline) {
-						// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
-					DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
+			// 'During Timing' broadcast starts.
+			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+			NotifyManager->BroadCast(BeforeSequence, 
+			[=, DurningSequence = BeforeSequence]() __declspec(noinline) {
+					// ==== ON DURING TIMING RESPONSE ENDED ====
+				DMS_LOG_SIMPLE(TEXT("==== %s : ON DURING TIMING RESPONSE ENDED [ Depth : %d ] ===="), *DurningSequence->GetName(), SeqManager->GetDepth(DurningSequence));
+				// Proceed to 'After Timing'
+				DurningSequence->Progress = EDMSTimingFlag::T_After;
 
-					auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+				DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
+
+				// 'After Timing' broadcast starts.
+				NotifyManager->BroadCast(DurningSequence, 
+				[=, AfterSequence = DurningSequence]() __declspec(noinline) {
+						// ==== ON AFTER TIMING RESPONSE ENDED ====
+					DMS_LOG_SIMPLE(TEXT("==== %s : ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *AfterSequence->GetName(), SeqManager->GetDepth(AfterSequence));
 					
-					// Resume parent sequence
-					// 'During Timing' broadcast starts.
-					NotifyManager->BroadCast(ParentSequence,
-					[=, DuringSequence= ParentSequence]() __declspec(noinline) {
-							// ==== ON DURING TIMING RESPONSE ENDED ====
-						DMS_LOG_SIMPLE(TEXT("==== %s : ON PARENT DURING TIMING RESPONSE ENDED [ Depth : %d ] ===="), *DuringSequence->GetName(), SeqManager->GetDepth(DuringSequence));
-						// Proceed to 'After Timing'
-						DuringSequence->Progress = EDMSTimingFlag::T_After;
+					// Run child effect if exist.
+					if (AfterSequence->OriginalEffectNode->ChildEffect != nullptr &&
+						AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(AfterSequence->SourceObject, AfterSequence))	{
 
-						DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DuringSequence));
-						
-						// 'After Timing' broadcast starts.
-						NotifyManager->BroadCast(DuringSequence, [=, AfterSequence = DuringSequence]() __declspec(noinline) {
-								// ==== ON AFTER TIMING RESPONSE ENDED ====
-							DMS_LOG_SIMPLE(TEXT("==== %s : ON PARENT AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *AfterSequence->GetName(), SeqManager->GetDepth(AfterSequence));
-							//Complete this sequence.
-							SeqManager->CompleteSequence(AfterSequence);
+						// Proceed to run child effect sequence.
+						DMS_LOG_SIMPLE(TEXT("==== %s : OnNotifyReceived -> Advance ===="), *AfterSequence->GetName());
+						auto ChildNode = AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
+						// follows parents data. 
+						auto NewSeq = RequestCreateSequence(AfterSequence->SourceObject, AfterSequence->SourceController, ChildNode,
+							TArray<TScriptInterface<IDMSEffectorInterface>>(), AfterSequence->EIDatas, AfterSequence);
+				
+						// Set delegates when child effect sequence completed.
+						NewSeq->AddToOnSequenceFinished_Native(
+						[=, ParentSequence= AfterSequence]() __declspec(noinline) {
+								// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
+							DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
+
+							auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+					
+							// Resume parent sequence closing
+							SeqManager->CompleteSequence(ParentSequence);
 						});
-					});
-				});
 
-				// Run setuped child effect sequence.
-				SeqManager->RunSequence(NewSeq);
-			}
-			else // if No proper child effect.
-			{
-				// 'During Timing' broadcast starts.
-				auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
-				NotifyManager->BroadCast(BeforeSequence, 
-				[=, DurningSequence = BeforeSequence]() __declspec(noinline) {
-						// ==== ON DURING TIMING RESPONSE ENDED ====
-					DMS_LOG_SIMPLE(TEXT("==== %s : LEAF ON DURING TIMING RESPONSE ENDED [ Depth : %d ] ===="), *DurningSequence->GetName(), SeqManager->GetDepth(DurningSequence));
-					// Proceed to 'After Timing'
-					DurningSequence->Progress = EDMSTimingFlag::T_After;
-
-					DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
-
-					// 'After Timing' broadcast starts.
-					NotifyManager->BroadCast(DurningSequence, 
-					[=, AfterSequence = DurningSequence]() __declspec(noinline) {
-							// ==== ON AFTER TIMING RESPONSE ENDED ====
-						DMS_LOG_SIMPLE(TEXT("==== %s : LEAF ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *AfterSequence->GetName(), SeqManager->GetDepth(AfterSequence));
-						//Complete this sequence.
+						// Run setuped child effect sequence.
+						SeqManager->RunSequence(NewSeq);
+					}
+					else //Complete this sequence.
 						SeqManager->CompleteSequence(AfterSequence);
-					});
 				});
-			}
+			});
+			
 		});
 	});
 

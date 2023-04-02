@@ -31,15 +31,22 @@ class PROJECTDMSGAME_API UDMSConditionObjectBase : public UObject
 {
 	GENERATED_BODY()
 
+protected:
+	UFUNCTION(BlueprintNativeEvent)
+	bool CheckOperation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const {return true;}
+	
 public:
-	UDMSConditionObjectBase() {}
+	UDMSConditionObjectBase():bIsNot(false){}
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
+	bool bIsNot;
+
+	UFUNCTION(BlueprintPure)
+	bool CheckCondition(UObject* CheckingGameObject,UDMSSequence* CurrentSequence) const { return bIsNot? !CheckOperation(CheckingGameObject, CurrentSequence) : CheckOperation(CheckingGameObject, CurrentSequence); }
 
 
-	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	bool CheckCondition(UObject* CheckingGameObject,UDMSSequence* CurrentSequence) const;
-
-	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const {return true;}
-	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, bool& outResult) const { outResult = true; return nullptr; }
+	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, bool& outResult) const { outResult = !bIsNot; return nullptr; }
 };
 
 UCLASS(BlueprintType, ClassGroup = (Condition))
@@ -54,10 +61,10 @@ public:
 	//UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Is will be checked for every notified object"))
 	bool bIsRelative;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 	bool bNullIsTrue;
 
-	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* Caller, UDMSSequence* iSeq,bool& outResult) const;
 };
 
@@ -69,7 +76,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition, meta = (DisplayName = "Condition Class"))
 	TSubclassOf<UDMSConditionObjectBase> Condition;
 
-	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const override;
 };
 
@@ -82,15 +89,15 @@ class PROJECTDMSGAME_API UDMSConditionCombiner : public UDMSConditionObjectBase
 public:
 	UDMSConditionCombiner() :bIsAnd(true), bEmptyIsTrue(false){}
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = Condition)
 	TArray<UDMSConditionObjectBase*> Conditions;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 	bool bIsAnd;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 	bool bEmptyIsTrue;
 
-	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const;
 };

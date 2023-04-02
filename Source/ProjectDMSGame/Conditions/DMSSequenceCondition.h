@@ -45,7 +45,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
 	FGameplayTagQuery EffectTagQuery;
 
-	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 };
 
 

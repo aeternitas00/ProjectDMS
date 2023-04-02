@@ -39,7 +39,7 @@ public:
 
 	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const EDMSObjectSelectorFlag& iTargetFlag) const;
 
-	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure)
 	bool SingleCheckCondition(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
@@ -67,7 +67,7 @@ class PROJECTDMSGAME_API UDMSObjectAttributeCondition : public UDMSObjectConditi
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Attribute)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Condition)
 	FGameplayTag AttributeTag;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
@@ -90,5 +90,5 @@ public:
 //	UPROPERTY(EditDefaultsOnly, Category = Condition)
 //	bool bAllObjectMustPassed;
 //
-//	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+//	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 //};

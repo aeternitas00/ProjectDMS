@@ -33,7 +33,7 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 	return Rv;
 }
 
-bool UDMSObjectConditionBase::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSObjectConditionBase::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
 	auto CheckingObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, TargetFlag);
 	bool outResult = bAllObjectMustPassed;
@@ -63,25 +63,26 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 
 	if (Att == nullptr) { return bNullIsTrue; }
 
+	bool rv;
 	switch (Operator)
 	{
 		case EDMSComparisonOperator::BO_Equal:
-			return Att->GetValue() == Value;
+			rv = Att->GetValue() == Value;
 		case EDMSComparisonOperator::BO_Greater:
-			return Att->GetValue() > Value;
+			rv = Att->GetValue() > Value;
 		case EDMSComparisonOperator::BO_Less:
-			return Att->GetValue() < Value;
+			rv = Att->GetValue() < Value;
 		case EDMSComparisonOperator::BO_GreaterEqual:
-			return Att->GetValue() >= Value;
+			rv = Att->GetValue() >= Value;
 		case EDMSComparisonOperator::BO_LessEqual:
-			return Att->GetValue() <= Value;
+			rv = Att->GetValue() <= Value;
 		default: return bNullIsTrue;
 	}
 
-	//return bNullIsTrue;
+	return rv;
 }
 
-//bool UDMSNoSelfTriggerCondition::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+//bool UDMSNoSelfTriggerCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 //{
 //	bool rv = false;
 //	for (auto EI : CurrentSequence->EIs)

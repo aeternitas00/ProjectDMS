@@ -29,7 +29,7 @@ public:
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced)
 	UDMSObjectComparer* Comparer;
 
-	virtual bool CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* CompareTarget ) const;
 };
 

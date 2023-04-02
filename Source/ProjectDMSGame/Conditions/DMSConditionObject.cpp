@@ -1,16 +1,17 @@
 #include "Conditions/DMSConditionObject.h"
 
-bool UDMSConditionClassWrapper::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
-{
-	return Condition.GetDefaultObject()->CheckCondition(CheckingGameObject,  CurrentSequence);
-}
 
-bool UDMSConditionObject::CheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSConditionObject::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
 	return bNullIsTrue;
 }
 
-bool UDMSConditionCombiner::CheckCondition_Implementation(UObject* CheckingGameObject,  UDMSSequence* CurrentSequence) const
+bool UDMSConditionClassWrapper::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+{
+	return Condition.GetDefaultObject()->CheckCondition(CheckingGameObject,  CurrentSequence);
+}
+
+bool UDMSConditionCombiner::CheckOperation_Implementation(UObject* CheckingGameObject,  UDMSSequence* CurrentSequence) const
 {
 	if (Conditions.Num() == 0) 
 		return bEmptyIsTrue;

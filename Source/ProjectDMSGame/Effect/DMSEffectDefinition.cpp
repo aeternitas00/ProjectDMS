@@ -13,7 +13,7 @@
 //	
 //	for (auto fx : EffectNodes)
 //	{
-//		if (fx->Conditions.CheckCondition_Implementation(iSeq)) rv.Add(fx);
+//		if (fx->Conditions.CheckOperation_Implementation(iSeq)) rv.Add(fx);
 //	}
 //	
 //	return rv;
