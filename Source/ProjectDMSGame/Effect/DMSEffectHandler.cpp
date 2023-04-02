@@ -28,46 +28,10 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* Sou
 
 TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode)
 {
-
-	//DMS_LOG_SCREEN(TEXT("EH: Generic CreateEI Start To %s"), *Sequence->SourceObject->GetName());
 	// No Selected Target ( Passed or No selector for this effect node )
+	// If PARAM_TARGET is exist, it will override preset generating.
 	if (Sequence->Targets.Num() == 0) 
-	{
-		//DMS_LOG_SCREEN(TEXT("EH: Generic CreateEI Meets no target %s"), *Sequence->SourceObject->GetName());
-		TArray<TScriptInterface<IDMSEffectorInterface>> TempTarget;
-
-		switch(EffectNode->PresetTargetFlag)
-		{
-			case EDMSPresetTargetFlag::PTF_Self:
-				if (Sequence->SourceObject->Implements<UDMSEffectorInterface>()){
-					TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(Sequence->SourceObject));
-					DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *Sequence->GetName(),*Sequence->SourceObject->GetName());
-					}
-				break;
-			case EDMSPresetTargetFlag::PTF_OC:
-				if (Sequence->SourceController->Implements<UDMSEffectorInterface>()){
-					TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(Sequence->SourceController));
-					DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *Sequence->GetName(), *Sequence->SourceController->GetName());
-				}
-				break;
-			//case EDMSPresetTargetFlag::PTF_Data:
-			//	TargetData = Sequence->EIDatas->GetData("PresetTarget");
-			//	
-			//	TempTarget = (TargetData != nullptr && TargetData->TypeCheck<TArray<TScriptInterface<IDMSEffectorInterface>>>()) ? 
-			//		TargetData->Get<TArray<TScriptInterface<IDMSEffectorInterface>>>() : 
-			//		TArray<TScriptInterface<IDMSEffectorInterface>>();
-			//	DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To Data->PresetTarget (Num : %d)"), *Sequence->GetName(), TempTarget.Num());
-			//	break;
-			case EDMSPresetTargetFlag::PTF_Effect:
-				TempTarget=EffectNode->GenerateTarget(Sequence);
-				DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To EN's target (Num : %d)"), *Sequence->GetName(), TempTarget.Num());
-				break;
-			default:
-				break;
-		}
-		Sequence->Targets = std::move(TempTarget);
-	}
-	
+		Sequence->Targets = UDMSEffectNode::GeneratePresetTarget(EffectNode,Sequence);
 
 	for (auto TargetObject : Sequence->Targets)
 	{

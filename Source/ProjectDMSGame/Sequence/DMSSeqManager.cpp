@@ -200,8 +200,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 				auto ChildNode = DuringSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
 				// follows parents data. 
 				auto NewSeq = RequestCreateSequence(DuringSequence->SourceObject, DuringSequence->SourceController, ChildNode,
-					ChildNode->PresetTargetFlag == EDMSPresetTargetFlag::PTF_Parent ? DuringSequence->Targets : TArray<TScriptInterface<IDMSEffectorInterface>>(), 
-					DuringSequence->EIDatas, DuringSequence);
+					TArray<TScriptInterface<IDMSEffectorInterface>>(), DuringSequence->EIDatas, DuringSequence);
 				
 				// Set delegates when child effect sequence completed.
 				NewSeq->AddToOnSequenceFinished_Native(
@@ -211,9 +210,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 
 					auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
 					
-					// If it has no need to replay Respondent selcting then resume.
-
-					// If it has no need to replay Respondent selcting, Resume parent sequence.
+					// Resume parent sequence
 					// 'During Timing' broadcast starts.
 					NotifyManager->BroadCast(ParentSequence,
 					[=, DuringSequence= ParentSequence]() __declspec(noinline) {

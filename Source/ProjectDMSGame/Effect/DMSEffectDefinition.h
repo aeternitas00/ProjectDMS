@@ -174,6 +174,9 @@ public:
 	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget(UDMSSequence* iSequence);
 	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget_Implementation(UDMSSequence* iSequence);
 	
+	UFUNCTION(BlueprintCallable)
+	static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
+
 	// Create paired selector widget from "EffectDefinitions".
 	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors();
 

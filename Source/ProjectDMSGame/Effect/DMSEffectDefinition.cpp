@@ -30,6 +30,39 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateTarget_I
 	return rv;
 }
 
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence)
+{	
+	TArray<TScriptInterface<IDMSEffectorInterface>> TempTarget;
+	switch (Node->PresetTargetFlag)
+	{
+	case EDMSPresetTargetFlag::PTF_Self:
+		if (iSequence->SourceObject->Implements<UDMSEffectorInterface>()) {
+			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourceObject));
+			DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceObject->GetName());
+		}
+		break;
+	case EDMSPresetTargetFlag::PTF_OC:
+		if (iSequence->SourceController->Implements<UDMSEffectorInterface>()) {
+			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourceController));
+			DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceController->GetName());
+		}
+		break;
+	case EDMSPresetTargetFlag::PTF_Parent:
+		if (iSequence->ParentSequence == nullptr)
+			break;
+		TempTarget.Append(iSequence->ParentSequence->Targets);
+		DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceController->GetName());
+		break;
+	case EDMSPresetTargetFlag::PTF_Effect:
+		TempTarget = Node->GenerateTarget(iSequence);
+		DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To EN's target (Num : %d)"), *iSequence->GetName(), TempTarget.Num());
+		break;
+	default:
+		break;
+	}
+	return TempTarget;
+}
+
 bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 {
 	FGameplayTagContainer ctn;

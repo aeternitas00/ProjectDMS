@@ -67,12 +67,7 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 	bool rv=false;
 	if (!iChainable && !EffectNode->bForced) return rv;
 
-	//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived"), *GetName());
-
-	if (CurrentState == EDMSEIState::EIS_Pending) {
-		//DMS_LOG_SCREEN(TEXT("%s : Pending"), *GetName());
-		return rv;
-	}
+	if (CurrentState == EDMSEIState::EIS_Pending) return rv;
 
 	//if (Seq->OriginalEffectNode == EffectNode) {
 	//	DMS_LOG_SIMPLE(TEXT("Recursive Response Occured"));
@@ -81,17 +76,11 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 	//}
 	if (EffectNode->Conditions->CheckCondition(SourceTweak, Seq))
 	{
-		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetOuter()->GetOuter() !=nullptr ? *GetOuter()->GetOuter()->GetName():TEXT("NullOuter"), *GetName());
 		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
 		outResponsedObjects.Add(SourceTweak, this);
-		rv=true;
-	
+		rv=true;	
 	}
-	else
-	{		
-		//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived -> Notify Passed"), *GetName());
-		rv=false;
-	}
+	else rv=false;
 	return rv;
 }
 
