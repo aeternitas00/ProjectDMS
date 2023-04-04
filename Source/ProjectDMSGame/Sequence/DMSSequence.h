@@ -101,24 +101,30 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets){ Targets = iTargets;}
 
-	//FORCEINLINE void SetActive(const bool& iAct) { bIsActive = iAct;}
-	//FORCEINLINE void AddToSelectorQueue(UDMSEffectElementSelectorWidget* iWidget) { SelectorQueue.AddSelector(iWidget); }
-	bool SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner);
+	bool SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets);
 
 	template<typename FuncFinished, typename FuncCanceled >
 	void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
 
-	__declspec(noinline) void OnSequenceFinish();
+	void OnSequenceInitiate();
+	void OnSequenceFinish();
 
-	DECLARE_MULTICAST_DELEGATE(FOnSequenceFinished);
-	//DECLARE_DYNAMIC_DELEGATE(FOnSequenceFinished_Dynamic);
+	DECLARE_MULTICAST_DELEGATE(FOnSequenceStateChanged);
+	//DECLARE_DYNAMIC_DELEGATE(FOnSequenceStateChanged_Dynamic);
 
 protected:
-	FOnSequenceFinished OnSequenceFinished;
+	FOnSequenceStateChanged OnSequenceInitiated;
+	FOnSequenceStateChanged OnSequenceFinished;
+
 public:
+	template<typename FuncInitiated>
+	void AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated);
+
 	template<typename FuncFinished>
-	void AddToOnSequenceFinished_Native(FuncFinished&& OnSequenceFinished);
+	void AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished);
 
 	void AddToOnSequenceFinished(const FSimpleEventSignature& OnSequenceFinished);
+
+	friend class UDMSSeqManager;
 };
 

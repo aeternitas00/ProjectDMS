@@ -2,18 +2,35 @@
 
 
 #include "DMSGameMode.h"
+
 #include "Sequence/DMSSeqManager.h"
-#include "Player/DMSPlayerController.h"
-#include "Effect/DMSEffectHandler.h"
-#include "Effect/DMSEffectorInterface.h"
 #include "Notify/DMSNotifyManager.h"
+#include "Phase/DMSPhaseManager.h"
+#include "Effect/DMSEffectHandler.h"
+
+#include "Player/DMSPlayerController.h"
+#include "Effect/DMSEffectorInterface.h"
 #include "Card/DMSCardDefinition.h"
 
 ADMSGameMode::ADMSGameMode()
 {
 	EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("CardEffectHandler"));
-	SequenceManager = CreateDefaultSubobject<UDMSSeqManager>(TEXT("SequenceManager"));
 	NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));
+	PhaseManagerClass= UDMSPhaseManager::StaticClass();
+	SequenceManagerClass = UDMSSeqManager::StaticClass();
+}
+
+void ADMSGameMode::PreInitializeComponents()
+{
+	if(PhaseManagerClass->IsValidLowLevelFast()){
+		PhaseManager = NewObject<UDMSPhaseManager>(this, PhaseManagerClass,TEXT("PhaseManager"));
+		PhaseManager->RegisterComponent();
+	}
+	if (SequenceManagerClass->IsValidLowLevelFast()) {
+		SequenceManager = NewObject<UDMSSeqManager>(this, SequenceManagerClass, TEXT("SequenceManager"));
+		SequenceManager->RegisterComponent();
+	}
+	Super::PreInitializeComponents();
 }
 
 void ADMSGameMode::SpawnCardsFromDeck(class ADMSPlayerController* iPC)
@@ -25,6 +42,3 @@ void ADMSGameMode::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> 
 {
 }
 
-void ADMSGameMode::PushSequence()
-{
-}

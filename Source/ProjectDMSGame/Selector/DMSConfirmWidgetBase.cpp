@@ -34,9 +34,9 @@ void UDMSConfirmWidgetBase::CancelSelect()
 
 void UDMSConfirmWidgetBase::PopupSelector()
 {
-	// if (Candidates.Num() == 1) { /*autoselect and close..*/ } 
-	//AddToViewport();
-	AddToPlayerScreen();
+	AddToViewport();
+	// multi?
+	//AddToPlayerScreen();
 	OnPopupSelector();
 }
 

@@ -47,6 +47,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	const UDMSCardDefinition* CardDefinition;
 
+	// Cache
 	UPROPERTY(BlueprintReadOnly)
 	UDMSCardContainerComponent* OwningContainer;
 

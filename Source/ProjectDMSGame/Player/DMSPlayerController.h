@@ -120,16 +120,14 @@ public:
 	virtual UObject* GetObject() override { return this; }
 	virtual AActor* GetOwningPlayer() { return this; }
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
-	//virtual UDMSAttribute* GetAttribute(const FName& AttributeName) override;
-	//virtual bool TryModAttribute(const FDMSAttributeModifier& Modifier) override;
-	//virtual void MakeAttribute(const FName& AttributeName, const float& DefValue = 0.0f);
+
 // ====================== TEST ====================== //
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UDMSAttributeComponent* AttributeComponent;
 
-	UFUNCTION(BlueprintCallable)
-	float GetAttributeValue(const FGameplayTag& AttributeName);
+	//UFUNCTION(BlueprintCallable)
+	//float GetAttributeValue(const FGameplayTag& AttributeName);
 
 // ================================================== //
 };

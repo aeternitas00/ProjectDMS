@@ -49,6 +49,13 @@ UDMSEffectHandler* UDMSCoreFunctionLibrary::GetDMSEffectHandler()
 	return GM != nullptr ? GM->GetEffectHandler() : nullptr;
 }
 
+UDMSPhaseManager* UDMSCoreFunctionLibrary::GetDMSPhaseManager()
+{
+	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+
+	return GM != nullptr ? GM->GetPhaseManager() : nullptr;
+}
+
 bool UDMSCoreFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FGameplayTag& Name, float& outValue)
 {
 	if (iActor == nullptr) goto INVSOURCE;

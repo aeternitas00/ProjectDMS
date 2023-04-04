@@ -20,6 +20,7 @@ class ADMSGameMode;
 class UDMSSeqManager;
 class UDMSNotifyManager;
 class UDMSEffectHandler;
+class UDMSPhaseManager;
 class UDMSConditionObjectBase;
 /**
  * 
@@ -40,6 +41,9 @@ public:
 	static UDMSNotifyManager* GetDMSNotifyManager();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSEffectHandler* GetDMSEffectHandler();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	static UDMSPhaseManager* GetDMSPhaseManager();
 
 	// Helper function
 	// Attribute Library?

@@ -82,7 +82,7 @@ bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 	return false;
 }
 
-TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors()
+TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(APlayerController* WidgetOwner)
 {
 	// TODO :: Callback and Queued Selectors
 
@@ -91,28 +91,28 @@ TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors()
 	for (auto ED : EffectDefinitions)
 	{
 		//rv.Append(ED->CreateSelectors());
-		auto t= ED->CreatePairedSelector();	if(t==nullptr) continue;
+		auto t= ED->CreatePairedSelector(WidgetOwner);	if(t==nullptr) continue;
 		rv.Add(t);
 	}
 	return rv;
 
 }
 
-TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets()
+TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(APlayerController* WidgetOwner)
 {
 	TArray<UDMSDecisionWidget*> rv;
 	for (auto WidgetClass : DecisionWidgetClasses)
-	rv.Add(NewObject<UDMSDecisionWidget>(this,WidgetClass));
+	rv.Add(CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass));
 
 	InitializeDecisionWidget(rv);
 	return rv;
 }
 
-UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector()
+UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(APlayerController* WidgetOwner)
 {
 	if(!bIsUsingSelector) return nullptr;
 	
-	auto rv = GetPairedSelector().Get() != nullptr ? NewObject<UDMSEffectElementSelectorWidget>(this, GetPairedSelector().Get()) : nullptr;
+	auto rv = GetPairedSelector().Get() != nullptr ? CreateWidget<UDMSEffectElementSelectorWidget>(WidgetOwner, GetPairedSelector().Get()) : nullptr;
 	
 	// Never happen?
 	if (rv == nullptr) return nullptr;

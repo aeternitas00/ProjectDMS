@@ -37,7 +37,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UDMSSequence* OwnerSeq;
 
-	UFUNCTION(BlueprintCallable)
+	__declspec(noinline) UFUNCTION(BlueprintCallable)
 	void PopupSelector();
 
 	UFUNCTION(BlueprintNativeEvent)

@@ -57,10 +57,6 @@ void ADMSPlayerController::PostInitializeComponents()
 	for (auto ContainerDef : CardContainerTypes){
 		CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
 	}
-	// Will be changed with same way to above
-	//for (auto Stat : DefaultStats)	{
-	//	AttributeComponent->MakeAttribute(Stat.Key,Stat.Value);
-	//}
 
 	for (auto Stat : DefaultStats) {
 		AttributeComponent->MakeAttribute(Stat.Key, Stat.Value);
@@ -104,17 +100,5 @@ void ADMSPlayerController::AttachEffectInstance(UDMSEffectInstance* EI)
 bool ADMSPlayerController::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects,
 	bool iChainable,UDMSSequence* Seq,UObject* SourceTweak)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan,
-	//	FString::Printf(TEXT("%s : OnNotifyReceived"), *this->GetName())
-	//);
 	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable,Seq,this);
-}
-
-//UDMSAttribute* ADMSPlayerController::GetAttribute(const FName& AttributeName) { return AttributeComponent->GetAttribute(AttributeName); }
-//bool ADMSPlayerController::TryModAttribute(const FDMSAttributeModifier& Modifier) { return AttributeComponent->TryModAttribute(Modifier); }
-//void ADMSPlayerController::MakeAttribute(const FName& AttributeName, const float& DefValue){ AttributeComponent->MakeAttribute(AttributeName,DefValue); }
-
-float ADMSPlayerController::GetAttributeValue(const FGameplayTag& AttributeName) 
-{
-	return AttributeComponent->GetAttribute(AttributeName) ? AttributeComponent->GetAttribute(AttributeName)->GetValue() : -1.0f; 
 }

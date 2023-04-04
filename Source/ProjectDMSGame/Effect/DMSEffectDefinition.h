@@ -86,7 +86,7 @@ public:
 	TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector();
 	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation(){return nullptr;}
 
-	UDMSEffectElementSelectorWidget* CreatePairedSelector();
+	UDMSEffectElementSelectorWidget* CreatePairedSelector(APlayerController* WidgetOwner);
 	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance){}
 };
 
@@ -147,7 +147,7 @@ public:
 	TArray<TSubclassOf<UDMSDecisionWidget>> DecisionWidgetClasses;
 
 	// Create decision widget with "DecisionWidgetClasses".
-	TArray<UDMSDecisionWidget*> CreateDecisionWidgets();
+	TArray<UDMSDecisionWidget*> CreateDecisionWidgets(APlayerController* WidgetOwner);
 
 	// Implements on BP. How to initializing decision widget's candidate or search range. 
 	// Param's order follows "DecisionWidgetClasses" property's one.
@@ -178,7 +178,7 @@ public:
 	static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
 
 	// Create paired selector widget from "EffectDefinitions".
-	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors();
+	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(APlayerController* WidgetOwner);
 
 //=================== Child effect ===================//
 
@@ -214,7 +214,7 @@ public:
 	UDMSEffectNode* GetEffectNodeBP() { return GetEffectNode(); }
 	virtual UDMSEffectNode* GetEffectNode(){return nullptr;}
 	//virtual bool IsContainKeyword(const FName& iKeyword) {return false;}
-	virtual void CreateSelectors(){}
+	virtual void CreateSelectors(APlayerController* WidgetOwner){}
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) {}
 };
 
@@ -238,7 +238,7 @@ public:
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode; }
 	//bool IsContainKeyword(const FName& iKeyword){return EffectNode->IsContainKeyword(iKeyword);}
-	virtual void CreateSelectors(){ EffectNode->CreateSelectors(); }
+	virtual void CreateSelectors(APlayerController* WidgetOwner){ EffectNode->CreateSelectors(WidgetOwner); }
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) { EffectNode->RunSelectors(WidgetOwner, inSequence,OnSelectorsFinished);}
 };
 
@@ -260,7 +260,7 @@ public:
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode.GetDefaultObject(); }
 	//bool IsContainKeyword(const FName& iKeyword) { return EffectNode.GetDefaultObject()->IsContainKeyword(iKeyword); }
-	virtual void CreateSelectors(){ EffectNode.GetDefaultObject()->CreateSelectors(); }
+	virtual void CreateSelectors(APlayerController* WidgetOwner){ EffectNode.GetDefaultObject()->CreateSelectors(WidgetOwner); }
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) { EffectNode.GetDefaultObject()->RunSelectors(WidgetOwner, inSequence,OnSelectorsFinished); }
 };
 

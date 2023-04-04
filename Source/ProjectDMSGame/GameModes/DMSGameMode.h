@@ -21,6 +21,7 @@
 class UDMSEffectHandler;
 class UDMSSeqManager;
 class UDMSNotifyManager;
+class UDMSPhaseManager;
 class UDMSCardDefinition;
 class IDMSEffectorInterface;
 
@@ -46,21 +47,27 @@ protected:
 	//private and getter()?
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Instanced)
 	UDMSEffectHandler* EffectHandler;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly)
 	UDMSSeqManager* SequenceManager;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
 	UDMSNotifyManager* NotifyManager;
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly)
+	UDMSPhaseManager* PhaseManager;
+	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<UDMSSeqManager> SequenceManagerClass;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<UDMSPhaseManager> PhaseManagerClass;
 
 public:
-	//static ADMSGameMode* GetDMSGameMode();
-
 	FORCEINLINE UDMSSeqManager* GetSequenceManager() {return SequenceManager;}
 	FORCEINLINE UDMSEffectHandler* GetEffectHandler() {return EffectHandler;}
 	FORCEINLINE UDMSNotifyManager* GetNotifyManager() { return NotifyManager; }
+	FORCEINLINE UDMSPhaseManager* GetPhaseManager() { return PhaseManager; }
 
-//public:
-// ADMSCardBase* RequestSpawnCard(UDMSCardDefinition* iCardDef,AActor* iOwner,const FName& DefaultContainerName);
-//protected:
+	virtual void PreInitializeComponents() override;
+
 	void SpawnCardsFromDeck(class ADMSPlayerController* iPC);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	ADMSCardBase* SpawnCard(const UDMSCardDefinition* iCardDef,AActor* iOwner,const FName& DefaultContainerName=TEXT("Deck"));
@@ -68,7 +75,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
-	void PushSequence();
 };
 
 //DEPRECATED

@@ -32,18 +32,15 @@ class UDMSDecisionWidget;
  * 
  *	========================================
  */
-UCLASS(ClassGroup = (Sequence))
-class PROJECTDMSGAME_API UDMSSeqManager : public UObject // or ActorComponent to attach GM
+UCLASS(Blueprintable, ClassGroup = (Sequence))
+class PROJECTDMSGAME_API UDMSSeqManager : public UActorComponent // or ActorComponent to attach GM
 {
 	GENERATED_BODY()
 
-private:
-	//UPROPERTY()
-	//TArray<UDMSSequence*> SequenceFlow;
-
 protected:
 	void ApplySequence(UDMSSequence* Sequence);
-	void CompleteSequence(UDMSSequence* Sequence);
+	void CompleteSequence(UDMSSequence* Sequence);	
+	void CleanupSequenceTree();
 public:
 	UDMSSeqManager();
 
@@ -59,7 +56,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
 
-	void CleanupSequenceTree();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSequenceTreeInitiated();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSequenceTreeCompleted();
 
 	// *FSeqHandle*/ 같은 시퀀스 핸들 구현? ( 넷코드 생각할때 다시 )
 	UFUNCTION(BlueprintCallable)
@@ -67,7 +68,7 @@ public:
 		UObject* SourceObject, 
 		AActor* SourceController,
 		UDMSEffectNode* EffectNode, 
-		TArray<TScriptInterface<IDMSEffectorInterface>> Targets/* = TArray<TScriptInterface<IDMSEffectorInterface>>()*/, 
+		TArray<TScriptInterface<IDMSEffectorInterface>> Targets, 
 		UDMSDataObjectSet* Datas = nullptr, 
 		UDMSSequence* ParentSequence = nullptr
 	);
@@ -76,6 +77,7 @@ public:
 	void RunSequence(UDMSSequence* iSeq);
 	
 	int GetDepth(UDMSSequence* iSeq);
+
 	DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 
 	FOnSelectorFinished OnSelectorFinished;

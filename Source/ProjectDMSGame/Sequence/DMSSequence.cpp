@@ -15,6 +15,12 @@ void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCancel
 	);
 }
 
+template<typename FuncInitiated>
+void UDMSSequence::AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated)
+{
+	OnSequenceFinished.AddLambda(iOnSequenceInitiated);
+}
+
 template<typename FuncFinished>
 void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
 {
@@ -43,19 +49,24 @@ void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq)
 	ChildSequence = iSeq;
 }
 
-bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets, APlayerController* WidgetOwner)
+bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets)
 { 
-	for(auto Widget : iWidgets) Widget->SetOwningPlayer(WidgetOwner);
+	//for(auto Widget : iWidgets) Widget->SetOwningPlayer(WidgetOwner);
 	SelectorQueue.SelectorQueue.Empty();
 	SelectorQueue.SelectorQueue.Append(iWidgets); 
 	bool rv= SelectorQueue.SetupQueue(this);
 	return rv;
 }
 
+void UDMSSequence::OnSequenceInitiate()
+{
+	OnSequenceInitiated.Broadcast();
+}
+
 void UDMSSequence::OnSequenceFinish()
 {
 	auto temp = std::move(OnSequenceFinished);
-	OnSequenceFinished = FOnSequenceFinished();
+	OnSequenceFinished = FOnSequenceStateChanged();
 	temp.Broadcast();
 	// Cleanup 
 	

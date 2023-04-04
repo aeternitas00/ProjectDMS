@@ -27,7 +27,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UObject* SourceObject,
 	AActor* SourceController, 
 	UDMSEffectNode* EffectNode, 
-	TArray<TScriptInterface<IDMSEffectorInterface>> Targets, 
+	TArray<TScriptInterface<IDMSEffectorInterface>> Targets = TArray<TScriptInterface<IDMSEffectorInterface>>(),
 	UDMSDataObjectSet* Datas, 
 	UDMSSequence* ParentSequence
 )
@@ -50,8 +50,11 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->EIDatas = NewData;
 	Sequence->Targets = Targets;
 	if (ParentSequence == nullptr) {
-		if (RootSequence == nullptr) 
+		if (RootSequence == nullptr) {
 			RootSequence = Sequence;
+			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
+			RootSequence->OnSequenceFinished.AddUObject(this, &UDMSSeqManager::OnSequenceTreeCompleted);
+		}
 		else if (CurrentSequence != nullptr)
 			CurrentSequence->AttachChildSequence(Sequence);
 	}
@@ -81,6 +84,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 	}
 
 	CurrentSequence = iSeq;
+	CurrentSequence->OnSequenceInitiate();
 
 	// ====== Decision Making Step ====== //
 	// ( ex. User Choose target, ... )
@@ -88,8 +92,8 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 	TArray<UDMSConfirmWidgetBase*> Widgets;
 	//if (!iSeq->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
 	//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
-	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets()));
-	if (!iSeq->SetupWidgetQueue(Widgets, WidgetOwner))
+	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets(WidgetOwner)));
+	if (!iSeq->SetupWidgetQueue(Widgets))
 	{
 		DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
 		CompleteSequence(iSeq);
@@ -105,7 +109,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 
 		// ====== Effect Data Selection Step ====== //
 		// ( ex. User set value of effect's damage amount , ... )
-		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors()), WidgetOwner))
+		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(WidgetOwner))))
 		{
 			DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
 			CompleteSequence(pSequence);
