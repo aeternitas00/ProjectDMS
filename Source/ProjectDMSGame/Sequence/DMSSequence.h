@@ -46,15 +46,15 @@ public:
 	// Default Initializer
 	UDMSSequence( ) { 
 		Progress = EDMSTimingFlag::T_Before; //EDMSTimingFlag::T_Null;
-		//bIsActive=false;
+		bIsActive = true;
 		SourceObject = nullptr;
 		ParentSequence = nullptr;
 		ChildSequence = nullptr;
 		// 
 	}
 
-	//UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	//bool bIsActive;
+	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
+	bool bIsActive;
 
 	// 어떠한 이펙트가 실제로 월드에 영향을 끼치기 까지의 과정 중에 간섭할 '타이밍'은 결론적으로 발동 전, 도중, 후 세가지로 크게 나눌 수 있음.
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)

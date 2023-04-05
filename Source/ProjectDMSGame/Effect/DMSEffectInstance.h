@@ -31,6 +31,8 @@ enum class EDMSEIState : uint8
 {
 	EIS_Default UMETA(DisplayName = "Default"),
 	EIS_Pending UMETA(DisplayName = "Pending to apply"),
+	EIS_Persistent UMETA(DisplayName = "Persistent"),
+	EIS_PendingKill UMETA(DisplayName = "Pending to kill"),
 	//...
 };
 

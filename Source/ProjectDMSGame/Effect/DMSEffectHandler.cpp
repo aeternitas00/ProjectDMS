@@ -12,7 +12,7 @@
 
 
 
-
+// Owned effect creating helper
 TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* SourceObject,AActor* SourceController, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
 {
 	TArray<UDMSEffectInstance*> rv;
@@ -20,6 +20,8 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* Sou
 	EffectInstance->Initialize(EffectNode, iSet);
 	EffectInstance->SourceObject = SourceObject;
 	EffectInstance->SourceController = SourceController;
+
+	EIList.Add(EffectInstance);
 
 	rv.Add(EffectInstance);
 	return rv;
@@ -40,6 +42,7 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 
 		TargetObject->AttachEffectInstance(EffectInstance);
 
+		EIList.Add(EffectInstance);
 		Sequence->EIs.Add(EffectInstance);
 	}
 	
@@ -53,6 +56,12 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 	
 	if (Sequence->EIs.Num() == 0) {
 		DMS_LOG_SIMPLE(TEXT("No Resolve Target"));
+		goto ResolveFailed; 
+	}
+	// seperate for logging
+	if (!Sequence->bIsActive) {
+		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
+	ResolveFailed:
 		OnResolveCompleted();
 		return;
 	}

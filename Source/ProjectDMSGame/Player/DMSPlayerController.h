@@ -28,6 +28,7 @@ class ADMSCardBase;
 class UDMSEIManagerComponent;
 class UDMSAttributeComponent;
 class UDMSAttribute;
+class UDMSEffectNode;
 
 //UENUM(BlueprintType)
 //enum class EDMSCardInteractionMode : uint8

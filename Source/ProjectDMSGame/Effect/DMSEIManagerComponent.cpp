@@ -62,31 +62,6 @@ UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FName& iSetName)
 	return Owner!=nullptr ? Owner->GetOwningEffectSet(iSetName) : nullptr;
 }
 
-//UDMSAttribute* UDMSEIManagerComponent::GetAttribute(const FName& AttributeName)
-//{
-//	auto Owner = Cast<IDMSAttributeInterface>(GetOwner());
-//	return Owner != nullptr ? Owner->GetAttribute(AttributeName) : nullptr;
-//}
-//
-//bool UDMSEIManagerComponent::TryModAttribute(const FDMSAttributeModifier& Modifier)
-//{
-//	DMS_LOG_SCREEN(TEXT("%s : TryModAttribute to %s"), *GetName(), *GetOwner()->GetName());
-//
-//	auto Owner = Cast<IDMSAttributeInterface>(GetOwner());
-//
-//	if (Owner == nullptr) DMS_LOG_SCREEN(TEXT("%s : Outer (%s) doesn't implements AttributeInterface"), *GetName(), *GetOwner()->GetName());
-//
-//	return Owner != nullptr ? Owner->TryModAttribute(Modifier) : false;
-//}
-//
-//void UDMSEIManagerComponent::MakeAttribute(const FName& AttributeName, const float& DefValue)
-//{
-//	auto Owner = Cast<IDMSAttributeInterface>(GetOwner());
-//
-//	if (Owner == nullptr) return;
-//	Owner->MakeAttribute(AttributeName, DefValue);
-//}
-
 template <typename FuncNodeInitializer>	
 void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName, FuncNodeInitializer&& NodeInitializer )
 {
@@ -114,7 +89,7 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FName
 		AActor* CardOwner = const_cast<AActor*>(GetOwner()->GetNetOwner());
 
 		auto EIs = EH->CreateEffectInstance(GetOwner(), CardOwner, Node);
-		EIs[0]->ChangeEIState(EDMSEIState::EIS_Default);
+		EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
 		EIs[0]->Rename(nullptr, GetOwner());
 		OwnEffectInstances.Add(EIs[0]);
 	}

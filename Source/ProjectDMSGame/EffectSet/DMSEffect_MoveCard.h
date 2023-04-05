@@ -7,11 +7,6 @@
 
 class ADMSCardBase;
 class UDMSCardContainerComponent;
-/**
- * 
- * 카드 이펙트처럼 인스턴스드 일수도 있고 필요할 때 생성해서 쓸수 있게도 할 예정 ( 플레이어 조작에 의한 행동 )
- * 
- */
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_MoveCard)
 

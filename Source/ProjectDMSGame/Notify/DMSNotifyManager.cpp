@@ -16,10 +16,15 @@ template<typename FuncCompleted>
 void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : BROADCASTING  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+	
+	if (!NotifyData->bIsActive) {
+		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
+		ResponseCompleted();
+		return;
+	}
+	
 	TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> ResponsedObjects;
-	// Check non relative first
 
-	// Check all relatives
 
 	for (auto& Object : NotifyObjects)
 	{
@@ -124,22 +129,24 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
 		UDMSEffectInstance* EffectInstance = Cast<UDMSEffectInstance>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
 		
+		// prepare for resume. ( we'll check again but except responded one.)
 		InstancedWidget->ResponsedObjects.Remove(Respondent);
-
 		TArray<TScriptInterface<IDMSEffectorInterface>> NewRespondents;
-		TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> NewResponsedObjects;
-
 		InstancedWidget->ResponsedObjects.GetKeys(NewRespondents);
-		for (auto Object : NewRespondents)
-		{
-			// 이거 말고 그냥 체크만 하는 함수로 재구성 하던가 포스드 일 때 강제실행을 여기서 노티파이 매니저가 하도록 해서 순차적으로 실행하게 해야함 ( 기다려주면서 ) 해야함.
-			Object->OnNotifyReceived(NewResponsedObjects, InstancedWidget->OwnerSeq->OriginalEffectNode->bIsChainableEffect, InstancedWidget->OwnerSeq);
-		}
 
 		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->OwnerSeq);
 		
-		NewSeq->AddToOnSequenceFinished_Native([ ResumingSequence= InstancedWidget->OwnerSeq,NewResponsedObjects](){
+		NewSeq->AddToOnSequenceFinished_Native([ ResumingSequence= InstancedWidget->OwnerSeq, NewRespondents](){
+			
 			// Replay response 
+			TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> NewResponsedObjects;
+
+			// Check again. ( Apply changed env )
+			for (auto Object : NewRespondents)
+			{
+				// 이거 말고 그냥 체크만 하는 함수로 재구성 하던가 포스드 일 때 강제실행을 여기서 노티파이 매니저가 하도록 해서 순차적으로 실행하게 해야함 ( 기다려주면서 ) 해야함.
+				Object->OnNotifyReceived(NewResponsedObjects, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
+			}
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : RESUME RESPONSE ===="), *ResumingSequence->GetName());
 

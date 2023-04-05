@@ -70,6 +70,7 @@ UENUM()
 enum class EDMSObjectSelectorFlag : uint8
 {
 	OSF_Default UMETA(DisplayName = "Notified Object"),
+	OSF_OwningPlayer UMETA(DisplayName = "Notified Object's owner player"),
 	OSF_SourceObj UMETA(DisplayName = "Seq -> Source Object"),
 	OSF_SourceCtr UMETA(DisplayName = "Seq -> Source Controller"),
 	OSF_Data UMETA(DisplayName = "Seq -> Data[Candidates] ? ( Working )"),

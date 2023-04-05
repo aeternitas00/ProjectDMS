@@ -13,6 +13,10 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 	case EDMSObjectSelectorFlag::OSF_Default:
 		Rv.Add(Caller);
 		break;
+	case EDMSObjectSelectorFlag::OSF_OwningPlayer:
+		if (Caller->Implements<UDMSEffectorInterface>())
+			Rv.Add(Cast<IDMSEffectorInterface>(Caller)->GetOwningPlayer());
+		break;
 	case EDMSObjectSelectorFlag::OSF_SourceObj:
 		Rv.Add(iSeq->SourceObject);
 		break;

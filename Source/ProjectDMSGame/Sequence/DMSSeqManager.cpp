@@ -268,5 +268,6 @@ void UDMSSeqManager::CleanupSequenceTree()
 {
 	//...
 	RootSequence = nullptr;
+	// Else will be GCed.
 	//...
 }
