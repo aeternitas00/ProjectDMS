@@ -42,6 +42,13 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	OnWorkCompleted.ExecuteIfBound(SourceSequence);
 }
 
+FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
+{ 
+	FGameplayTagContainer Rv(EffectTag);
+	Rv.AddTag(Value.AttributeTag);
+	return Rv;
+}
+
 void UDMSEffect_ModAtt::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
 {
 	auto CastedWidget = Cast<UDMSSelector_ModAtt>(WidgetInstance);

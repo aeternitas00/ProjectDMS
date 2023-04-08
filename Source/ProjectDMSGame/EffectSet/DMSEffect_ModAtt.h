@@ -73,7 +73,7 @@ public:
 	TSubclassOf<UDMSSelector_ModAtt> PairedWidgetClass;
 
 	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation() { return PairedWidgetClass.Get(); }
-
+	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
 	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance) override;
 };
 

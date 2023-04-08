@@ -55,6 +55,9 @@ public:
 	UPROPERTY()
 	FGameplayTag EffectTag;
 
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
+	FGameplayTagContainer GetEffectTags();
+	virtual FGameplayTagContainer GetEffectTags_Implementation(){return FGameplayTagContainer(EffectTag);}
 public:
 	UDMSEffectDefinition(): bIsUsingSelector(false), bHasPairedSelector(false){}
 
@@ -64,7 +67,7 @@ public:
 	// 성공 여부 파악, 체인 확장을 위한 핸들 리턴?
 	UFUNCTION(BlueprintNativeEvent)
 	void Work(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted); // temp
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){};
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(SourceSequence); }
 
 	// ===== For selector features ===== //
 
@@ -176,6 +179,11 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
+
+	UFUNCTION(BlueprintNativeEvent)
+	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget(UDMSSequence* iSequence);
+	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget_Implementation(UDMSSequence* iSequence);
+
 
 	// Create paired selector widget from "EffectDefinitions".
 	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(APlayerController* WidgetOwner);

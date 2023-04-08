@@ -10,6 +10,7 @@
 #include "Conditions/DMSConditionObject.h"
 
 #include "GameModes/DMSGameMode.h"
+#include "EffectSet/DMSEffect_CancelEffect.h"
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 #include "Card/DMSCardBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -40,8 +41,20 @@ void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 {
 	if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num())
 		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence);
-	else
-		EffectNode->EffectDefinitions[OnApplyCompletedMap[SourceSequence].Index++]->Work(SourceSequence,this, OnApplyCompletedMap[SourceSequence].IteratingDelegate);
+	else{
+		FGameplayTagQuery Query;
+		auto CurrentDef = EffectNode->EffectDefinitions[OnApplyCompletedMap[SourceSequence].Index++];
+
+		if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) && SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>()) 
+			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
+		
+		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
+			CurrentDef->Work(SourceSequence, this, OnApplyCompletedMap[SourceSequence].IteratingDelegate);
+		}
+		else {
+			OnApplyCompletedMap[SourceSequence].IteratingDelegate.ExecuteIfBound(SourceSequence);
+		}
+	}
 }
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) { EffectNode = iNode; CurrentState = EDMSEIState::EIS_Pending; DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); }

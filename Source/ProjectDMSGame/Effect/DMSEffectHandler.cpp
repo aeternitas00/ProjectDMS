@@ -5,6 +5,8 @@
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
+
+
 #include "Notify/DMSNotifyManager.h"
 #include "GameModes/DMSGameMode.h"
 #include "Sequence/DMSSequence.h"
@@ -35,7 +37,7 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 	if (Sequence->Targets.Num() == 0) 
 		Sequence->Targets = UDMSEffectNode::GeneratePresetTarget(EffectNode,Sequence);
 
-	for (auto TargetObject : Sequence->Targets)
+	for (auto TargetObject : EffectNode->GenerateApplyTarget(Sequence))
 	{
 		UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(this);
 		EffectInstance->Initialize(EffectNode, Sequence);
@@ -59,8 +61,8 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 		goto ResolveFailed; 
 	}
 	// seperate for logging
-	if (!Sequence->bIsActive) {
-		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
+	if (Sequence->SequenceState != EDMSSequenceState::SS_Default) {
+		DMS_LOG_SIMPLE(TEXT("Sequence is canceled or ignored"));
 	ResolveFailed:
 		OnResolveCompleted();
 		return;

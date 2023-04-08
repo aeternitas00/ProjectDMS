@@ -212,7 +212,8 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 					DMS_LOG_SIMPLE(TEXT("==== %s : ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *AfterSequence->GetName(), SeqManager->GetDepth(AfterSequence));
 					
 					// Run child effect if exist.
-					if (AfterSequence->OriginalEffectNode->ChildEffect != nullptr &&
+					if (AfterSequence->SequenceState!=EDMSSequenceState::SS_Canceled &&
+						AfterSequence->OriginalEffectNode->ChildEffect != nullptr &&
 						AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(AfterSequence->SourceObject, AfterSequence))	{
 
 						// Proceed to run child effect sequence.

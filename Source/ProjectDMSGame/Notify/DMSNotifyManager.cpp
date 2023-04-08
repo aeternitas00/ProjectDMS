@@ -17,7 +17,7 @@ void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : BROADCASTING  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
 	
-	if (!NotifyData->bIsActive) {
+	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled) {
 		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
 		ResponseCompleted();
 		return;
@@ -136,21 +136,27 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->OwnerSeq);
 		
-		NewSeq->AddToOnSequenceFinished_Native([ ResumingSequence= InstancedWidget->OwnerSeq, NewRespondents](){
+		NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->OwnerSeq ](){
 			
 			// Replay response 
-			TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> NewResponsedObjects;
+
+			TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> LocalNRO;
+
+			if (ResumingSequence->SequenceState == EDMSSequenceState::SS_Canceled) {
+				DMS_LOG_SIMPLE(TEXT("Resumed sequence was canceled"));
+				UDMSCoreFunctionLibrary::GetDMSNotifyManager()->CallResponseCompleted(ResumingSequence);
+				return;
+			}
 
 			// Check again. ( Apply changed env )
 			for (auto Object : NewRespondents)
 			{
 				// 이거 말고 그냥 체크만 하는 함수로 재구성 하던가 포스드 일 때 강제실행을 여기서 노티파이 매니저가 하도록 해서 순차적으로 실행하게 해야함 ( 기다려주면서 ) 해야함.
-				Object->OnNotifyReceived(NewResponsedObjects, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
+				Object->OnNotifyReceived(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
 			}
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : RESUME RESPONSE ===="), *ResumingSequence->GetName());
 
-			auto LocalNRO = std::move(NewResponsedObjects);
 			UDMSCoreFunctionLibrary::GetDMSNotifyManager()->CreateRespondentSelector(ResumingSequence, LocalNRO);
 		});		
 

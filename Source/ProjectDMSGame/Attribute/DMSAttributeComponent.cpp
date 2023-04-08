@@ -61,7 +61,7 @@ void UDMSAttributeComponent::MakeAttribute(const FGameplayTag& AttributeName, co
 
 	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
 	NewAtt->Value = DefValue;
-
+	NewAtt->AttributeTag = AttributeName;
 	Attributes.Add(AttributeName, NewAtt);
 }
 

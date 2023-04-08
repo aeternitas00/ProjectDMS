@@ -28,6 +28,13 @@ class UDMSEffectorInterface;
 class UDMSEffectNode;
 class UDMSConfirmWidgetBase;
 
+UENUM(/*BlueprintType*/)
+enum class EDMSSequenceState : uint8
+{
+	SS_Default UMETA(DisplayName = "Default"),
+	SS_Canceled UMETA(DisplayName = "Canceled"),
+	SS_Ignored UMETA(DisplayName = "After")
+};
 
 /** 
  * 	========================================
@@ -46,27 +53,27 @@ public:
 	// Default Initializer
 	UDMSSequence( ) { 
 		Progress = EDMSTimingFlag::T_Before; //EDMSTimingFlag::T_Null;
-		bIsActive = true;
+		SequenceState = EDMSSequenceState::SS_Default;
 		SourceObject = nullptr;
 		ParentSequence = nullptr;
 		ChildSequence = nullptr;
 		// 
 	}
 
-	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	bool bIsActive;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EDMSSequenceState SequenceState;
 
 	// 어떠한 이펙트가 실제로 월드에 영향을 끼치기 까지의 과정 중에 간섭할 '타이밍'은 결론적으로 발동 전, 도중, 후 세가지로 크게 나눌 수 있음.
-	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSTimingFlag Progress;
 
 	// 이펙트 노드와 1:1 매칭.
 	// 이 시퀀스에 있어 사실상의 의미절에 해당함.
-	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDMSEffectNode* OriginalEffectNode;
 
 	// 미리 선택하고 발동을 해야하는 카드들을 위해?
-	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<TScriptInterface<IDMSEffectorInterface>> Targets; // 개편후 정리 / 재고 필요
 
 	// 발동 의지를 보인 플레이어 (혹은 AI?)

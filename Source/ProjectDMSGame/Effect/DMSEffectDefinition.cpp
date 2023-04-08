@@ -63,11 +63,16 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 	return TempTarget;
 }
 
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateApplyTarget_Implementation(UDMSSequence* iSequence)
+{
+	return iSequence->Targets;
+}
+
 bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 {
 	FGameplayTagContainer ctn;
 	ctn.AddTagFast(NodeTag);
-	for (auto fx : EffectDefinitions)	ctn.AddTag(fx->EffectTag);
+	for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
 	
 	return ctn.MatchesQuery(EffectTagQuery);
 }
