@@ -87,6 +87,7 @@ bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 	return false;
 }
 
+
 TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(APlayerController* WidgetOwner)
 {
 	// TODO :: Callback and Queued Selectors
@@ -126,3 +127,30 @@ UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(APla
 
 	return rv;
 }
+
+
+
+// SERIALIZATIONS
+
+//void UDMSEffectDefinition::Serialize(FArchive& Ar)
+//{
+//	Super::Serialize(Ar);
+//
+//	if (Ar.IsSaving()) {}
+//	else if (Ar.IsLoading()) {}
+//}
+//void UDMSEffectNode::Serialize(FArchive& Ar)
+//{
+//	Super::Serialize(Ar);
+//
+//	if (Ar.IsSaving()){}
+//	else if (Ar.IsLoading()) {}
+//}
+//
+//void UDMSEffectSet::Serialize(FArchive& Ar)
+//{
+//	Super::Serialize(Ar);
+//
+//	if (Ar.IsSaving()) {}
+//	else if (Ar.IsLoading()) {}
+//}

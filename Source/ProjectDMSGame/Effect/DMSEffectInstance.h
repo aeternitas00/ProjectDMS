@@ -49,7 +49,7 @@ enum class EDMSEIState : uint8
  */
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class PROJECTDMSGAME_API UDMSEffectInstance : public UObject , public IDMSEffectorInterface
 {
 	GENERATED_BODY()
@@ -59,10 +59,11 @@ public:
 		
 protected:
 	// State flag of Effect instance. For preview or persistant things.
+	UPROPERTY()
 	EDMSEIState CurrentState;
 
 	// Effects that affect to effect. ( modifying values )
-	//UPROPERTY()
+	UPROPERTY()
 	TArray<UDMSEffectInstance*> SubEI;
 
 	struct FApplyDelegateCounter {
@@ -80,7 +81,7 @@ public:
 	UObject* SourceObject;
 
 	// Effect node that effect instance will run.
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UDMSEffectNode* EffectNode;
 
 	// Data needs to running effect node.
@@ -110,5 +111,9 @@ public:
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;
 	// 기본적으로 EI는 '어떤 효과' 그 자체를 객체화 하기 위해 만든 클래스이므로 이펙트셋을 소유한다는 개념은 조금 이상한 듯.
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
+
+	virtual void Serialize(FArchive& Ar) override;
+
+	//friend FArchive& operator<<(FArchive& Ar, UDMSEffectInstance*& EI);
 };
 

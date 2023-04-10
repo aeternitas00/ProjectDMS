@@ -33,7 +33,7 @@ class UDMSEffectNode_TypeBehavior;
  *
  */
 UCLASS(Blueprintable, BlueprintType, Const, ClassGroup = (Card))
-class PROJECTDMSGAME_API UDMSCardDefinition : public UDataAsset
+class PROJECTDMSGAME_API UDMSCardDefinition : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 	
@@ -48,23 +48,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FName DefaultCardType; // ENUM?
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	//TSubclassOf<UDMSEffectNode_TypeBehavior> DefaultCardType;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText EffectText;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText FlavorText;
 	
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	//FBrush Image;
-
 	// enum for key?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
 	TMap<FName,UDMSEffectSet*> CardEffectSets;
 
 public:
-
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// TODO :: Asset Management Helper Funcs
 };

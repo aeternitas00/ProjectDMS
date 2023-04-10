@@ -22,6 +22,8 @@ class UDMSNotifyManager;
 class UDMSEffectHandler;
 class UDMSPhaseManager;
 class UDMSConditionObjectBase;
+struct FDMSCardData;
+
 /**
  * 
  */
@@ -57,4 +59,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static bool CheckCondition(UDMSConditionObjectBase* Condition, UObject* CheckingGameObject, UDMSSequence* CurrentSequence);
+
+	UFUNCTION(BlueprintCallable)
+	static void SetDataOwner(const FDMSCardData& Data, UObject* Owner);
 };

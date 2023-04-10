@@ -97,10 +97,52 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 	return rv;
 }
 
+void UDMSEffectInstance::Serialize(FArchive& Ar)
+{
+	DMS_LOG_SCREEN(TEXT("UDMSEffectInstance Serialized"));
+	Super::Serialize(Ar);
+
+	if (Ar.IsSaving())
+	{
+		// UDMSEffectNode* 멤버 변수를 직렬화하고 저장
+		if (EffectNode)
+		{
+			UClass* NodeClass = EffectNode->GetClass();
+			Ar << NodeClass;
+			EffectNode->Serialize(Ar);
+		}
+		else
+		{
+			UClass* NullClass = nullptr;
+			Ar << NullClass;
+		}
+	}
+	else if (Ar.IsLoading())
+	{
+		// UDMSEffectNode* 멤버 변수를 로드하고 역직렬화하여 새로운 인스턴스를 생성
+
+		UClass* NodeClass;
+		Ar << NodeClass;
+
+		if (NodeClass!=nullptr){
+			EffectNode = NewObject<UDMSEffectNode>(this, NodeClass);
+			EffectNode->Serialize(Ar);
+		}
+	}
+
+}
+
 
 //UDMSEffectSet* UDMSEffectInstance::GetOwningEffectSet()
 //{
 //	//
 //
 //	return nullptr;
+//}
+
+//FArchive& operator<<(FArchive& Ar, UDMSEffectInstance*& EI)
+//{
+//	// TODO: 여기에 return 문을 삽입합니다.
+//	EI->Serialize(Ar);
+//	return Ar;
 //}

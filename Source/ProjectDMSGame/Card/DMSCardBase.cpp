@@ -95,3 +95,5 @@ UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FName& iSetName)
 	//return CardDefinition->CardEffects;
 	return CardDefinition->CardEffectSets.Contains(iSetName) ? CardDefinition->CardEffectSets[iSetName] : nullptr;
 }
+
+

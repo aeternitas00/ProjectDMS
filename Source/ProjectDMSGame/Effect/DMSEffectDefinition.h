@@ -91,6 +91,8 @@ public:
 
 	UDMSEffectElementSelectorWidget* CreatePairedSelector(APlayerController* WidgetOwner);
 	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance){}
+
+	//virtual void Serialize(FArchive& Ar) override;
 };
 
 
@@ -203,6 +205,8 @@ public:
 	// Flag of "Is this effect has chainable window?".
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
 	bool bIsChainableEffect;
+
+	//virtual void Serialize(FArchive& Ar) override;
 };
 
 /** 
@@ -298,6 +302,8 @@ public:
 
 	//bool IsContainKeyword(const FName& iKeyword);
 	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
+
+	//virtual void Serialize(FArchive & Ar) override;
 };
 
 

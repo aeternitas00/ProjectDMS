@@ -9,7 +9,9 @@
 #include "Effect/DMSEffectHandler.h"
 #include "Card/DMSCardBase.h"
 #include "Card/DMSCardDefinition.h"
+#include "Effect/DMSEffectInstance.h"
 #include "Conditions/DMSConditionObject.h"
+#include "Card/DMSCardData.h"
 
 FString UDMSCoreFunctionLibrary::GetTimingString(const EDMSTimingFlag& Flag)
 {
@@ -84,4 +86,13 @@ bool UDMSCoreFunctionLibrary::CheckCardIsCommitable(ADMSCardBase* iCard)
 bool UDMSCoreFunctionLibrary::CheckCondition(UDMSConditionObjectBase* Condition, UObject* CheckingGameObject, UDMSSequence* CurrentSequence)
 {
 	return Condition->CheckCondition(CheckingGameObject, CurrentSequence);
+}
+
+void UDMSCoreFunctionLibrary::SetDataOwner(const FDMSCardData& Data, UObject* Owner)
+{
+	for (auto EI : Data.AttachedEffect)
+	{
+		if (EI!=nullptr)
+			EI->Rename(nullptr, Owner);
+	}
 }

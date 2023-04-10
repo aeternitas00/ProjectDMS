@@ -21,6 +21,8 @@ class UDMSCardDefinition;
 class UDMSCardContainerComponent;
 class UDMSEIManagerComponent;
 
+
+
 /**
  * 	========================================
  *
@@ -57,6 +59,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// IDMSEffectorInterface Implements.
 	virtual UObject* GetObject() override { return this; }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;

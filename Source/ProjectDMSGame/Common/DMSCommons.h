@@ -99,6 +99,7 @@ enum class EDMSPresetTargetFlag : uint8
  *	게임내에 돌아다니는 데이터들의 타입 제한을 조금 더 느슨하게 해보고자 해서 도입
  *	지금 상태가 최선이 아닌거같긴 한데 다른 방법이 있을까에 대한 생각.=>
  *	좀 더 사용 가능한 타입을 제한하고 그냥 union이나 ue5에서 제공하는 비슷한것을 쓴다던지 
+ *	특히 시리얼라이즈부분의 이슈가 있어서...
  */
 UCLASS(BlueprintType)
 class PROJECTDMSGAME_API UDMSDataObject : public UObject
@@ -130,6 +131,7 @@ public:
 	void SetInheriting(const bool& i) { Inheriting=i; }
 	
 	void CopyValue(UDMSDataObject* iObj) {this->AnyValue = iObj->AnyValue;}
+
 };
 
 //	위의 DataObject 를 모아서 관리하는 오브젝트
@@ -140,6 +142,7 @@ class PROJECTDMSGAME_API UDMSDataObjectSet : public UObject
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY()
 	TMap<FGameplayTag, UDMSDataObject*> DataMap;
 
 public:
