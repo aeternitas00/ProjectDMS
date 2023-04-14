@@ -13,7 +13,6 @@ bool FDMSSelectorQueue::SetupQueue(UDMSSequence* OwnerSeq)
 	CurrentIndex = -1;
 
 	for (auto Selector : SelectorQueue){
-		Selector->OwnerSeq= Owner;
 		if (!Selector->SetupWidget() ) 
 			return false;
 	}
@@ -56,9 +55,5 @@ void FDMSSelectorQueue::RunNextSelector()
 		return;
 	}
 	SelectorQueue[LocalIdx]->PopupSelector();
-	//if (!SelectorQueue[LocalIdx]->SetupWidget()) {
-	//	SelectorQueue[LocalIdx]->CloseSelector();
-	//	RunNextSelector();
-	//}
 
 }

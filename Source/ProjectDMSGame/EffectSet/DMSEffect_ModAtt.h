@@ -69,6 +69,8 @@ public:
 
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override; // temp
 
+	// ====== Selectors ====== //
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	TSubclassOf<UDMSSelector_ModAtt> PairedWidgetClass;
 

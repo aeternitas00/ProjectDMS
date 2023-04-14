@@ -69,17 +69,19 @@ public:
 	void Work(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted); // temp
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(SourceSequence); }
 
-	// ===== For selector features ===== //
+	// ===== For selector ===== //
 
-	UFUNCTION(BlueprintNativeEvent)
-	bool GetCandidates(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
-	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj) { return false; }
+
+	// InitializePairedSelector 와 병합하는게 맞을듯
+	//UFUNCTION(BlueprintNativeEvent)
+	//bool GetCandidates(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
+	//virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj) { return false; }
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "bHasPairedSelector", EditConditionHides))
 	bool bIsUsingSelector;
 
 	// dynamic referencer for tweaks
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	FGameplayTag ReferenceDataKey;
 
 	UPROPERTY(VisibleAnywhere, meta = (EditCondition = false, EditConditionHides))
@@ -88,9 +90,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector();
 	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation(){return nullptr;}
-
-	UDMSEffectElementSelectorWidget* CreatePairedSelector(APlayerController* WidgetOwner);
+	
 	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance){}
+
+	UDMSEffectElementSelectorWidget* CreatePairedSelector(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner);
 
 	//virtual void Serialize(FArchive& Ar) override;
 };
@@ -188,7 +191,7 @@ public:
 
 
 	// Create paired selector widget from "EffectDefinitions".
-	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(APlayerController* WidgetOwner);
+	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner);
 
 //=================== Child effect ===================//
 
@@ -226,7 +229,7 @@ public:
 	UDMSEffectNode* GetEffectNodeBP() { return GetEffectNode(); }
 	virtual UDMSEffectNode* GetEffectNode(){return nullptr;}
 	//virtual bool IsContainKeyword(const FName& iKeyword) {return false;}
-	virtual void CreateSelectors(APlayerController* WidgetOwner){}
+	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){}
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) {}
 };
 
@@ -250,7 +253,7 @@ public:
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode; }
 	//bool IsContainKeyword(const FName& iKeyword){return EffectNode->IsContainKeyword(iKeyword);}
-	virtual void CreateSelectors(APlayerController* WidgetOwner){ EffectNode->CreateSelectors(WidgetOwner); }
+	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode->CreateSelectors(OwnerSeq,WidgetOwner); }
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) { EffectNode->RunSelectors(WidgetOwner, inSequence,OnSelectorsFinished);}
 };
 
@@ -272,7 +275,7 @@ public:
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode.GetDefaultObject(); }
 	//bool IsContainKeyword(const FName& iKeyword) { return EffectNode.GetDefaultObject()->IsContainKeyword(iKeyword); }
-	virtual void CreateSelectors(APlayerController* WidgetOwner){ EffectNode.GetDefaultObject()->CreateSelectors(WidgetOwner); }
+	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode.GetDefaultObject()->CreateSelectors(OwnerSeq,WidgetOwner); }
 	//virtual void RunSelectors(APlayerController* WidgetOwner, UDMSSequence* inSequence, void (UDMSSeqManager::*OnSelectorsFinished)(UDMSSequence*)) { EffectNode.GetDefaultObject()->RunSelectors(WidgetOwner, inSequence,OnSelectorsFinished); }
 };
 

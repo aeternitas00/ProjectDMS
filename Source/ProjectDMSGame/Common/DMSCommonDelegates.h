@@ -22,6 +22,8 @@ class UDMSSequence;
 //	========================================
 
 DECLARE_DELEGATE(FSimpleEventSignature);
+DECLARE_MULTICAST_DELEGATE(FSimpleMulticastEventSignature);
+
 DECLARE_DELEGATE(FOnResolveCompleted);
 DECLARE_DELEGATE_OneParam(FResolveIteratingDelegate, UDMSSequence*);
 DECLARE_DELEGATE_OneParam(FOnApplyCompleted, UDMSSequence*);

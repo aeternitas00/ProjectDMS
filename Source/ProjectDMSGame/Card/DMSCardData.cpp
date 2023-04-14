@@ -14,37 +14,6 @@ void FDMSCardData::LoadCardDefinition()
 	CardDefinition=UDMSAssetManager::Get().ForceLoadCard(CardAssetID);
 }
 
-//void FDMSCardData::Serialize(FArchive& Ar)
-//{
-//	DMS_LOG_SCREEN(TEXT("FDMSCardData SERIALIZED"));
-//	Ar << CardAssetID;
-//
-//	if (Ar.IsSaving())
-//	{
-//		int EINum = AttachedEffect.Num();
-//		Ar << EINum;
-//
-//		for (auto EI : AttachedEffect)
-//		{
-//			EI->Serialize(Ar);
-//		}
-//	}
-//	else if (Ar.IsLoading())
-//	{
-//		int EINum = 0;
-//		Ar << EINum;
-//
-//		for (int i=0;i<EINum;i++){
-//			UDMSEffectInstance* EI = NewObject<UDMSEffectInstance>();
-//			EI->Serialize(Ar);
-//
-//			AttachedEffect.Add(EI);
-//		}
-//	}
-//
-//}
-
-
 FArchive& operator<<(FArchive& Ar, FDMSCardData& Data)
 {
 	DMS_LOG_SCREEN(TEXT("FDMSCardData Serialized"));

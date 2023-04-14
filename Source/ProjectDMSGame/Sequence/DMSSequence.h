@@ -36,6 +36,9 @@ enum class EDMSSequenceState : uint8
 	SS_Ignored UMETA(DisplayName = "After")
 };
 
+DECLARE_DYNAMIC_DELEGATE(FOnSequenceStateChanged_Signature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceStateChanged_Dynamic);
+
 /** 
  * 	========================================
  *
@@ -116,12 +119,14 @@ public:
 	void OnSequenceInitiate();
 	void OnSequenceFinish();
 
-	DECLARE_MULTICAST_DELEGATE(FOnSequenceStateChanged);
-	//DECLARE_DYNAMIC_DELEGATE(FOnSequenceStateChanged_Dynamic);
+
 
 protected:
-	FOnSequenceStateChanged OnSequenceInitiated;
-	FOnSequenceStateChanged OnSequenceFinished;
+	FSimpleMulticastEventSignature OnSequenceInitiated;
+	FSimpleMulticastEventSignature OnSequenceFinished;
+
+	FOnSequenceStateChanged_Dynamic OnSequenceInitiated_Dynamic;
+	FOnSequenceStateChanged_Dynamic OnSequenceFinished_Dynamic;
 
 public:
 	template<typename FuncInitiated>
@@ -130,7 +135,11 @@ public:
 	template<typename FuncFinished>
 	void AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished);
 
-	void AddToOnSequenceFinished(const FSimpleEventSignature& OnSequenceFinished);
+	UFUNCTION(BlueprintCallable)
+	void AddToOnSequenceInitiated(const FOnSequenceStateChanged_Signature& iOnSequenceInitiated);
+
+	UFUNCTION(BlueprintCallable)
+	void AddToOnSequenceFinished(const FOnSequenceStateChanged_Signature& OnSequenceFinished);
 
 	friend class UDMSSeqManager;
 };

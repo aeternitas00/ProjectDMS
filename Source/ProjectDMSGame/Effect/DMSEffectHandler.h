@@ -46,7 +46,11 @@ protected:
 
 	void ApplyNextEffectInstance(UDMSSequence* Sequence);
 
+	
+
 public:
+	void Cleanup();
+	
 	// Create from setup
 	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UObject* SourceObject, AActor* SourceController, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
 	// Create from seq

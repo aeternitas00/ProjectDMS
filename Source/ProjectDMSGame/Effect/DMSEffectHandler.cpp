@@ -83,3 +83,10 @@ void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence)
 	else
 		SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++]->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].IteratingDelegate);
 }
+
+void UDMSEffectHandler::Cleanup()
+{
+	EIList.RemoveAllSwap([](UDMSEffectInstance* EI) {
+		return EI->GetCurrentState() == EDMSEIState::EIS_PendingKill;
+	});
+}

@@ -67,6 +67,9 @@ public:
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
 	virtual AActor* GetOwningPlayer() { return GetOwner(); }
 
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Attach Effect Instance"))
+	void AttachEffectInstance_BP(UDMSEffectInstance* EI) { AttachEffectInstance(EI); }
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void InitializeCard(const UDMSCardDefinition* iCardDefinition/*...*/);
 	void InitializeCard_Implementation(const UDMSCardDefinition* iCardDefinition/*...*/);

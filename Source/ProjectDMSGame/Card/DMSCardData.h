@@ -34,24 +34,19 @@ struct FDMSCardData
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FPrimaryAssetId CardAssetID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	TArray<UDMSEffectInstance*> AttachedEffect;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Transient)
+	UPROPERTY(BlueprintReadWrite, Transient)
 	TArray<ADMSCardBase*> SpawnedCardActor;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Transient)
+	UPROPERTY(BlueprintReadWrite, Transient)
 	const UDMSCardDefinition* CardDefinition;
 
 	void LoadCardDefinition();
-	void CachingCardActor() {}
-	void CollectSavingDataFromActor() {}
-
-	//void Serialize(FArchive& Ar);
-
 
 	friend FArchive& operator<<(FArchive& Ar, FDMSCardData& MyStruct);
 };

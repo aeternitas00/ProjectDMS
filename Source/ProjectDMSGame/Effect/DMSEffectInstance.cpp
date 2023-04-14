@@ -40,7 +40,10 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence) 
 {
 	if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num())
+	{
+		if (CurrentState!=EDMSEIState::EIS_Persistent) CurrentState=EDMSEIState::EIS_PendingKill;
 		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence);
+	}
 	else{
 		FGameplayTagQuery Query;
 		auto CurrentDef = EffectNode->EffectDefinitions[OnApplyCompletedMap[SourceSequence].Index++];

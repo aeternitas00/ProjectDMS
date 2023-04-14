@@ -68,13 +68,6 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	SeqMan->RunSequence(NewSeq);
 }
 
-void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
-{
-	auto CastedWidget = Cast<UDMSSelector_ActivateEffect>(WidgetInstance);
-	if (CastedWidget == nullptr) return;
-	CastedWidget->OutDataName = ReferenceDataKey;
-}
-
 UDMSEffectSet* UDMSEffect_ActivateEffect::GetEffectSetFromOuter(UDMSEffectInstance* iEI)
 {
 	// Outer Validation
@@ -84,25 +77,38 @@ UDMSEffectSet* UDMSEffect_ActivateEffect::GetEffectSetFromOuter(UDMSEffectInstan
 	return tOuter != nullptr ? tOuter->GetOwningEffectSet(EffectSetName) : nullptr;
 }
 
-
-// 타겟이 여러개일때?
-bool UDMSEffect_ActivateEffect::GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj)
+void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
 {
-	//return false;
+	auto CastedWidget = Cast<UDMSSelector_ActivateEffect>(WidgetInstance);
+	if (CastedWidget == nullptr) return;
+	
+	//CastedWidget->OutDataName = ReferenceDataKey;
 
+	auto& iSeq = WidgetInstance->OwnerSeq;
+	
 	for (auto EI : iSeq->EIs)
 	{
 		auto Set = GetEffectSetFromOuter(EI);
 		if (Set == nullptr) 
-		{ DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *EI->GetOuter()->GetName()); outDataObj.Empty(); return false; }
+		{ DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *EI->GetOuter()->GetName()); WidgetInstance->CandidatesData.Empty(); return; }
 
 		auto NewDataObj = NewObject<UDMSDataObject>();
 		TArray<UObject*> tArr;
 		for (UObject* i : Set->EffectNodes) tArr.Add(i);
 		NewDataObj->Set(tArr);
 
-		outDataObj.Add(NewDataObj);
-	}
+		WidgetInstance->CandidatesData.Add(NewDataObj);
+	} 
+}
+//
+//bool UDMSEffect_ActivateEffect::GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj)
+//{
+//	//return false;
+//
+//
+//}
 
-	return true; 
+UDMSDataObjectSet* UDMSSelector_ActivateEffect::MakeOutputData_Implementation()
+{ 
+	return NewObject<UDMSDataObjectSet>(); 
 }

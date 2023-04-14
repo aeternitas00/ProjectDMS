@@ -29,7 +29,7 @@ public:
 	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
 
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override;
-	virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
+	//virtual bool GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj);
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	TSubclassOf<UDMSSelector_ActivateEffect> PairedWidgetClass;
@@ -46,8 +46,7 @@ class UDMSSelector_ActivateEffect : public UDMSEffectElementSelectorWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
-	FGameplayTag OutDataName;
 
-	virtual	bool SetupWidget_Implementation() { return GetCandidatesFromED(); }
+	virtual UDMSDataObjectSet* MakeOutputData_Implementation();
+
 };

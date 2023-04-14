@@ -52,6 +52,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	if (ParentSequence == nullptr) {
 		if (RootSequence == nullptr) {
 			RootSequence = Sequence;
+			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::CleanupSequenceTree);
 			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
 			RootSequence->OnSequenceFinished.AddUObject(this, &UDMSSeqManager::OnSequenceTreeCompleted);
 		}
@@ -109,7 +110,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 
 		// ====== Effect Data Selection Step ====== //
 		// ( ex. User set value of effect's damage amount , ... )
-		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(WidgetOwner))))
+		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(pSequence, WidgetOwner))))
 		{
 			DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
 			CompleteSequence(pSequence);
@@ -124,6 +125,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 			DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="),*pSequenceN->GetName());
 			ApplySequence(pSequenceN);
 
+			// Prevent self notifing 
 			for (auto EI : pSequenceN->EIs)
 			{
 				EI->ChangeEIState(EDMSEIState::EIS_Default);
@@ -213,7 +215,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 					
 					// Run child effect if exist.
 					if (AfterSequence->SequenceState!=EDMSSequenceState::SS_Canceled &&
-						AfterSequence->OriginalEffectNode->ChildEffect != nullptr &&
+						AfterSequence->OriginalEffectNode->ChildEffect != nullptr && AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode() != nullptr &&
 						AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(AfterSequence->SourceObject, AfterSequence))	{
 
 						// Proceed to run child effect sequence.
@@ -269,6 +271,7 @@ void UDMSSeqManager::CleanupSequenceTree()
 {
 	//...
 	RootSequence = nullptr;
+	UDMSCoreFunctionLibrary::GetDMSEffectHandler()->Cleanup();
 	// Else will be GCed.
 	//...
 }

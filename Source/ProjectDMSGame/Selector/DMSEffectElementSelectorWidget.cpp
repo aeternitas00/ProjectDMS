@@ -5,7 +5,7 @@
 #include "Effect/DMSEffectDefinition.h"
 
 
-bool UDMSEffectElementSelectorWidget::GetCandidatesFromED()
-{
-	return SourceEffectDefinition->GetCandidates(OwnerSeq, CandidatesData);
-}
+//bool UDMSEffectElementSelectorWidget::GetCandidatesFromED()
+//{
+//	return SourceEffectDefinition->GetCandidates(OwnerSeq, CandidatesData);
+//}

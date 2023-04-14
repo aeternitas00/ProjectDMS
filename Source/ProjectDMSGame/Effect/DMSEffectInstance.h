@@ -30,7 +30,7 @@ UENUM()
 enum class EDMSEIState : uint8
 {
 	EIS_Default UMETA(DisplayName = "Default"),
-	EIS_Pending UMETA(DisplayName = "Pending to apply"),
+	EIS_Pending UMETA(DisplayName = "Pending to apply"), // Prevent self notifing 
 	EIS_Persistent UMETA(DisplayName = "Persistent"),
 	EIS_PendingKill UMETA(DisplayName = "Pending to kill"),
 	//...
@@ -97,6 +97,7 @@ public:
 	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet = nullptr);
 	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
 
+	FORCEINLINE EDMSEIState GetCurrentState() { return CurrentState; }
 	FORCEINLINE void ChangeEIState(const EDMSEIState& NewState) { CurrentState = NewState; }
 
 	UDMSSequence* CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence);

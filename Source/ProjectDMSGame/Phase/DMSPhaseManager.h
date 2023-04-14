@@ -26,16 +26,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UDMSPhase>> DefaultPhaseList;
 
+	UPROPERTY()
 	UDMSPhase* CurrentPhase;
-
-	//UPROPERTY(/*BlueprintReadWrite, EditDefaultsOnly, */BlueprintAssignable)
-	//FOnPhaseStateChanged DefaultOnPhaseStarted;
-	//
-	//UPROPERTY(/*BlueprintReadWrite, EditDefaultsOnly,*/ BlueprintAssignable)
-	//FOnPhaseStateChanged DefaultOnPhaseEnded;
-
-	//void BroadCastPhaseStarted(UDMSPhase* iPhase){ DefaultOnPhaseStarted.Broadcast(iPhase); }
-	//void BroadCastPhaseEnded(UDMSPhase* iPhase){ DefaultOnPhaseEnded.Broadcast(iPhase); }
 
 public:
 

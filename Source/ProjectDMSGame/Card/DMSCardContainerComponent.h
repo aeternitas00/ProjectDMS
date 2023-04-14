@@ -93,6 +93,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSCardBase*> GetTopNCards(int Num);
 
+	UFUNCTION(BlueprintCallable)
+	void ShuffleTopNCards(int Num=0);
 
 	UFUNCTION(BlueprintPure,BlueprintCallable)
 	FName GetContainerName() const {return FName(*GetName())/*ContainerName */; }

@@ -70,7 +70,7 @@ public:
 
 	void SpawnCardsFromDeck(class ADMSPlayerController* iPC);
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	ADMSCardBase* SpawnCard(const UDMSCardDefinition* iCardDef,AActor* iOwner,const FName& DefaultContainerName=TEXT("Deck"));
+	ADMSCardBase* SpawnCard(const FDMSCardData& CardData,AActor* iOwner,const FName& DefaultContainerName=TEXT("Deck"));
 
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);

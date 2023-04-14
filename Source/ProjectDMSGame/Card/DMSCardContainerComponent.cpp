@@ -2,7 +2,8 @@
 
 
 #include "Card/DMSCardContainerComponent.h"
-
+#include "Library/DMSCoreFunctionLibrary.h"
+#include "Misc/DateTime.h"
 
 // Called when the game starts
 void UDMSCardContainerComponent::BeginPlay()
@@ -67,4 +68,10 @@ TArray<ADMSCardBase*> UDMSCardContainerComponent::GetTopNCards(int Num)
 	if (CardList.Cards.Num() == 0 || Num <= 0) return TArray<ADMSCardBase*>();
 	if (CardList.Cards.Num() <= Num) Num = CardList.Cards.Num();
 	return TArray<ADMSCardBase*>(&CardList.Cards.GetData()[CardList.Cards.Num() - Num], Num);
+}
+
+void UDMSCardContainerComponent::ShuffleTopNCards(int Num)
+{
+	FRandomStream Stream(FDateTime::Now().GetTicks());
+	UDMSCoreFunctionLibrary::ShuffleArray(Stream,CardList.Cards,Num);
 }

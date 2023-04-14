@@ -30,7 +30,7 @@ class PROJECTDMSGAME_API ADMSPlayerState : public APlayerState
 	GENERATED_BODY()
 	
 public:
-	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	TArray<FDMSCardData> OriginalCardDatas;
 	// Original card infos.
 
@@ -39,5 +39,6 @@ public:
 
 	void LoadDeck(class UDMSSaveGame* SaveGame){}
 
-
+	UFUNCTION(BlueprintCallable)
+	void SetCardDatas(const TArray<FDMSCardData>& InDatas);
 };

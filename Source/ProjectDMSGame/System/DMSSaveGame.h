@@ -22,6 +22,9 @@ public:
 	// Character datas ( exp, ~~ )
 
 	// Scenario datas ( campain progress, ~~ )
+	UFUNCTION(BlueprintCallable)
+	void LoadSavedCardData();
+
 protected:
 	virtual void Serialize(FArchive& Ar) override;
 };

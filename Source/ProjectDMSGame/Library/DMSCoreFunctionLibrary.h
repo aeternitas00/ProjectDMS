@@ -62,4 +62,21 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static void SetDataOwner(const FDMSCardData& Data, UObject* Owner);
+
+	template<typename Type>
+	static void ShuffleArray(FRandomStream& Stream, TArray<Type>& Array, const int32& ShuffleRange);
 };
+
+template<typename Type>
+void UDMSCoreFunctionLibrary::ShuffleArray(FRandomStream& Stream, TArray<Type>& Array, const int32& ShuffleRange) {
+	const int32 LastIndex = (ShuffleRange <= 0 || ShuffleRange > Array.Num() - 1 )? Array.Num() - 1 : ShuffleRange;
+
+	for (int32 i = 0; i <= LastIndex; i += 1) {
+		const int32 Index = Stream.RandRange(i, LastIndex);
+		if (i == Index) {
+			continue;
+		}
+
+		Array.Swap(i, Index);
+	}
+}

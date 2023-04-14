@@ -88,7 +88,7 @@ bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 }
 
 
-TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(APlayerController* WidgetOwner)
+TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner)
 {
 	// TODO :: Callback and Queued Selectors
 
@@ -97,7 +97,7 @@ TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(APlayer
 	for (auto ED : EffectDefinitions)
 	{
 		//rv.Append(ED->CreateSelectors());
-		auto t= ED->CreatePairedSelector(WidgetOwner);	if(t==nullptr) continue;
+		auto t= ED->CreatePairedSelector(OwnerSeq,WidgetOwner);	if(t==nullptr) continue;
 		rv.Add(t);
 	}
 	return rv;
@@ -114,7 +114,7 @@ TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(APlayerControl
 	return rv;
 }
 
-UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(APlayerController* WidgetOwner)
+UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner)
 {
 	if(!bIsUsingSelector) return nullptr;
 	
@@ -123,6 +123,7 @@ UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(APla
 	// Never happen?
 	if (rv == nullptr) return nullptr;
 	rv->SetSourceEffectDefinition(this);
+	rv->OwnerSeq = OwnerSeq;
 	InitializePairedSelector(rv);
 
 	return rv;

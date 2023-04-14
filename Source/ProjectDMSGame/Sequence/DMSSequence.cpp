@@ -33,14 +33,19 @@ void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFini
 
 }
 
-void UDMSSequence::AddToOnSequenceFinished(const FSimpleEventSignature& iOnSequenceFinished)
+void UDMSSequence::AddToOnSequenceInitiated(const FOnSequenceStateChanged_Signature& iOnSequenceInitiated)
+{
+	OnSequenceInitiated_Dynamic.Add(iOnSequenceInitiated);
+}
+
+void UDMSSequence::AddToOnSequenceFinished(const FOnSequenceStateChanged_Signature& iOnSequenceFinished)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
 
-	if (OnSequenceFinished.IsBound()) {
+	if (OnSequenceFinished_Dynamic.IsBound()) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
 	}
-	OnSequenceFinished.Add(iOnSequenceFinished);
+	OnSequenceFinished_Dynamic.Add(iOnSequenceFinished);
 }
 
 void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq) 
@@ -61,13 +66,17 @@ bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets)
 void UDMSSequence::OnSequenceInitiate()
 {
 	OnSequenceInitiated.Broadcast();
+	OnSequenceInitiated_Dynamic.Broadcast();
 }
 
 void UDMSSequence::OnSequenceFinish()
 {
 	auto temp = std::move(OnSequenceFinished);
-	OnSequenceFinished = FOnSequenceStateChanged();
+	auto temp_Dynamic = std::move(OnSequenceFinished_Dynamic);
+	OnSequenceFinished = FSimpleMulticastEventSignature();
+	OnSequenceFinished_Dynamic = FOnSequenceStateChanged_Dynamic();
 	temp.Broadcast();
+	temp_Dynamic.Broadcast();
 	// Cleanup 
 	
 }

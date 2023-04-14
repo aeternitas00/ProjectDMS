@@ -33,27 +33,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bForEachTarget;
 
-protected:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<UDMSDataObject*> CandidatesData;
-
+protected:
+	UPROPERTY(BlueprintReadOnly)
 	UDMSEffectDefinition* SourceEffectDefinition;
 
 public:
 	UDMSEffectElementSelectorWidget(const FObjectInitializer& ObjectInitializer) :
 	UDMSConfirmWidgetBase(ObjectInitializer),bForEachTarget(false),SourceEffectDefinition(nullptr)
 	{}
-
-
-	//UFUNCTION(BlueprintImplementableEvent)
-	//bool SetupCandidates();
 	
-	// Usage : Use this in SetupCandidate() when if this selector have dynamic candidates.
-	// ex) 
-	UFUNCTION(BlueprintCallable)
-	bool GetCandidatesFromED();
-	
-	//virtual	bool SetupWidget_Implementation();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UDMSDataObjectSet* MakeOutputData();
+	virtual UDMSDataObjectSet* MakeOutputData_Implementation(){return NewObject<UDMSDataObjectSet>(); }
 
 	FORCEINLINE void SetSourceEffectDefinition(UDMSEffectDefinition* iDef) { SourceEffectDefinition = iDef;}
 	FORCEINLINE UDMSDataObject* GetCandidatesData(const uint8& TargetIdx) { return CandidatesData[TargetIdx]; }

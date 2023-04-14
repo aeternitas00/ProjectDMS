@@ -65,7 +65,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	bool bIsDependOnOuter;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
+	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
 
 	DECLARE_DYNAMIC_DELEGATE_RetVal(float, FGetDependentValue);
 
