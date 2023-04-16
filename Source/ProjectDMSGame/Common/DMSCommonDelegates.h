@@ -7,7 +7,7 @@
  *
  *	DMS_CORE_MODULE
  *
- *	ENUMS and Data Object that used often in DMS.
+ *	Delegates that used often in DMS.
  *
  *	========================================
  */
@@ -17,9 +17,9 @@
 
 class UDMSSequence;
 
-//	========================================
-//				
-//	========================================
+//	========================= //
+//			Delegates
+//	========================= //
 
 DECLARE_DELEGATE(FSimpleEventSignature);
 DECLARE_MULTICAST_DELEGATE(FSimpleMulticastEventSignature);

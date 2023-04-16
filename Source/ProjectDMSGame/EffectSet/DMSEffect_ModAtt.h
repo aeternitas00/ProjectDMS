@@ -64,6 +64,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
 	bool bCreateIfNull;
 
+	/**
+	 *
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	FDMSSelectorData_ModAtt SelectorData;
 
@@ -85,6 +88,9 @@ class UDMSSelector_ModAtt : public UDMSEffectElementSelectorWidget
 	GENERATED_BODY()
 
 public:
+	/**
+	 *
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	FDMSSelectorData_ModAtt SelectorData;
 };

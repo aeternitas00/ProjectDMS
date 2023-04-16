@@ -30,12 +30,23 @@ class PROJECTDMSGAME_API UDMSEffectElementSelectorWidget : public UDMSConfirmWid
 	GENERATED_BODY()
 	
 public:
+
+	/**
+	 * Is this selection has to be for each target?
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bForEachTarget;
 
+	/**
+	 * Storing candidate data before this widget is popped up.
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	TArray<UDMSDataObject*> CandidatesData;
 protected:
+
+	/**
+	 * Paired effect definition.
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	UDMSEffectDefinition* SourceEffectDefinition;
 
@@ -44,11 +55,24 @@ public:
 	UDMSConfirmWidgetBase(ObjectInitializer),bForEachTarget(false),SourceEffectDefinition(nullptr)
 	{}
 	
+	/**
+	 * Processes the result selected in the widget for sending it to the sequence's EI Data.
+	 * @return	New UDMSDataObjectSet. Use ReferenceDataKey of paired ED.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UDMSDataObjectSet* MakeOutputData();
 	virtual UDMSDataObjectSet* MakeOutputData_Implementation(){return NewObject<UDMSDataObjectSet>(); }
 
+	/**
+	 * Setter of SourceEffectDefinition
+	 */
 	FORCEINLINE void SetSourceEffectDefinition(UDMSEffectDefinition* iDef) { SourceEffectDefinition = iDef;}
+	
+	/**
+	 * Getter of CandidatesData's item.
+	 * @param	TargetIdx					CandidatesData's index
+	 * @return	CandidatesData[TargetIdx]
+	 */
 	FORCEINLINE UDMSDataObject* GetCandidatesData(const uint8& TargetIdx) { return CandidatesData[TargetIdx]; }
 
 };

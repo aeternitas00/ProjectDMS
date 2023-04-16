@@ -44,7 +44,10 @@ public:
 	//ADMSGameMode(const FObjectInitializer& ObjectInitializer);
 
 protected:
-	//private and getter()?
+
+	/**
+	 * Manager objects / components.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Instanced)
 	UDMSEffectHandler* EffectHandler;
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly)
@@ -53,10 +56,8 @@ protected:
 	UDMSNotifyManager* NotifyManager;
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly)
 	UDMSPhaseManager* PhaseManager;
-	
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSSeqManager> SequenceManagerClass;
-
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSPhaseManager> PhaseManagerClass;
 
@@ -68,14 +69,22 @@ public:
 
 	virtual void PreInitializeComponents() override;
 
+	/**
+	 *
+	 */
 	void SpawnCardsFromDeck(class ADMSPlayerController* iPC);
+
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	ADMSCardBase* SpawnCard(const FDMSCardData& CardData,AActor* iOwner,const FName& DefaultContainerName=TEXT("Deck"));
 
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
 };
 
-//DEPRECATED
-//#define GetDMSGameMode() (Cast<ADMSGameMode>(UGameplayStatics::GetGameMode(GetWorld())))

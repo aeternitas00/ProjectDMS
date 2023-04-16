@@ -41,20 +41,35 @@ public:
 
 	// ----------------------------------------------------------------------------------------- //
 	// 기본적인 카드 구성 요소들은 인게임내에서 변경 가능성에 대해 생각해봐야함.
+	
+	/**
+	 * Display name of card.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText CardName;
 
-	// Using Data registry Connect with type behavior?
+	/**
+	 * Name of card type.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FName DefaultCardType; // ENUM?
 
+	/**
+	 * Description text of card effect.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText EffectText;
 
+	/**
+	 * Flavor text of card effect.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText FlavorText;
 	
-	// enum for key?
+	/**
+	 * Effect sets of Card.
+	 * ex) <"Cost",CostEffectSet>
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
 	TMap<FName,UDMSEffectSet*> CardEffectSets;
 

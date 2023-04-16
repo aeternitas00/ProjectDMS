@@ -18,7 +18,9 @@ class PROJECTDMSGAME_API UDMSEffect_MoveCard : public UDMSEffectDefinition
 public:
 	UDMSEffect_MoveCard();;
 
-	// Keyword for search
+	/**
+	 * Keyword for search
+	 */ 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Name of Destination Container"))
 	FName NameDestination;
 

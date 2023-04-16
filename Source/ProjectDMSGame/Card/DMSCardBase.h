@@ -45,20 +45,25 @@ protected:
 
 protected:
 
-	// Here?
+	/**
+	 * Card's data.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	const UDMSCardDefinition* CardDefinition;
 
-	// Cache
+	/**
+	 * Card container that owning this card.
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	UDMSCardContainerComponent* OwningContainer;
 
+	/**
+	 * Card's effector component.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UDMSEIManagerComponent* EffectManagerComponent;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	// IDMSEffectorInterface Implements.
 	virtual UObject* GetObject() override { return this; }
@@ -67,20 +72,32 @@ public:
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
 	virtual AActor* GetOwningPlayer() { return GetOwner(); }
 
+	/**
+	 * AttachEffectInstance for blueprint
+	 * @param	EI								Attaching new ei.
+	 */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Attach Effect Instance"))
 	void AttachEffectInstance_BP(UDMSEffectInstance* EI) { AttachEffectInstance(EI); }
 
+	/**
+	 * Initialize card with new card definition.
+	 * @param	iCardDefinition					New card data.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void InitializeCard(const UDMSCardDefinition* iCardDefinition/*...*/);
 	void InitializeCard_Implementation(const UDMSCardDefinition* iCardDefinition/*...*/);
 
-	// Native Get,Setter
+	/**
+	 * Native Get,Setter
+	 */
 	const UDMSCardDefinition* GetCardDefinition();
 	void SetCardDefinition(const UDMSCardDefinition* iCardDefinition); // Init
 
 	UDMSCardContainerComponent* GetOwningContainer() {return OwningContainer;}
 
-	// Hide or something?
+	/**
+	 * 
+	 */
 	void SetOwningContainer(UDMSCardContainerComponent* Container) { OwningContainer = Container;}
 
 	

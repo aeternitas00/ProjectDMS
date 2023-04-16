@@ -37,11 +37,15 @@ class PROJECTDMSGAME_API UDMSSeqTimingCondition : public UDMSConditionObject
 	GENERATED_BODY()
 
 public:
-	// 'Before / During / After' What happens
+	/**
+	 * 'Before / During / After' What happens
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
 	EDMSTimingFlag Timing;
 
-	// 'What'
+	/**
+	 * 'What'
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
 	FGameplayTagQuery EffectTagQuery;
 

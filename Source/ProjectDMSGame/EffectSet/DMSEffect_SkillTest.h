@@ -65,10 +65,11 @@ class UDMSSelector_SkillTest : public UDMSEffectElementSelectorWidget
 	GENERATED_BODY()
 
 protected:
-	//UPROPERTY(BlueprintReadOnly)
-	//float V;
 
 public:
+	/**
+	 *
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	FDMSSelectorData_SkillTest SkillTestData;
 

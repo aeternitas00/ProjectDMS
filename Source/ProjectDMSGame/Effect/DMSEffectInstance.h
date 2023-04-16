@@ -58,11 +58,15 @@ public:
 	UDMSEffectInstance():CurrentState(EDMSEIState::EIS_Default){}
 		
 protected:
-	// State flag of Effect instance. For preview or persistant things.
+	/** 
+	 * State flag of Effect instance.For preview or persistant things.
+	 */
 	UPROPERTY()
 	EDMSEIState CurrentState;
 
-	// Effects that affect to effect. ( modifying values )
+	/**
+	 * Effects that affect to effect. (modifying values)
+	 */
 	UPROPERTY()
 	TArray<UDMSEffectInstance*> SubEI;
 
@@ -72,38 +76,77 @@ protected:
 		FOnWorkCompleted IteratingDelegate;
 	};
 
-	// 상호 발동형 이펙트를 통해 체인 내에 같은 EI가 Reapply 될 경우 꼬일 가능성 존재하므로 흐름 단위인 '시퀀스'를 키로 잡음.
+	/**
+	 * 상호 발동형 이펙트를 통해 체인 내에 같은 EI가 Reapply 될 경우 꼬일 가능성 존재하므로 흐름 단위인 '시퀀스'를 키로 잡음.
+	 */
 	TMap<UDMSSequence*, FApplyDelegateCounter> OnApplyCompletedMap;
 
+	/**
+	 * Function for chained delegates. Will be bound to IteratingDelegate.
+	 * @param	SourceSequence					Current applying sequence.
+	 */
+	UFUNCTION()
+	void ApplyNextEffectDefinition(UDMSSequence* SourceSequence);
+
 public:
-	// Sources of effect
+
+	/**
+	 * Getter of CurrentState
+	 */
+	FORCEINLINE EDMSEIState GetCurrentState() { return CurrentState; }
+
+	/**
+	 * Setter of CurrentState
+	 */
+	FORCEINLINE void ChangeEIState(const EDMSEIState& NewState) { CurrentState = NewState; }
+
+	/**
+	 * Sources of effect
+	 */
 	AActor* SourceController;
 	UObject* SourceObject;
 
-	// Effect node that effect instance will run.
+	/**
+	 * Effect node that effect instance will run.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UDMSEffectNode* EffectNode;
 
-	// Data needs to running effect node.
+	/**
+	 * Data needs to running effect node.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UDMSDataObjectSet* DataSet; 
 
 public:
-	// Apply effect to Outer.
-
+	/**
+	 * Apply effect to Outer.
+	 * @return	Sequence						Current sequence.
+	 * @return	OnApplyCompleted				Delegate executed when apply completed.
+	 */
 	FORCEINLINE void Apply(UDMSSequence* Sequence,const FResolveIteratingDelegate& OnApplyCompleted);
 
-	// Sort of setup. Getting data from sequence or other source. ( ex. Setting up Owning effect. )
+	/** 
+	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
+	 * @param	iNode
+	 * @param	iSet.
+	 */
 	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet = nullptr);
+	
+	/**
+	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
+	 * @param	iNode
+	 * @param	iSeq.
+	 */
 	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
 
-	FORCEINLINE EDMSEIState GetCurrentState() { return CurrentState; }
-	FORCEINLINE void ChangeEIState(const EDMSEIState& NewState) { CurrentState = NewState; }
-
+	/**
+	 * Create new sequence from owning datas. ( node, datas .... )
+	 * @param	SourceTweak						Source object of new sequence.
+	 * @param	ChainingSequence				Parent sequence of creating sequence.
+	 * @return	Created sequence.
+	 */
 	UDMSSequence* CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence);
-
-	UFUNCTION()
-	void ApplyNextEffectDefinition(UDMSSequence* SourceSequence);
 
 	// =========== INTERFACE FUNCTION =========== // 
 	virtual UObject* GetObject() override { return this; } 

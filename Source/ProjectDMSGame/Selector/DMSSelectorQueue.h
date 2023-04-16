@@ -25,35 +25,60 @@ struct FDMSSelectorQueue
 {
 	GENERATED_BODY()
 
-public:
 	FDMSSelectorQueue():CurrentIndex(-1){}
 
-	//Cache
+	/**
+	 * Caching owner sequence.
+	 */
 	class UDMSSequence* Owner;
 
+	/**
+	 * List of selectors.
+	 */
 	UPROPERTY()
 	TArray<UDMSConfirmWidgetBase*> SelectorQueue;
 
+	/**
+	 * Current index of SelectorQueue.
+	 */
 	//UPROPERTY()
 	int8 CurrentIndex;
 
-	// Chained Delegates..
-	__declspec(noinline) bool SetupQueue(UDMSSequence* OwnerSeq) ;
+	/**
+	 * Current index of SelectorQueue.
+	 * @param	OwnerSeq					Owner sequence of selector queue.
+	 * @return	true if Setup was successful.
+	 */
+	bool SetupQueue(UDMSSequence* OwnerSeq);
+
+	/**
+	 * Add confirm widget to SelectorQueue.
+	 * @param	iWidget						Adding widget.
+	 */
 	FORCEINLINE void AddSelector(UDMSConfirmWidgetBase* iWidget) { SelectorQueue.Add(iWidget); }
 	
+	/**
+	 * Run SelectorQueue.
+	 * @param	iOnSelectorsCompleted		Lambda parameter binded to OnSelectorsCompleted.
+	 * @param	iOnSelectorsCanceled		Lambda parameter binded to OnSelectorsCanceled.
+	 */
 	template<typename FuncCompleted, typename FuncCanceled >
 	void RunSelectors(FuncCompleted&& iOnSelectorsCompleted, FuncCanceled&& iOnSelectorsCanceled);
-
-	void RunNextSelector();
-
+	
 	DECLARE_DELEGATE_OneParam(FOnSelectorsClosed, UDMSSequence*);
 
+	/**
+	 * Delegate to be called when the Selector Queue was completed.
+	 */
 	FOnSelectorsClosed OnSelectorsCompleted;
-	FOnSelectorsClosed OnSelectorsCanceled;
-};
 
-//UCLASS()
-//class PROJECTDMSGAME_API UDMSSelectorQueue : public UObject;
-//{
-//
-//}
+	/**
+	 * Delegate to be called when the Selector Queue was canceled.
+	 */
+	FOnSelectorsClosed OnSelectorsCanceled;
+	
+	/**
+	 * Run next selector (internal).
+	 */
+	void RunNextSelector();
+};

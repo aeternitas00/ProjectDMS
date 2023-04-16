@@ -34,36 +34,62 @@ protected:
 public:
 	UDMSConfirmWidgetBase(const FObjectInitializer& ObjectInitializer) :UUserWidget(ObjectInitializer){}
 	
+	/**
+	 * Owner sequence of widget.
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	UDMSSequence* OwnerSeq;
 
-	__declspec(noinline) UFUNCTION(BlueprintCallable)
+	/**
+	 * Popup this widget.
+	 */
+	UFUNCTION(BlueprintCallable)
 	void PopupSelector();
 
+	/**
+	 * Executed when widget popped up.
+	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void OnPopupSelector();
 	virtual void OnPopupSelector_Implementation(){}
 
+	/**
+	 * Close this widget.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void CloseSelector();
 
+	/**
+	 * Executed when widget closed.
+	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void OnCloseSelector();
 	virtual void OnCloseSelector_Implementation(){}
 
-	// Usage : Bind to Confirm Button
+	/**
+	 * Complete this selector widget. ( This function have to be bound to widget's ok button or something )
+	 */
 	UFUNCTION(BlueprintCallable)
 	void CompleteSelect(UDMSDataObjectSet* OutData);
-	// Usage : Bind to Cancel Button
+
+	/**
+	 * Cancel this selector widget. ( This function have to be bound to widget's cancel button or something )
+	 */
 	UFUNCTION(BlueprintCallable)
 	void CancelSelect();
 
+	/**
+	 * Setup this selector widget's OnCompleted and OnCanceled delegates.
+	 * @param	iOnCompleted				Lambda parameter binded to OnSelectCompleted.
+	 * @param	iOnCanceled					Lambda parameter binded to OnSelectCanceled.
+	 */
 	template<typename FuncCompleted, typename FuncCanceled > // 나중에 universal reference 읽어보기
 	void SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled/*, UDMSSequence* iOwnerSeq*/);
 
-	// Do something with "OwnerSeq"
-	// Return "Setup widget was Successful"
-	// Usage : 
+	/**
+	 * Setup widget ( with OwnerSeq's data ).
+	 * @return	true if Setup was successful
+	 */
 	UFUNCTION(BlueprintNativeEvent)
 	bool SetupWidget();
 	virtual	bool SetupWidget_Implementation(){return true;}

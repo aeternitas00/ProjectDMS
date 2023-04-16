@@ -32,15 +32,10 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UDMSSequence* ParentSequence
 )
 {
-	// TODO :: Root Seq Check and make Chain tree work / Cleanup
-
-
 	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
-	if (EH==nullptr) { /*DMS_LOG_DETAIL("Invalid EH");*/ return nullptr; }
+	if (EH==nullptr) { return nullptr; }
 
-	//if (EffectNode==nullptr){ DMS_LOG_SCREEN(TEXT("%s : EffectNode is Null"), *SourceObject->GetName()); return nullptr;}
-	
-	//FString SeqName = TEXT("Sequence")+ EffectNode->NodeTag.ToString();
+	// Initialize new sequence
 	UDMSSequence* Sequence = NewObject<UDMSSequence>(this/*, FName(*SeqName)*/);
 	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(Sequence);
 	NewData->Inherit(Datas);
@@ -49,6 +44,8 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->SourceController = SourceController;
 	Sequence->EIDatas = NewData;
 	Sequence->Targets = Targets;
+
+	// Add new seq to seq tree.
 	if (ParentSequence == nullptr) {
 		if (RootSequence == nullptr) {
 			RootSequence = Sequence;
@@ -62,10 +59,6 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	else {
 		ParentSequence->AttachChildSequence(Sequence);
 	}
-
-	//if (Sequence == Sequence->ParentSequence) {
-	//	DMS_LOG_SIMPLE(TEXT("ERROR"));
-	//}
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : Request Create Sequence [%s] of [%s] to [%d : %s] ===="),  *SourceObject->GetName(), *Sequence->GetName(), *EffectNode->NodeTag.ToString(), GetDepth(Sequence), Sequence->ParentSequence == nullptr ? TEXT("EmptySequence") : *Sequence->ParentSequence->GetName());
 
@@ -271,7 +264,7 @@ void UDMSSeqManager::CleanupSequenceTree()
 {
 	//...
 	RootSequence = nullptr;
-	UDMSCoreFunctionLibrary::GetDMSEffectHandler()->Cleanup();
+	UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CleanupNonPersistent();
 	// Else will be GCed.
 	//...
 }

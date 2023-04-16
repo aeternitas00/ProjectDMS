@@ -21,10 +21,13 @@ class PROJECTDMSGAME_API UDMSEffect_CancelEffect : public UDMSEffectDefinition
 public:
 	//UDMSEffect_CancelEffect();
 
+	/**
+	 * Cancel param sequence if sequence's effect node matches TargetTagQuery
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	FGameplayTagQuery CancelTargetTagQuery;
 
-	__declspec(noinline) virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override;
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override;
 };
 
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "Ignore Parent Effect"))
@@ -35,9 +38,15 @@ class PROJECTDMSGAME_API UDMSEffect_IgnoreEffect : public UDMSEffectDefinition
 public:
 	//UDMSEffect_CancelEffect();
 
+	/**
+	 * Ignore param sequence if sequence's effect node matches TargetTagQuery.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	FGameplayTagQuery IgnoreTargetTagQuery;
 
+	/**
+	 * Ignore sequence's applying part only if false.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool IgnoreWholeSequence;
 

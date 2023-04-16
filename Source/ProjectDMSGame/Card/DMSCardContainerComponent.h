@@ -67,6 +67,10 @@ protected:
 	//FName ContainerName;
 
 public:
+
+	/**
+	 * Wrapper of card array. 
+	 */
 	UPROPERTY()
 	FDMSCardList CardList;
 
@@ -77,11 +81,11 @@ public:
 	//Generic card pile actions
 	TArray<ADMSCardBase*> PopAt(uint16 Idx);
 	TArray<ADMSCardBase*> PopAt(uint16 Idx,uint16 Num);
-
 	void Insert(TArray<ADMSCardBase*> iContainer, uint16 Idx);
 	void Find(uint16 Idx, uint16 Range);
 	void Remove(ADMSCardBase* iCard);
 	void Remove(TArray<ADMSCardBase*> iCards);
+
 
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	const int GetNum() const {return CardList.Num(); }
@@ -98,6 +102,7 @@ public:
 
 	UFUNCTION(BlueprintPure,BlueprintCallable)
 	FName GetContainerName() const {return FName(*GetName())/*ContainerName */; }
+
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);
 	void OnContainerAdded_Implementation(const TArray<ADMSCardBase*>& AddedCards){}

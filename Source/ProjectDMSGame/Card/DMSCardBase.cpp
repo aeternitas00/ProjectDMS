@@ -33,13 +33,6 @@ void ADMSCardBase::BeginPlay()
 	// Automatic Type Behavior EI Attachment with carddefintion->defaultCardType
 }
 
-// Called every frame
-void ADMSCardBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 const UDMSCardDefinition* ADMSCardBase::GetCardDefinition()
 {
 	return CardDefinition;

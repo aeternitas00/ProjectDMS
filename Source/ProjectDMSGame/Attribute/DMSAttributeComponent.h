@@ -32,42 +32,39 @@ public:
 
 public:	
 
-	// Attributes map
-	//UPROPERTY()
-	//TMap<FName,UDMSAttribute*> Attributes; // Resources
-
+	/**
+	 *
+	 */
 	UPROPERTY()
 	TMap<FGameplayTag, UDMSAttribute*> Attributes; // Resources
-
-	// Make attribute. skip if Attributes contains AttributeName.
-	//UFUNCTION(BlueprintCallable)
-	//void MakeAttribute(const FName& AttributeName, const float& DefValue =0.0f);
-
-	//// 
-	//UFUNCTION(BlueprintCallable)
-	//void BindOnModifiedToAttribute(const FName& AttributeName, const FOnAttributeModifiedSignature& iDelegate);
-
-	////
-	//UFUNCTION(BlueprintCallable)
-	//UDMSAttribute* GetAttribute(const FName& AttributeName) const;
 	
-	//
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable)
 	bool TryModAttribute(const FDMSAttributeModifier& Modifier);
-
-	//UFUNCTION(BlueprintCallable)
-	//bool GetAttributeValue(const FName& AttributeName, float& outValue) const;
-
+	
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable)
 	void MakeAttribute(const FGameplayTag& AttributeName, const float& DefValue = 0.0f);
 
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable)
 	void BindOnModifiedToAttribute(const FGameplayTag& AttributeName, const FOnAttributeModifiedSignature& iDelegate);
 
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable)
 	UDMSAttribute* GetAttribute(const FGameplayTag& AttributeName) const;
 
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable)
 	bool GetAttributeValue(const FGameplayTag& AttributeName, float& outValue) const;
-//friend UDMSAttribute;
 };

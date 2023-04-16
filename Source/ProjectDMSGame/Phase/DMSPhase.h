@@ -25,6 +25,7 @@ class PROJECTDMSGAME_API UDMSPhase : public UObject
 
 public:
 	UDMSPhase();
+
 	UPROPERTY(BlueprintReadOnly)
 	UDMSPhase* NextPhase;
 

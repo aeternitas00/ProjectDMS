@@ -62,65 +62,113 @@ public:
 		ChildSequence = nullptr;
 		// 
 	}
-
+	/**
+	 * Current state of this sequence.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSSequenceState SequenceState;
 
-	// 어떠한 이펙트가 실제로 월드에 영향을 끼치기 까지의 과정 중에 간섭할 '타이밍'은 결론적으로 발동 전, 도중, 후 세가지로 크게 나눌 수 있음.
+	/**
+	 * Current timing of this sequence.
+	 * 어떠한 이펙트가 실제로 월드에 영향을 끼치기 까지의 과정 중에 간섭할 '타이밍'은 결론적으로 발동 전, 도중, 후 세가지로 크게 나눌 수 있음.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSTimingFlag Progress;
 
-	// 이펙트 노드와 1:1 매칭.
-	// 이 시퀀스에 있어 사실상의 의미절에 해당함.
+
+	/**
+	 * Effect that will be applied when the 'sequence is applied'.
+	 * Sequence : EffectNode = 1 : 1 / Corresponds to the actual meaning of this sequence.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDMSEffectNode* OriginalEffectNode;
 
-	// 미리 선택하고 발동을 해야하는 카드들을 위해?
+	/**
+	 * Explicit targets of this sequence. Override EffectNode's preset target flag.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<TScriptInterface<IDMSEffectorInterface>> Targets; // 개편후 정리 / 재고 필요
+	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
 
-	// 발동 의지를 보인 플레이어 (혹은 AI?)
+	/**
+	 * The player or actor that triggers the sequence.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AActor* SourceController;
 
-	// 발동 주체
+	/**
+	 * The object that triggers the sequence.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UObject* SourceObject; // Rename?
 
-	// 이펙트 인스턴스 ( 한번의 시퀀스로 여러 타겟 영향 위해 어레이, EI하나가 타겟 하나에 부착되는 형태 )
+	/**
+	 * Effect instances (One EI attached to One target)
+	 */
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
 	TArray<UDMSEffectInstance*> EIs;
 	
-	// 시퀀스에 진행에 필요한 플레이어의 의사 결정용 위젯들의 컨테이너
+	/**
+	 * Container for widgets used by the player to make decisions during the progress of a sequence.
+	 */
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
 	FDMSSelectorQueue SelectorQueue;
 
-	// 시퀀스 플로우에 필요한 데이터들을 보관. ( 수치 같은 것의 변화 같이 )
+	/** 
+	 * Data needed for sequence flow, such as 'Damage' by numerical values.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDMSDataObjectSet* EIDatas;
 
-	// 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도 
-	// ++ 상위 시퀀스와 연관된 컨디션, 이펙트 같은 것을 구현 하기 위해
+	/** 
+	 * 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도
+	 * ++ 상위 시퀀스와 연관된 컨디션, 이펙트 같은 것을 구현 하기 위해
+	 */
 	UDMSSequence* ParentSequence;
-	
 	UDMSSequence* ChildSequence;
 
+	/**
+	 * Attach child sequence.
+	 * @param	iSeq						Attaching sequence.
+	 */
 	void AttachChildSequence(UDMSSequence* iSeq);
 
-	// Noncopy setter?
+	/**
+	 * Setter of Targets.
+	 * @param	iTargets					New targets.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets){ Targets = iTargets;}
 
+	/**
+	 * Setup owning widget queue with param widgets.
+	 * @param	iWidgets					Widgets going to used in widget queue.
+	 * @return	ture if setup was successful.
+	 */
 	bool SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets);
 
+	/**
+	 * Run owning widget queue.
+	 * @param	iOnSelectorFinished			Lambda parameter to be executed when the widget queue is successfully completed.
+	 * @param	iOnSelectorCanceled			Lambda parameter to be executed when the widget queue is canceled.
+	 */
 	template<typename FuncFinished, typename FuncCanceled >
 	void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
 
+	/**
+	 * Executed when sequence is initiated.
+	 */
 	void OnSequenceInitiate();
+
+	/**
+	 * Executed when sequence is finished.
+	 */
 	void OnSequenceFinish();
 
 
 
+	// ================================ //
+	//		Delegates and binders.
+	// ================================ //
 protected:
 	FSimpleMulticastEventSignature OnSequenceInitiated;
 	FSimpleMulticastEventSignature OnSequenceFinished;

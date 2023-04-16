@@ -107,31 +107,51 @@ class PROJECTDMSGAME_API UDMSDataObject : public UObject
 	GENERATED_BODY()
 
 protected:
+	/**
+	 * Store Real value.
+	 */
 	std::any AnyValue;
 
+	/**
+	 * Inheriting option. see UDMSDataObjectSet::Inherit
+	 */
 	bool Inheriting;
 public:
 	UDMSDataObject():Inheriting(false) {}
 
-	// std::foward?
-	//
+	/**
+	 * Setter of AnyValue.
+	 * std::forward???
+	 */
 	void Set(const std::any& iValue) { AnyValue = iValue;/*emplace*/ }
 	void Set(std::any&& iValue) { AnyValue = std::move(iValue); }
 
-
+	/**
+	 * Getter of AnyValue with template type.
+	 */
 	template<typename T>
 	T Get() { return std::any_cast<T>(AnyValue); }
 
-	//std::any Get() { return AnyValue; }
-
+	/**
+	 * Check AnyValue is storing template type.
+	 */
 	template<typename T>
 	bool TypeCheck() { return std::any_cast<T>(&AnyValue) != nullptr; }
 
+	/**
+	 * Getter of Inheriting.
+	 */
 	bool IsInheriting() {return Inheriting;}
-	void SetInheriting(const bool& i) { Inheriting=i; }
-	
-	void CopyValue(UDMSDataObject* iObj) {this->AnyValue = iObj->AnyValue;}
 
+	/**
+	 * Setter of Inheriting.
+	 */
+	void SetInheriting(const bool& i) { Inheriting=i; }
+
+	/**
+	 * Copy Value only function.
+	 */
+	void CopyValue(UDMSDataObject* iObj) {this->AnyValue = iObj->AnyValue;}
 };
 
 //	위의 DataObject 를 모아서 관리하는 오브젝트
@@ -142,11 +162,20 @@ class PROJECTDMSGAME_API UDMSDataObjectSet : public UObject
 	GENERATED_BODY()
 
 protected:
+	/**
+	 * <Tag, data object> map. stores datas.
+	 */
 	UPROPERTY()
 	TMap<FGameplayTag, UDMSDataObject*> DataMap;
 
 public:
 
+	/**
+	 * Add data with std::any param. Instancing UDMSDataObject automatically.
+	 * @param	Tag							Key.
+	 * @param	Data						Value.
+	 * @param	Inheriting					New data's inheriting option.
+	 */
 	FORCEINLINE void SetData(const FGameplayTag& Tag, const std::any& Data, const bool& Inheriting = false) {
 		UDMSDataObject* DataObject = NewObject<UDMSDataObject>();
 		DataObject->Set(Data);
@@ -154,6 +183,12 @@ public:
 		DataMap.Add(Tag, DataObject);
 	}
 
+	/**
+	 * Add data with std::any param. Instancing UDMSDataObject automatically.
+	 * @param	Tag							Key.
+	 * @param	Data						Value.
+	 * @param	Inheriting					New data's inheriting option.
+	 */
 	FORCEINLINE void SetData(const FGameplayTag& Tag, std::any&& Data, const bool& Inheriting = false) {
 		UDMSDataObject* DataObject = NewObject<UDMSDataObject>();
 		DataObject->Set(std::move(Data));
@@ -161,6 +196,12 @@ public:
 		DataMap.Add(Tag, DataObject);
 	}
 
+	/**
+	 * Add data directly.
+	 * @param	Tag							Key.
+	 * @param	Data						Value.
+	 * @param	Inheriting					New data's inheriting option.
+	 */
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AddData(const FGameplayTag& Tag, UDMSDataObject* Data, const bool& Inheriting = false) {
 		if (Data == nullptr) return;
@@ -168,19 +209,39 @@ public:
 		DataMap.Add(Tag, Data);
 	}
 
+	/**
+	 * Check DataMap contains param key.
+	 * @param	Tag							Searching key.
+	 * @return	true if DataMap contains Tag.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE bool ContainData(const FGameplayTag& Tag) const {
 		return DataMap.Contains(Tag);
 	}
 
+	/**
+	 * Get data from DataMap
+	 * @param	Tag							Searching key.
+	 * @return	DataMap[Tag] : null ptr if No such key.
+	 */
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UDMSDataObject* GetData(const FGameplayTag& Tag) {
 		return ContainData(Tag) ? DataMap[Tag] : nullptr;
 	}
 
+	/**
+	 * Inherit datas from param data set.
+	 * @param	Parent						Parent data set. Data set will be copied from this.
+	 * @param	InheritAgain				true if inherited data will be inherited again.
+	 */
 	void Inherit(UDMSDataObjectSet* Parent, const bool& InheritAgain=false);
 
-	// actually it's overwrite
+
+	/**
+	 * Merge with param data set. temp) It's override for soon.
+	 * @param	iSet						Merging data set. 
+	 * ... some conflict option will be added.
+	 */
 	void Merge(UDMSDataObjectSet* iSet);
 
 };

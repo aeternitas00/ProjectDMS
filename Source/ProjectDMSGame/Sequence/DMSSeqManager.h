@@ -25,6 +25,8 @@ class UDMSSequence;
 class UDMSEffectorInterface;
 class UDMSDecisionWidget;
 
+DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
+
 /**
  *	========================================
  * 
@@ -37,32 +39,20 @@ class PROJECTDMSGAME_API UDMSSeqManager : public UActorComponent // or ActorComp
 {
 	GENERATED_BODY()
 
-protected:
-	void ApplySequence(UDMSSequence* Sequence);
-	void CompleteSequence(UDMSSequence* Sequence);	
-	void CleanupSequenceTree();
+
 public:
 	UDMSSeqManager();
 
-	// 시퀀스 최초 발생시 이곳에 저장
-	// Root이 있으면 차일드 노드는 이 밑으로 계속 붙어나감
-	// leaf 시퀀스가 모두 종료되고 root seq의 after 타이밍이 최종적으로 종료되면 클린업 실행.
-	UPROPERTY()
-	UDMSSequence* RootSequence;
-
-	UPROPERTY()
-	UDMSSequence* CurrentSequence;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnSequenceTreeInitiated();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnSequenceTreeCompleted();
-
-	// *FSeqHandle*/ 같은 시퀀스 핸들 구현? ( 넷코드 생각할때 다시 )
+	/**
+	 * Create a Sequence object.
+	 * @param	SourceObject				The object that triggers the sequence.
+	 * @param	SourceController			Explicit controller of the SourceObject.
+	 * @param	EffectNode					Effect that will be applied when the 'sequence is applied'.
+	 * @param	Targets						Explicit targets of this sequence. Override EffectNode's preset target flag.
+	 * @param	Datas						Additional data for applying effect.
+	 * @param	ParentSequence				Explicit parent sequence. Default is Current sequence of SequenceManager.
+	 * @return	Created sequence : nullptr if request was failed.
+	 */
 	UFUNCTION(BlueprintCallable)
 	UDMSSequence* RequestCreateSequence(
 		UObject* SourceObject, 
@@ -71,19 +61,80 @@ public:
 		TArray<TScriptInterface<IDMSEffectorInterface>> Targets, 
 		UDMSDataObjectSet* Datas = nullptr, 
 		UDMSSequence* ParentSequence = nullptr
-	);
-
+	);	
+	
+	/**
+	 * Run param sequence.
+	 * @param	iSeq
+	 */
 	UFUNCTION(BlueprintCallable)
 	void RunSequence(UDMSSequence* iSeq);
+
+protected:
+	/**
+	 * Apply param sequence.
+	 * @param	Sequence				
+	 */
+	void ApplySequence(UDMSSequence* Sequence);
+
+	/**
+	 * Complete param sequence. sort of cleanup.
+	 * @param	Sequence
+	 */
+	void CompleteSequence(UDMSSequence* Sequence);	
+
+	/**
+	 * Clear sequence tree. 
+	 * ( acutally it just nullifying root sequence. the rest is left to be handled by the gc. )
+	 * @param	Sequence
+	 */
+	void CleanupSequenceTree();	
 	
+public:
+	/*
+	 * Root of sequence tree. the first created sequence becomes root sequence.
+	 */
+	UPROPERTY()
+	UDMSSequence* RootSequence;
+
+	/*
+	 * Current running sequence.
+	 * Sequences created while another sequence is in progress will be set as child of that.
+	 */
+	UPROPERTY()
+	UDMSSequence* CurrentSequence;
+
+	/*
+	 * Default YN widget class will be added as final confirmation with preview to the decision step.
+	 * TEST
+	 */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
+
+
+	/**
+	 * Get depth of sequence in tree.
+	 * @param	iSeq
+	 * @return	Detpth : -1 if iSeq is nullptr.
+	 */
 	int GetDepth(UDMSSequence* iSeq);
 
-	DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
-
+	/*
+	 * Delegate for resuming sequence flow from selector queue
+	 */
 	FOnSelectorFinished OnSelectorFinished;
+
+	/**
+	 * Executed when sequence tree is initiated.
+	 */
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSequenceTreeInitiated();
+
+	/**
+	 * Executed when sequence tree is completed.
+	 */
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSequenceTreeCompleted();
 
 	friend class UDMSSequence;
 };
-
-//DEPRECATED
-//#define GetDMSSequenceManager() ( GetDMSGameMode()!=nullptr ? GetDMSGameMode()->GetSeqManager() : nullptr )

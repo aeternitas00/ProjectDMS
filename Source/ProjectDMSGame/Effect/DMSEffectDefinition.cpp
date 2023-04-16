@@ -22,11 +22,6 @@
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateTarget_Implementation(UDMSSequence* iSequence)
 {
 	TArray<TScriptInterface<IDMSEffectorInterface>> rv;
-
-	//for (auto ED : EffectDefinitions)
-	//{
-	//	for (auto Target : ED->GenerateTarget())	rv.AddUnique(Target);
-	//}
 	return rv;
 }
 

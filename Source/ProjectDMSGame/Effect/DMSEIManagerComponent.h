@@ -31,11 +31,15 @@ public:
 	// Sets default values for this component's properties
 	UDMSEIManagerComponent();
 
-	// Attached Effects
+	/** 
+	 * Attached Effects
+	 */
 	UPROPERTY()
 	TArray<UDMSEffectInstance*> EffectInstances;
 
-	// Owning Effects
+	/**
+	 * Owning Effects. 
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<UDMSEffectInstance*> OwnEffectInstances;
 

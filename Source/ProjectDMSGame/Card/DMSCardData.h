@@ -34,15 +34,27 @@ struct FDMSCardData
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Referencing card asset.
+	 */
 	UPROPERTY(BlueprintReadWrite)
 	FPrimaryAssetId CardAssetID;
 
+	/**
+	 * Saved persistent effects.
+	 */
 	UPROPERTY(BlueprintReadWrite)
 	TArray<UDMSEffectInstance*> AttachedEffect;
 
+	/**
+	 * Caching spawned card actor for saving.
+	 */
 	UPROPERTY(BlueprintReadWrite, Transient)
 	TArray<ADMSCardBase*> SpawnedCardActor;
 
+	/**
+	 * Caching card definition by CardAssetID for saving.
+	 */
 	UPROPERTY(BlueprintReadWrite, Transient)
 	const UDMSCardDefinition* CardDefinition;
 
