@@ -14,6 +14,7 @@
 
 #include "ProjectDMS.h"
 #include "Common/DMSCommons.h"
+#include "Attribute/DMSSerializedAttribute.h"
 #include "DMSAttribute.generated.h"
 
 
@@ -113,5 +114,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void BindOnModified(const FOnAttributeModifiedSignature& iDelegate);
+
+	FDMSSerializedAttribute ToSerialized() { return FDMSSerializedAttribute(AttributeTag, Value); }
+
+	virtual void Serialize(FArchive& Ar) override;
 };
 

@@ -13,15 +13,13 @@
 #include "EffectSet/DMSEffectNode_PlayCard.h"
 
 // Sets default values
-ADMSCardBase::ADMSCardBase()
+ADMSCardBase::ADMSCardBase() : ADMSEffectorActorBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates=true;
 	SetReplicateMovement(true);
-
-	EffectManagerComponent=CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
 
 }
 
@@ -70,17 +68,6 @@ void ADMSCardBase::InitializeCard_Implementation(const UDMSCardDefinition* iCard
 
 	if (CardDefinition->CardEffectSets.Contains("Cost"))
 		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Cost"],"Cost", NodeGenerator);
-}
-
-void ADMSCardBase::AttachEffectInstance(UDMSEffectInstance* EI)
-{
-	EffectManagerComponent->AttachEffectInstance(EI);
-}
-
-bool ADMSCardBase::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweaker)
-{
-	//DMS_LOG_SCREEN(TEXT("%s : OnNotifyReceived"), *this->GetName());
-	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects,iChainable,Seq,this);
 }
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FName& iSetName)

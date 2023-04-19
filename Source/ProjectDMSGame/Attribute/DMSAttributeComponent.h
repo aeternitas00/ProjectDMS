@@ -15,7 +15,6 @@
 
 #include "ProjectDMS.h"
 #include "Attribute/DMSAttribute.h"
-#include "Attribute/DMSAttributeInterface.h"
 #include "Components/ActorComponent.h"
 #include "DMSAttributeComponent.generated.h"
 

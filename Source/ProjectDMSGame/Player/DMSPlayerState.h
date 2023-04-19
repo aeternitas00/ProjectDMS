@@ -15,6 +15,7 @@
 #include "ProjectDMS.h"
 #include "GameFramework/PlayerState.h"
 #include "Card/DMSCardData.h"
+#include "Character/DMSPlayerCharacterData.h"
 #include "DMSPlayerState.generated.h"
 
 /**
@@ -34,9 +35,23 @@ public:
 	/**
 	 * Storing original player's deck. Persistent effect will be saved at Level's cleanup phase.
 	 */
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<FDMSCardData> OriginalCardDatas;
-	// Original card infos.
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FDMSPlayerCharacterData PlayerCharacterData;
+
+	/**
+	 *
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 EXP;
+
+	/**
+	 *
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 Level;
 
 	// 인게임 중에서 위의 분류중 비공개 정보는 다른 플레이어가 알 수 없는게 기본. 
 	// 해당 정보를 공개할 수 있는 효과가 있을 때 가공을 해서 따로 이곳에 저장하는 형태로.

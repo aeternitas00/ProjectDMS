@@ -2,6 +2,8 @@
 #include "Card/DMSCardDefinition.h"
 
 const FPrimaryAssetType	UDMSAssetManager::CardAssetType = TEXT("Card");
+const FPrimaryAssetType	UDMSAssetManager::PlayerCharacterAssetType = TEXT("PlayerCharacter");
+const FPrimaryAssetType	UDMSAssetManager::EnemyCharacterAssetType = TEXT("EnemyCharacter");
 
 UDMSAssetManager& UDMSAssetManager::Get()
 {

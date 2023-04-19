@@ -9,7 +9,8 @@ void ADMSPlayerState::SetCardDatas(const TArray<FDMSCardData>& InDatas)
 	OriginalCardDatas= InDatas;
 
 	for (auto& Data : OriginalCardDatas) 
-	{Data.LoadCardDefinition(); 
-	UDMSCoreFunctionLibrary::SetDataOwner(Data,this);
+	{
+		Data.LoadCardDefinition(); 
+		UDMSCoreFunctionLibrary::SetDataOwner(Data,this);
 	}
 }

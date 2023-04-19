@@ -5,6 +5,7 @@
 #include "ProjectDMS.h"
 #include "GameFramework/SaveGame.h"
 #include "Card/DMSCardData.h"
+#include "Character/DMSPlayerCharacterData.h"
 #include "DMSSaveGame.generated.h"
 
 /**
@@ -20,11 +21,26 @@ public:
 	// Decklist ( original card data asset, attached effects, ~~~ )
 
 	// Character datas ( exp, ~~ )
+		// Character datas ( exp, ~~ )
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FDMSPlayerCharacterData	SavedCharacterData;
+
 
 	// Scenario datas ( campain progress, ~~ )
+	/**
+	 *
+	 */
+	UPROPERTY(BlueprintReadWrite)
+	int32 EXP;
+
+	/**
+	 *
+	 */
+	UPROPERTY(BlueprintReadWrite)
+	int32 Level;
+
 	UFUNCTION(BlueprintCallable)
 	void LoadSavedCardData();
 
-protected:
 	virtual void Serialize(FArchive& Ar) override;
 };

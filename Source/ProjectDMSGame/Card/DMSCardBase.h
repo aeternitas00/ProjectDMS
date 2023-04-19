@@ -13,15 +13,11 @@
  */
 
 #include "ProjectDMS.h"
-#include "GameFramework/Actor.h"
-#include "Effect/DMSEffectorInterface.h"
+#include "Effect/DMSEffectorActorBase.h"
 #include "DMSCardBase.generated.h"
 
 class UDMSCardDefinition;
 class UDMSCardContainerComponent;
-class UDMSEIManagerComponent;
-
-
 
 /**
  * 	========================================
@@ -31,7 +27,7 @@ class UDMSEIManagerComponent;
  *	========================================
  */
 UCLASS(Blueprintable, Abstract)
-class PROJECTDMSGAME_API ADMSCardBase : public AActor, public IDMSEffectorInterface
+class PROJECTDMSGAME_API ADMSCardBase : public ADMSEffectorActorBase
 {
 	GENERATED_BODY()
 	
@@ -57,20 +53,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UDMSCardContainerComponent* OwningContainer;
 
-	/**
-	 * Card's effector component.
-	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UDMSEIManagerComponent* EffectManagerComponent;
-
 public:	
 
 	// IDMSEffectorInterface Implements.
-	virtual UObject* GetObject() override { return this; }
-	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
-	virtual AActor* GetOwningPlayer() { return GetOwner(); }
 
 	/**
 	 * AttachEffectInstance for blueprint

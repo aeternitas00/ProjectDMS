@@ -35,3 +35,13 @@ void UDMSAttribute::BindOnModified(const FOnAttributeModifiedSignature& iDelegat
 	//OnAttributeModified.AddDynamic();
 	OnAttributeModified.Add(iDelegate);
 }
+
+void UDMSAttribute::Serialize(FArchive& Ar)
+{
+	Super::Serialize(Ar);
+	auto s = ToSerialized();
+	Ar << s;
+
+	//if (Ar.IsSaving()) {}
+	//else if (Ar.IsLoading()) {}
+}

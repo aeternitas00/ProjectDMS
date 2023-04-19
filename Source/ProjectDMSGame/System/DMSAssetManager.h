@@ -18,6 +18,9 @@ public:
 	UDMSAssetManager() {}
 
 	static const FPrimaryAssetType CardAssetType;
+	static const FPrimaryAssetType PlayerCharacterAssetType;
+	static const FPrimaryAssetType EnemyCharacterAssetType;
+
 	static UDMSAssetManager& Get();
 
 	UDMSCardDefinition* ForceLoadCard(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);

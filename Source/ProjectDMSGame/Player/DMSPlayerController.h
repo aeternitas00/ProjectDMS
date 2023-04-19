@@ -15,9 +15,7 @@
 #include "ProjectDMS.h"
 #include "GameFramework/PlayerController.h"
 #include "Effect/DMSEffectorInterface.h"
-#include "Attribute/DMSAttributeInterface.h"
 #include "Common/DMSCommons.h"
-
 #include "DMSPlayerController.generated.h"
 
 

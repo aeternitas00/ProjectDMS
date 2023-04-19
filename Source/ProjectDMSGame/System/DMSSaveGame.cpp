@@ -13,7 +13,7 @@ void UDMSSaveGame::Serialize(FArchive& Ar)
 	DMS_LOG_SCREEN(TEXT("SAVEGAME SERIALIZED"));
 	Super::Serialize(Ar);
 
-	Ar << SavedCardDatas;
+	Ar << SavedCardDatas << SavedCharacterData;
 
 	//for (auto& Data : SavedCardDatas)
 	//{

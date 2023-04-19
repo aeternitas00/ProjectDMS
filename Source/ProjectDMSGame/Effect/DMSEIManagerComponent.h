@@ -14,7 +14,6 @@
 
 #include "ProjectDMS.h"
 #include "Effect/DMSEffectInstance.h"
-#include "Attribute/DMSAttributeInterface.h"
 #include "Components/ActorComponent.h"
 #include "DMSEIManagerComponent.generated.h"
 
