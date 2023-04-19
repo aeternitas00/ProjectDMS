@@ -55,6 +55,14 @@ bool UDMSAttributeComponent::GetAttributeValue(const FGameplayTag& AttributeName
 	return rv;
 }
 
+TArray<FDMSSerializedAttribute> UDMSAttributeComponent::ToSerialized()
+{
+	TArray<FDMSSerializedAttribute> rv;
+	for (auto& Att : Attributes)
+		rv.Add(FDMSSerializedAttribute(Att.Key, Att.Value->GetValue()));
+	return rv;
+}
+
 void UDMSAttributeComponent::MakeAttribute(const FGameplayTag& AttributeName, const float& DefValue)
 {
 	if (Attributes.Contains(AttributeName)) return; // log or what\
