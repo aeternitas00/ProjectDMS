@@ -16,7 +16,7 @@ void FDMSCardData::LoadCardDefinition()
 
 FArchive& operator<<(FArchive& Ar, FDMSCardData& Data)
 {
-	DMS_LOG_SCREEN(TEXT("FDMSCardData Serialized"));
+	//DMS_LOG_SCREEN(TEXT("FDMSCardData Serialized"));
 	Ar << Data.CardAssetID;
 	if (Ar.IsSaving())
 	{

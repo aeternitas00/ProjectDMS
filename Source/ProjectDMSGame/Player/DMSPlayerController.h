@@ -140,6 +140,18 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	/**
+	 *
+	 */
+	UFUNCTION(BlueprintCallable)
+	void SetupCardContainers();
+
+	/**
+	 *
+	 */
+	UFUNCTION(BlueprintCallable)
+	void SetupAttributes();
+
+	/**
 	 * Deprecated
 	 */
 	UFUNCTION(BlueprintCallable)

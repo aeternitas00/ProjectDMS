@@ -19,8 +19,11 @@
 
 class UDMSEffectSet;
 
-/// EI 인터랙션을 필요로 하는 오브젝트에 부착하여 사용.
-/// SelfLogging System?
+/**
+ * This component is used by attaching it to effector actors that require EI interactions.
+ * 
+ * TODO :: SelfLogging System?
+ */ 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTDMSGAME_API UDMSEIManagerComponent : public UActorComponent, public IDMSEffectorInterface//, public IDMSAttributeInterface
 {
@@ -45,6 +48,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual UDMSEffectNode* ActivatorNodeGenerator(const FName& EffectSetName, const uint8& idx);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual UObject* GetObject() { return Cast<UObject>(GetOwner()); }
@@ -55,6 +59,5 @@ public:
 
 	
 	// concepts????
-	template <typename FuncNodeInitializer>
-	void SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName, FuncNodeInitializer&& NodeInitializer = [](UDMSEffectNodeWrapper* iNode, const int& idx)->UDMSEffectNode* {return iNode->GetEffectNode();});
+	void SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName);
 };

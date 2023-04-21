@@ -2,6 +2,7 @@
 
 
 #include "Character/DMSEnemyCharacterDefinition.h"
+#include "System/DMSAssetManager.h"
 
 FPrimaryAssetId UDMSEnemyCharacterDefinition::GetPrimaryAssetId() const
 {

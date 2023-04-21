@@ -14,21 +14,12 @@ ADMSCharacterBase::ADMSCharacterBase() : ADMSEffectorActorBase()
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
 }
 
-// Called when the game starts or when spawned
-//void ADMSCharacterBase::BeginPlay()
-//{
-//	Super::BeginPlay();
-//	
-//}
+UDMSEffectSet* ADMSCharacterBase::GetOwningEffectSet(const FName& iSetName)
+{
+	return CharacterDefinition->CharacterEffectSets.Contains(iSetName) ? CharacterDefinition->CharacterEffectSets[iSetName] : nullptr;
+}
 
-// Called every frame
-//void ADMSCharacterBase::Tick(float DeltaTime)
-//{
-//	Super::Tick(DeltaTime);
-//
-//}
-
-void ADMSCharacterBase::InitializeCharacter_Implementation(UDMSCharacterDefinition* NewDefinition)
+void ADMSCharacterBase::InitializeCharacter_Implementation(const UDMSCharacterDefinition* NewDefinition)
 {
 	CharacterDefinition = NewDefinition;
 	SetupAttributes(CharacterDefinition->DefaultAttributes);

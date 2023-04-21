@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ProjectDMS.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "DMSEffect_CancelEffect.generated.h"
 

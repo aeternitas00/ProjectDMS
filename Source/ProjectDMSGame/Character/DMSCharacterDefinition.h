@@ -12,7 +12,7 @@ class UDMSEffectSet;
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType,Const)
 class PROJECTDMSGAME_API UDMSCharacterDefinition : public UPrimaryDataAsset
 {
 
@@ -36,7 +36,7 @@ public:
 	 * ex) <"Cost",CostEffectSet>
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Character)
-	TMap<FName, UDMSEffectSet*> CharacterEffectSets;
+	TMap<FName, TObjectPtr<UDMSEffectSet>> CharacterEffectSets;
 
 	/**
 	 * Default attributes of character.

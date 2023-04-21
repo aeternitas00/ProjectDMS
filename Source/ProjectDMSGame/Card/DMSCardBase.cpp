@@ -47,27 +47,12 @@ void ADMSCardBase::InitializeCard_Implementation(const UDMSCardDefinition* iCard
 	// EffectManagerComponent->CleanupOwnEffect(); ?
 	SetCardDefinition(iCardDefinition);
 
-	auto NodeGenerator = [this](UDMSEffectNodeWrapper* EffectWrapper, const FName& EffectSetName, const int& idx)->UDMSEffectNode* {
-		auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
-		//UDMSEffectNode* Effect = EffectWrapper->GetEffectNode();
-		UDMSEffectNode* Node = NewObject<UDMSEffectNode>(EffectManagerComponent);
-		UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>(Node);
-		//UDMSDataObjectSet* DataSet = NewObject<UDMSDataObjectSet>(this);
-
-		AEffect->EffectIdx = idx;
-		AEffect->EffectSetName = EffectSetName;
-		// NODE INITIALIZER?
-		Node->EffectDefinitions.Add(AEffect);
-
-		return Node;
-	};
-
 	// ¿ì¸®²¨¸¸?
 	if (CardDefinition->CardEffectSets.Contains("Effect"))
-		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Effect"], "Effect", NodeGenerator);
+		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Effect"], "Effect");
 
 	if (CardDefinition->CardEffectSets.Contains("Cost"))
-		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Cost"],"Cost", NodeGenerator);
+		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Cost"], "Cost");
 }
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FName& iSetName)

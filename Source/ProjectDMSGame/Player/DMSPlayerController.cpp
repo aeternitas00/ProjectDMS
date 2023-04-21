@@ -47,20 +47,30 @@ ADMSPlayerController::ADMSPlayerController(const FObjectInitializer& ObjectIniti
 void ADMSPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	EnableInput(this);
+	EnableInput(this);	
+
+
+
+
+}
+
+void ADMSPlayerController::SetupCardContainers()
+{
+	for (auto ContainerDef : CardContainerTypes) {
+		CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
+	}
+}
+
+void ADMSPlayerController::SetupAttributes()
+{
+	for (auto Stat : DefaultStats) {
+		AttributeComponent->MakeAttribute(Stat.Key, Stat.Value);
+	}
 }
 
 void ADMSPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	for (auto ContainerDef : CardContainerTypes){
-		CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
-	}
-
-	for (auto Stat : DefaultStats) {
-		AttributeComponent->MakeAttribute(Stat.Key, Stat.Value);
-	}
 }
 
 

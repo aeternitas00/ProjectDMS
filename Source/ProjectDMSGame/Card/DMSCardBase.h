@@ -45,13 +45,13 @@ protected:
 	 * Card's data.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	const UDMSCardDefinition* CardDefinition;
+	TObjectPtr<const UDMSCardDefinition> CardDefinition;
 
 	/**
 	 * Card container that owning this card.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	UDMSCardContainerComponent* OwningContainer;
+	TObjectPtr<UDMSCardContainerComponent> OwningContainer;
 
 public:	
 
@@ -80,11 +80,6 @@ public:
 	void SetCardDefinition(const UDMSCardDefinition* iCardDefinition); // Init
 
 	UDMSCardContainerComponent* GetOwningContainer() {return OwningContainer;}
-
-	/**
-	 * 
-	 */
 	void SetOwningContainer(UDMSCardContainerComponent* Container) { OwningContainer = Container;}
 
-	
 };

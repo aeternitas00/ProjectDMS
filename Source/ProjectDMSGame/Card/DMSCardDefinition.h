@@ -65,13 +65,25 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText FlavorText;
+
+	/**
+	 * Displaying mana cost of card. (not actual cost. cosmetic)
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
+	FText DisplayManaCost;
 	
+	/**
+	 * Displaying action point cost of card. (not actual cost. cosmetic)
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
+	FText DisplayAPCost;
+
 	/**
 	 * Effect sets of Card.
 	 * ex) <"Cost",CostEffectSet>
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
-	TMap<FName,UDMSEffectSet*> CardEffectSets;
+	TMap<FName, TObjectPtr<UDMSEffectSet>> CardEffectSets;
 
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;

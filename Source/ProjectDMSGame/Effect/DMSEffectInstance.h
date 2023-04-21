@@ -16,6 +16,7 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Common/DMSCommonDelegates.h"
 #include "Common/DMSCommons.h"
+#include "Effect/DMSEffectDefinition.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSEffectInstance.generated.h"
 
@@ -55,7 +56,7 @@ class PROJECTDMSGAME_API UDMSEffectInstance : public UObject , public IDMSEffect
 	GENERATED_BODY()
 	
 public:
-	UDMSEffectInstance():CurrentState(EDMSEIState::EIS_Default){}
+	UDMSEffectInstance();
 		
 protected:
 	/** 
@@ -68,18 +69,19 @@ protected:
 	 * Effects that affect to effect. (modifying values)
 	 */
 	UPROPERTY()
-	TArray<UDMSEffectInstance*> SubEI;
+	TArray<TObjectPtr<UDMSEffectInstance>> SubEI;
 
 	struct FApplyDelegateCounter {
 		FOnApplyCompleted CompletedDelegate;
 		uint8 Index;
-		FOnWorkCompleted IteratingDelegate;
 	};
+
+	FOnWorkCompleted IteratingDelegate;
 
 	/**
 	 * 상호 발동형 이펙트를 통해 체인 내에 같은 EI가 Reapply 될 경우 꼬일 가능성 존재하므로 흐름 단위인 '시퀀스'를 키로 잡음.
 	 */
-	TMap<UDMSSequence*, FApplyDelegateCounter> OnApplyCompletedMap;
+	TMap<TObjectPtr<UDMSSequence>, FApplyDelegateCounter> OnApplyCompletedMap;
 
 	/**
 	 * Function for chained delegates. Will be bound to IteratingDelegate.
@@ -103,20 +105,20 @@ public:
 	/**
 	 * Sources of effect
 	 */
-	AActor* SourceController;
-	UObject* SourceObject;
+	TObjectPtr<AActor> SourceController;
+	TObjectPtr<UObject> SourceObject;
 
 	/**
 	 * Effect node that effect instance will run.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UDMSEffectNode* EffectNode;
+	TObjectPtr<UDMSEffectNode> EffectNode;
 
 	/**
 	 * Data needs to running effect node.
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UDMSDataObjectSet* DataSet; 
+	TObjectPtr<UDMSDataObjectSet> DataSet;
 
 public:
 	/**

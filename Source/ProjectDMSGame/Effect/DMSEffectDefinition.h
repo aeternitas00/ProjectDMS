@@ -24,6 +24,8 @@ class UDMSDataObjectSet;
 class UDMSSequence;
 class UDMSConditionCombiner;
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWorkCompleted, UDMSSequence*, SourceSequence);
+
 /**
  * 	========================================
  *
@@ -38,8 +40,6 @@ class UDMSConditionCombiner;
  *	셀렉터가 없을 경우 -> 수치가 범위 기반이라면 랜덤 값, 타겟은 시전자가 되도록 구현
  *	Ex) BP_EffectTag_DealDamage ?
  */
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWorkCompleted, UDMSSequence*, SourceSequence);
-
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, ClassGroup = (Effect))
 class UDMSEffectDefinition : public UObject
 {
@@ -143,9 +143,7 @@ class PROJECTDMSGAME_API UDMSEffectNode : public UObject
 	GENERATED_BODY()
 
 public:
-	UDMSEffectNode(): bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) {
-		Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
-	}
+	UDMSEffectNode();
 	
 
 	/**
@@ -336,6 +334,9 @@ public:
 	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode.GetDefaultObject()->CreateSelectors(OwnerSeq,WidgetOwner); }
 };
 
+
+DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FNodeComparer, UDMSEffectNode*, ComparingNode);
+
 /**
  * 	========================================
  *
@@ -367,7 +368,9 @@ public:
 	 */
 	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
 
+	UFUNCTION(BlueprintCallable)
+	TArray<UDMSEffectNodeWrapper*> GetEffectNodeWithComparer(const FNodeComparer& Comparer);
+
 	//virtual void Serialize(FArchive & Ar) override;
 };
-
 

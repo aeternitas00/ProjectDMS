@@ -3,6 +3,7 @@
 
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectHandler.h"
+//#include "Effect/DMSEffectDefinition.h"
 
 #include "Sequence/DMSSeqManager.h"
 #include "Sequence/DMSSequence.h"
@@ -14,6 +15,8 @@
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 #include "Card/DMSCardBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
+
+UDMSEffectInstance::UDMSEffectInstance() :CurrentState(EDMSEIState::EIS_Default) { IteratingDelegate.BindDynamic(this, &UDMSEffectInstance::ApplyNextEffectDefinition); }
 
 
 void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
@@ -32,12 +35,13 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 	OnApplyCompletedMap.Add(SourceSequence);
 	OnApplyCompletedMap[SourceSequence].CompletedDelegate=OnApplyCompleted;
 	OnApplyCompletedMap[SourceSequence].Index = 0;
-	OnApplyCompletedMap[SourceSequence].IteratingDelegate.BindDynamic(this,&UDMSEffectInstance::ApplyNextEffectDefinition);
+
 
 	ApplyNextEffectDefinition(SourceSequence);
 }
 
-void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence) 
+
+void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 {
 	if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num())
 	{
@@ -52,10 +56,11 @@ void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
 		
 		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
-			CurrentDef->Work(SourceSequence, this, OnApplyCompletedMap[SourceSequence].IteratingDelegate);
+			CurrentDef->Work(SourceSequence, this, IteratingDelegate);
 		}
 		else {
-			OnApplyCompletedMap[SourceSequence].IteratingDelegate.ExecuteIfBound(SourceSequence);
+			ApplyNextEffectDefinition(SourceSequence);
+			//OnApplyCompletedMap[SourceSequence].IteratingDelegate.ExecuteIfBound(SourceSequence);
 		}
 	}
 }

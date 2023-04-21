@@ -17,6 +17,7 @@
 #include "DMSSelectorQueue.generated.h"
 
 class UDMSConfirmWidgetBase;
+class UDMSSequence;
 
 //	시퀀스에 종속적인 구조체로써 시퀀스가 돌아갈 때 띄울 위젯들을 관리하는데 사용.
 //	
@@ -30,7 +31,7 @@ struct FDMSSelectorQueue
 	/**
 	 * Caching owner sequence.
 	 */
-	class UDMSSequence* Owner;
+	TObjectPtr<UDMSSequence> Owner;
 
 	/**
 	 * List of selectors.

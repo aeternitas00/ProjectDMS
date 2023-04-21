@@ -3,6 +3,9 @@
 #include "Effect/DMSEIManagerComponent.h"
 
 #include "GameModes/DMSGameMode.h"
+
+#include "Card/DMSCardBase.h"
+
 #include "Effect/DMSEffectHandler.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "EffectSet/DMSEffect_ActivateEffect.h"
@@ -62,18 +65,35 @@ UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FName& iSetName)
 	return Owner!=nullptr ? Owner->GetOwningEffectSet(iSetName) : nullptr;
 }
 
-template <typename FuncNodeInitializer>	
-void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName, FuncNodeInitializer&& NodeInitializer )
+UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FName& EffectSetName, const uint8& idx)
+{
+	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+
+	UDMSEffectNode* Node = NewObject<UDMSEffectNode>(this);
+	UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>(Node);
+
+	AEffect->EffectIdx = idx;
+	AEffect->EffectSetName = EffectSetName;
+	// NODE INITIALIZER?
+	Node->EffectDefinitions.Add(AEffect);
+
+	return Node;
+};
+
+
+
+void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName )
 {
 	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
 	auto EffectNodes = EffectSet->EffectNodes;
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 	if (!EH) { DMS_LOG_DETAIL(Error, TEXT("No Effect Handler")); 	return; }
 
+
 	uint8 idx = 0;
 	for (auto EffectWrapper : EffectNodes)
 	{
-		UDMSEffectNode* Node = NodeInitializer(EffectWrapper, SetName,idx++);
+		UDMSEffectNode* Node = ActivatorNodeGenerator(SetName, idx++);
 		auto Effect = EffectWrapper->GetEffectNode();
 
 		Node->Rename(nullptr, this);

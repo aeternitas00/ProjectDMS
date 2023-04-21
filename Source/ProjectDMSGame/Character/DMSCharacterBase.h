@@ -4,11 +4,15 @@
 
 #include "ProjectDMS.h"
 #include "Effect/DMSEffectorActorBase.h"
+#include "Location/DMSLocatableInterface.h"
 #include "Attribute/DMSSerializedAttribute.h"
 #include "DMSCharacterBase.generated.h"
 
+class UDMSCharacterDefinition;
+class UDMSAttributeComponent;
+
 UCLASS()
-class PROJECTDMSGAME_API ADMSCharacterBase : public ADMSEffectorActorBase
+class PROJECTDMSGAME_API ADMSCharacterBase : public ADMSEffectorActorBase , public IDMSLocatableInterface
 {
 	GENERATED_BODY()
 	
@@ -18,33 +22,27 @@ protected:
 	 * Character's data.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UDMSCharacterDefinition* CharacterDefinition;
+	TObjectPtr<const UDMSCharacterDefinition> CharacterDefinition;
 
 	/**
 	 * Attribute component.
 	 * Manage mana, resource, etc... of character.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	class UDMSAttributeComponent* AttributeComponent;
+	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 
 public:	
 	// Sets default values for this actor's properties
 	ADMSCharacterBase();
 
-protected:
-	// Called when the game starts or when spawned
-	//virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	//virtual void Tick(float DeltaTime) override;
+	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
 
 	/**
 	 *
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void InitializeCharacter(UDMSCharacterDefinition* NewDefinition);
-	virtual void InitializeCharacter_Implementation(UDMSCharacterDefinition* NewDefinition);
+	void InitializeCharacter(const UDMSCharacterDefinition* NewDefinition);
+	virtual void InitializeCharacter_Implementation(const UDMSCharacterDefinition* NewDefinition);
 	
 	/**
 	 *

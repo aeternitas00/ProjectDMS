@@ -44,21 +44,22 @@ public:
 	 * Saved persistent effects.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	TArray<UDMSEffectInstance*> AttachedEffect;
+	TArray<TObjectPtr<UDMSEffectInstance>> AttachedEffect;
 
 	/**
 	 * Caching spawned card actor for saving.
 	 */
 	UPROPERTY(BlueprintReadWrite, Transient)
-	TArray<ADMSCardBase*> SpawnedCardActor;
+	TArray<TObjectPtr<ADMSCardBase>> SpawnedCardActor;
 
 	/**
 	 * Caching card definition by CardAssetID for saving.
 	 */
 	UPROPERTY(BlueprintReadWrite, Transient)
-	const UDMSCardDefinition* CardDefinition;
+	TObjectPtr<UDMSCardDefinition> CardDefinition;
 
 	void LoadCardDefinition();
 
 	friend FArchive& operator<<(FArchive& Ar, FDMSCardData& MyStruct);
+
 };

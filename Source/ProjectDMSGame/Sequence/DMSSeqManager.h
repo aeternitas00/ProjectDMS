@@ -95,14 +95,14 @@ public:
 	 * Root of sequence tree. the first created sequence becomes root sequence.
 	 */
 	UPROPERTY()
-	UDMSSequence* RootSequence;
+	TObjectPtr<UDMSSequence> RootSequence;
 
 	/*
 	 * Current running sequence.
 	 * Sequences created while another sequence is in progress will be set as child of that.
 	 */
 	UPROPERTY()
-	UDMSSequence* CurrentSequence;
+	TObjectPtr<UDMSSequence> CurrentSequence;
 
 	/*
 	 * Default YN widget class will be added as final confirmation with preview to the decision step.

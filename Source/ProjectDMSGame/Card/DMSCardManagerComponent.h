@@ -41,7 +41,7 @@ protected:
 	// Set replicated in constructor
 	// 직접 생성할 이유는 별로 없고 외부에서 생성하게 될 것. ( DMS PC의 예 ) 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<FName,UDMSCardContainerComponent*> Containers; 
+	TMap<FName, TObjectPtr<UDMSCardContainerComponent>> Containers;
 
 public:
 	// Post Init 이후 생성된 카드 컨테이너들에 대해 레플리케이션 실행.

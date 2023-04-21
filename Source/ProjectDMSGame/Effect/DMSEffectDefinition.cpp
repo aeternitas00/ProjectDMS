@@ -63,6 +63,11 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateApplyTar
 	return iSequence->Targets;
 }
 
+UDMSEffectNode::UDMSEffectNode() : bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) 
+{
+	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
+}
+
 bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 {
 	FGameplayTagContainer ctn;
@@ -124,6 +129,16 @@ UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(UDMS
 	return rv;
 }
 
+TArray<UDMSEffectNodeWrapper*> UDMSEffectSet::GetEffectNodeWithComparer(const FNodeComparer& Comparer)
+{
+	TArray<UDMSEffectNodeWrapper*> rv;
+
+	for (auto NodeWrapper : EffectNodes)
+	{
+		if (Comparer.Execute(NodeWrapper->GetEffectNode())) rv.Add(NodeWrapper);
+	}
+	return rv;
+}
 
 
 // SERIALIZATIONS

@@ -81,7 +81,7 @@ public:
 	 * Sequence : EffectNode = 1 : 1 / Corresponds to the actual meaning of this sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UDMSEffectNode* OriginalEffectNode;
+	TObjectPtr<UDMSEffectNode> OriginalEffectNode;
 
 	/**
 	 * Explicit targets of this sequence. Override EffectNode's preset target flag.
@@ -93,19 +93,19 @@ public:
 	 * The player or actor that triggers the sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	AActor* SourceController;
+	TObjectPtr<AActor> SourceController;
 
 	/**
 	 * The object that triggers the sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UObject* SourceObject; // Rename?
+	TObjectPtr<UObject> SourceObject; // Rename?
 
 	/**
 	 * Effect instances (One EI attached to One target)
 	 */
 	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	TArray<UDMSEffectInstance*> EIs;
+	TArray<TObjectPtr<UDMSEffectInstance>> EIs;
 	
 	/**
 	 * Container for widgets used by the player to make decisions during the progress of a sequence.
@@ -117,14 +117,14 @@ public:
 	 * Data needed for sequence flow, such as 'Damage' by numerical values.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UDMSDataObjectSet* EIDatas;
+	TObjectPtr<UDMSDataObjectSet> EIDatas;
 
 	/** 
 	 * 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도
 	 * ++ 상위 시퀀스와 연관된 컨디션, 이펙트 같은 것을 구현 하기 위해
 	 */
-	UDMSSequence* ParentSequence;
-	UDMSSequence* ChildSequence;
+	TObjectPtr<UDMSSequence> ParentSequence;
+	TObjectPtr<UDMSSequence> ChildSequence;
 
 	/**
 	 * Attach child sequence.
