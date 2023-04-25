@@ -49,8 +49,9 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	if (ParentSequence == nullptr) {
 		if (RootSequence == nullptr) {
 			RootSequence = Sequence;
-			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::CleanupSequenceTree);
+
 			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
+			RootSequence->OnSequenceFinished.AddUObject(this, &UDMSSeqManager::CleanupSequenceTree);			
 			RootSequence->OnSequenceFinished.AddUObject(this, &UDMSSeqManager::OnSequenceTreeCompleted);
 		}
 		else if (CurrentSequence != nullptr)

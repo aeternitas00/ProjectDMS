@@ -7,6 +7,8 @@
 #include "Location/DMSLocatableInterface.h"
 #include "DMSLocationBase.generated.h"
 
+class UDMSLocationData;
+
 /**
  * 
  */
@@ -15,9 +17,18 @@ class PROJECTDMSGAME_API ADMSLocationBase : public ADMSEffectorActorBase, public
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TObjectPtr<UDMSLocationData> LocationData;
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TArray<TObjectPtr<ADMSLocationBase>> ConnectingLocations;
+
 public:
 	ADMSLocationBase();
 
-	// TObjectPtr<DMSLocationData> LocationData;
-	// TArray<TObjectPtr<ADMSLocationBase>> ConnectingLocations;
+	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
+	void InitializeLocation(const FDMSScenarioLocatingData& iLocData);
+
 };

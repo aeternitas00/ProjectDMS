@@ -2,6 +2,7 @@
 
 
 #include "Location/DMSLocationBase.h"
+#include "Location/DMSLocationData.h"
 
 ADMSLocationBase::ADMSLocationBase():ADMSEffectorActorBase()
 {

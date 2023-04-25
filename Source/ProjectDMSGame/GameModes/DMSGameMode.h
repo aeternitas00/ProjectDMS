@@ -86,5 +86,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
+	UFUNCTION(BlueprintCallable)
+	void LoadAndSpawnScenario(class UDMSScenarioData* ScenarioData);
+
 };
 

@@ -2,4 +2,5 @@
 
 
 #include "Location/DMSLocationData.h"
-
+#include "Effect/DMSEffectDefinition.h"
+#include "Location/DMSLocationBase.h"

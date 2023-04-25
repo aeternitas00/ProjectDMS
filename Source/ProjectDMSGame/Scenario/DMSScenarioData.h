@@ -6,6 +6,19 @@
 #include "Engine/DataAsset.h"
 #include "DMSScenarioData.generated.h"
 
+class UDMSLocationData;
+
+USTRUCT(BlueprintType)
+struct FDMSScenarioLocatingData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TSoftObjectPtr<UDMSLocationData> LocationAsset;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FTransform LocationOffset;
+};
 /**
  * 
  */
@@ -16,6 +29,21 @@ class PROJECTDMSGAME_API UDMSScenarioData : public UPrimaryDataAsset
 	
 public:
 
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	//FBrush? ScenarioBG;
+
+	// BGM
+
+	// theme
+
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
+	TArray<FDMSScenarioLocatingData> Locations;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FName ScenarioName;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FText ScenarioDescription;
 	// Locations, Offset
 
 	// Scenario rules ( as effect )

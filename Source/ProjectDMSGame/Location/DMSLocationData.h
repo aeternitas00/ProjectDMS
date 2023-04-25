@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ProjectDMS.h"
 #include "Engine/DataAsset.h"
 #include "DMSLocationData.generated.h"
 
+class UDMSEffectSet;
+class ADMSLocationBase;
 /**
  * 
  */
@@ -15,14 +17,22 @@ class PROJECTDMSGAME_API UDMSLocationData : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
-
-	// location name
 	
-	// location effect 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<ADMSLocationBase> LocationClass;
 
-	// location type
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FName LocationName;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TObjectPtr<UDMSEffectSet> LocationEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TArray<FGameplayTag> LocationTraits;
 
 	// location brush
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	//FBrush LocationBG;
 
 	// location gatherable resources ( further farming system )
 };

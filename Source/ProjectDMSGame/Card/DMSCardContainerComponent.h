@@ -106,6 +106,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);
 	void OnContainerAdded_Implementation(const TArray<ADMSCardBase*>& AddedCards){}
+
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerRemoved(const TArray<ADMSCardBase*>& RemovedCards);
 	void OnContainerRemoved_Implementation(const TArray<ADMSCardBase*>& RemovedCards){}

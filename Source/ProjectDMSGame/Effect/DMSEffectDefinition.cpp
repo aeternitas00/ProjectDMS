@@ -97,7 +97,8 @@ TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSeq
 	for (auto ED : EffectDefinitions)
 	{
 		//rv.Append(ED->CreateSelectors());
-		auto t= ED->CreatePairedSelector(OwnerSeq,WidgetOwner);	if(t==nullptr) continue;
+		auto t= ED->CreatePairedSelector(OwnerSeq,WidgetOwner);	
+		if(t==nullptr) continue;
 		rv.Add(t);
 	}
 	return rv;
