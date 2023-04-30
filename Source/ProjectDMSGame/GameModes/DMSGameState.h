@@ -6,6 +6,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "DMSGameState.generated.h"
 
+class ADMSLocationBase;
 /**
  * 
  */
@@ -14,5 +15,9 @@ class PROJECTDMSGAME_API ADMSGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TArray<ADMSLocationBase*> Locations;
+
 	// PhaseState, Manager
 };

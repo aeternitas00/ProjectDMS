@@ -31,12 +31,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 
+	TObjectPtr<ADMSLocationBase> CurrentLocationRef;
 public:	
 	// Sets default values for this actor's properties
 	ADMSCharacterBase();
 
 	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
-
+	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc) { CurrentLocationRef = iLoc; }
+	virtual ADMSLocationBase* GetCurrentLocation_Implementation() { return CurrentLocationRef; }
 	/**
 	 *
 	 */
@@ -49,4 +51,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void SetupAttributes(const TArray<FDMSSerializedAttribute>& Attributes);
+
+
 };

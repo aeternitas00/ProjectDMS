@@ -12,7 +12,7 @@ class ADMSLocationBase;
  * 
  */
 UCLASS()
-class PROJECTDMSGAME_API UDMSLocationData : public UPrimaryDataAsset
+class PROJECTDMSGAME_API UDMSLocationData : public UDataAsset
 {
 	GENERATED_BODY()
 

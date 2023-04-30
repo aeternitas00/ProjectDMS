@@ -25,10 +25,30 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<TObjectPtr<ADMSLocationBase>> ConnectingLocations;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TArray<TScriptInterface<IDMSLocatableInterface>> ActorsOnLocation;
+
 public:
 	ADMSLocationBase();
 
-	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnActorEntered(const TScriptInterface<IDMSLocatableInterface>& Locatable);
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnActorLeaved(const TScriptInterface<IDMSLocatableInterface>& Locatable);
+
+	void InitializeLocation_Native(const FDMSScenarioLocatingData& iLocData);
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void InitializeLocation(const FDMSScenarioLocatingData& iLocData);
 
+	UFUNCTION(BlueprintCallable)
+	static void MoveActorToDMSLocation(ADMSLocationBase* Dest, const TScriptInterface<IDMSLocatableInterface>& Locatable);
+
+	UFUNCTION(BlueprintCallable)
+	static void ConnectLocations(ADMSLocationBase* Start,ADMSLocationBase* Dest,const bool& IsOneWay);
+
+public:
+	ADMSLocationBase* GetCurrentLocation_Implementation(){return this;}
+	bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation){return false;}
 };

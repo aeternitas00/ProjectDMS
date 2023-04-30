@@ -2,6 +2,7 @@
 
 
 #include "DMSGameMode.h"
+#include "GameModes/DMSGameState.h"
 
 #include "Sequence/DMSSeqManager.h"
 #include "Notify/DMSNotifyManager.h"
@@ -22,6 +23,13 @@ ADMSGameMode::ADMSGameMode()
 	NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));
 	PhaseManagerClass= UDMSPhaseManager::StaticClass();
 	SequenceManagerClass = UDMSSeqManager::StaticClass();
+}
+
+void ADMSGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//DMSGameState=GetGameState<ADMSGameState>();
 }
 
 void ADMSGameMode::PreInitializeComponents()
@@ -49,12 +57,23 @@ void ADMSGameMode::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> 
 
 void ADMSGameMode::LoadAndSpawnScenario(UDMSScenarioData* ScenarioData)
 {
+	auto& Locs = GetGameState<ADMSGameState>()->Locations;
 	for (auto& Location : ScenarioData->Locations)
 	{
-		Location.LocationAsset.LoadSynchronous();
+		//Location.LocationAsset.LoadSynchronous();
 		auto LocData = Location.LocationAsset.Get();
-		GetWorld()->SpawnActor<ADMSLocationBase>(LocData->LocationClass,Location.LocationOffset)->InitializeLocation(Location);
+		FActorSpawnParameters param;
+		auto SpawnedLocation = GetWorld()->SpawnActor<ADMSLocationBase>(LocData->LocationClass);
+		SpawnedLocation->Rename(nullptr,this);
+		SpawnedLocation->InitializeLocation_Native(Location);
+		Locs.Add(SpawnedLocation);
 	}
 	
+	for (auto& LocConnection : ScenarioData->Connections)
+	{
+		if(LocConnection.StartLocationIndex < Locs.Num() && LocConnection.DestLocationIndex < Locs.Num())
+			ADMSLocationBase::ConnectLocations(Locs[LocConnection.StartLocationIndex], Locs[LocConnection.DestLocationIndex], LocConnection.bIsOneWay);
+	}
+
 }
 

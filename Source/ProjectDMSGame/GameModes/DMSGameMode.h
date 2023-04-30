@@ -24,7 +24,7 @@ class UDMSNotifyManager;
 class UDMSPhaseManager;
 class UDMSCardDefinition;
 class IDMSEffectorInterface;
-
+class ADMSGameState;
 
 /**
  *	========================================
@@ -61,6 +61,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSPhaseManager> PhaseManagerClass;
 
+	//UPROPERTY(BlueprintReadOnly)
+	//ADMSGameState* DMSGameState;
+
+protected:
+
+	virtual void BeginPlay() override;
 public:
 	FORCEINLINE UDMSSeqManager* GetSequenceManager() {return SequenceManager;}
 	FORCEINLINE UDMSEffectHandler* GetEffectHandler() {return EffectHandler;}

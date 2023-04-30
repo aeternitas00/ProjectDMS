@@ -4,7 +4,7 @@
 #include "Character/DMSCharacterBase.h"
 #include "Character/DMSCharacterDefinition.h"
 #include "Attribute/DMSAttributeComponent.h"
-
+#include "Location/DMSLocationBase.h"
 // Sets default values
 ADMSCharacterBase::ADMSCharacterBase() : ADMSEffectorActorBase()
 {
