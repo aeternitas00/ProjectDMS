@@ -5,7 +5,7 @@
 #include "Effect/DMSEIManagerComponent.h"
 
 // Sets default values
-ADMSEffectorActorBase::ADMSEffectorActorBase()
+ADMSEffectorActorBase::ADMSEffectorActorBase(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
@@ -24,7 +24,7 @@ bool ADMSEffectorActorBase::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffe
 	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
 }
 
-UDMSEffectSet* ADMSEffectorActorBase::GetOwningEffectSet(const FName& iSetName)
+UDMSEffectSet* ADMSEffectorActorBase::GetOwningEffectSet(const FGameplayTag& iSetName)
 {
 	return nullptr;
 }

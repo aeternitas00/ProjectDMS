@@ -5,22 +5,21 @@
 #include "Scenario/DMSScenarioData.h"
 #include "Location/DMSLocationData.h"
 
-ADMSLocationBase::ADMSLocationBase():ADMSEffectorActorBase()
+ADMSLocationBase::ADMSLocationBase(const FObjectInitializer& ObjectInitializer):ADMSEffectorActorBase(ObjectInitializer)
 {
+	//ChildSlot=CreateDefaultSubobject< USceneComponent>("ChildSlot");
 }
 
-void ADMSLocationBase::InitializeLocation_Native(const FDMSScenarioLocatingData& iLocData)
-{
-	LocationData = iLocData.LocationAsset;
-	SetActorTransform(iLocData.LocationOffset);
-	InitializeLocation(iLocData);
-}
+//void ADMSLocationBase::Initialize_Implementation(const UDMSSpawnableDataBase* inData)
+//{
+//	LocationData = Cast<UDMSLocationData>(inData);
+//}
 
-void ADMSLocationBase::MoveActorToDMSLocation(ADMSLocationBase* Dest,const TScriptInterface<IDMSLocatableInterface>& Locatable)
+bool ADMSLocationBase::MoveActorToDMSLocation(ADMSLocationBase* Dest,const TScriptInterface<IDMSLocatableInterface>& Locatable)
 {
 	UObject* Obj = Locatable.GetObject();
-	//IDMSLocatableInterface* ThisInterface = Cast<IDMSLocatableInterface>(Obj);
 	
+
 	auto CurrentLocation = Locatable->Execute_GetCurrentLocation(Obj);
 
 	if (CurrentLocation != nullptr)
@@ -33,10 +32,14 @@ void ADMSLocationBase::MoveActorToDMSLocation(ADMSLocationBase* Dest,const TScri
 
 	Dest->OnActorEntered(Locatable);
 	Dest->ActorsOnLocation.Add(Locatable);
+
+	return true;
 }
 
 void ADMSLocationBase::ConnectLocations(ADMSLocationBase* Start, ADMSLocationBase* Dest, const bool& IsOneWay)
 {
 	Start->ConnectingLocations.Add(Dest);
 	if (!IsOneWay)Dest->ConnectingLocations.Add(Start);
+
+	
 }

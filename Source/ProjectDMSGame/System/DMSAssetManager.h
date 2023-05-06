@@ -20,7 +20,7 @@ public:
 	static const FPrimaryAssetType CardAssetType;
 	static const FPrimaryAssetType PlayerCharacterAssetType;
 	static const FPrimaryAssetType EnemyCharacterAssetType;
-
+	static const FPrimaryAssetType LocationAssetType;
 	static UDMSAssetManager& Get();
 
 	UDMSCardDefinition* ForceLoadCard(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning = true);

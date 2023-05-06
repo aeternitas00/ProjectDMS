@@ -24,7 +24,7 @@ public:
 	uint8 EffectIdx;
 
 	UPROPERTY(EditDefaultsOnly)
-	FName EffectSetName;
+	FGameplayTag EffectSetName;
 
 	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
 

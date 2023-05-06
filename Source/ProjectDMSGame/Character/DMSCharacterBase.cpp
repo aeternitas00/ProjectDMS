@@ -6,7 +6,7 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "Location/DMSLocationBase.h"
 // Sets default values
-ADMSCharacterBase::ADMSCharacterBase() : ADMSEffectorActorBase()
+ADMSCharacterBase::ADMSCharacterBase(const FObjectInitializer& ObjectInitializer) : ADMSEffectorActorBase(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,14 +14,17 @@ ADMSCharacterBase::ADMSCharacterBase() : ADMSEffectorActorBase()
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
 }
 
-UDMSEffectSet* ADMSCharacterBase::GetOwningEffectSet(const FName& iSetName)
+UDMSEffectSet* ADMSCharacterBase::GetOwningEffectSet(const FGameplayTag& iSetName)
 {
 	return CharacterDefinition->CharacterEffectSets.Contains(iSetName) ? CharacterDefinition->CharacterEffectSets[iSetName] : nullptr;
 }
 
-void ADMSCharacterBase::InitializeCharacter_Implementation(const UDMSCharacterDefinition* NewDefinition)
+void ADMSCharacterBase::Initialize_Implementation(const UDMSSpawnableDataBase* NewDefinition)
 {
-	CharacterDefinition = NewDefinition;
+	CharacterDefinition = Cast<UDMSCharacterDefinition>(NewDefinition);
+
+	check(CharacterDefinition != nullptr);
+
 	SetupAttributes(CharacterDefinition->DefaultAttributes);
 }
 

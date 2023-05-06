@@ -33,7 +33,7 @@ class PROJECTDMSGAME_API ADMSCardBase : public ADMSEffectorActorBase
 	
 public:	
 	// Sets default values for this actor's properties
-	ADMSCardBase();
+	ADMSCardBase(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -56,7 +56,7 @@ protected:
 public:	
 
 	// IDMSEffectorInterface Implements.
-	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
+	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
 
 	/**
 	 * AttachEffectInstance for blueprint
@@ -69,9 +69,7 @@ public:
 	 * Initialize card with new card definition.
 	 * @param	iCardDefinition					New card data.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void InitializeCard(const UDMSCardDefinition* iCardDefinition/*...*/);
-	void InitializeCard_Implementation(const UDMSCardDefinition* iCardDefinition/*...*/);
+	void Initialize_Implementation(const UDMSSpawnableDataBase* iCardDefinition/*...*/);
 
 	/**
 	 * Native Get,Setter

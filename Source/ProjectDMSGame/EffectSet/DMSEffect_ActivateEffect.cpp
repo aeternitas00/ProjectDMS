@@ -16,7 +16,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ActivateEffect, "Effect.ActivateEffect");
 
 UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() :EffectIdx(0)
 { 
-	EffectSetName = TEXT("Effect");
+	EffectSetName = TAG_DMS_EffectType_Effect;
 	EffectTag = TAG_DMS_Effect_ActivateEffect;
 	bHasPairedSelector=true;
 }
@@ -86,7 +86,7 @@ void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelect
 
 	auto& iSeq = WidgetInstance->OwnerSeq;
 	
-	for (auto EI : iSeq->EIs)
+	for (auto& EI : iSeq->EIs)
 	{
 		auto Set = GetEffectSetFromOuter(EI);
 		if (Set == nullptr) 

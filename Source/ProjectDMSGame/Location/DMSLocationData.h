@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectDMS.h"
-#include "Engine/DataAsset.h"
+#include "Common/DMSSpawnableDataBase.h"
 #include "DMSLocationData.generated.h"
 
 class UDMSEffectSet;
@@ -12,15 +12,11 @@ class ADMSLocationBase;
  * 
  */
 UCLASS()
-class PROJECTDMSGAME_API UDMSLocationData : public UDataAsset
+class PROJECTDMSGAME_API UDMSLocationData : public UDMSSpawnableDataBase
 {
 	GENERATED_BODY()
 
 public:
-	
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSubclassOf<ADMSLocationBase> LocationClass;
-
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName LocationName;
 
@@ -35,4 +31,5 @@ public:
 	//FBrush LocationBG;
 
 	// location gatherable resources ( further farming system )
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 };

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ProjectDMS.h"
-#include "Engine/DataAsset.h"
+#include "Common/DMSSpawnableDataBase.h"
 #include "Attribute/DMSSerializedAttribute.h"
 #include "DMSCharacterDefinition.generated.h"
 
@@ -13,9 +13,8 @@ class UDMSEffectSet;
  * 
  */
 UCLASS(BlueprintType,Const)
-class PROJECTDMSGAME_API UDMSCharacterDefinition : public UPrimaryDataAsset
+class PROJECTDMSGAME_API UDMSCharacterDefinition : public UDMSSpawnableDataBase
 {
-
 	GENERATED_BODY()
 
 public:
@@ -36,7 +35,7 @@ public:
 	 * ex) <"Cost",CostEffectSet>
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Character)
-	TMap<FName, TObjectPtr<UDMSEffectSet>> CharacterEffectSets;
+	TMap<FGameplayTag, TObjectPtr<UDMSEffectSet>> CharacterEffectSets;
 
 	/**
 	 * Default attributes of character.

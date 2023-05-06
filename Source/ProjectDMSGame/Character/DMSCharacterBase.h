@@ -34,17 +34,16 @@ protected:
 	TObjectPtr<ADMSLocationBase> CurrentLocationRef;
 public:	
 	// Sets default values for this actor's properties
-	ADMSCharacterBase();
+	ADMSCharacterBase(const FObjectInitializer& ObjectInitializer);
 
-	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
+	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
 	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc) { CurrentLocationRef = iLoc; }
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation() { return CurrentLocationRef; }
+
 	/**
 	 *
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void InitializeCharacter(const UDMSCharacterDefinition* NewDefinition);
-	virtual void InitializeCharacter_Implementation(const UDMSCharacterDefinition* NewDefinition);
+	virtual void Initialize_Implementation(const UDMSSpawnableDataBase* inData);
 	
 	/**
 	 *

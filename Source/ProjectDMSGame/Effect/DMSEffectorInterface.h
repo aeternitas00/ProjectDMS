@@ -63,7 +63,7 @@ public:
 	/**
 	 * 객체가 자체적으로 소유한 이펙트 세트를 반환.
 	 */
-	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName)=0;
+	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName)=0;
 
 	//~~
 };

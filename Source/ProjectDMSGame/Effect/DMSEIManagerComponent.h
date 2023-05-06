@@ -48,16 +48,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual UDMSEffectNode* ActivatorNodeGenerator(const FName& EffectSetName, const uint8& idx);
+	virtual UDMSEffectNode* ActivatorNodeGenerator(const FGameplayTag& EffectSetName, const uint8& idx);
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual UObject* GetObject() { return Cast<UObject>(GetOwner()); }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
-	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
+	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
 	virtual AActor* GetOwningPlayer() { return GetOwner()->GetOwner(); }
 
 	
 	// concepts????
-	void SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName);
+	void SetupOwnEffect(UDMSEffectSet* EffectSet,const FGameplayTag& SetName);
 };

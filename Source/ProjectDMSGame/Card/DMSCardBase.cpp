@@ -13,7 +13,7 @@
 #include "EffectSet/DMSEffectNode_PlayCard.h"
 
 // Sets default values
-ADMSCardBase::ADMSCardBase() : ADMSEffectorActorBase()
+ADMSCardBase::ADMSCardBase(const FObjectInitializer& ObjectInitializer) : ADMSEffectorActorBase(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -42,20 +42,25 @@ void ADMSCardBase::SetCardDefinition(const UDMSCardDefinition* iCardDefinition)
 }
 
 
-void ADMSCardBase::InitializeCard_Implementation(const UDMSCardDefinition* iCardDefinition/*, Saved data...*/)
+void ADMSCardBase::Initialize_Implementation(const UDMSSpawnableDataBase* iCardDefinition/*, Saved data...*/)
 {
 	// EffectManagerComponent->CleanupOwnEffect(); ?
-	SetCardDefinition(iCardDefinition);
+	OriginalData = iCardDefinition;
+
+	// Caching casted one.
+	SetCardDefinition(Cast<UDMSCardDefinition>(iCardDefinition));
+
+	check(CardDefinition != nullptr);
 
 	// ¿ì¸®²¨¸¸?
-	if (CardDefinition->CardEffectSets.Contains("Effect"))
-		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Effect"], "Effect");
+	if (CardDefinition->CardEffectSets.Contains(TAG_DMS_EffectType_Effect))
+		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[TAG_DMS_EffectType_Effect], TAG_DMS_EffectType_Effect);
 
-	if (CardDefinition->CardEffectSets.Contains("Cost"))
-		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets["Cost"], "Cost");
+	if (CardDefinition->CardEffectSets.Contains(TAG_DMS_EffectType_Cost))
+		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[TAG_DMS_EffectType_Cost], TAG_DMS_EffectType_Cost);
 }
 
-UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FName& iSetName)
+UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FGameplayTag& iSetName)
 {
 	//return CardDefinition->CardEffects;
 	return CardDefinition->CardEffectSets.Contains(iSetName) ? CardDefinition->CardEffectSets[iSetName] : nullptr;

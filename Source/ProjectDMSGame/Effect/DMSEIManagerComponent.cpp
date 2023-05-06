@@ -59,13 +59,13 @@ bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEff
 	return rv;
 }
 
-UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FName& iSetName)
+UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FGameplayTag& iSetName)
 {
 	auto Owner = Cast<IDMSEffectorInterface>(GetOwner());
 	return Owner!=nullptr ? Owner->GetOwningEffectSet(iSetName) : nullptr;
 }
 
-UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FName& EffectSetName, const uint8& idx)
+UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTag& EffectSetName, const uint8& idx)
 {
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 
@@ -82,7 +82,7 @@ UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FName& Effe
 
 
 
-void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FName& SetName )
+void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGameplayTag& SetName )
 {
 	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
 	auto EffectNodes = EffectSet->EffectNodes;

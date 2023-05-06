@@ -172,5 +172,5 @@ public:
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq,UObject* SourceTweak) override;
 	virtual UObject* GetObject() override { return this; }
 	virtual AActor* GetOwningPlayer() { return this; }
-	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override { return nullptr; }
+	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
 };

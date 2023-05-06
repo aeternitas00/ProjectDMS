@@ -80,7 +80,7 @@ bool UDMSCoreFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FGamep
 
 bool UDMSCoreFunctionLibrary::CheckCardIsCommitable(ADMSCardBase* iCard)
 {
-	return iCard->GetCardDefinition()->CardEffectSets.Contains("Commit");
+	return iCard->GetCardDefinition()->CardEffectSets.Contains(TAG_DMS_EffectType_Commit);
 }
 
 bool UDMSCoreFunctionLibrary::CheckCondition(UDMSConditionObjectBase* Condition, UObject* CheckingGameObject, UDMSSequence* CurrentSequence)

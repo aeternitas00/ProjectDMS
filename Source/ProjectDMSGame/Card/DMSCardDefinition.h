@@ -13,7 +13,7 @@
  */
 
 #include "ProjectDMS.h"
-#include "Engine/DataAsset.h"
+#include "Common/DMSSpawnableDataBase.h"
 #include "Common/DMSCommons.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "DMSCardDefinition.generated.h"
@@ -33,7 +33,7 @@ class UDMSEffectNode_TypeBehavior;
  *
  */
 UCLASS(Blueprintable, BlueprintType, Const, ClassGroup = (Card))
-class PROJECTDMSGAME_API UDMSCardDefinition : public UPrimaryDataAsset
+class PROJECTDMSGAME_API UDMSCardDefinition : public UDMSSpawnableDataBase
 {
 	GENERATED_BODY()
 	
@@ -83,7 +83,7 @@ public:
 	 * ex) <"Cost",CostEffectSet>
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
-	TMap<FName, TObjectPtr<UDMSEffectSet>> CardEffectSets;
+	TMap<FGameplayTag, TObjectPtr<UDMSEffectSet>> CardEffectSets;
 
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;

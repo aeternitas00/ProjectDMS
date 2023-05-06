@@ -3,22 +3,22 @@
 #pragma once
 
 #include "ProjectDMS.h"
-#include "GameFramework/Actor.h"
+#include "Common/DMSSpawnableDataBase.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "DMSEffectorActorBase.generated.h"
 
 UCLASS(Abstract)
-class PROJECTDMSGAME_API ADMSEffectorActorBase : public AActor, public IDMSEffectorInterface
+class PROJECTDMSGAME_API ADMSEffectorActorBase : public ADMSSpawnableBase, public IDMSEffectorInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADMSEffectorActorBase();
+	ADMSEffectorActorBase(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	/**
-	 * Card's effector component.
+	 * Actor's effector component.
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class UDMSEIManagerComponent* EffectManagerComponent;
@@ -28,6 +28,6 @@ public:
 	virtual AActor* GetOwningPlayer() { return GetOwner(); }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
-	virtual UDMSEffectSet* GetOwningEffectSet(const FName& iSetName) override;
+	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
 
 };

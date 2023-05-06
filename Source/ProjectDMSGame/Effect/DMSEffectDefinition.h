@@ -92,13 +92,13 @@ public:
 	/**
 	 * Custom referencer for tweaks.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	FGameplayTag ReferenceDataKey;
 
 	/**
 	 * Is this effect has paired selector?
 	 */
-	UPROPERTY(VisibleAnywhere, meta = (EditCondition = false, EditConditionHides))
+	UPROPERTY(VisibleAnywhere, Category = Effect,meta = (EditCondition = false, EditConditionHides))
 	bool bHasPairedSelector;
 
 	/**
@@ -150,7 +150,7 @@ public:
 	 * 이펙트 노드에 대한 대표 키워드. 비워두어도 상관 없음. 
 	 * 대표 키워드를 통한 노티파이 플로우의 세부적인 쿼리옵션을 사용하고 싶을 경우 사용.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	FGameplayTag NodeTag;
 
 	/**
@@ -165,20 +165,20 @@ public:
 	/**
 	 * Effect's activatable timing.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	UDMSConditionCombiner* Conditions;
 
 	/**
 	 * Has a choice about triggering the effect ? 
 	 * true : Forced trigger when meet the conditions. / false : Can choose Y / N of trigger.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bForced;
 
 	/**
 	 * Effect's Cost. It's different with cost of playing card.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	UDMSEffectSet* EffectCost;
 
 //=================== Pre-activate ( Decision step ) ===================//
@@ -186,7 +186,7 @@ public:
 	/**
 	 * Classes of decision widget what this effect will use.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	TArray<TSubclassOf<UDMSDecisionWidget>> DecisionWidgetClasses;
 
 	/**
@@ -211,14 +211,14 @@ public:
 	 * Actual effects that activatable in that timing
 	 * Works in order to 0~n
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode, Instanced)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
 	TArray<UDMSEffectDefinition*> EffectDefinitions;
 
 	/** 
 	 * Flag for the effect's predefined target.
 	 * ex ) effect that Add some resource to "Actvivated player". 
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	EDMSPresetTargetFlag PresetTargetFlag;
 
 	/**
@@ -261,13 +261,13 @@ public:
 	/**
 	 * Effect's child(sub) effect
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	UDMSEffectNodeWrapper* ChildEffect;
 
 	/**
 	 * Flag of "Is this effect has chainable window?".
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EffectNode)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIsChainableEffect;
 
 	//virtual void Serialize(FArchive& Ar) override;
@@ -358,7 +358,7 @@ public:
 	/**
 	 * Effect nodes of this effect set.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = CardEffect, Instanced)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
 	TArray<UDMSEffectNodeWrapper*> EffectNodes;
 
 	/**

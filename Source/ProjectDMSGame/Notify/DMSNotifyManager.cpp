@@ -92,7 +92,7 @@ void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 
 void UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object)
 {
-	NotifyObjects.Add(Object);
+	NotifyObjects.AddUnique(Object);
 }
 
 void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects)
