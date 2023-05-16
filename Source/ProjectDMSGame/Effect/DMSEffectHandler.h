@@ -73,12 +73,12 @@ public:
 	/** 
 	 * Creating method without sequence. ( ex. setup object's owning effect. )
  	 * @param	SourceObject
-	 * @param	SourceController
+	 * @param	SourcePlayer
 	 * @param	EffectNode
 	 * @param	iSet
 	 * @return	Created effect instances.
 	 */
-	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UObject* SourceObject, AActor* SourceController, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
+	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UObject* SourceObject, AActor* SourcePlayer, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
 	
 	/**
 	 * Creating method for general purpose.

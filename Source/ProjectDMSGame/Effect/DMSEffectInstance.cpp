@@ -21,7 +21,7 @@ UDMSEffectInstance::UDMSEffectInstance() :CurrentState(EDMSEIState::EIS_Default)
 
 void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
 {
-	DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), EffectNode->NodeTag == FGameplayTag::EmptyTag ? *EffectNode->EffectDefinitions[0]->EffectTag.ToString() : *EffectNode->NodeTag.ToString());
+	DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
 	//for (auto EffectDefinition : EffectNode->EffectDefinitions )
 	//{
 	//	EffectDefinition->Work(this);
@@ -65,15 +65,17 @@ void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 	}
 }
 
-void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) { EffectNode = iNode; CurrentState = EDMSEIState::EIS_Pending; DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); }
+void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
+{ EffectNode = iNode; CurrentState = EDMSEIState::EIS_Pending; DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); }
 
-void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq) { EffectNode = iNode; SourceController=iSeq->SourceController; SourceObject = iSeq->SourceObject; DataSet = iSeq->EIDatas; CurrentState = EDMSEIState::EIS_Pending; }
+void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq) 
+{ EffectNode = iNode; SourcePlayer=iSeq->SourcePlayer; SourceObject = iSeq->SourceObject; DataSet = iSeq->EIDatas; CurrentState = EDMSEIState::EIS_Pending; }
 
 UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 
 {
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if (SM == nullptr) return nullptr;
-	return SM->RequestCreateSequence(SourceTweak, SourceController, EffectNode, {}, DataSet, ChainingSequence);
+	return SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, {}, DataSet, ChainingSequence);
 }
 
 void UDMSEffectInstance::AttachEffectInstance(UDMSEffectInstance* EI)

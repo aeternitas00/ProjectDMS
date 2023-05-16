@@ -25,7 +25,7 @@ UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr), CurrentSequence(nullpt
 
 UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UObject* SourceObject,
-	AActor* SourceController, 
+	AActor* SourcePlayer, 
 	UDMSEffectNode* EffectNode, 
 	TArray<TScriptInterface<IDMSEffectorInterface>> Targets = TArray<TScriptInterface<IDMSEffectorInterface>>(),
 	UDMSDataObjectSet* Datas, 
@@ -41,7 +41,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	NewData->Inherit(Datas);
 	Sequence->OriginalEffectNode = EffectNode;
 	Sequence->SourceObject = SourceObject;
-	Sequence->SourceController = SourceController;
+	Sequence->SourcePlayer = SourcePlayer;
 	Sequence->EIDatas = NewData;
 	Sequence->Targets = Targets;
 
@@ -71,7 +71,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
 
-	auto WidgetOwner = Cast<APlayerController>(iSeq->SourceController);
+	auto WidgetOwner = iSeq->GetWidgetOwner();
 
 	if (WidgetOwner == nullptr) {
 		//	it's from GAMEMODE or SYSTEM THINGs. LEADER PLAYER own this selector 
@@ -156,9 +156,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 	DMS_LOG_SIMPLE(TEXT("==== %s : Apply Sequence [ Depth : %d ] ===="), *Sequence->GetName(), GetDepth(Sequence));
 
 	DMS_LOG_SCREEN(TEXT("%s : ApplySequence [%s]"), *Sequence->SourceObject->GetName(), 
-	Sequence->OriginalEffectNode->NodeTag == FGameplayTag::EmptyTag ? 
-	*Sequence->OriginalEffectNode->EffectDefinitions[0]->EffectTag.ToString() :
-	*Sequence->OriginalEffectNode->NodeTag.ToString());
+	*Sequence->OriginalEffectNode->GenerateTagContainer().ToString());
 	// Before Notify
 
 	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
@@ -172,6 +170,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 
 	DMS_LOG_SCREEN(TEXT("==-- BEFORE [ Depth : %d ] --=="),GetDepth(Sequence));
 	// 'Before Timing' broadcast starts.
+	Sequence->Progress = EDMSTimingFlag::T_Before;
 	NotifyManager->BroadCast(Sequence, 
 	[=, BeforeSequence=Sequence]() {
 			// ==== ON BEFORE TIMING RESPONSE ENDED ====
@@ -216,7 +215,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 						DMS_LOG_SIMPLE(TEXT("==== %s : OnNotifyReceived -> Advance ===="), *AfterSequence->GetName());
 						auto ChildNode = AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
 						// follows parents data. 
-						auto NewSeq = RequestCreateSequence(AfterSequence->SourceObject, AfterSequence->SourceController, ChildNode,
+						auto NewSeq = RequestCreateSequence(AfterSequence->SourceObject, AfterSequence->SourcePlayer, ChildNode,
 							TArray<TScriptInterface<IDMSEffectorInterface>>(), AfterSequence->EIDatas, AfterSequence);
 				
 						// Set delegates when child effect sequence completed.

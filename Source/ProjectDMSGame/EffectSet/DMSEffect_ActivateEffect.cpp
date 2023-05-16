@@ -58,7 +58,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	auto Node = NodeWrapper->GetEffectNode();
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
-	auto NewSeq = SeqMan->RequestCreateSequence(iEI->SourceObject, iEI->SourceController,Node,{},nullptr );
+	auto NewSeq = SeqMan->RequestCreateSequence(iEI->SourceObject, iEI->SourcePlayer,Node,{},nullptr );
 	
 	// 차일드 노드 끝날때 박는게 아니고 파라미터로 델리게이트를 넘겨서 패런츠의 ONRESUME을 하는게 나아보임.
 	NewSeq->AddToOnSequenceFinished_Native([=]() {

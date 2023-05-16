@@ -32,7 +32,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	TObjectPtr<const UDMSSpawnableDataBase> OriginalData;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	int32 OwnerID;
+
 public:
+	UFUNCTION(BlueprintCallable)
+	int32 GetOwnerID() {return OwnerID;}
+
+	UFUNCTION(BlueprintCallable)
+	void SetOwnerID(const int32& inID) {OwnerID= inID;}
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE const UDMSSpawnableDataBase* GetOriginalData(){return OriginalData;}
 

@@ -67,7 +67,7 @@ public:
 	 * @param	AttributeName						Target attribute's tag
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSAttribute* GetAttribute(const FGameplayTag& AttributeName) const;
+	UDMSAttribute* GetAttribute(const FGameplayTag& AttributeName);
 
 	/**
 	 * Getter of attribute value

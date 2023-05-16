@@ -76,7 +76,8 @@ public:
 	FORCEINLINE UDMSEffectHandler* GetEffectHandler() {return EffectHandler;}
 	FORCEINLINE UDMSNotifyManager* GetNotifyManager() { return NotifyManager; }
 	FORCEINLINE UDMSPhaseManager* GetPhaseManager() { return PhaseManager; }
-	FORCEINLINE ADMSGameState* GetDMSGameState();
+	UFUNCTION(BlueprintCallable)
+	ADMSGameState* GetDMSGameState();
 
 	virtual void PreInitializeComponents() override;
 
@@ -89,28 +90,31 @@ public:
 	 *
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	ADMSCardBase* SpawnCard(const FDMSCardData& CardData,AActor* iOwner,const FName& DefaultContainerName=TEXT("Deck"));
-	virtual ADMSCardBase* SpawnCard_Implementation(const FDMSCardData& CardData, AActor* iOwner, const FName& DefaultContainerName = TEXT("Deck"));
+	ADMSCardBase* SpawnCard(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName=TEXT("Deck"));
+	virtual ADMSCardBase* SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName = NAME_None);
 	/**
 	 *
 	 */
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
-	//void RegisterNotifyObject_Native(TScriptInterface<IDMSEffectorInterface> Object);
-	//void RegisterNotifyObject_Native(UObject* Object);
 
 
+	//UFUNCTION(BlueprintCallable,meta = (DisplayName="Spawn DMS Game Actor"))
+	//ADMSSpawnableBase* SpawnDMSGameActor_BP(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
 
-	// Deprecated ( Scenario => Direct to Level )
-	//UFUNCTION(BlueprintCallable)
-	//void LoadAndSpawnScenario(class UDMSScenarioData* ScenarioData);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Spawn DMS Game Actor_ID"))
+	ADMSSpawnableBase* SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
 
-	UFUNCTION(BlueprintCallable,meta = (DisplayName="Spawn DMS Game Actor"))
-	ADMSSpawnableBase* SpawnDMSGameActor_BP(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+
+	//template<typename ReturnType>
+	//ReturnType* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+	//ADMSSpawnableBase* SpawnDMSGameActor(const TSubclassOf<ADMSSpawnableBase>& SpawningClass, const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+	//ADMSSpawnableBase* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
 
 	template<typename ReturnType>
-	ReturnType* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
-	ADMSSpawnableBase* SpawnDMSGameActor(const TSubclassOf<ADMSSpawnableBase>& SpawningClass, const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
-	ADMSSpawnableBase* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+	ReturnType* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+	ADMSSpawnableBase* SpawnDMSGameActor(const TSubclassOf<ADMSSpawnableBase>& SpawningClass, const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+	ADMSSpawnableBase* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+
 };
 

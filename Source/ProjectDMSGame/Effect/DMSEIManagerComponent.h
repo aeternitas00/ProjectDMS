@@ -25,7 +25,7 @@ class UDMSEffectSet;
  * TODO :: SelfLogging System?
  */ 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTDMSGAME_API UDMSEIManagerComponent : public UActorComponent, public IDMSEffectorInterface//, public IDMSAttributeInterface
+class PROJECTDMSGAME_API UDMSEIManagerComponent : public UActorComponent, public IDMSEffectorInterface
 {
 	GENERATED_BODY()
 
@@ -45,6 +45,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<UDMSEffectInstance*> OwnEffectInstances;
 
+	// TODO :: MIGRATE EffectSet to here
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -52,10 +54,10 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual UObject* GetObject() { return Cast<UObject>(GetOwner()); }
+	virtual AActor* GetOwningPlayer();
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
-	virtual AActor* GetOwningPlayer() { return GetOwner()->GetOwner(); }
 
 	
 	// concepts????

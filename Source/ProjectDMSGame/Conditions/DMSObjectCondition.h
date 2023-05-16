@@ -38,10 +38,12 @@ public:
 	EDMSObjectSelectorFlag TargetFlag;
 
 	/**
-	 * If it is true, CheckOperation returns true only if all of target check was true
+	 * If it is true, CheckOperation returns true only if all of object checkings were true
 	 */
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	bool bAllObjectMustPassed;
+
+
 
 	/**
 	 * Get compare target with TargetFlag.
@@ -78,7 +80,7 @@ public:
 	 * Used in CheckOperation. Update return value of CheckOperation.
 	 */
 	void UpdateResultWhenNull(bool& outResult) const{
-		UpdateResult(outResult, bAllObjectMustPassed);
+		UpdateResult(outResult, bNullIsTrue);
 	}
 };
 
@@ -113,3 +115,24 @@ public:
 
 	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
 };
+
+//UCLASS(BlueprintType)
+//class PROJECTDMSGAME_API UDMSLocatingCondition : public UDMSObjectConditionBase
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	/**
+//	 * Checking attribute's tag.
+//	 */
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Condition)
+//	FGameplayTag AttributeTag;
+//
+//	/**
+//	 * Operating value.
+//	 */
+//	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
+//	int Value; // float? 
+//
+//	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
+//};

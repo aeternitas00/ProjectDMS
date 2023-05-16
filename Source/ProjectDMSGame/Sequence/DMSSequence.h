@@ -55,7 +55,7 @@ class UDMSSequence : public UObject
 public:
 	// Default Initializer
 	UDMSSequence( ) { 
-		Progress = EDMSTimingFlag::T_Before; //EDMSTimingFlag::T_Null;
+		Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
 		SequenceState = EDMSSequenceState::SS_Default;
 		SourceObject = nullptr;
 		ParentSequence = nullptr;
@@ -70,7 +70,6 @@ public:
 
 	/**
 	 * Current timing of this sequence.
-	 * 어떠한 이펙트가 실제로 월드에 영향을 끼치기 까지의 과정 중에 간섭할 '타이밍'은 결론적으로 발동 전, 도중, 후 세가지로 크게 나눌 수 있음.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSTimingFlag Progress;
@@ -93,13 +92,13 @@ public:
 	 * The player or actor that triggers the sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<AActor> SourceController;
+	TObjectPtr<AActor> SourcePlayer;
 
 	/**
 	 * The object that triggers the sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UObject> SourceObject; // Rename?
+	TObjectPtr<UObject> SourceObject; // IDMSEffectorInterface
 
 	/**
 	 * Effect instances (One EI attached to One target)
@@ -164,7 +163,7 @@ public:
 	 */
 	void OnSequenceFinish();
 
-
+	APlayerController* GetWidgetOwner();
 
 	// ================================ //
 	//		Delegates and binders.

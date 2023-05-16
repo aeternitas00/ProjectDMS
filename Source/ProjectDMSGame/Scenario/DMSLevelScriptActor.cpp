@@ -52,16 +52,16 @@ TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()
 	return { StartingLocations[rand() % StartingLocations.Num()]};
 }
 
-
-void ADMSLevelScriptActor::AttachEffectInstance(UDMSEffectInstance* EI)
-{
-	EffectManagerComponent->AttachEffectInstance(EI);
-}
-
-bool ADMSLevelScriptActor::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
-{
-	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
-}
+//
+//void ADMSLevelScriptActor::AttachEffectInstance(UDMSEffectInstance* EI)
+//{
+//	EffectManagerComponent->AttachEffectInstance(EI);
+//}
+//
+//bool ADMSLevelScriptActor::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+//{
+//	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
+//}
 
 UDMSEffectSet* ADMSLevelScriptActor::GetOwningEffectSet(const FGameplayTag& iSetName)
 { 

@@ -5,7 +5,8 @@
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
-
+#include "Player/DMSPlayerState.h"
+#include "Gamemodes/DMSGameState.h"
 template<typename FuncFinished, typename FuncCanceled >
 void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
 {
@@ -78,6 +79,17 @@ void UDMSSequence::OnSequenceFinish()
 	temp.Broadcast();
 	temp_Dynamic.Broadcast();
 	// Cleanup 
+	
+}
+
+APlayerController* UDMSSequence::GetWidgetOwner()
+{
+	if (SourcePlayer->GetClass()->IsChildOf<ADMSPlayerState>())
+		return Cast<ADMSPlayerState>(SourcePlayer)->GetPlayerController();
+	
+	//if (SourcePlayer->GetClass()->IsChildOf<ADMSGameState>())
+	return Cast<ADMSGameState>(SourcePlayer)->GetLeaderPlayerController();
+
 	
 }
 

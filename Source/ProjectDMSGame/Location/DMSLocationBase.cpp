@@ -10,16 +10,21 @@ ADMSLocationBase::ADMSLocationBase(const FObjectInitializer& ObjectInitializer):
 	//ChildSlot=CreateDefaultSubobject< USceneComponent>("ChildSlot");
 }
 
-//void ADMSLocationBase::Initialize_Implementation(const UDMSSpawnableDataBase* inData)
-//{
-//	LocationData = Cast<UDMSLocationData>(inData);
-//}
+bool ADMSLocationBase::CanPlayerLeave() const
+{
+	return (LocationStateFlag & EDMSLocationState::LS_BlockPlayerLeave) == EDMSLocationState::LS_Default;
+
+}
+
+bool ADMSLocationBase::CanPlayerEnter() const 
+{
+	return (LocationStateFlag & EDMSLocationState::LS_BlockPlayerEnter) == EDMSLocationState::LS_Default;
+}
 
 bool ADMSLocationBase::MoveActorToDMSLocation(ADMSLocationBase* Dest,const TScriptInterface<IDMSLocatableInterface>& Locatable)
 {
 	UObject* Obj = Locatable.GetObject();
 	
-
 	auto CurrentLocation = Locatable->Execute_GetCurrentLocation(Obj);
 
 	if (CurrentLocation != nullptr)

@@ -153,6 +153,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	FGameplayTag NodeTag;
 
+	FGameplayTagContainer GenerateTagContainer();
+
+
 	/**
 	 * Execute param tag query to generated node tag container.
 	 * @param	EffectTagQuery				Executing tag query

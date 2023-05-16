@@ -15,13 +15,13 @@
 
 
 // Owned effect creating helper
-TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* SourceObject,AActor* SourceController, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
+TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* SourceObject,AActor* SourcePlayer, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
 {
 	TArray<UDMSEffectInstance*> rv;
 	UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(this);
 	EffectInstance->Initialize(EffectNode, iSet);
 	EffectInstance->SourceObject = SourceObject;
-	EffectInstance->SourceController = SourceController;
+	EffectInstance->SourcePlayer = SourcePlayer;
 
 	EIList.Add(EffectInstance);
 

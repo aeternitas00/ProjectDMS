@@ -37,16 +37,16 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 		}
 		break;
 	case EDMSPresetTargetFlag::PTF_OC:
-		if (iSequence->SourceController->Implements<UDMSEffectorInterface>()) {
-			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourceController));
-			DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceController->GetName());
+		if (iSequence->SourcePlayer->Implements<UDMSEffectorInterface>()) {
+			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourcePlayer));
+			DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
 		}
 		break;
 	case EDMSPresetTargetFlag::PTF_Parent:
 		if (iSequence->ParentSequence == nullptr)
 			break;
 		TempTarget.Append(iSequence->ParentSequence->Targets);
-		DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceController->GetName());
+		DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
 		break;
 	case EDMSPresetTargetFlag::PTF_Effect:
 		TempTarget = Node->GenerateTarget(iSequence);
@@ -68,13 +68,22 @@ UDMSEffectNode::UDMSEffectNode() : bForced(false), PresetTargetFlag(EDMSPresetTa
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 }
 
-bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
+FGameplayTagContainer UDMSEffectNode::GenerateTagContainer()
 {
 	FGameplayTagContainer ctn;
 	ctn.AddTagFast(NodeTag);
 	for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
-	
-	return ctn.MatchesQuery(EffectTagQuery);
+
+	return ctn;
+}
+
+bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
+{
+	//FGameplayTagContainer ctn;
+	//ctn.AddTagFast(NodeTag);
+	//for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
+
+	return GenerateTagContainer().MatchesQuery(EffectTagQuery);
 }
 
 bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
@@ -109,7 +118,7 @@ TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(APlayerControl
 {
 	TArray<UDMSDecisionWidget*> rv;
 	for (auto WidgetClass : DecisionWidgetClasses)
-	rv.Add(CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass));
+		rv.Add(CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass));
 
 	InitializeDecisionWidget(rv);
 	return rv;

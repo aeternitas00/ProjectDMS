@@ -53,6 +53,7 @@ enum class EDMSModifierType : uint8
 UENUM(/*BlueprintType*/)
 enum class EDMSTimingFlag : uint8
 {
+	T_Decision UMETA(DisplayName = "Decision"),
 	T_Before UMETA(DisplayName = "Before"),
 	T_During UMETA(DisplayName = "During"),
 	T_After UMETA(DisplayName = "After"),
@@ -235,6 +236,19 @@ public:
 		return ContainData(Tag) ? DataMap[Tag] : nullptr;
 	}
 
+	/**
+	 * Templated Get validated data from DataMap 
+	 * @param	Tag							Searching key.
+	 * @return	true if DataMap contains Tag.
+	 * @return	DataMap[Tag] : null ptr if No such key.
+	 */
+	template<typename T>
+	bool GetValidDataValue(const FGameplayTag& Tag, T& outValue ) {
+		bool rv = ContainData(Tag);
+		if (rv) rv = rv && DataMap[Tag]->TypeCheck<T>();
+		if (rv) outValue = DataMap[Tag]->Get<T>();
+		return rv;
+	}
 	/**
 	 * Inherit datas from param data set.
 	 * @param	Parent						Parent data set. Data set will be copied from this.

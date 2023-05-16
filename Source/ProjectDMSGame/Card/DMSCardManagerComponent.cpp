@@ -12,6 +12,8 @@ UDMSCardManagerComponent::UDMSCardManagerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	
+	Containers.Add(NAME_None, CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("NoneContainer")));
+
 	// Now supported ( had to use OnComponentCreated before )
 	//Deck=CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("Deck"));
 	//Hand = CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("Hand"));
@@ -40,9 +42,19 @@ void UDMSCardManagerComponent::MigrateCard(TArray<ADMSCardBase*> Cards, UDMSCard
 
 void UDMSCardManagerComponent::AddCardtoContainer(TArray<ADMSCardBase*> Cards, const FName& ContainerName)
 {
-	if(!Containers.Contains(ContainerName)) return;
-	
-	Containers[ContainerName]->Insert(Cards,0);
+	if(!Containers.Contains(ContainerName)) Containers[NAME_None]->Insert(Cards,0);
+	else Containers[ContainerName]->Insert(Cards,0);
+}
+
+TArray<ADMSCardBase*> UDMSCardManagerComponent::GetAllCards()
+{
+	TArray<ADMSCardBase*> rv;
+
+	for (auto& Container : Containers)
+	{
+		rv.Append(Container.Value->GetCards());
+	}
+	return rv;
 }
 
 

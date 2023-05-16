@@ -29,12 +29,12 @@ void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequen
 				auto IndexArr = Data->Get<TArray<uint8>>();
 				
 				for (auto i : IndexArr) 
-					AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourceController, EIEffects[i]->GetEffectNode()));
+					AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourcePlayer, EIEffects[i]->GetEffectNode()));
 			}
 		}
 		else{
 			for (auto Node : EIEffects)
-				AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourceController, Node->GetEffectNode()));
+				AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourcePlayer, Node->GetEffectNode()));
 		}
 	}
 	SourceSequence->AddToOnSequenceFinished_Native([AddedEIs](){

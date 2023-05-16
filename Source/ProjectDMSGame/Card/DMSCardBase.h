@@ -14,6 +14,7 @@
 
 #include "ProjectDMS.h"
 #include "Effect/DMSEffectorActorBase.h"
+#include "Location/DMSLocatableInterface.h"
 #include "DMSCardBase.generated.h"
 
 class UDMSCardDefinition;
@@ -27,7 +28,7 @@ class UDMSCardContainerComponent;
  *	========================================
  */
 UCLASS(Blueprintable, Abstract)
-class PROJECTDMSGAME_API ADMSCardBase : public ADMSEffectorActorBase
+class PROJECTDMSGAME_API ADMSCardBase : public ADMSEffectorActorBase , public IDMSLocatableInterface
 {
 	GENERATED_BODY()
 	
@@ -80,4 +81,17 @@ public:
 	UDMSCardContainerComponent* GetOwningContainer() {return OwningContainer;}
 	void SetOwningContainer(UDMSCardContainerComponent* Container) { OwningContainer = Container;}
 
+	/// Some query functions
+
+	/**
+	 *
+	 */
+	//UFUNCTION(BlueprintCallable)
+	//bool IsCommittable();
+
+	// Attach Card to Location
+	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc);
+	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
+	virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);
+	virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);
 };

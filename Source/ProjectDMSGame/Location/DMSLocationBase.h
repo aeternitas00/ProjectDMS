@@ -10,6 +10,15 @@
 class UDMSLocationData;
 
 UENUM(BlueprintType)
+enum class EBitOperatorType : uint8
+{
+	AND = 0	UMETA(DisplayName = "&"),
+	OR = 0	UMETA(DisplayName = "|"),
+	XOR = 0	UMETA(DisplayName = "^"),
+	//NOT = 0	UMETA(DisplayName = "~"),
+};
+
+UENUM(BlueprintType)
 enum class EDMSLocationState : uint8
 {
 	LS_Default					= 0													UMETA(DisplayName = "Default"),
@@ -62,6 +71,15 @@ public:
 
 public:
 	ADMSLocationBase(const FObjectInitializer& ObjectInitializer);
+
+	//UFUNCTION(BlueprintCallable)
+	//EDMSLocationState BitOperateWithLocationFlag(const EBitOperatorType& Operator, const EDMSLocationState& inFlag);
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool CanPlayerEnter() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool CanPlayerLeave() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnActorEntered(const TScriptInterface<IDMSLocatableInterface>& Locatable);

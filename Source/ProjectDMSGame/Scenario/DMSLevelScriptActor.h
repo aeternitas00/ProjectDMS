@@ -45,9 +45,9 @@ public:
 	/**
 	 * Interfaces
 	 */
-	virtual UObject* GetObject() override {return this;} // RENAME?
-	virtual AActor* GetOwningPlayer() override {return UDMSCoreFunctionLibrary::GetDMSGameMode();} // RENAME?
-	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak = nullptr) override;
+	//virtual UObject* GetObject() override {return this;} // RENAME?
+	virtual AActor* GetOwningPlayer() override {return UDMSCoreFunctionLibrary::GetDMSGameMode()->GameState;} // RENAME?
+	//virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
+	//virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak = nullptr) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
 };

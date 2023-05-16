@@ -46,7 +46,7 @@ public:
 	/**
 	 * Create a Sequence object.
 	 * @param	SourceObject				The object that triggers the sequence.
-	 * @param	SourceController			Explicit controller of the SourceObject.
+	 * @param	SourcePlayer				Explicit controller of the SourceObject.
 	 * @param	EffectNode					Effect that will be applied when the 'sequence is applied'.
 	 * @param	Targets						Explicit targets of this sequence. Override EffectNode's preset target flag.
 	 * @param	Datas						Additional data for applying effect.
@@ -56,7 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UDMSSequence* RequestCreateSequence(
 		UObject* SourceObject, 
-		AActor* SourceController,
+		AActor* SourcePlayer,
 		UDMSEffectNode* EffectNode, 
 		TArray<TScriptInterface<IDMSEffectorInterface>> Targets, 
 		UDMSDataObjectSet* Datas = nullptr, 

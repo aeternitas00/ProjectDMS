@@ -58,4 +58,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddCardtoContainer(TArray<ADMSCardBase*> Cards,const FName& ContainerName);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<ADMSCardBase*> GetAllCards();
 };

@@ -22,12 +22,8 @@ protected:
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class UDMSEIManagerComponent* EffectManagerComponent;
-
+	
 public:	
-	virtual UObject* GetObject() override { return this; }
-	virtual AActor* GetOwningPlayer() { return GetOwner(); }
-	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
-	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
+
 
 };

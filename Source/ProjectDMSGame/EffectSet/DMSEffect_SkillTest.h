@@ -18,7 +18,7 @@ struct FDMSSelectorData_SkillTest
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FGameplayTag StatName;
 
-	// Get stat from ( true == SourceController / false == SourceObject ) 
+	// Get stat from ( true == SourcePlayer / false == SourceObject ) 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	bool bSourceFlag;
 
@@ -73,9 +73,16 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FDMSSelectorData_SkillTest SkillTestData;
 
-	virtual void OnPopupSelector_Implementation() override;
-	virtual void OnCloseSelector_Implementation() override;
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<ADMSCardBase>> CommitableCards;
 
+	UPROPERTY(BlueprintReadWrite)
+	float OutBonusValue;
+
+	//virtual void OnPopupSelector_Implementation() override;
+	//virtual void OnCloseSelector_Implementation() override;
+
+	virtual UDMSDataObjectSet* MakeOutputData_Implementation() override;
 	virtual	bool SetupWidget_Implementation() override;
 
 	friend class UDMSEffect_SkillTest;

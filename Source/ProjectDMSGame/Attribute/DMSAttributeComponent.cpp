@@ -50,9 +50,14 @@ bool UDMSAttributeComponent::TryModAttribute(const FDMSAttributeModifier& Modifi
 
 bool UDMSAttributeComponent::GetAttributeValue(const FGameplayTag& AttributeName, float& outValue) const
 {
-	bool rv = GetAttribute(AttributeName) == nullptr;
-	outValue = rv ? GetAttribute(AttributeName)->GetValue() : -1.0f;
-	return rv;
+	//bool rv = GetAttribute(AttributeName) == nullptr;
+	//outValue = rv ? GetAttribute(AttributeName)->GetValue() : -1.0f;
+	
+	if (!Attributes.Contains(AttributeName)) return false;
+
+	outValue = Attributes[AttributeName]->Value;
+
+	return true;
 }
 
 TArray<FDMSSerializedAttribute> UDMSAttributeComponent::ToSerialized()
@@ -80,7 +85,7 @@ void UDMSAttributeComponent::BindOnModifiedToAttribute(const FGameplayTag& Attri
 	Attributes[AttributeName]->BindOnModified(iDelegate);
 }
 
-UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTag& AttributeName) const
+UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTag& AttributeName)
 {
 	if (!Attributes.Contains(AttributeName)) return nullptr; // log or what\
 

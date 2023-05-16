@@ -65,6 +65,11 @@ UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FGameplayTag& iS
 	return Owner!=nullptr ? Owner->GetOwningEffectSet(iSetName) : nullptr;
 }
 
+AActor* UDMSEIManagerComponent::GetOwningPlayer() 
+{ 
+	return GetOwner()->Implements<UDMSEffectorInterface>() ? Cast<IDMSEffectorInterface>(GetOwner())->GetOwningPlayer() : GetOwner();
+}
+
 UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTag& EffectSetName, const uint8& idx)
 {
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
@@ -106,9 +111,9 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 		Node->bForced = Effect->bForced;
 		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Self;
 
-		AActor* CardOwner = const_cast<AActor*>(GetOwner()->GetNetOwner());
+		//AActor* CardOwner = GetOwningPlayer();
 
-		auto EIs = EH->CreateEffectInstance(GetOwner(), CardOwner, Node);
+		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), Node);
 		EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
 		EIs[0]->Rename(nullptr, GetOwner());
 		OwnEffectInstances.Add(EIs[0]);

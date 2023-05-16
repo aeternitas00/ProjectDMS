@@ -14,7 +14,7 @@
 
 #include "ProjectDMS.h"
 #include "GameFramework/PlayerController.h"
-#include "Effect/DMSEffectorInterface.h"
+#include "Location/DMSLocatableInterface.h"
 #include "Common/DMSCommons.h"
 #include "DMSPlayerController.generated.h"
 
@@ -27,7 +27,7 @@ class UDMSEIManagerComponent;
 class UDMSAttributeComponent;
 class UDMSAttribute;
 class UDMSEffectNode;
-
+class ADMSCharacterBase;
 
 /**
  * 	========================================
@@ -37,7 +37,7 @@ class UDMSEffectNode;
  *	========================================
  */
 UCLASS(Blueprintable)
-class PROJECTDMSGAME_API ADMSPlayerController : public APlayerController, public IDMSEffectorInterface//, public IDMSAttributeInterface
+class PROJECTDMSGAME_API ADMSPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -57,6 +57,7 @@ protected:
 	 */
 	UPROPERTY(BlueprintReadOnly)
 	UObject* InstigatingObject;
+
 
 public:
 
@@ -83,73 +84,12 @@ public:
 	void OnSelectedObject(UObject* FormerObject);
 
 
-	// ====================== //
-	//		DMS Features
-	// ====================== //
-protected:
-
-	/**
-	 * Card manager component. 
-	 * Manage player's card containers like deck, hand, discard pile...
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	UDMSCardManagerComponent* CardManagerComponent;
-
-	/**
-	 * Player's default card containers list and intancing class.
-	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<FName, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
-
-	/**
-	 * Search for named card container from CardManagerComponent.
-	 */
-	UFUNCTION(BlueprintCallable)
-	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
-
-	/**
-	 * Effect manager component. 
-	 * Manage effects that targeting players or triggered.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	UDMSEIManagerComponent* EffectManagerComponent;
-
-	/**
-	 * Attribute component.
-	 * Manage mana, resource, etc... of player.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	UDMSAttributeComponent* AttributeComponent;
-
-	/**
-	 * Player's default attribute key, value pairs.
-	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<FGameplayTag, float> DefaultStats;
-
-	/**
-	 * Player's default basic actions.
-	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
-	TMap<FName, UDMSEffectNode*> DefaultBasicActions;
-
 public:
 	ADMSPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 
-	/**
-	 *
-	 */
-	UFUNCTION(BlueprintCallable)
-	void SetupCardContainers();
-
-	/**
-	 *
-	 */
-	UFUNCTION(BlueprintCallable)
-	void SetupAttributes();
 
 	/**
 	 * Deprecated
@@ -165,12 +105,4 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void PlayCard(ADMSCardBase* Card);
 	
-	// ============================= //
-	//		INTERFACE FUNCTIONS
-	// ============================= //
-	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq,UObject* SourceTweak) override;
-	virtual UObject* GetObject() override { return this; }
-	virtual AActor* GetOwningPlayer() { return this; }
-	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
 };

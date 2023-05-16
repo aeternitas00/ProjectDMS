@@ -8,6 +8,7 @@
 #include "Sequence/DMSSeqManager.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Sequence/DMSSequence.h"
+#include "Gamemodes/DMSGameState.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_Respondent, "System.Notify.Respondent");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_ActivatingEffect, "System.Notify.ActivatingEffect");
@@ -106,12 +107,12 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		CallResponseCompleted(CurrentSequence);
 		return;
 	}
-	// PC Getter?
 
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : %d Respondent(s) ===="), *CurrentSequence->GetName(), *TimingStr, ResponsedObjects.Num());
 
-	APlayerController* LocalPC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	UDMSNotifyRespondentSelector* InstancedWidget = CreateWidget<UDMSNotifyRespondentSelector>(LocalPC, ResponsedObjectSelector);
+	// TODO :: 각 오너에게 뿌리는 방식으로 변경 해야함.
+	APlayerController* LeaderPC = UDMSCoreFunctionLibrary::GetDMSGameMode()->GetDMSGameState()->GetLeaderPlayerController();
+	UDMSNotifyRespondentSelector* InstancedWidget = CreateWidget<UDMSNotifyRespondentSelector>(LeaderPC, ResponsedObjectSelector);
 
 	InstancedWidget->ResponsedObjects = ResponsedObjects; 
 	ResponsedObjects.GetKeys(InstancedWidget->Respondents);

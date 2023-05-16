@@ -91,11 +91,15 @@ public:
 	UPROPERTY()
 	FOnAttributeModified OnAttributeModified;
 
+
+	//UFUNCTION(BlueprintCallable,BlueprintPure)
+	//FName GetAttributeTag() const { return AttributeTag.GetTagName(); };
+
 	/**
 	 * Simple getter
 	 */
-	UFUNCTION(BlueprintCallable)
-	float GetValue() { return bIsDependOnOuter ? GetDependentValue.Execute(): Value;  } ;
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetValue() const { return bIsDependOnOuter ? GetDependentValue.Execute(): Value;  } ;
 	
 	/**
 	 * Simple setter

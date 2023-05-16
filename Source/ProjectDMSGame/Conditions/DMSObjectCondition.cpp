@@ -21,7 +21,7 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 		Rv.Add(iSeq->SourceObject);
 		break;
 	case EDMSObjectSelectorFlag::OSF_SourceCtr:
-		Rv.Add(iSeq->SourceController);
+		Rv.Add(iSeq->SourcePlayer);
 		break;
 	case EDMSObjectSelectorFlag::OSF_Target:
 		for (auto InterfaceScript : iSeq->Targets)
@@ -96,4 +96,9 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 //
 //	}
 //	return rv;
+//}
+
+//bool UDMSLocatingCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
+//{
+//	return false;
 //}
