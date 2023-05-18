@@ -21,7 +21,7 @@
 #include "DMSSequence.generated.h"
 
 
-
+class UDMSSequenceStep;
 class UDMSEffectInstance;
 class UDMSDataObjectSet;
 class UDMSEffectorInterface;
@@ -62,6 +62,7 @@ public:
 		ChildSequence = nullptr;
 		// 
 	}
+
 	/**
 	 * Current state of this sequence.
 	 */
@@ -69,7 +70,7 @@ public:
 	EDMSSequenceState SequenceState;
 
 	/**
-	 * Current timing of this sequence.
+	 * Current timing of this sequence. DEPRECATED :: [Step]
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSTimingFlag Progress;
@@ -188,6 +189,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddToOnSequenceFinished(const FOnSequenceStateChanged_Signature& OnSequenceFinished);
 
+
+// STEP 
+public:
+	TObjectPtr<UDMSSequenceStep> CurrentStep;
+	// 이펙트 노드에서 스텝 리스트 정해놓고 생성?
+	void InitializeSteps(const TArray<TSubclassOf<UDMSSequenceStep>>& StepClasses);
+
+	void RunStepQueue();
+
+	FGameplayTagContainer GenerateTagContainer();
+
+protected:	
+	TArray<TObjectPtr<UDMSSequenceStep>> InstancedSteps;
+	
+	friend class UDMSSequenceStep;
 	friend class UDMSSeqManager;
 };
 

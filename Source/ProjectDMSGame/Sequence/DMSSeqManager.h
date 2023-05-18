@@ -39,6 +39,8 @@ class PROJECTDMSGAME_API UDMSSeqManager : public UActorComponent // or ActorComp
 {
 	GENERATED_BODY()
 
+private:
+	bool bUsingSteps;
 
 public:
 	UDMSSeqManager();

@@ -20,7 +20,7 @@ struct FDMSSelectorData_SkillTest
 
 	// Get stat from ( true == SourcePlayer / false == SourceObject ) 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	bool bSourceFlag;
+	bool bGetAttributeTargetIsPlayer;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	bool bTestToStaticValue;

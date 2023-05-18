@@ -19,10 +19,33 @@
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
 
+class UDMSSequenceStep;
 class UDMSDecisionWidget;
 class UDMSDataObjectSet;
 class UDMSSequence;
 class UDMSConditionCombiner;
+
+USTRUCT(BlueprintType)
+struct FDMSEffectValueDef
+{
+	GENERATED_BODY()
+
+	/**
+	 * Custom referencer for tweaks.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "!IsStatic", EditConditionHides))
+	FGameplayTag DataKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DefaultValue = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EDMSModifierType Modifier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool IsStatic = true;
+};
+
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWorkCompleted, UDMSSequence*, SourceSequence);
 
@@ -154,7 +177,10 @@ public:
 	FGameplayTag NodeTag;
 
 	FGameplayTagContainer GenerateTagContainer();
-
+	
+	UFUNCTION(BlueprintNativeEvent)
+	TArray<TSubclassOf<UDMSSequenceStep>> GetStepRequirements();
+	virtual TArray<TSubclassOf<UDMSSequenceStep>> GetStepRequirements_Implementation();
 
 	/**
 	 * Execute param tag query to generated node tag container.

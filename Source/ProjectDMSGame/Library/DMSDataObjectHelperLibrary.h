@@ -17,6 +17,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DMSDataObjectHelperLibrary.generated.h"
 
+struct FDMSEffectValueDef;
 /**
  * 필요한 타입이면 상속받아서 추가하기?
  * [ BP호환을 위해선 이렇게 더러운 방식 밖에 안되는 걸까 ]
@@ -87,5 +88,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Data Object", meta = (Displayname = "Set Data uint8"))
 	static void SetData_uint8(UDMSDataObject* iObj, const uint8& inData) { iObj->Set(inData); }
 
-
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	static float SearchWithEffectValueDefs(UDMSDataObjectSet* iSet, const TArray<FDMSEffectValueDef>& DefArray, float DefaultValue=0.0f);
 };

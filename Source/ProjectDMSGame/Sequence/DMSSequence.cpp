@@ -2,6 +2,7 @@
 
 
 #include "Sequence/DMSSequence.h"
+#include "Sequence/DMSSequenceStep.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
@@ -47,6 +48,32 @@ void UDMSSequence::AddToOnSequenceFinished(const FOnSequenceStateChanged_Signatu
 		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
 	}
 	OnSequenceFinished_Dynamic.Add(iOnSequenceFinished);
+}
+
+void UDMSSequence::InitializeSteps(const TArray<TSubclassOf<UDMSSequenceStep>>& StepClasses)
+{
+	CurrentStep=nullptr;
+	if (StepClasses.Num()==0) return;
+	InstancedSteps.Empty(StepClasses.Num());
+	for (auto& StepClass : StepClasses)
+		InstancedSteps.Add(NewObject<UDMSSequenceStep>(this,StepClass));
+
+	CurrentStep = InstancedSteps[0];
+	for (int i=0 ; i< InstancedSteps.Num()-1;i++)
+		InstancedSteps[i]->NextStep = InstancedSteps[i+1];
+}
+
+void UDMSSequence::RunStepQueue()
+{
+	CurrentStep->RunStep();
+}
+
+FGameplayTagContainer UDMSSequence::GenerateTagContainer()
+{
+	FGameplayTagContainer rv;
+	rv.AppendTags(OriginalEffectNode->GenerateTagContainer());
+	rv.AddTagFast(CurrentStep->StepTag);
+	return rv;
 }
 
 void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq) 

@@ -27,7 +27,7 @@ void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDM
 	AActor* SourceActor;
 	float SourceValue;
 
-	if (SkillTestData.bSourceFlag)	SourceActor = Cast<AActor>(iEI->SourceObject);
+	if (!SkillTestData.bGetAttributeTargetIsPlayer)	SourceActor = Cast<AActor>(iEI->SourceObject);
 	else	SourceActor = iEI->SourcePlayer;
 
 	if ( !UDMSCoreFunctionLibrary::GetAttributeFromActor(SourceActor, SkillTestData.StatName, SourceValue)){ OnWorkCompleted.ExecuteIfBound(SourceSequence); return;}

@@ -53,7 +53,7 @@ enum class EDMSModifierType : uint8
 UENUM(/*BlueprintType*/)
 enum class EDMSTimingFlag : uint8
 {
-	T_Decision UMETA(DisplayName = "Decision"),
+	T_Decision=0 UMETA(DisplayName = "Decision"),
 	T_Before UMETA(DisplayName = "Before"),
 	T_During UMETA(DisplayName = "During"),
 	T_After UMETA(DisplayName = "After"),

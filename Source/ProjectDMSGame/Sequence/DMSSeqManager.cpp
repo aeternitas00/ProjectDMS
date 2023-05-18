@@ -17,8 +17,9 @@
 
 
 UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr), CurrentSequence(nullptr)
+, bUsingSteps(false)
 {
-
+	
 }
 
 
@@ -44,6 +45,8 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->SourcePlayer = SourcePlayer;
 	Sequence->EIDatas = NewData;
 	Sequence->Targets = Targets;
+	Sequence->InitializeSteps(EffectNode->GetStepRequirements());
+
 
 	// Add new seq to seq tree.
 	if (ParentSequence == nullptr) {
@@ -71,78 +74,86 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
 
-	auto WidgetOwner = iSeq->GetWidgetOwner();
-
-	if (WidgetOwner == nullptr) {
-		//	it's from GAMEMODE or SYSTEM THINGs. LEADER PLAYER own this selector 
-		//	추후 멀티 플레이 환경에서 어떻게 할 지 생각해보기.
-	}
 
 	CurrentSequence = iSeq;
 	CurrentSequence->OnSequenceInitiate();
 
 	// ====== Decision Making Step ====== //
+	// TODO :: Migrate to Decision Step 
 	// ( ex. User Choose target, ... )
 
-	TArray<UDMSConfirmWidgetBase*> Widgets;
-	//if (!iSeq->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
-	//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
-	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets(WidgetOwner)));
-	if (!iSeq->SetupWidgetQueue(Widgets))
+	if(!bUsingSteps)
 	{
-		DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
-		CompleteSequence(iSeq);
-		return;
-	}
+		auto WidgetOwner = iSeq->GetWidgetOwner();
 
-	iSeq->RunWidgetQueue(
-	[&, WidgetOwner](UDMSSequence* pSequence) {
-		// Decision confirmed or no decision widget
-
-		// Create EI first for preview.
-		UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(pSequence, pSequence->OriginalEffectNode);
-
-		// ====== Effect Data Selection Step ====== //
-		// ( ex. User set value of effect's damage amount , ... )
-		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(pSequence, WidgetOwner))))
+		if (WidgetOwner == nullptr) {
+			//	it's from GAMEMODE or SYSTEM THINGs. LEADER PLAYER own this selector 
+			//	추후 멀티 플레이 환경에서 어떻게 할 지 생각해보기.
+		}
+		TArray<UDMSConfirmWidgetBase*> Widgets;
+		//if (!iSeq->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
+		//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
+		Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets(WidgetOwner)));
+		if (!iSeq->SetupWidgetQueue(Widgets))
 		{
-			DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
-			CompleteSequence(pSequence);
+			DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
+			CompleteSequence(iSeq);
 			return;
 		}
 
-		pSequence->RunWidgetQueue(
-		[this](UDMSSequence* pSequenceN) {
-			// Selection completed
+		iSeq->RunWidgetQueue(
+		[&, WidgetOwner](UDMSSequence* pSequence) {
+			// Decision confirmed or no decision widget
 
-			// Run sequence ( Notifying steps and apply )
-			DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="),*pSequenceN->GetName());
-			ApplySequence(pSequenceN);
+			// Create EI first for preview.
+			UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(pSequence, pSequence->OriginalEffectNode);
 
-			// Prevent self notifing 
-			for (auto EI : pSequenceN->EIs)
+			// ====== Effect Data Selection Step ====== //
+			// ( ex. User set value of effect's damage amount , ... )
+			if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(pSequence, WidgetOwner))))
 			{
-				EI->ChangeEIState(EDMSEIState::EIS_Default);
+				DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
+				CompleteSequence(pSequence);
+				return;
 			}
+
+			pSequence->RunWidgetQueue(
+			[this](UDMSSequence* pSequenceN) {
+				// Selection completed
+
+				// Run sequence ( Notifying steps and apply )
+				DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="),*pSequenceN->GetName());
+				ApplySequence(pSequenceN);
+
+				// Prevent self notifing 
+				for (auto EI : pSequenceN->EIs)
+				{
+					EI->ChangeEIState(EDMSEIState::EIS_Default);
+				}
+			}, 
+			[this](UDMSSequence* pSequenceN) {
+				// Selection Canceled
+				DMS_LOG_SIMPLE(TEXT("Selection Canceled"));
+				CompleteSequence(pSequenceN);
+				// Cleanup this seq
+			} // Runwidgetqueue end.
+			);
 		}, 
-		[this](UDMSSequence* pSequenceN) {
-			// Selection Canceled
-			DMS_LOG_SIMPLE(TEXT("Selection Canceled"));
-			CompleteSequence(pSequenceN);
+
+		[this](UDMSSequence* pSequence) {
+			// Decision canceled
+			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
 			// Cleanup this seq
-		} // Runwidgetqueue end.
+			CompleteSequence(pSequence);
+			//...
+		}
 		);
-	}, 
-
-	[this](UDMSSequence* pSequence) {
-		// Decision canceled
-		DMS_LOG_SIMPLE(TEXT("Decision canceled"));
-		// Cleanup this seq
-		CompleteSequence(pSequence);
-		//...
 	}
-	);
-
+	else
+	{
+		
+		CurrentSequence->RunStepQueue();
+	}
 }
 
 int UDMSSeqManager::GetDepth(UDMSSequence* iSeq) {
@@ -166,7 +177,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 
 	//Sequence->SetActive(true);
 
-	// 이 방식 말고 받는 입장에서 알아서 생각 하게 하면 한번 뿌리는 것으로 해결 할 수 있을 듯?
+	// TODO :: Migrate to ApplyStep
 
 	DMS_LOG_SCREEN(TEXT("==-- BEFORE [ Depth : %d ] --=="),GetDepth(Sequence));
 	// 'Before Timing' broadcast starts.

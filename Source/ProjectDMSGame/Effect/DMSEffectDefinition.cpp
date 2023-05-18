@@ -4,6 +4,8 @@
 #include "Effect/DMSEffectDefinition.h"
 #include "Selector/DMSDecisionWidget.h"
 #include "Sequence/DMSSequence.h"
+#include "Sequence/Steps/DMSSequenceStep_Decision.h"
+#include "Sequence/Steps/DMSSequenceStep_Apply.h"
 #include "Conditions/DMSConditionObject.h"
 
 //TArray<UDMSEffectNode*> UDMSEffectSet::SearchEffects(UDMSSequence* iSeq)
@@ -75,6 +77,17 @@ FGameplayTagContainer UDMSEffectNode::GenerateTagContainer()
 	for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
 
 	return ctn;
+}
+
+TArray<TSubclassOf<UDMSSequenceStep>> UDMSEffectNode::GetStepRequirements_Implementation()
+{
+	//TArray<TSubclassOf<UDMSSequenceStep>> rv;
+	//for (auto ED : EffectDefinitions)
+	//{
+	//	rv.Append(ED->GetStepRequirements());
+	//}
+
+	return { UDMSSequenceStep_Decision::StaticClass(),UDMSSequenceStep_Apply::StaticClass() };
 }
 
 bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)

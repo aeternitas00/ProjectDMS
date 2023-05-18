@@ -53,6 +53,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static bool GetAttributeFromActor(AActor* iActor, const FGameplayTag& Name, float& outValue);
 
+
+
+
 	// Helper function
 	// Card Library?
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
