@@ -100,5 +100,6 @@ public:
 
 public:
 	ADMSLocationBase* GetCurrentLocation_Implementation(){return this;}
+	virtual void Initialize_Implementation(const UDMSSpawnableDataBase* NewData);
 	bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation){return false;}
 };

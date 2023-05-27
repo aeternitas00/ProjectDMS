@@ -23,7 +23,7 @@ class UDMSSequence;
  *
  *	========================================
  */
-UCLASS(Abstract, Blueprintable, BlueprintType, Const,EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "State Condition Base"))
+UCLASS(Abstract, Blueprintable, BlueprintType, Const,EditInlineNew, ClassGroup = (Condition))
 class PROJECTDMSGAME_API UDMSObjectConditionBase : public UDMSConditionObject
 {
 	GENERATED_BODY()
@@ -53,6 +53,10 @@ public:
 	 * @return	
 	 */
 	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const EDMSObjectSelectorFlag& iTargetFlag) const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	TArray<UObject*> GetCustomCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const EDMSObjectSelectorFlag& iTargetFlag) const;
+	TArray<UObject*> GetCustomCompareTarget_Implementation(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& iTargetFlag) const;
 
 	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 
@@ -112,6 +116,24 @@ public:
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 	int Value; // float? 
+
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
+};
+
+UCLASS(BlueprintType)
+class PROJECTDMSGAME_API UDMSObjectClassCondition : public UDMSObjectConditionBase
+{
+	GENERATED_BODY()
+
+public:
+	/**
+	 * Checking Class;
+	 */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Condition)
+	TSubclassOf<UObject> Class;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Condition)
+	bool OnlyExact;
 
 	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
 };

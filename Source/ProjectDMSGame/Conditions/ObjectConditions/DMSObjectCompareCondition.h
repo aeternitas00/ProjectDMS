@@ -108,9 +108,9 @@ public:
 	
 	virtual bool Compare_Implementation(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) override {
 		bool A = (SourceType != nullptr) ?
-			(bAllowSourceChildClass ? UKismetMathLibrary::ClassIsChildOf(SourceObject->GetClass(), SourceType) : SourceObject->GetClass() == SourceType) : true;
+			(bAllowSourceChildClass ? SourceObject->IsA(SourceType) : SourceObject->GetClass() == SourceType) : true;
 		bool B = (TargetType != nullptr) ?
-			(bAllowTargetChildClass ? UKismetMathLibrary::ClassIsChildOf(TargetObject->GetClass(), TargetType) : TargetObject->GetClass() == TargetType) : true;
+			(bAllowTargetChildClass ? TargetObject->IsA(TargetType) : TargetObject->GetClass() == TargetType) : true;
 		return bIsAndOperator ? (A && B) : (A || B);
 	}
 };

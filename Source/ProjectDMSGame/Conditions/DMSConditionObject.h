@@ -26,7 +26,7 @@
  */
 
 // Sort of interface but we need type specifier.
-UCLASS(Abstract, HideDropdown, Const, EditInlineNew, ClassGroup = (Condition))
+UCLASS(Abstract, Const, EditInlineNew, ClassGroup = (Condition))
 class PROJECTDMSGAME_API UDMSConditionObjectBase : public UObject
 {
 	GENERATED_BODY()

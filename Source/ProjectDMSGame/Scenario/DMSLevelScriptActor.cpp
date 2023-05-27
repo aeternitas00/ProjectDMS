@@ -29,13 +29,26 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 	check(GS);
 
 	GS->Locations = SpawnedLocations;
-	for (auto Loc : SpawnedLocations)
-		Loc->Initialize(Loc->GetOriginalData());
-	
-	TArray<AActor*> LevelPlacedEffectors;
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(),UDMSEffectorInterface::StaticClass(), LevelPlacedEffectors);
+	for (auto& Pair : SpawnedDMSActors)
+	{
+		for(auto& Actor : Pair.Value.Actors)
+		{
+			if (Actor->Implements<UDMSLocatableInterface>())
+				IDMSLocatableInterface::Execute_LocatingTo(Actor,Pair.Key);
+		}
+	}
+	TArray<AActor*> LevelPlacedActors;
 
-	for (auto Actor : LevelPlacedEffectors)
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADMSSpawnableBase::StaticClass(), LevelPlacedActors);
+	for (auto Actor : LevelPlacedActors)
+	{	
+		ADMSSpawnableBase* Spawnable = Cast<ADMSSpawnableBase>(Actor);
+		Spawnable->Initialize(Spawnable->GetOriginalData());
+	}
+
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(),UDMSEffectorInterface::StaticClass(), LevelPlacedActors);
+
+	for (auto Actor : LevelPlacedActors)
 		GM->RegisterNotifyObject(Actor);
 	
 	TArray<FGameplayTag> Keys;

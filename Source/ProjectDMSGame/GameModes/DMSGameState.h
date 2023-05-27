@@ -38,10 +38,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool SetLeaderPlayer(int32 LeaderID);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	APlayerState* FindPlayerFromId(int32 OwnerID);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	APlayerController* FindPlayerControllerFromId(int32 OwnerID);
 	// PhaseState, Manager
 

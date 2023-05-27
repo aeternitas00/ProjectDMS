@@ -116,7 +116,7 @@ public:
 	 * Custom referencer for tweaks.
 	 */ 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	FGameplayTag ReferenceDataKey;
+	FGameplayTag OutDataKey;
 
 	/**
 	 * Is this effect has paired selector?
@@ -223,7 +223,7 @@ public:
 	 * @param	WidgetOwner
 	 * @return	Crated widgets.
 	 */
-	TArray<UDMSDecisionWidget*> CreateDecisionWidgets(APlayerController* WidgetOwner);
+	TArray<UDMSDecisionWidget*> CreateDecisionWidgets(UDMSSequence* OwnerSequence, APlayerController* WidgetOwner);
 
 	/**
 	 * Implements on BP.How to initializing decision widget's candidate or search range. 
@@ -276,6 +276,15 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget(UDMSSequence* iSequence);
 	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget_Implementation(UDMSSequence* iSequence);
+
+	/**
+	 * Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
+	 * @param	iSequence						Current sequence.
+	 * @return	Generated apply targets.
+	 */
+	//UFUNCTION(BlueprintNativeEvent)
+	//TArray<UObject*> GenerateConditionTarget(UDMSSequence* iSequence);
+	//virtual TArray<UObject*> GenerateConditionTarget_Implementation(UDMSSequence* iSequence);
 
 	/**
 	 * Create paired selector widget from "EffectDefinitions".

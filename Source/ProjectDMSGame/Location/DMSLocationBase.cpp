@@ -4,6 +4,7 @@
 #include "Location/DMSLocationBase.h"
 #include "Scenario/DMSScenarioData.h"
 #include "Location/DMSLocationData.h"
+#include "Effect/DMSEIManagerComponent.h"
 
 ADMSLocationBase::ADMSLocationBase(const FObjectInitializer& ObjectInitializer):ADMSEffectorActorBase(ObjectInitializer)
 {
@@ -47,4 +48,15 @@ void ADMSLocationBase::ConnectLocations(ADMSLocationBase* Start, ADMSLocationBas
 	if (!IsOneWay)Dest->ConnectingLocations.Add(Start);
 
 	
+}
+
+void ADMSLocationBase::Initialize_Implementation(const UDMSSpawnableDataBase* NewData) 
+{
+	Super::Initialize_Implementation(NewData);
+	
+	if (!OriginalData->IsA<UDMSLocationData>()) return;
+
+	auto LocData = Cast<UDMSLocationData>(OriginalData);
+	
+	EffectManagerComponent->SetupOwnEffect(LocData->LocationEffect, TAG_DMS_EffectType_Effect);
 }

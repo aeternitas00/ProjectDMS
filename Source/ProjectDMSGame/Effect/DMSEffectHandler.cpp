@@ -54,7 +54,7 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 template <typename FuncFinished>
 void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted)
 {
-	DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
+	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 	
 	if (Sequence->EIs.Num() == 0) {
 		DMS_LOG_SIMPLE(TEXT("No Resolve Target"));

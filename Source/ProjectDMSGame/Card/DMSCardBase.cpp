@@ -83,16 +83,8 @@ void ADMSCardBase::Initialize_Implementation(const UDMSSpawnableDataBase* iCardD
 	TArray<FGameplayTag> Keys;
 	CardDefinition->CardEffectSets.GetKeys(Keys);
 
-	// TODO :: 액티베이트 BA를 플레이 BA랑 비슷하게 공시퀀스 생성으로 바꿀것.
 	for(auto& Key : Keys)
 		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
-
-	// 우리꺼만?
-	//if (CardDefinition->CardEffectSets.Contains(TAG_DMS_EffectType_Effect))
-	//	EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[TAG_DMS_EffectType_Effect], TAG_DMS_EffectType_Effect);
-
-	//if (CardDefinition->CardEffectSets.Contains(TAG_DMS_EffectType_Cost))
-	//	EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[TAG_DMS_EffectType_Cost], TAG_DMS_EffectType_Cost);
 }
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FGameplayTag& iSetName)

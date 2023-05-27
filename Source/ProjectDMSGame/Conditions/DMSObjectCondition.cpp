@@ -27,14 +27,21 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 		for (auto InterfaceScript : iSeq->Targets)
 			Rv.Add(InterfaceScript.GetObject());
 		break;
-	case EDMSObjectSelectorFlag::OSF_Data:
+	case EDMSObjectSelectorFlag::OSF_EffectNode:
+		//Rv.Append(iSeq->OriginalEffectNode->GenerateConditionTarget(iSeq));
+		break;
 	case EDMSObjectSelectorFlag::OSF_Custom:
-		//Values.Add(State.CheckState(Seq->Target, Seq));
+		Rv.Append(GetCustomCompareTarget(Caller,iSeq, iTargetFlag));
 		break;
 	default:	break;
 	}
 
 	return Rv;
+}
+
+TArray<UObject*> UDMSObjectConditionBase::GetCustomCompareTarget_Implementation(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& iTargetFlag) const
+{
+return TArray<UObject*>();
 }
 
 bool UDMSObjectConditionBase::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
@@ -56,7 +63,7 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 {
 	AActor* tOuter = Cast<AActor>(Target);
 	if (tOuter == nullptr) {
-		DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *GetName(), *Target->GetName());
+		//DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *GetName(), *Target->GetName());
 		return bNullIsTrue;
 	}
 	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
@@ -86,19 +93,7 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 	return rv;
 }
 
-//bool UDMSNoSelfTriggerCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
-//{
-//	bool rv = false;
-//	for (auto EI : CurrentSequence->EIs)
-//	{
-//		if (CurrentSequence->OriginalEffectNode == EI->EffectNode)
-//			rv=true;
-//
-//	}
-//	return rv;
-//}
-
-//bool UDMSLocatingCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
-//{
-//	return false;
-//}
+bool UDMSObjectClassCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
+{
+	return OnlyExact ? Target->GetClass() == Class : Target->IsA(Class);
+}

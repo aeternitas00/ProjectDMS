@@ -18,6 +18,7 @@
 #include "DMSCoreFunctionLibrary.generated.h"
 
 class ADMSGameMode;
+class ADMSGameState;
 class UDMSSeqManager;
 class UDMSNotifyManager;
 class UDMSEffectHandler;
@@ -39,12 +40,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static ADMSGameMode* GetDMSGameMode();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	static ADMSGameState* GetDMSGameState();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSSeqManager* GetDMSSequenceManager();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSNotifyManager* GetDMSNotifyManager();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSEffectHandler* GetDMSEffectHandler();
-
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSPhaseManager* GetDMSPhaseManager();
 

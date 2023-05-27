@@ -23,10 +23,10 @@ UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() :EffectIdx(0)
 
 void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
 {
-	DMS_LOG_SCREEN(TEXT("%s : %s"), *iEI->GetName(), *EffectTag.ToString());
+	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iEI->GetName(), *EffectTag.ToString());
 
 	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
-	if(SeqMan==nullptr) { DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName()); return;}
+	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/ return;}
 
 	auto Set= GetEffectSetFromOuter(iEI);
 	if (Set == nullptr) { 
@@ -72,7 +72,7 @@ UDMSEffectSet* UDMSEffect_ActivateEffect::GetEffectSetFromOuter(UDMSEffectInstan
 {
 	// Outer Validation
 	auto tOuter = Cast<IDMSEffectorInterface>(iEI->GetOuter());
-	if (tOuter == nullptr) { DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName()); return nullptr; }
+	if (tOuter == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName());*/ return nullptr; }
 
 	return tOuter != nullptr ? tOuter->GetOwningEffectSet(EffectSetName) : nullptr;
 }
@@ -82,7 +82,7 @@ void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelect
 	auto CastedWidget = Cast<UDMSSelector_ActivateEffect>(WidgetInstance);
 	if (CastedWidget == nullptr) return;
 	
-	//CastedWidget->OutDataName = ReferenceDataKey;
+	//CastedWidget->OutDataName = OutDataKey;
 
 	auto& iSeq = WidgetInstance->OwnerSeq;
 	
@@ -90,7 +90,7 @@ void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelect
 	{
 		auto Set = GetEffectSetFromOuter(EI);
 		if (Set == nullptr) 
-		{ DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *EI->GetOuter()->GetName()); WidgetInstance->CandidatesData.Empty(); return; }
+		{ /*DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *EI->GetOuter()->GetName());*/ WidgetInstance->CandidatesData.Empty(); return; }
 
 		auto NewDataObj = NewObject<UDMSDataObject>();
 		TArray<UObject*> tArr;

@@ -57,7 +57,7 @@ public:
 	
 	/**
 	 * Processes the result selected in the widget for sending it to the sequence's EI Data.
-	 * @return	New UDMSDataObjectSet. Use ReferenceDataKey of paired ED.
+	 * @return	New UDMSDataObjectSet. Use OutDataKey of paired ED.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UDMSDataObjectSet* MakeOutputData();

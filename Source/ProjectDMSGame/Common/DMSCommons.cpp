@@ -16,7 +16,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Attribute_INT,"Attribute.INT");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Attribute_DEX,"Attribute.DEX");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Attribute_SavedSkillBonus,"Attribute.SavedSkillBonus");
 
-void UDMSDataObjectSet::Inherit(UDMSDataObjectSet* Parent,const bool& InheritAgain)
+void UDMSDataObjectSet::Inherit(UDMSDataObjectSet* Parent)
 {
 	if (Parent==nullptr)return;
 	for (auto r : Parent->DataMap)
@@ -25,7 +25,7 @@ void UDMSDataObjectSet::Inherit(UDMSDataObjectSet* Parent,const bool& InheritAga
 		if (r.Value->IsInheriting()){
 			UDMSDataObject* tDS = NewObject<UDMSDataObject>(GetOuter());
 			tDS->CopyValue(r.Value);
-			tDS->SetInheriting(InheritAgain);
+			tDS->SetInheriting(true);
 			DataMap.Add(r.Key, tDS);
 		}
 	}

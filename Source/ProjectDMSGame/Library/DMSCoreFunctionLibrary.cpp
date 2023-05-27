@@ -30,6 +30,13 @@ ADMSGameMode* UDMSCoreFunctionLibrary::GetDMSGameMode()
 	return (Cast<ADMSGameMode>(UGameplayStatics::GetGameMode(tWorld)));
 }
 
+ADMSGameState* UDMSCoreFunctionLibrary::GetDMSGameState()
+{
+	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+
+	return GM != nullptr ? GM->GetDMSGameState() : nullptr;
+}
+
 UDMSSeqManager* UDMSCoreFunctionLibrary::GetDMSSequenceManager()
 {
 	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();

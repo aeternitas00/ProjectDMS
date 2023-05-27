@@ -24,7 +24,11 @@
 #include "DMSPlayerState.generated.h"
 
 class UDMSCardManagerComponent;
+class UDMSCardContainerComponent;
+class UDMSAttributeComponent;
+class UDMSEIManagerComponent;
 class ADMSCharacterBase;
+class UDMSEffectNode;
 
 /**
  *	========================================

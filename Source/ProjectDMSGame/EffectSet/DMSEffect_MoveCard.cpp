@@ -23,7 +23,12 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMS
 	UDMSEIManagerComponent* CardEffector = Cast<UDMSEIManagerComponent>(iEI->GetOuter());
 	ADMSCardBase* Card = Cast<ADMSCardBase>(CardEffector->GetOwner());
 
-	if (Card==nullptr){ GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, TEXT("Outer is not card")); OnWorkCompleted.ExecuteIfBound(SourceSequence); return;}
+	if (Card==nullptr)
+	{	
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, TEXT("Outer is not card")); 
+		OnWorkCompleted.ExecuteIfBound(SourceSequence); 
+		return; 
+	}
 	FromTemp = Card->GetOwningContainer();
 
 	// 시전한 플레이어의 (Name) 컨테이너 / AI가 사용했다던가 했을땐 카드가 원래 있던 컨테이너의 주인 기준으로 (Name)컨테이너 찾아서
@@ -38,11 +43,11 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMS
 	if (Container_Destination == nullptr)
 	{
 		/*No proper container.. continue; */ 
-		DMS_LOG_SCREEN(TEXT("%s : Move Card Failed"), *iEI->GetName());
+		//DMS_LOG_SCREEN(TEXT("%s : Move Card Failed"), *iEI->GetName());
 	}
 	else 
 	{
-		DMS_LOG_SCREEN(TEXT("%s : Move Card to %s"), *iEI->GetName(), *Container_Destination->GetName());
+		//DMS_LOG_SCREEN(TEXT("%s : Move Card to %s"), *iEI->GetName(), *Container_Destination->GetName());
 		UDMSCardManagerComponent::MigrateCard(Card, Container_Destination, 0);
 	}
 

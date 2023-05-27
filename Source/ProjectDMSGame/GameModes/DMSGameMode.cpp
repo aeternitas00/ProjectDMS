@@ -38,7 +38,7 @@ void ADMSGameMode::BeginPlay()
 	bool rv = GetDMSGameState()->IsValidLowLevelFast();
 	if (rv && GetDMSGameState()->PlayerArray.Num() != 0)
 	{
-		GetDMSGameState()->SetLeaderPlayer(GetDMSGameState()->PlayerArray[0]->PlayerId);
+		GetDMSGameState()->SetLeaderPlayer(GetDMSGameState()->PlayerArray[0]->GetPlayerId());
 	}
 	//DMSGameState=GetGameState<ADMSGameState>();
 }

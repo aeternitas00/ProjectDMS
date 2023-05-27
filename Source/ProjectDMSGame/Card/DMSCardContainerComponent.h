@@ -87,14 +87,15 @@ public:
 	void Remove(TArray<ADMSCardBase*> iCards);
 
 
-	UFUNCTION(BlueprintCallable,BlueprintPure)
+	UFUNCTION(BlueprintCallable,BlueprintPure, meta = (CompactNodeTitle = "Cards Amount"))
 	const int GetNum() const {return CardList.Num(); }
 
-	UFUNCTION(BlueprintCallable)
+	// Get Copy of cards array
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (CompactNodeTitle = "Cards"))
 	TArray<ADMSCardBase*> GetCards() {return CardList.Cards;}
 	
 	// Get [Num] cards from container. if [Num] is greater than container's size, returns entire container.
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	TArray<ADMSCardBase*> GetTopNCards(int Num);
 
 	UFUNCTION(BlueprintCallable)
@@ -106,6 +107,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);
 	void OnContainerAdded_Implementation(const TArray<ADMSCardBase*>& AddedCards){}
+
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerRemoved(const TArray<ADMSCardBase*>& RemovedCards);

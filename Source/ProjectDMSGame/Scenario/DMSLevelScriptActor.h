@@ -8,6 +8,16 @@
 #include "DMSLevelScriptActor.generated.h"
 
 class ADMSLocationBase;
+class ADMSSpawnableBase;
+
+USTRUCT(BlueprintType)
+struct FDMSLocatingActors
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TArray<TObjectPtr<ADMSSpawnableBase>> Actors;
+};
 /**
  * 
  */
@@ -17,6 +27,9 @@ class PROJECTDMSGAME_API ADMSLevelScriptActor : public ALevelScriptActor, public
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<TObjectPtr<ADMSLocationBase>, FDMSLocatingActors> SpawnedDMSActors;
+
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly, Category = Scenario)
 	TArray<TObjectPtr<ADMSLocationBase>> SpawnedLocations;
 

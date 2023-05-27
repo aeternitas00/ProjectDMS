@@ -35,24 +35,24 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 	case EDMSPresetTargetFlag::PTF_Self:
 		if (iSequence->SourceObject->Implements<UDMSEffectorInterface>()) {
 			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourceObject));
-			DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceObject->GetName());
+			//DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceObject->GetName());
 		}
 		break;
 	case EDMSPresetTargetFlag::PTF_OC:
 		if (iSequence->SourcePlayer->Implements<UDMSEffectorInterface>()) {
 			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourcePlayer));
-			DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
+			//DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
 		}
 		break;
 	case EDMSPresetTargetFlag::PTF_Parent:
 		if (iSequence->ParentSequence == nullptr)
 			break;
 		TempTarget.Append(iSequence->ParentSequence->Targets);
-		DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
+		//DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
 		break;
 	case EDMSPresetTargetFlag::PTF_Effect:
 		TempTarget = Node->GenerateTarget(iSequence);
-		DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To EN's target (Num : %d)"), *iSequence->GetName(), TempTarget.Num());
+		//DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To EN's target (Num : %d)"), *iSequence->GetName(), TempTarget.Num());
 		break;
 	default:
 		break;
@@ -110,6 +110,11 @@ bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 }
 
 
+//TArray<UObject*> UDMSEffectNode::GenerateConditionTarget_Implementation(UDMSSequence* iSequence)
+//{
+//	return TArray<UObject*>();
+//}
+
 TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner)
 {
 	// TODO :: Callback and Queued Selectors
@@ -127,11 +132,15 @@ TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSeq
 
 }
 
-TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(APlayerController* WidgetOwner)
+TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(UDMSSequence* OwnerSequence,APlayerController* WidgetOwner)
 {
 	TArray<UDMSDecisionWidget*> rv;
 	for (auto WidgetClass : DecisionWidgetClasses)
-		rv.Add(CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass));
+	{
+		auto NewWidget = CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass);
+		NewWidget->OwnerSeq= OwnerSequence;
+		rv.Add(NewWidget);
+	}
 
 	InitializeDecisionWidget(rv);
 	return rv;

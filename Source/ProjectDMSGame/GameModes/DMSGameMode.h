@@ -76,7 +76,7 @@ public:
 	FORCEINLINE UDMSEffectHandler* GetEffectHandler() {return EffectHandler;}
 	FORCEINLINE UDMSNotifyManager* GetNotifyManager() { return NotifyManager; }
 	FORCEINLINE UDMSPhaseManager* GetPhaseManager() { return PhaseManager; }
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintPure,meta = (CompactNodeTitle = "DMS Game State"))
 	ADMSGameState* GetDMSGameState();
 
 	virtual void PreInitializeComponents() override;

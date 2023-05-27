@@ -18,7 +18,7 @@ const FGameplayTag UDMSEffect_SkillTest::SkillBonusName = FGameplayTag::RequestG
 UDMSEffect_SkillTest::UDMSEffect_SkillTest()
 {
 	EffectTag = TAG_DMS_Effect_SkillTest;
-	ReferenceDataKey = EffectTag;
+	OutDataKey = EffectTag;
 	bHasPairedSelector = true;
 }
 
@@ -52,7 +52,7 @@ void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDM
 		SkillTestResult = SourceValue + SkillBonus - TargetValue;
 	}
 
-	iEI->DataSet->SetData(ReferenceDataKey, SkillTestResult,true );
+	iEI->DataSet->SetData(OutDataKey, SkillTestResult, true);
 
 	OnWorkCompleted.ExecuteIfBound(SourceSequence);
 }

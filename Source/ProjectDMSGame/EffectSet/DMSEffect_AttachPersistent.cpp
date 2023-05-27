@@ -15,7 +15,8 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_AttachPersistent, "Effect.AttachPersistent
 //	return FGameplayTagContainer();
 //}
 UDMSEffect_AttachPersistent::UDMSEffect_AttachPersistent() {
-	ReferenceDataKey= TAG_DMS_Effect_AttachPersistent;
+	EffectTag = TAG_DMS_Effect_AttachPersistent;
+	OutDataKey = TAG_DMS_Effect_AttachPersistent;
 	bHasPairedSelector = true;
 }
 void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
@@ -57,7 +58,7 @@ UDMSDataObjectSet* UDMSSelector_AttachPersistent::MakeOutputData_Implementation(
 {
 	UDMSDataObjectSet* rv = NewObject<UDMSDataObjectSet>(OwnerSeq);
 
-	rv->SetData(SourceEffectDefinition->ReferenceDataKey, SelectedIndex);
+	rv->SetData(SourceEffectDefinition->OutDataKey, SelectedIndex);
 
 	return rv;
 }

@@ -18,11 +18,11 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 
 void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
 {
-	DMS_LOG_SCREEN(TEXT("%s : ModAtt"), *iEI->GetName());
+	//DMS_LOG_SCREEN(TEXT("%s : ModAtt"), *iEI->GetName());
 	
 	AActor* tOuter = iEI->GetTypedOuter<AActor>();
 	if(tOuter== nullptr) 	{
-		DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *iEI->GetName(),*iEI->GetOuter()->GetName());
+		//DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *iEI->GetName(),*iEI->GetOuter()->GetName());
 		OnWorkCompleted.ExecuteIfBound(SourceSequence);
 		return;
 	}
@@ -37,6 +37,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	}
 	
 	if (bCreateIfNull)	AttComp->MakeAttribute(Value.AttributeTag);
+	
 	AttComp->TryModAttribute(Value);
 
 	OnWorkCompleted.ExecuteIfBound(SourceSequence);

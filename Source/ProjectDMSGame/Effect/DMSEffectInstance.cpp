@@ -21,7 +21,7 @@ UDMSEffectInstance::UDMSEffectInstance() :CurrentState(EDMSEIState::EIS_Default)
 
 void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
 {
-	DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
+	//DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
 	//for (auto EffectDefinition : EffectNode->EffectDefinitions )
 	//{
 	//	EffectDefinition->Work(this);
@@ -99,7 +99,7 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 	//}
 	if (EffectNode->Conditions->CheckCondition(SourceTweak, Seq))
 	{
-		DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
+		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
 		outResponsedObjects.Add(SourceTweak, this);
 		rv=true;	
 	}
@@ -109,7 +109,7 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 
 void UDMSEffectInstance::Serialize(FArchive& Ar)
 {
-	DMS_LOG_SCREEN(TEXT("UDMSEffectInstance Serialized"));
+	//DMS_LOG_SCREEN(TEXT("UDMSEffectInstance Serialized"));
 	Super::Serialize(Ar);
 
 	if (Ar.IsSaving())

@@ -40,6 +40,7 @@ class PROJECTDMSGAME_API UDMSSeqManager : public UActorComponent // or ActorComp
 	GENERATED_BODY()
 
 private:
+	//Test feature
 	bool bUsingSteps;
 
 public:
@@ -113,7 +114,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
 
-
 	/**
 	 * Get depth of sequence in tree.
 	 * @param	iSeq
@@ -137,6 +137,13 @@ public:
 	 */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSequenceTreeCompleted();
+
+	// TEST
+	UPROPERTY()
+	TMap<TObjectPtr<UDMSSequence>, TObjectPtr<UDMSDataObjectSet>> DataObjectMap;
+
+	UFUNCTION(BlueprintCallable)
+	UDMSDataObjectSet* SearchNearestDataObject(UDMSSequence* StartingSequence, FGameplayTag SerachingTag) const;
 
 	friend class UDMSSequence;
 };

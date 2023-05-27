@@ -11,7 +11,7 @@ UDMSAttributeComponent::UDMSAttributeComponent()
 
 bool UDMSAttributeComponent::TryModAttribute(const FDMSAttributeModifier& Modifier)
 {
-	DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
+	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
 	if (!Attributes.Contains(Modifier.AttributeTag)) return false; // log or what
 
 	return Attributes[Modifier.AttributeTag]->ModAttribute(Modifier);

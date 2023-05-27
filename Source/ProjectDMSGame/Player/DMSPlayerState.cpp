@@ -3,10 +3,13 @@
 
 #include "Player/DMSPlayerState.h"
 
+#include "Effect/DMSEffectDefinition.h"
+#include "Effect/DMSEIManagerComponent.h"
+
 #include "Card/DMSCardContainerComponent.h"
 #include "Card/DMSCardManagerComponent.h"
+
 #include "Attribute/DMSAttributeComponent.h"
-#include "Effect/DMSEIManagerComponent.h"
 #include "Character/DMSCharacterBase.h"
 
 #include "Library/DMSCoreFunctionLibrary.h"

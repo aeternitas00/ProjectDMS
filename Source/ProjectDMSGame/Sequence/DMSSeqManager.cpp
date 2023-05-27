@@ -16,8 +16,7 @@
 
 
 
-UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr), CurrentSequence(nullptr)
-, bUsingSteps(false)
+UDMSSeqManager::UDMSSeqManager() : bUsingSteps(false), RootSequence(nullptr), CurrentSequence(nullptr)
 {
 	
 }
@@ -45,8 +44,9 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->SourcePlayer = SourcePlayer;
 	Sequence->EIDatas = NewData;
 	Sequence->Targets = Targets;
+	
+	// Test Feature
 	Sequence->InitializeSteps(EffectNode->GetStepRequirements());
-
 
 	// Add new seq to seq tree.
 	if (ParentSequence == nullptr) {
@@ -79,11 +79,11 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 	CurrentSequence->OnSequenceInitiate();
 
 	// ====== Decision Making Step ====== //
-	// TODO :: Migrate to Decision Step 
 	// ( ex. User Choose target, ... )
-
-	if(!bUsingSteps)
-	{
+		
+	// TODO :: Migrate to Decision Step 
+	//if(!bUsingSteps)
+	//{
 		auto WidgetOwner = iSeq->GetWidgetOwner();
 
 		if (WidgetOwner == nullptr) {
@@ -93,7 +93,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 		TArray<UDMSConfirmWidgetBase*> Widgets;
 		//if (!iSeq->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
 		//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
-		Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets(WidgetOwner)));
+		Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets(iSeq,WidgetOwner)));
 		if (!iSeq->SetupWidgetQueue(Widgets))
 		{
 			DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
@@ -148,12 +148,12 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 			//...
 		}
 		);
-	}
-	else
-	{
-		
-		CurrentSequence->RunStepQueue();
-	}
+	//}
+	//else
+	//{
+	//	
+	//	CurrentSequence->RunStepQueue();
+	//}
 }
 
 int UDMSSeqManager::GetDepth(UDMSSequence* iSeq) {
@@ -162,12 +162,23 @@ int UDMSSeqManager::GetDepth(UDMSSequence* iSeq) {
 	return GetDepth(iSeq->ParentSequence)+1;
 }
 
+UDMSDataObjectSet* UDMSSeqManager::SearchNearestDataObject(UDMSSequence* StartingSequence, FGameplayTag SerachingTag) const
+{
+	UDMSSequence* It= StartingSequence;
+	while (It!=nullptr)
+	{
+		if (It->EIDatas->ContainData(SerachingTag)) return It->EIDatas;
+		It = It->ParentSequence;
+	}
+	return nullptr;
+}
+
 void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Apply Sequence [ Depth : %d ] ===="), *Sequence->GetName(), GetDepth(Sequence));
 
-	DMS_LOG_SCREEN(TEXT("%s : ApplySequence [%s]"), *Sequence->SourceObject->GetName(), 
-	*Sequence->OriginalEffectNode->GenerateTagContainer().ToString());
+	//DMS_LOG_SCREEN(TEXT("%s : ApplySequence [%s]"), *Sequence->SourceObject->GetName(), 
+	//*Sequence->OriginalEffectNode->GenerateTagContainer().ToString());
 	// Before Notify
 
 	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
@@ -179,7 +190,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 
 	// TODO :: Migrate to ApplyStep
 
-	DMS_LOG_SCREEN(TEXT("==-- BEFORE [ Depth : %d ] --=="),GetDepth(Sequence));
+	//DMS_LOG_SCREEN(TEXT("==-- BEFORE [ Depth : %d ] --=="),GetDepth(Sequence));
 	// 'Before Timing' broadcast starts.
 	Sequence->Progress = EDMSTimingFlag::T_Before;
 	NotifyManager->BroadCast(Sequence, 
@@ -190,7 +201,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 		BeforeSequence->Progress = EDMSTimingFlag::T_During;
 
 		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
-		DMS_LOG_SCREEN(TEXT("==-- DURING [ Depth : %d ] --=="), SeqManager->GetDepth(BeforeSequence));
+		//DMS_LOG_SCREEN(TEXT("==-- DURING [ Depth : %d ] --=="), SeqManager->GetDepth(BeforeSequence));
 		
 		// Resolve First
 		DMS_LOG_SIMPLE(TEXT("==== %s : RESOLVE START ===="), *BeforeSequence->GetName());
@@ -209,7 +220,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 				// Proceed to 'After Timing'
 				DurningSequence->Progress = EDMSTimingFlag::T_After;
 
-				DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
+				//DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
 
 				// 'After Timing' broadcast starts.
 				NotifyManager->BroadCast(DurningSequence, 

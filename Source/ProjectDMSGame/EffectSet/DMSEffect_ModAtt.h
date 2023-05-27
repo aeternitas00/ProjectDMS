@@ -16,10 +16,10 @@ struct FDMSSelectorData_ModAtt
 {
 	GENERATED_BODY()
 
-		/**
-		 *	True = Value is ranged. (ex. {"Add", "HP", [3 ~ 6]} )
-		 *	False = Give Modifier list to player (ex. Choose one of [ {"Add", "HP", 3 } , {"Add", "HP", 6 } ]
-		 */
+	/**
+	 *	True = Value is ranged. (ex. {"Add", "HP", [3 ~ 6]} )
+	 *	False = Give Modifier list to player (ex. Choose one of [ {"Add", "HP", 3 } , {"Add", "HP", 6 } ]
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute)
 	bool bIsRanged;
 
