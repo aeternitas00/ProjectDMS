@@ -38,6 +38,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool SetLeaderPlayer(int32 LeaderID);
 
+	UFUNCTION(BlueprintCallable)
+	TArray<ADMSPlayerState*> GetDMSPlayers();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<ADMSPlayerController*> GetDMSPlayerControllers();
+
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	APlayerState* FindPlayerFromId(int32 OwnerID);
 
@@ -45,6 +51,7 @@ public:
 	APlayerController* FindPlayerControllerFromId(int32 OwnerID);
 	// PhaseState, Manager
 
+	void SetPlayersFocusTarget(AActor* Target);
 public:
 	ADMSGameState(const FObjectInitializer& Initializer);
 

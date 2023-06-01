@@ -6,12 +6,15 @@
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
 
+#include "Player/DMSPlayerController.h"
+#include "Camera/DMSCameraPawn.h"
 
 #include "Notify/DMSNotifyManager.h"
 #include "GameModes/DMSGameMode.h"
 #include "Sequence/DMSSequence.h"
-#include "GameModes/DMSGameMode.h"
+#include "GameModes/DMSGameState.h"
 
+#include "Library/DMSCoreFunctionLibrary.h"
 
 
 // Owned effect creating helper
@@ -67,6 +70,7 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 		OnResolveCompleted();
 		return;
 	}
+
 
 	OnResolveCompletedMap.Add(Sequence);
 	OnResolveCompletedMap[Sequence].Delegate.BindLambda(OnResolveCompleted);

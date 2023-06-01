@@ -68,3 +68,9 @@ public:
 	void ProgressComplete();
 };
 
+template<typename Func>
+void UDMSSequenceStep::InitializeDelegates(Func&& FuncStepInitiated, Func&& StepFinished)
+{
+	OnStepInitiated_Delegate.AddLambda(FuncStepInitiated);
+	OnStepFinished_Delegate.AddLambda(StepFinished);
+}

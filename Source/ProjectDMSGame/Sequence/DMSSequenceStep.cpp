@@ -10,12 +10,7 @@ UDMSSequenceStep::UDMSSequenceStep()
 	Progress=EDMSTimingFlag::T_Before;
 }
 
-template<typename Func>
-void UDMSSequenceStep::InitializeDelegates(Func&& FuncStepInitiated, Func&& StepFinished)
-{
-	OnStepInitiated_Delegate.AddLambda(FuncStepInitiated);
-	OnStepFinished_Delegate.AddLambda(StepFinished);
-}
+
 
 
 void UDMSSequenceStep::RunStep()

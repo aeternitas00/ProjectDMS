@@ -2,6 +2,8 @@
 
 
 #include "EffectSet/DMSEffect_MoveLocatable.h"
+#include "Library/DMSCoreFunctionLibrary.h"
+#include "GameModes/DMSGameState.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "Location/DMSLocatableInterface.h"
@@ -36,5 +38,14 @@ void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence,
 	IDMSLocatableInterface::Execute_LocatingTo(ApplyTarget, Cast<ADMSLocationBase>(DestLocation));
 
 	OnWorkCompleted.ExecuteIfBound(SourceSequence);
+}
+
+void UDMSEffect_MoveLocatable::SetPlayerFocus_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
+{
+	// Default source target is Effect's Target.
+	UObject* FocusTarget;
+	if (!SourceSequence->EIDatas->GetValidDataValue<UObject*>(EffectTag, FocusTarget))	return;
+	UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(Cast<AActor>(FocusTarget));
+
 }
 

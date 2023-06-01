@@ -8,32 +8,6 @@
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "Player/DMSPlayerState.h"
 #include "Gamemodes/DMSGameState.h"
-template<typename FuncFinished, typename FuncCanceled >
-void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
-{
-	SelectorQueue.RunSelectors(
-		std::forward<FuncFinished&&>(iOnSelectorFinished),
-		std::forward<FuncCanceled&&>(iOnSelectorCanceled)
-	);
-}
-
-template<typename FuncInitiated>
-void UDMSSequence::AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated)
-{
-	OnSequenceFinished.AddLambda(iOnSequenceInitiated);
-}
-
-template<typename FuncFinished>
-void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
-{
-	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
-
-	if (OnSequenceFinished.IsBound()) {
-		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
-	}
-	OnSequenceFinished.AddLambda(iOnSequenceFinished);
-
-}
 
 void UDMSSequence::AddToOnSequenceInitiated(const FOnSequenceStateChanged_Signature& iOnSequenceInitiated)
 {

@@ -3,7 +3,23 @@
 
 #include "GameModes/DMSGameState.h"
 #include "Player/DMSPlayerState.h"
+#include "Player/DMSPlayerController.h"
+#include "Camera/DMSCameraPawn.h"
 #include "Effect/DMSEIManagerComponent.h"
+
+void ADMSGameState::SetPlayersFocusTarget(AActor* Target)
+{
+	if (Target == nullptr) return;
+
+	auto PlayerControllers = GetDMSPlayerControllers();
+
+	for (auto PC : PlayerControllers)
+	{
+		auto Loc = Target->GetActorLocation();
+		auto OrLoc = PC->GetCameraPawn()->GetActorLocation();
+		PC->GetCameraPawn()->SetActorLocation(FVector(OrLoc.X, Loc.Y, Loc.Z));
+	}
+}
 
 ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
 {
@@ -25,6 +41,32 @@ bool ADMSGameState::SetLeaderPlayer(int32 inLeaderID)
 	return false;
 }
 
+TArray<ADMSPlayerState*> ADMSGameState::GetDMSPlayers()
+{
+	TArray<ADMSPlayerState*> rv;
+	
+	for (auto& Player : PlayerArray)
+	{
+		if (Player->IsA<ADMSPlayerState>())
+			rv.Add(Cast<ADMSPlayerState>(Player));
+	}
+
+	return rv;
+}
+
+TArray<ADMSPlayerController*> ADMSGameState::GetDMSPlayerControllers()
+{
+	TArray<ADMSPlayerController*> rv;
+
+	for (auto& Player : PlayerArray)
+	{
+		if (Player->GetPlayerController()->IsA<ADMSPlayerController>())
+			rv.Add(Cast<ADMSPlayerController>(Player->GetPlayerController()));
+	}
+
+	return rv;
+}
+
 APlayerState* ADMSGameState::FindPlayerFromId(int32 OwnerID)
 {
 	for (auto& Player : PlayerArray)
@@ -40,13 +82,3 @@ APlayerController* ADMSGameState::FindPlayerControllerFromId(int32 OwnerID)
 	return FindPlayerFromId(OwnerID) == nullptr ? FindPlayerFromId(LeaderPlayerID)->GetPlayerController() : FindPlayerFromId(OwnerID)->GetPlayerController();
 }
 
-//void ADMSGameState::AttachEffectInstance(UDMSEffectInstance* EI)
-//{
-//	EffectManagerComponent->AttachEffectInstance(EI);
-//}
-//
-//bool ADMSGameState::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects,
-//	bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
-//{
-//	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
-//}

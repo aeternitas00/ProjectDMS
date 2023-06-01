@@ -102,6 +102,10 @@ public:
 	void Work(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted); // temp
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(SourceSequence); }
 
+	UFUNCTION(BlueprintNativeEvent)
+	void SetPlayerFocus(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
+	virtual void SetPlayerFocus_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
+
 	// ====================== //
 	//		For selector
 	// ====================== //
@@ -124,6 +128,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Effect,meta = (EditCondition = false, EditConditionHides))
 	bool bHasPairedSelector;
 
+	/**
+	 * true : move the player's camera pawn to make the effect source visible when the effect is triggered.
+	 */
+	 UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	 bool bPlayerHasToBeFocused;
 	/**
 	 * Implements returning paired selector class if effect has paired selector.
 	 * @return	Paired selector class.
@@ -309,6 +318,8 @@ public:
 	bool bIsChainableEffect;
 
 	//virtual void Serialize(FArchive& Ar) override;
+
+
 };
 
 /** 

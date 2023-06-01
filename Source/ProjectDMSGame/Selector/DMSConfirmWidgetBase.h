@@ -102,3 +102,19 @@ public:
 	FOnSelectCanceled OnSelectCanceled;
 
 };
+
+
+template<typename FuncCompleted, typename FuncCanceled>
+void UDMSConfirmWidgetBase::SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled/*, UDMSSequence* iOwnerSeq*/) {
+
+	//OwnerSeq = iOwnerSeq;
+	//if (!SetupWidget()){return false;};
+
+	OnSelectCompleted.Unbind();
+	OnSelectCanceled.Unbind();
+
+	OnSelectCompleted.BindLambda(std::forward<FuncCompleted&&>(iOnCompleted));
+	OnSelectCanceled.BindLambda(std::forward<FuncCanceled&&>(iOnCanceled));
+
+	//return true;
+}

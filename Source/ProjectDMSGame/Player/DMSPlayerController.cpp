@@ -4,6 +4,7 @@
 #include "Player/DMSPlayerController.h"
 #include "Gamemodes/DMSGameMode.h"
 #include "Sequence/DMSSeqManager.h"
+#include "Camera/DMSCameraPawn.h"
 
 #include "Effect/DMSEffectInstance.h"
 
@@ -46,6 +47,11 @@ void ADMSPlayerController::PostInitializeComponents()
 
 void/**/ ADMSPlayerController::PopupSelectorWidget(TSubclassOf<UDMSEffectElementSelectorWidget> WidgetClass)
 {
+}
+
+ADMSCameraPawn* ADMSPlayerController::GetCameraPawn()
+{
+	return GetPawn<ADMSCameraPawn>();
 }
 
 void ADMSPlayerController::InstigateObject(UObject* Object)

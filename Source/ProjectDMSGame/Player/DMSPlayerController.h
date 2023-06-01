@@ -20,6 +20,7 @@
 
 
 struct FDMSAttributeModifier;
+class ADMSCameraPawn;
 class UDMSCardManagerComponent;
 class UDMSCardContainerComponent;
 class ADMSCardBase;
@@ -105,4 +106,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void PlayCard(ADMSCardBase* Card);
 	
+	UFUNCTION(BlueprintCallable)
+	ADMSCameraPawn* GetCameraPawn();
+
 };

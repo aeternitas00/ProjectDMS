@@ -56,6 +56,7 @@ void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
 		
 		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
+			if (CurrentDef->bPlayerHasToBeFocused) CurrentDef->SetPlayerFocus(SourceSequence, this);
 			CurrentDef->Work(SourceSequence, this, IteratingDelegate);
 		}
 		else {

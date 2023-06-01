@@ -3,23 +3,23 @@
 
 #include "Effect/DMSEffectDefinition.h"
 #include "Selector/DMSDecisionWidget.h"
+#include "Library/DMSCoreFunctionLibrary.h"
 #include "Sequence/DMSSequence.h"
+#include "GameModes/DMSGameState.h"
+#include "Effect/DMSEffectInstance.h"
 #include "Sequence/Steps/DMSSequenceStep_Decision.h"
 #include "Sequence/Steps/DMSSequenceStep_Apply.h"
 #include "Conditions/DMSConditionObject.h"
 
-//TArray<UDMSEffectNode*> UDMSEffectSet::SearchEffects(UDMSSequence* iSeq)
-//{ 
-//	TArray<UDMSEffectNode*> rv;
-//
-//	
-//	for (auto fx : EffectNodes)
-//	{
-//		if (fx->Conditions.CheckOperation_Implementation(iSeq)) rv.Add(fx);
-//	}
-//	
-//	return rv;
-//}
+
+
+void UDMSEffectDefinition::SetPlayerFocus_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
+{
+	// Default source target is Effect's Target.
+	auto FocusTarget = iEI->GetTypedOuter<AActor>();
+	UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(FocusTarget);
+
+}
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateTarget_Implementation(UDMSSequence* iSequence)
 {
@@ -145,6 +145,8 @@ TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(UDMSSequence* 
 	InitializeDecisionWidget(rv);
 	return rv;
 }
+
+
 
 UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner)
 {

@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "NativeGameplayTags.h"
 #include "Net/UnrealNetwork.h"
+#include "Library/DMSCoreFunctionLibrary.h"
 
 /// Debugger or logger module?
 
