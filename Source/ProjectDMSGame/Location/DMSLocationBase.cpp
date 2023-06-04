@@ -50,10 +50,8 @@ void ADMSLocationBase::ConnectLocations(ADMSLocationBase* Start, ADMSLocationBas
 	
 }
 
-void ADMSLocationBase::Initialize_Implementation(const UDMSSpawnableDataBase* NewData) 
+void ADMSLocationBase::OnInitialized_Implementation()
 {
-	Super::Initialize_Implementation(NewData);
-	
 	if (!OriginalData->IsA<UDMSLocationData>()) return;
 
 	auto LocData = Cast<UDMSLocationData>(OriginalData);

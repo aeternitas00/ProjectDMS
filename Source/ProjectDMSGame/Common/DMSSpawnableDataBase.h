@@ -45,9 +45,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE const UDMSSpawnableDataBase* GetOriginalData(){return OriginalData;}
 
-	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-	void Initialize(const UDMSSpawnableDataBase* inData);
-	virtual void Initialize_Implementation(const UDMSSpawnableDataBase* inData) { OriginalData = inData; }
+	UFUNCTION(BlueprintCallable)
+	void Initialize(const UDMSSpawnableDataBase* inData){ OriginalData = inData; OnInitialized(); PostInitialize();}
+
+	UFUNCTION(BlueprintNativeEvent)
+
+	void OnInitialized();
+	virtual void OnInitialized_Implementation(){}
+
+	UFUNCTION(BlueprintNativeEvent)
+
+	void PostInitialize();
+	virtual void PostInitialize_Implementation(){}
 
 };
 

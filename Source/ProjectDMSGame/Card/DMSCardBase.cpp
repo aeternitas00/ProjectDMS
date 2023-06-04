@@ -68,15 +68,12 @@ bool ADMSCardBase::LocatingTo_Implementation(ADMSLocationBase* TargetLocation)
 	return false;
 }
 
-void ADMSCardBase::Initialize_Implementation(const UDMSSpawnableDataBase* iCardDefinition/*, Saved data...*/)
+void ADMSCardBase::OnInitialized_Implementation()
 {
 	// EffectManagerComponent->CleanupOwnEffect(); ?
 	// 
-	//Super::Initialize(iCardDefinition);
-	OriginalData = iCardDefinition;
-
 	// Caching casted one.
-	SetCardDefinition(Cast<UDMSCardDefinition>(iCardDefinition));
+	SetCardDefinition(Cast<UDMSCardDefinition>(OriginalData));
 
 	check(CardDefinition);
 

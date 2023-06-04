@@ -87,8 +87,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnActorLeaved(const TScriptInterface<IDMSLocatableInterface>& Locatable);
 
-	//virtual void Initialize_Implementation(const UDMSSpawnableDataBase* inData);
-
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void InitializeLocation(const FDMSScenarioLocatingData& iLocData);
 
@@ -100,6 +98,6 @@ public:
 
 public:
 	ADMSLocationBase* GetCurrentLocation_Implementation(){return this;}
-	virtual void Initialize_Implementation(const UDMSSpawnableDataBase* NewData);
+	virtual void OnInitialized_Implementation();
 	bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation){return false;}
 };

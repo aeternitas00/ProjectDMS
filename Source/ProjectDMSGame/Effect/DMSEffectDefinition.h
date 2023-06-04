@@ -103,8 +103,8 @@ public:
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(SourceSequence); }
 
 	UFUNCTION(BlueprintNativeEvent)
-	void SetPlayerFocus(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
-	virtual void SetPlayerFocus_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
+	AActor* GetPlayerFocusTarget(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
+	virtual AActor* GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
 
 	// ====================== //
 	//		For selector
@@ -204,7 +204,7 @@ public:
 	 * Effect's activatable timing.
 	 */ 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	UDMSConditionCombiner* Conditions;
+	TObjectPtr<UDMSConditionCombiner> Conditions;
 
 	/**
 	 * Has a choice about triggering the effect ? 
@@ -217,7 +217,7 @@ public:
 	 * Effect's Cost. It's different with cost of playing card.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	UDMSEffectSet* EffectCost;
+	TObjectPtr<UDMSEffectSet> EffectCost;
 
 //=================== Pre-activate ( Decision step ) ===================//
 
@@ -309,7 +309,7 @@ public:
 	 * Effect's child(sub) effect
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	UDMSEffectNodeWrapper* ChildEffect;
+	TObjectPtr<UDMSEffectNodeWrapper> ChildEffect;
 
 	/**
 	 * Flag of "Is this effect has chainable window?".
@@ -357,7 +357,7 @@ class PROJECTDMSGAME_API UDMSEffectNodeWrapper_Manual : public UDMSEffectNodeWra
 
 public:
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = Effect)
-	UDMSEffectNode* EffectNode;
+	TObjectPtr<UDMSEffectNode> EffectNode;
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode; }
 	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode->CreateSelectors(OwnerSeq,WidgetOwner); }
@@ -408,7 +408,7 @@ public:
 	 * Effect nodes of this effect set.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
-	TArray<UDMSEffectNodeWrapper*> EffectNodes;
+	TArray<TObjectPtr<UDMSEffectNodeWrapper>> EffectNodes;
 
 	/**
 	 * Execute param tag query to all effect nodes.

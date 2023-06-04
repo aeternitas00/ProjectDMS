@@ -10,7 +10,9 @@
 
 #include "Conditions/DMSConditionObject.h"
 
+#include "GameModes/DMSGameState.h"
 #include "GameModes/DMSGameMode.h"
+
 #include "EffectSet/DMSEffect_CancelEffect.h"
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 #include "Card/DMSCardBase.h"
@@ -43,22 +45,29 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 
 void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 {
-	if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num())
-	{
+	if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num()) {
 		if (CurrentState!=EDMSEIState::EIS_Persistent) CurrentState=EDMSEIState::EIS_PendingKill;
 		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence);
 	}
-	else{
+	else {
 		FGameplayTagQuery Query;
 		auto CurrentDef = EffectNode->EffectDefinitions[OnApplyCompletedMap[SourceSequence].Index++];
 
-		if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) && SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>()) 
+		// ====================== //
+		//    Effect Canceling    //
+		// ====================== // 
+		// Have to think about more complicated situations.
+
+		if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) && 
+		SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>()) 
 			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
 		
 		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
-			if (CurrentDef->bPlayerHasToBeFocused) CurrentDef->SetPlayerFocus(SourceSequence, this);
+			if (CurrentDef->bPlayerHasToBeFocused) 	
+				UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));
 			CurrentDef->Work(SourceSequence, this, IteratingDelegate);
 		}
+
 		else {
 			ApplyNextEffectDefinition(SourceSequence);
 			//OnApplyCompletedMap[SourceSequence].IteratingDelegate.ExecuteIfBound(SourceSequence);
@@ -67,10 +76,19 @@ void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 }
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
-{ EffectNode = iNode; CurrentState = EDMSEIState::EIS_Pending; DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); }
+{ 
+	EffectNode = iNode; 
+	CurrentState = EDMSEIState::EIS_Pending; 
+	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); 
+}
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq) 
-{ EffectNode = iNode; SourcePlayer=iSeq->SourcePlayer; SourceObject = iSeq->SourceObject; DataSet = iSeq->EIDatas; CurrentState = EDMSEIState::EIS_Pending; }
+{ 
+	EffectNode = iNode; SourcePlayer=iSeq->SourcePlayer; 
+	SourceObject = iSeq->SourceObject; 
+	DataSet = iSeq->EIDatas; 
+	CurrentState = EDMSEIState::EIS_Pending; 
+}
 
 UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 
 {

@@ -7,6 +7,8 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "DMSEffectorActorBase.generated.h"
 
+class UDMSEIManagerComponent;
+
 UCLASS(Abstract)
 class PROJECTDMSGAME_API ADMSEffectorActorBase : public ADMSSpawnableBase, public IDMSEffectorInterface
 {
@@ -21,9 +23,14 @@ protected:
 	 * Actor's effector component.
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	class UDMSEIManagerComponent* EffectManagerComponent;
+	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TObjectPtr<ADMSEffectorActorBase> PreviewDummy;
+
 public:	
+	UFUNCTION(BlueprintCallable)
+	ADMSEffectorActorBase* GetPreviewDummy() const {return PreviewDummy;}
 
-
+	virtual void PostInitialize_Implementation();
 };

@@ -70,7 +70,7 @@ public:
 	 * Initialize card with new card definition.
 	 * @param	iCardDefinition					New card data.
 	 */
-	void Initialize_Implementation(const UDMSSpawnableDataBase* iCardDefinition/*...*/);
+	void OnInitialized_Implementation();
 
 	/**
 	 * Native Get,Setter

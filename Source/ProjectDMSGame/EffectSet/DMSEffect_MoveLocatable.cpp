@@ -40,12 +40,12 @@ void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence,
 	OnWorkCompleted.ExecuteIfBound(SourceSequence);
 }
 
-void UDMSEffect_MoveLocatable::SetPlayerFocus_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
+AActor* UDMSEffect_MoveLocatable::GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
 {
 	// Default source target is Effect's Target.
 	UObject* FocusTarget;
-	if (!SourceSequence->EIDatas->GetValidDataValue<UObject*>(EffectTag, FocusTarget))	return;
-	UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(Cast<AActor>(FocusTarget));
+	if (!SourceSequence->EIDatas->GetValidDataValue<UObject*>(EffectTag, FocusTarget)) return nullptr;
+	return Cast<AActor>(FocusTarget);
 
 }
 

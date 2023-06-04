@@ -20,5 +20,5 @@ public:
 
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override;
 
-	virtual void SetPlayerFocus_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) override;
+	virtual AActor* GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) override;
 };

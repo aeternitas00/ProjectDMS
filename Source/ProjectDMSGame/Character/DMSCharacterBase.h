@@ -43,7 +43,7 @@ public:
 	/**
 	 *
 	 */
-	virtual void Initialize_Implementation(const UDMSSpawnableDataBase* inData);
+	virtual void OnInitialized_Implementation();
 	
 	/**
 	 *

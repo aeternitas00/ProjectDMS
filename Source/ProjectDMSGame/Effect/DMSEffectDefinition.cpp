@@ -13,12 +13,10 @@
 
 
 
-void UDMSEffectDefinition::SetPlayerFocus_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
+AActor* UDMSEffectDefinition::GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
 {
 	// Default source target is Effect's Target.
-	auto FocusTarget = iEI->GetTypedOuter<AActor>();
-	UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(FocusTarget);
-
+	return iEI->GetTypedOuter<AActor>();
 }
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateTarget_Implementation(UDMSSequence* iSequence)

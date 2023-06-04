@@ -66,6 +66,9 @@ public:
 		UDMSSequence* ParentSequence = nullptr
 	);	
 	
+	UFUNCTION(BlueprintCallable)
+	void RemoveSequence(UDMSSequence* Sequence);
+
 	/**
 	 * Run param sequence.
 	 * @param	iSeq

@@ -19,9 +19,9 @@ UDMSEffectSet* ADMSCharacterBase::GetOwningEffectSet(const FGameplayTag& iSetNam
 	return CharacterDefinition->CharacterEffectSets.Contains(iSetName) ? CharacterDefinition->CharacterEffectSets[iSetName] : nullptr;
 }
 
-void ADMSCharacterBase::Initialize_Implementation(const UDMSSpawnableDataBase* NewDefinition)
+void ADMSCharacterBase::OnInitialized_Implementation()
 {
-	CharacterDefinition = Cast<UDMSCharacterDefinition>(NewDefinition);
+	CharacterDefinition = Cast<UDMSCharacterDefinition>(OriginalData);
 
 	check(CharacterDefinition != nullptr);
 

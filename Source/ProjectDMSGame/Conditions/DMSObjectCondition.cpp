@@ -78,15 +78,15 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 	switch (Operator)
 	{
 		case EDMSComparisonOperator::BO_Equal:
-			rv = Att->GetValue() == Value;
+			rv = Att->GetValue() == Value; break;			
 		case EDMSComparisonOperator::BO_Greater:
-			rv = Att->GetValue() > Value;
+			rv = Att->GetValue() > Value; break;
 		case EDMSComparisonOperator::BO_Less:
-			rv = Att->GetValue() < Value;
+			rv = Att->GetValue() < Value; break;
 		case EDMSComparisonOperator::BO_GreaterEqual:
-			rv = Att->GetValue() >= Value;
+			rv = Att->GetValue() >= Value; break;
 		case EDMSComparisonOperator::BO_LessEqual:
-			rv = Att->GetValue() <= Value;
+			rv = Att->GetValue() <= Value; break;
 		default: return bNullIsTrue;
 	}
 

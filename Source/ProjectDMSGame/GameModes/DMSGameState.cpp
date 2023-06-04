@@ -17,7 +17,7 @@ void ADMSGameState::SetPlayersFocusTarget(AActor* Target)
 	{
 		auto Loc = Target->GetActorLocation();
 		auto OrLoc = PC->GetCameraPawn()->GetActorLocation();
-		PC->GetCameraPawn()->SetActorLocation(FVector(OrLoc.X, Loc.Y, Loc.Z));
+		PC->GetCameraPawn()->FocusToLocation(FVector(OrLoc.X, Loc.Y, Loc.Z));
 	}
 }
 

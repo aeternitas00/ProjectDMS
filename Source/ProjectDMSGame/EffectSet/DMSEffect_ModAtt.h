@@ -64,6 +64,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
 	bool bCreateIfNull;
 
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
+	bool bFailBelowZero;
+
 	/**
 	 *
 	 */

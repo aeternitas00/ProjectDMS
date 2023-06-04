@@ -11,13 +11,13 @@
 #include "InputMappingContext.h"
 
 // Sets default values
-ADMSCameraPawn::ADMSCameraPawn()
+ADMSCameraPawn::ADMSCameraPawn():FocusSpeed(10.f)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 
-	MovementComponent = CreateDefaultSubobject<UPawnMovementComponent, UFloatingPawnMovement>(TEXT("MovementComponentName"));
+	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingMovement"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -26,10 +26,25 @@ ADMSCameraPawn::ADMSCameraPawn()
 	BaseEyeHeight=0.0f;
 }
 
+void ADMSCameraPawn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (isFocusing)
+	{
+		FVector CurrentLocation = GetActorLocation();
+		FVector NewLocation = FMath::VInterpTo(CurrentLocation, FocusDestination, DeltaTime, FocusSpeed);
+		SetActorLocation(NewLocation);
+		float DistanceSq = FVector::DistSquared(CurrentLocation, FocusDestination);
+		if (DistanceSq < 5.0f)
+			isFocusing = false;
+		
+	}
+}
 
 void ADMSCameraPawn::Input_Move(const FInputActionValue& InputActionValue)
 {
-	if (Controller)
+	if (Controller && !isFocusing)
 	{
 		const FVector Value = InputActionValue.Get<FVector>();
 		//const FRotator MovementRotation(Controller->GetControlRotation().Pitch, 0.0f, 0.0f);
@@ -83,3 +98,9 @@ void ADMSCameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	EIC->BindAction(Action, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
 }
 
+
+void ADMSCameraPawn::FocusToLocation(const FVector& Destination)
+{
+	isFocusing=true;
+	FocusDestination = Destination;
+}

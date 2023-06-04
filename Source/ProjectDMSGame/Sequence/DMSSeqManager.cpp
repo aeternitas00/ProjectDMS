@@ -69,6 +69,22 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	return Sequence;
 }
 
+void UDMSSeqManager::RemoveSequence(UDMSSequence* Sequence)
+{
+	if (Sequence==RootSequence) {
+		RootSequence = Sequence->ChildSequence!=nullptr ? Sequence->ChildSequence : nullptr ;
+		return;
+	}
+	
+	if (Sequence->ParentSequence != nullptr){
+		Sequence->ParentSequence->ChildSequence = Sequence->ChildSequence != nullptr ? Sequence->ChildSequence : nullptr;
+	}
+
+	if (Sequence->ChildSequence != nullptr) {
+		Sequence->ChildSequence->ParentSequence = Sequence->ParentSequence != nullptr ? Sequence->ParentSequence : nullptr;
+	}
+}
+
 
 void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 {
