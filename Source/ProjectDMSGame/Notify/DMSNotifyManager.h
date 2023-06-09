@@ -17,10 +17,9 @@
 #include "UObject/NoExportTypes.h"
 #include "Sequence/DMSSequence.h"
 #include "Effect/DMSEffectInstance.h"
+#include "Effect/DMSEffectorInterface.h"
 #include "Selector/DMSDecisionWidget.h"
 #include "DMSNotifyManager.generated.h"
-
-class IDMSEffectorInterface;
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_Respondent)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_ActivatingEffect)
@@ -109,9 +108,10 @@ public:
 	/**
 	 * Broadcast sequence for NotifyObjects.
 	 * @param	Object							Register target.
+	 * @return	true if registring was success.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
+	bool RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.
@@ -154,6 +154,7 @@ void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 
 	for (auto& Object : NotifyObjects)
 	{
+		//DMS_LOG_SIMPLE(TEXT("%s"), (Object==nullptr) ? TEXT("Object is NULLPTR") : *(Object->GetObject()->GetName()));
 		Object->OnNotifyReceived(ResponsedObjects, NotifyData->OriginalEffectNode->bIsChainableEffect, NotifyData);
 	}
 

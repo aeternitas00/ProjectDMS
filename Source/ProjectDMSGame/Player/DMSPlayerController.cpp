@@ -2,12 +2,13 @@
 
 
 #include "Player/DMSPlayerController.h"
+#include "Player/DMSPlayerState.h"
 #include "Gamemodes/DMSGameMode.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Camera/DMSCameraPawn.h"
+#include "System/DMSSaveGame.h"
 
 #include "Effect/DMSEffectInstance.h"
-
 #include "Effect/DMSEffectorInterface.h"
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 
@@ -52,6 +53,22 @@ void/**/ ADMSPlayerController::PopupSelectorWidget(TSubclassOf<UDMSEffectElement
 ADMSCameraPawn* ADMSPlayerController::GetCameraPawn()
 {
 	return GetPawn<ADMSCameraPawn>();
+}
+
+void ADMSPlayerController::OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem)
+{
+	auto PS = GetPlayerState<ADMSPlayerState>();
+	check(PS);
+
+	PS->LoadDatasFromSave(LoadedItem);
+
+}
+
+void ADMSPlayerController::LoadClientSaveGame(const FString& SlotName, const int32 UserIndex)
+{
+	auto DMSSaveGame=Cast<UDMSSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
+
+	OnLoadSaveGame(DMSSaveGame);
 }
 
 void ADMSPlayerController::InstigateObject(UObject* Object)

@@ -13,8 +13,8 @@ ADMSEffectorActorBase::ADMSEffectorActorBase(const FObjectInitializer& ObjectIni
 	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
 }
 
-void ADMSEffectorActorBase::PostInitialize_Implementation() 
-{ 
-	PreviewDummy = DuplicateObject(this, GetOuter());
+void ADMSEffectorActorBase::OnInitialized_Implementation() {
+	Super::OnInitialized_Implementation();
+	PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
 	PreviewDummy->SetActorHiddenInGame(true);
 }

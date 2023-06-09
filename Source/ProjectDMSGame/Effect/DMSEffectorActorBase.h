@@ -29,8 +29,7 @@ protected:
 	TObjectPtr<ADMSEffectorActorBase> PreviewDummy;
 
 public:	
-	UFUNCTION(BlueprintCallable)
-	ADMSEffectorActorBase* GetPreviewDummy() const {return PreviewDummy;}
-
-	virtual void PostInitialize_Implementation();
+	virtual IDMSEffectorInterface* GetPreviewObject() {return PreviewDummy;}
+	virtual void ResetPreviewObject() override {}
+	virtual void OnInitialized_Implementation() override;
 };

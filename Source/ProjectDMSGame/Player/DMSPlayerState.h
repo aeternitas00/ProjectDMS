@@ -46,13 +46,14 @@ public:
 	ADMSPlayerState(const FObjectInitializer& Initializer);
 
 protected:
-
+	UPROPERTY()
+	TObjectPtr<ADMSPlayerState> PreviewDummy;
 	/**
 	 * Card manager component.
 	 * Manage player's card containers like deck, hand, discard pile...
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	UDMSCardManagerComponent* CardManagerComponent;
+	TObjectPtr<UDMSCardManagerComponent> CardManagerComponent;
 
 	/**
 	 * Player's default card containers list and intancing class.
@@ -61,24 +62,18 @@ protected:
 	TMap<FName, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
 	/**
-	 * Search for named card container from CardManagerComponent.
-	 */
-	UFUNCTION(BlueprintCallable)
-	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
-
-	/**
 	 * Effect manager component.
 	 * Manage effects that targeting players or triggered.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	UDMSEIManagerComponent* EffectManagerComponent;
+	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 
 	/**
 	 * Attribute component.
 	 * Manage mana, resource, etc... of player.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	UDMSAttributeComponent* AttributeComponent;
+	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 
 	/**
 	 * Player's default attribute key, value pairs.
@@ -90,10 +85,8 @@ protected:
 	 * Player's default basic actions.
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
-	TMap<FName, UDMSEffectNode*> DefaultBasicActions;
+	TMap<FName, TObjectPtr<UDMSEffectNode>> DefaultBasicActions;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	ADMSCharacterBase* CharacterRef;
 
 public:
 
@@ -105,6 +98,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FDMSPlayerCharacterData PlayerCharacterData;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TObjectPtr<ADMSCharacterBase> CharacterRef;
 
 	/**
 	 *
@@ -126,7 +122,7 @@ public:
 	 * @param	SaveGame					Savegame of current slot.
 	 * [ Temporal implements ]
 	 */
-	void LoadDeck(class UDMSSaveGame* SaveGame){}
+	void LoadDatasFromSave(class UDMSSaveGame* SaveGame);
 
 	/**
 	 * Setter of OriginalCardDatas. Called at cleanup phase.
@@ -136,25 +132,30 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCardDatas(const TArray<FDMSCardData>& InDatas);
 
+	UFUNCTION(BlueprintCallable)
+	void SetupDefaults();
+
 	/**
 	 *
 	 */
-	UFUNCTION(BlueprintCallable)
 	void SetupCardContainers();
 
 	/**
 	 *
 	 */
-	UFUNCTION(BlueprintCallable)
 	void SetupAttributes();
+
+	/**
+	 * Search for named card container from CardManagerComponent.
+	 */
+	UFUNCTION(BlueprintCallable)
+	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
 
 	// ============================= //
 	//		INTERFACE FUNCTIONS
 	// ============================= //
-	//virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	//virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) override;
-	//virtual UObject* GetObject() override { return this; }
 	virtual AActor* GetOwningPlayer() { return this; }
+	virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 	// TODO :: Match with BA ?
 	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
 

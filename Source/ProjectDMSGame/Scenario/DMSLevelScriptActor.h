@@ -27,6 +27,9 @@ class PROJECTDMSGAME_API ADMSLevelScriptActor : public ALevelScriptActor, public
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY()
+	TObjectPtr<ADMSLevelScriptActor> PreviewDummy;
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<TObjectPtr<ADMSLocationBase>, FDMSLocatingActors> SpawnedDMSActors;
 
@@ -60,6 +63,7 @@ public:
 	 */
 	//virtual UObject* GetObject() override {return this;} // RENAME?
 	virtual AActor* GetOwningPlayer() override {return UDMSCoreFunctionLibrary::GetDMSGameMode()->GameState;} // RENAME?
+	virtual IDMSEffectorInterface* GetPreviewObject() {return PreviewDummy;}
 	//virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	//virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak = nullptr) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;

@@ -28,6 +28,7 @@ class UDMSEIManagerComponent;
 class UDMSAttributeComponent;
 class UDMSAttribute;
 class UDMSEffectNode;
+class UDMSSaveGame;
 class ADMSCharacterBase;
 
 /**
@@ -109,4 +110,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ADMSCameraPawn* GetCameraPawn();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void CreateHUDWidgets();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetupHUDWidgets();	
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void OnLoadSaveGame(UDMSSaveGame* LoadedItem);
+	virtual void OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem);
+
+	UFUNCTION(/*Client*/)
+	void LoadClientSaveGame(const FString& SlotName, const int32 UserIndex);
 };

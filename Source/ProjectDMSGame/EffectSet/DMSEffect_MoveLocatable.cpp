@@ -21,23 +21,23 @@ void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence,
 {
 	UObject* DestLocation;
 
-	AActor* ApplyTarget = iEI->GetTypedOuter<AActor>();
+	AActor* ApplyTarget = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
 
 	if (!ApplyTarget->Implements<UDMSLocatableInterface>() )
 	{
-		OnWorkCompleted.ExecuteIfBound(SourceSequence);
+		OnWorkCompleted.ExecuteIfBound(SourceSequence, false);
 		return;
 	}
 
 	if ( !SourceSequence->EIDatas->GetValidDataValue<UObject*>(EffectTag, DestLocation) )
 	{
-		OnWorkCompleted.ExecuteIfBound(SourceSequence);
+		OnWorkCompleted.ExecuteIfBound(SourceSequence,false);
 		return;
 	}
 
 	IDMSLocatableInterface::Execute_LocatingTo(ApplyTarget, Cast<ADMSLocationBase>(DestLocation));
 
-	OnWorkCompleted.ExecuteIfBound(SourceSequence);
+	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
 }
 
 AActor* UDMSEffect_MoveLocatable::GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)

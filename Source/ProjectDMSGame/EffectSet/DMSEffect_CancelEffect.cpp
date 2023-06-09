@@ -22,7 +22,7 @@ void UDMSEffect_CancelEffect::Work_Implementation(UDMSSequence* SourceSequence, 
 		SearchSeq = SearchSeq->ParentSequence;
 	}
 	
-	OnWorkCompleted.ExecuteIfBound(SourceSequence);
+	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
 }
 
 void UDMSEffect_IgnoreEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
@@ -39,5 +39,5 @@ void UDMSEffect_IgnoreEffect::Work_Implementation(UDMSSequence* SourceSequence, 
 		SearchSeq = SearchSeq->ParentSequence;
 	}
 	
-	OnWorkCompleted.ExecuteIfBound(SourceSequence);
+	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
 }

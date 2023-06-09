@@ -47,7 +47,7 @@ struct FDMSEffectValueDef
 };
 
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWorkCompleted, UDMSSequence*, SourceSequence);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnWorkCompleted, UDMSSequence*, SourceSequence, bool, Successed);
 
 /**
  * 	========================================
@@ -100,7 +100,17 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void Work(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted); // temp
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(SourceSequence); }
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(SourceSequence,true); }
+
+	/**
+	 * Predict whether work will succeed or fail
+	 * @param	SourceSequence					Target sequence.
+	 * @param	iEi								Source effect instance
+	 * @return	
+	 */
+	UFUNCTION(BlueprintNativeEvent)
+	bool Predict(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI); // temp
+	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) { return true; }
 
 	UFUNCTION(BlueprintNativeEvent)
 	AActor* GetPlayerFocusTarget(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);

@@ -20,10 +20,12 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 {
 	//DMS_LOG_SCREEN(TEXT("%s : ModAtt"), *iEI->GetName());
 	
-	AActor* tOuter = iEI->GetTypedOuter<AActor>();
+	// predict에 valid check 를 다 하고가니 이런거 필요 한가 다시 생각해보긴 해야할텐데...
+	
+	AActor* tOuter = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
 	if(tOuter== nullptr) 	{
 		//DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *iEI->GetName(),*iEI->GetOuter()->GetName());
-		OnWorkCompleted.ExecuteIfBound(SourceSequence);
+		OnWorkCompleted.ExecuteIfBound(SourceSequence,false);
 		return;
 	}
 
@@ -31,7 +33,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	if (AttComp == nullptr)
 	{	
 		if(!bCreateIfNull)	{
-			OnWorkCompleted.ExecuteIfBound(SourceSequence); return;
+			OnWorkCompleted.ExecuteIfBound(SourceSequence, false); return;
 		}
 		AttComp = Cast<UDMSAttributeComponent>(tOuter->AddComponentByClass(UDMSAttributeComponent::StaticClass(),false,FTransform(),false));
 	}
@@ -40,7 +42,21 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	
 	AttComp->TryModAttribute(Value);
 
-	OnWorkCompleted.ExecuteIfBound(SourceSequence);
+	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
+}
+
+bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
+{
+
+	AActor* tOuter = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
+	if (tOuter == nullptr) 
+		return false;
+
+	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
+	if (AttComp == nullptr && !bCreateIfNull)
+		return false;
+		
+	return AttComp->TryModAttribute(Value);
 }
 
 FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()

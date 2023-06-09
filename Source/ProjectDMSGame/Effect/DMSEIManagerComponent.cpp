@@ -113,9 +113,8 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 
 		//AActor* CardOwner = GetOwningPlayer();
 
-		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), Node);
+		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), GetOwner(), Node);
 		EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
-		EIs[0]->Rename(nullptr, GetOwner());
 		OwnEffectInstances.Add(EIs[0]);
 	}
 }

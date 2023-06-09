@@ -7,6 +7,18 @@
 #include "Camera/DMSCameraPawn.h"
 #include "Effect/DMSEIManagerComponent.h"
 
+ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
+{
+	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
+	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
+
+}
+
+void ADMSGameState::SetupDefaults()
+{
+	PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
+}
+
 void ADMSGameState::SetPlayersFocusTarget(AActor* Target)
 {
 	if (Target == nullptr) return;
@@ -19,13 +31,6 @@ void ADMSGameState::SetPlayersFocusTarget(AActor* Target)
 		auto OrLoc = PC->GetCameraPawn()->GetActorLocation();
 		PC->GetCameraPawn()->FocusToLocation(FVector(OrLoc.X, Loc.Y, Loc.Z));
 	}
-}
-
-ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
-{
-	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
-
 }
 
 bool ADMSGameState::SetLeaderPlayer(int32 inLeaderID)

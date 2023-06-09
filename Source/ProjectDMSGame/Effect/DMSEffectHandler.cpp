@@ -18,13 +18,13 @@
 
 
 // Owned effect creating helper
-TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* SourceObject,AActor* SourcePlayer, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
+TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* SourceObject,AActor* SourcePlayer, UObject* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
 {
 	TArray<UDMSEffectInstance*> rv;
-	UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(this);
-	EffectInstance->Initialize(EffectNode, iSet);
+	UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(Target);
 	EffectInstance->SourceObject = SourceObject;
-	EffectInstance->SourcePlayer = SourcePlayer;
+	EffectInstance->SourcePlayer = SourcePlayer;	
+	EffectInstance->Initialize(EffectNode, iSet);
 
 	EIList.Add(EffectInstance);
 
@@ -42,7 +42,7 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 
 	for (auto TargetObject : EffectNode->GenerateApplyTarget(Sequence))
 	{
-		UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(this);
+		UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(TargetObject.GetObject());
 		EffectInstance->Initialize(EffectNode, Sequence);
 
 		TargetObject->AttachEffectInstance(EffectInstance);
@@ -54,38 +54,20 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 	return Sequence->EIs;
 }
 
-template <typename FuncFinished>
-void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted)
+
+void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence, bool PrevSuccessed)
 {
-	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
-	
-	if (Sequence->EIs.Num() == 0) {
-		DMS_LOG_SIMPLE(TEXT("No Resolve Target"));
-		goto ResolveFailed; 
-	}
-	// seperate for logging
-	if (Sequence->SequenceState != EDMSSequenceState::SS_Default) {
-		DMS_LOG_SIMPLE(TEXT("Sequence is canceled or ignored"));
-	ResolveFailed:
-		OnResolveCompleted();
+	if (!PrevSuccessed)
+	{
+		// DISCUSSION :: Stopping immediately when failed is FINE?
+		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound(false);
 		return;
 	}
 
-
-	OnResolveCompletedMap.Add(Sequence);
-	OnResolveCompletedMap[Sequence].Delegate.BindLambda(OnResolveCompleted);
-	OnResolveCompletedMap[Sequence].Count = 0;
-	OnResolveCompletedMap[Sequence].IteratingDelegate.BindUObject(this,&UDMSEffectHandler::ApplyNextEffectInstance);
-	
-	ApplyNextEffectInstance(Sequence);
-}
-
-void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence)
-{
 	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->EIs.Num())
-		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound();
+		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound(true);
 	else
-		SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++]->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].IteratingDelegate);
+		OnResolveCompletedMap[SourceSequence].Getter.Execute(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].IteratingDelegate);
 }
 
 void UDMSEffectHandler::CleanupNonPersistent()

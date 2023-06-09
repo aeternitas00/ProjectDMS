@@ -52,6 +52,8 @@ void ADMSLocationBase::ConnectLocations(ADMSLocationBase* Start, ADMSLocationBas
 
 void ADMSLocationBase::OnInitialized_Implementation()
 {
+	Super::OnInitialized_Implementation();
+
 	if (!OriginalData->IsA<UDMSLocationData>()) return;
 
 	auto LocData = Cast<UDMSLocationData>(OriginalData);

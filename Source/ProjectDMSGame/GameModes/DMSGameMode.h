@@ -98,18 +98,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
-
-	//UFUNCTION(BlueprintCallable,meta = (DisplayName="Spawn DMS Game Actor"))
-	//ADMSSpawnableBase* SpawnDMSGameActor_BP(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void SetupDMSGame();
+	virtual void SetupDMSGame_Implementation();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Spawn DMS Game Actor_ID"))
 	ADMSSpawnableBase* SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
-
-
-	//template<typename ReturnType>
-	//ReturnType* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
-	//ADMSSpawnableBase* SpawnDMSGameActor(const TSubclassOf<ADMSSpawnableBase>& SpawningClass, const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
-	//ADMSSpawnableBase* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner = nullptr, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
 
 	template<typename ReturnType>
 	ReturnType* SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());

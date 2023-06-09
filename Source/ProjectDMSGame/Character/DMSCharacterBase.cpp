@@ -23,6 +23,8 @@ void ADMSCharacterBase::OnInitialized_Implementation()
 {
 	CharacterDefinition = Cast<UDMSCharacterDefinition>(OriginalData);
 
+	Super::OnInitialized_Implementation();
+
 	check(CharacterDefinition != nullptr);
 
 	SetupAttributes(CharacterDefinition->DefaultAttributes);

@@ -66,7 +66,7 @@ public:
 
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
-	bool bFailBelowZero;
+	bool bFailIfResultIsNegative;
 
 	/**
 	 *
@@ -75,7 +75,7 @@ public:
 	FDMSSelectorData_ModAtt SelectorData;
 
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override; // temp
-
+	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) override;
 	// ====== Selectors ====== //
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))

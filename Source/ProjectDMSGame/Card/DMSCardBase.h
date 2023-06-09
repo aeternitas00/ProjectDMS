@@ -67,10 +67,10 @@ public:
 	void AttachEffectInstance_BP(UDMSEffectInstance* EI) { AttachEffectInstance(EI); }
 
 	/**
-	 * Initialize card with new card definition.
-	 * @param	iCardDefinition					New card data.
+	 * 
 	 */
-	void OnInitialized_Implementation();
+	void OnInitialized_Implementation() override;
+	//virtual void PostInitialize_Implementation() override;
 
 	/**
 	 * Native Get,Setter

@@ -17,7 +17,6 @@ class PROJECTDMSGAME_API ADMSCharacterBase : public ADMSEffectorActorBase , publ
 	GENERATED_BODY()
 	
 protected:
-
 	/**
 	 * Character's data.
 	 */

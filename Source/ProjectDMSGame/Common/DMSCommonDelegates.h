@@ -24,7 +24,7 @@ class UDMSSequence;
 DECLARE_DELEGATE(FSimpleEventSignature);
 DECLARE_MULTICAST_DELEGATE(FSimpleMulticastEventSignature);
 
-DECLARE_DELEGATE(FOnResolveCompleted);
-DECLARE_DELEGATE_OneParam(FResolveIteratingDelegate, UDMSSequence*);
-DECLARE_DELEGATE_OneParam(FOnApplyCompleted, UDMSSequence*);
+DECLARE_DELEGATE_OneParam(FOnResolveCompleted, bool);
+DECLARE_DELEGATE_TwoParams(FResolveIteratingDelegate, UDMSSequence*, bool);
+DECLARE_DELEGATE_TwoParams(FOnApplyCompleted, UDMSSequence*, bool);
 

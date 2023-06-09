@@ -70,10 +70,13 @@ bool ADMSCardBase::LocatingTo_Implementation(ADMSLocationBase* TargetLocation)
 
 void ADMSCardBase::OnInitialized_Implementation()
 {
-	// EffectManagerComponent->CleanupOwnEffect(); ?
-	// 
 	// Caching casted one.
 	SetCardDefinition(Cast<UDMSCardDefinition>(OriginalData));
+
+	Super::OnInitialized_Implementation();
+	// EffectManagerComponent->CleanupOwnEffect(); ?
+	// 
+
 
 	check(CardDefinition);
 
@@ -83,6 +86,11 @@ void ADMSCardBase::OnInitialized_Implementation()
 	for(auto& Key : Keys)
 		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
 }
+
+//void ADMSCardBase::PostInitialize_Implementation()
+//{
+//	Super::PostInitialize_Implementation();
+//}
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FGameplayTag& iSetName)
 {

@@ -22,26 +22,32 @@ UDMSEffect_AttachPersistent::UDMSEffect_AttachPersistent() {
 void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
 {
 	TArray<UDMSEffectInstance*> AddedEIs;
-	for (auto& Target : SourceSequence->Targets)
-	{
-		if(bIsUsingSelector){
-			auto Data = iEI->DataSet->GetData(TAG_DMS_Effect_AttachPersistent);
-			if (Data!=nullptr && Data->TypeCheck<TArray<uint8>>()){
-				auto IndexArr = Data->Get<TArray<uint8>>();
+
+	auto Target = iEI->GetApplyTarget();
+
+	if (Target == nullptr) {
+		OnWorkCompleted.ExecuteIfBound(SourceSequence, false);
+		return;
+	}
+
+	if(bIsUsingSelector){
+		auto Data = iEI->DataSet->GetData(TAG_DMS_Effect_AttachPersistent);
+		if (Data!=nullptr && Data->TypeCheck<TArray<uint8>>()){
+			auto IndexArr = Data->Get<TArray<uint8>>();
 				
-				for (auto i : IndexArr) 
-					AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourcePlayer, EIEffects[i]->GetEffectNode()));
-			}
-		}
-		else{
-			for (auto Node : EIEffects)
-				AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourcePlayer, Node->GetEffectNode()));
+			for (auto i : IndexArr) 
+				AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourcePlayer, Target->GetObject(), EIEffects[i]->GetEffectNode()));
 		}
 	}
+	else{
+		for (auto Node : EIEffects)
+			AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->SourceObject, SourceSequence->SourcePlayer, Target->GetObject(), Node->GetEffectNode()));
+	}
+	
 	SourceSequence->AddToOnSequenceFinished_Native([AddedEIs](){
-		for (auto& EI : AddedEIs)	EI->ChangeEIState(EDMSEIState::EIS_Persistent);
+		for (auto& EI : AddedEIs)	{EI->ChangeEIState(EDMSEIState::EIS_Persistent);}
 	});
-	OnWorkCompleted.ExecuteIfBound(SourceSequence);
+	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
 }
 
 void UDMSEffect_AttachPersistent::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)

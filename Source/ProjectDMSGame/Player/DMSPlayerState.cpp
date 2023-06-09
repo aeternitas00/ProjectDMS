@@ -3,6 +3,8 @@
 
 #include "Player/DMSPlayerState.h"
 
+#include "System/DMSSaveGame.h"
+
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEIManagerComponent.h"
 
@@ -44,15 +46,35 @@ void ADMSPlayerState::SetupAttributes()
 }
 
 
+void ADMSPlayerState::LoadDatasFromSave(UDMSSaveGame* SaveGame)
+{
+	PlayerCharacterData = SaveGame->SavedCharacterData;
+	SetCardDatas(SaveGame->SavedCardDatas);
+}
+
 void ADMSPlayerState::SetCardDatas(const TArray<FDMSCardData>& InDatas)
 {
-	OriginalCardDatas= InDatas;
+	OriginalCardDatas = InDatas;
 
 	for (auto& Data : OriginalCardDatas) 
 	{
 		Data.LoadCardDefinition(); 
 		UDMSCoreFunctionLibrary::SetDataOwner(Data,this);
 	}
+}
+
+void ADMSPlayerState::SetupDefaults()
+{
+	SetupCardContainers();
+	SetupAttributes();
+
+	// Load Player datas
+	// -> 
+	// Spawn Players Character
+
+	PreviewDummy = DuplicateObject(this,this,FName(GetName()+TEXT("_Preview")));
+	// Referencer initalize
+	//PreviewDummy->CharacterRef = Cast<ADMSCharacterBase>(CharacterRef->GetPreviewObject());
 }
 
 UDMSCardContainerComponent* ADMSPlayerState::SearchContainer(const FName& ContainerName)

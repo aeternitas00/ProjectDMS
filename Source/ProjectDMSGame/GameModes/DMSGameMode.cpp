@@ -5,6 +5,7 @@
 #include "Player/DMSPlayerState.h"
 #include "GameModes/DMSGameState.h"
 
+#include "Scenario/DMSLevelScriptActor.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Phase/DMSPhaseManager.h"
@@ -13,6 +14,7 @@
 #include "Player/DMSPlayerController.h"
 #include "Effect/DMSEffectorInterface.h"
 
+#include "Character/DMSCharacterDefinition.h"
 #include "Card/DMSCardManagerComponent.h"
 #include "Card/DMSCardBase.h"
 #include "Card/DMSCardDefinition.h"
@@ -85,86 +87,52 @@ void ADMSGameMode::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> 
 	NotifyManager->RegisterNotifyObject(Object);
 }
 
-//void ADMSGameMode::LoadAndSpawnScenario(UDMSScenarioData* ScenarioData)
-//{
-//	auto& Locs = GetGameState<ADMSGameState>()->Locations;
-//	for (auto& Location : ScenarioData->Locations)
-//	{
-//		//Location.LocationAsset.LoadSynchronous();
-//		auto LocData = Location.LocationAsset.LoadSynchronous();
-//		auto SpawnedLocation = SpawnDMSGameActor<ADMSLocationBase>(LocData, this, nullptr, Location.LocationOffset);
-//
-//		Locs.Add(SpawnedLocation);
-//	}
-//	
-//	for (auto& LocConnection : ScenarioData->Connections)
-//	{
-//		if(LocConnection.StartLocationIndex < Locs.Num() && LocConnection.DestLocationIndex < Locs.Num())
-//			ADMSLocationBase::ConnectLocations(Locs[LocConnection.StartLocationIndex], Locs[LocConnection.DestLocationIndex], LocConnection.bIsOneWay);
-//	}
-//
-//}
-//
-//ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor_BP(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner, ADMSLocationBase* DefaultLocation, const FTransform& inRelativeTransform)
-//{
-//	return SpawnDMSGameActor(ActorData, NewOwner, DefaultLocation, inRelativeTransform);
-//}
-//
-//template<typename ReturnType>
-//ReturnType* ADMSGameMode::SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner, ADMSLocationBase* DefaultLocation, const FTransform& inRelativeTransform)
-//{
-//	TSubclassOf<ADMSSpawnableBase> SpawningClass = ActorData->SpawningClass == nullptr && DefaultSpawningClasses.Contains(ActorData->GetPrimaryAssetId().PrimaryAssetType) ? DefaultSpawningClasses[ActorData->GetPrimaryAssetId().PrimaryAssetType] : nullptr;
-//
-//	if ( SpawningClass == nullptr || !SpawningClass->IsChildOf<ReturnType>() ) return nullptr;
-//	
-//	return Cast<ReturnType>(SpawnDMSGameActor(SpawningClass, ActorData, NewOwner, DefaultLocation, inRelativeTransform));
-//}
-//
-//
-//ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor(const TSubclassOf<ADMSSpawnableBase>& SpawningClass, const UDMSSpawnableDataBase* ActorData, AActor* NewOwner, ADMSLocationBase* DefaultLocation, const FTransform& inRelativeTransform)
-//{
-//	FActorSpawnParameters Params;
-//	Params.Owner = NewOwner == nullptr ? this : NewOwner;
-//	ADMSSpawnableBase* SpawnedActor = GetWorld()->SpawnActor<ADMSSpawnableBase>(SpawningClass, Params);
-//	//SpawnedActor->Rename(nullptr, NewOwner == nullptr ? this : NewOwner);
-//	SpawnedActor->Initialize(ActorData);
-//
-//	// Support DMS Common interface
-//	if (SpawnedActor->Implements<UDMSLocatableInterface>() && DefaultLocation != nullptr)
-//	{
-//		TScriptInterface<IDMSLocatableInterface> Locatable = SpawnedActor;
-//
-//		ADMSLocationBase::MoveActorToDMSLocation(DefaultLocation, SpawnedActor);
-//	}
-//
-//	if (SpawnedActor->Implements<UDMSEffectorInterface>())
-//	{
-//		TScriptInterface<IDMSEffectorInterface> Effector = SpawnedActor;
-//		NotifyManager->RegisterNotifyObject(Effector);
-//	}
-//	SpawnedActor->AddActorLocalTransform(inRelativeTransform);
-//	//SpawnedActor->SetActorRelativeRotation(inRelativeTransform.GetRotation());
-//	//SpawnedActor->SetActorRelativeScale3D(inRelativeTransform.GetScale3D());
-//	//SpawnedActor->AddActorLocalOffset(inRelativeTransform.GetLocation());
-//
-//	return SpawnedActor;
-//}
-//
-//
-//ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor(const UDMSSpawnableDataBase* ActorData, AActor* NewOwner, ADMSLocationBase* DefaultLocation, const FTransform& inRelativeTransform)
-//{
-//	FActorSpawnParameters param;
-//	UClass* SpawningClass = ActorData->SpawningClass == nullptr && DefaultSpawningClasses.Contains(ActorData->GetPrimaryAssetId().PrimaryAssetType) ? DefaultSpawningClasses[ActorData->GetPrimaryAssetId().PrimaryAssetType] : nullptr;
-//
-//	if (SpawningClass==nullptr) {DMS_LOG_SIMPLE(TEXT("No Default Spawning Class")); return nullptr; }
-//
-//	return SpawnDMSGameActor(SpawningClass, ActorData, NewOwner, DefaultLocation, inRelativeTransform);
-//}
-//
+void ADMSGameMode::SetupDMSGame_Implementation()
+{
+	auto GS = GetDMSGameState();
+	check(GS);
 
+	// Setup game system thingys.
+	RegisterNotifyObject(GS);
+	GS->SetupDefaults();
 
+	auto CurrentLSA = Cast<ADMSLevelScriptActor>(GetWorld()->GetLevelScriptActor());
+	if (CurrentLSA != nullptr)
+		CurrentLSA->InitializeDMSGame();
 
+	auto StartingLocation = CurrentLSA->GetStartingLocations()[0];
 
+	// Setup Player thingys.
+	for (auto PC : GS->GetDMSPlayerControllers()) {
+
+		auto PS = PC->GetPlayerState<ADMSPlayerState>();
+		if (PS==nullptr) continue;
+		auto PlayerID = PS->GetPlayerId();
+
+		PC->CreateHUDWidgets();
+		PS->SetupDefaults();
+		PC->SetupHUDWidgets();
+		
+		// TODO :: USE RPC WITH SYNC
+		PC->LoadClientSaveGame("TestSlot",0);
+
+		// IF SERVER RECEIVED DATA [ MIGRATE TO OTHER FUNCTION FOR SYNC ]
+
+		// Spawn character
+		auto CharacterAsset_Soft = UKismetSystemLibrary::GetSoftObjectReferenceFromPrimaryAssetId(PS->PlayerCharacterData.AssetID);
+		auto CharacterAsset = Cast<UDMSCharacterDefinition>(UKismetSystemLibrary::LoadAsset_Blocking(CharacterAsset_Soft));
+		PS->CharacterRef = SpawnDMSGameActor<ADMSCharacterBase>(CharacterAsset, PlayerID,StartingLocation,FTransform(FVector(- 10, 0, 0)));
+
+		// Spawn cards
+
+		for (auto CardData : PS->OriginalCardDatas)
+			SpawnCard(CardData, PlayerID,TEXT("Deck"));
+		
+		PS->SearchContainer(TEXT("Deck"))->ShuffleTopNCards();
+	}
+
+	// ...
+}
 
 ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID, ADMSLocationBase* DefaultLocation, const FTransform& inRelativeTransform)
 {

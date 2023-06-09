@@ -30,7 +30,7 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 	//}
 
 	if (EffectNode->EffectDefinitions.Num() == 0) {
-		OnApplyCompleted.ExecuteIfBound(SourceSequence);
+		OnApplyCompleted.ExecuteIfBound(SourceSequence,true);
 		return;
 	}
 
@@ -38,16 +38,37 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 	OnApplyCompletedMap[SourceSequence].CompletedDelegate=OnApplyCompleted;
 	OnApplyCompletedMap[SourceSequence].Index = 0;
 
-
-	ApplyNextEffectDefinition(SourceSequence);
+	//
+	ApplyNextEffectDefinition(SourceSequence, true);
 }
 
-
-void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
+IDMSEffectorInterface* UDMSEffectInstance::GetApplyTarget()
 {
+	auto Outer = Cast<IDMSEffectorInterface>(GetOuter());
+	if (CurrentState == EDMSEIState::EIS_Preview)
+		return Outer==nullptr ? nullptr : Outer->GetPreviewObject();
+	else 
+		return Outer;
+}
+void UDMSEffectInstance::SetToPendingKill()
+{
+	if (CurrentState == EDMSEIState::EIS_Preview ){ if(GetTypedOuter<UDMSEffectInstance>()->CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill; }
+	else if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
+}
+
+void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed)
+{
+	if (!PrevSuccessed)
+	{
+		// DISCUSSION :: Stopping immediately when failed is FINE?
+		SetToPendingKill();
+		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence, false);
+		return;
+	}
+
 	if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num()) {
-		if (CurrentState!=EDMSEIState::EIS_Persistent) CurrentState=EDMSEIState::EIS_PendingKill;
-		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence);
+		SetToPendingKill();
+		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence,true);
 	}
 	else {
 		FGameplayTagQuery Query;
@@ -65,12 +86,18 @@ void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence)
 		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
 			if (CurrentDef->bPlayerHasToBeFocused) 	
 				UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));
-			CurrentDef->Work(SourceSequence, this, IteratingDelegate);
+
+			// Predict first
+			if ( CurrentDef->Predict(SourceSequence, this))
+				CurrentDef->Work(SourceSequence, this, IteratingDelegate);
+			// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
+			else
+				ApplyNextEffectDefinition(SourceSequence, false);
 		}
 
 		else {
-			ApplyNextEffectDefinition(SourceSequence);
-			//OnApplyCompletedMap[SourceSequence].IteratingDelegate.ExecuteIfBound(SourceSequence);
+			// Ignored effect is considered to successed.
+			ApplyNextEffectDefinition(SourceSequence, true);
 		}
 	}
 }
@@ -80,14 +107,21 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iS
 	EffectNode = iNode; 
 	CurrentState = EDMSEIState::EIS_Pending; 
 	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); 
+	
+	// NOTE :: 자기 자신에게 체이닝 되는 이펙트들을 위한 프리뷰 더미이므로 부착은 자신 (EI) 에게 해놓을것..
+	PreviewDummy = DuplicateObject<UDMSEffectInstance>(this,this,FName(GetName() + TEXT("_Preview")));
+	PreviewDummy->CurrentState = EDMSEIState::EIS_Preview;
 }
 
-void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq) 
+void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 { 
 	EffectNode = iNode; SourcePlayer=iSeq->SourcePlayer; 
 	SourceObject = iSeq->SourceObject; 
 	DataSet = iSeq->EIDatas; 
 	CurrentState = EDMSEIState::EIS_Pending; 
+
+	PreviewDummy = DuplicateObject<UDMSEffectInstance>(this, this, FName(GetName() + TEXT("_Preview")));
+	PreviewDummy->CurrentState = EDMSEIState::EIS_Preview;
 }
 
 UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 

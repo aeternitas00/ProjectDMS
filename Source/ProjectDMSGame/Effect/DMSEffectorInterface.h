@@ -38,6 +38,7 @@ class PROJECTDMSGAME_API IDMSEffectorInterface
 	GENERATED_BODY()
 
 public:
+
 	/** 
 	 * 개념적으로 '실제 이펙트를 가지는 객체'를 반환 
 	 * ( ex) EI Manager Comp 같은 경우 Outer(카드, 적 등등)를 반환 
@@ -45,17 +46,27 @@ public:
 	virtual UObject* GetObject();
 	
 	/**
-	 * 
+	 * Get preview object.
+	 */
+	virtual IDMSEffectorInterface* GetPreviewObject() = 0;
+
+	/**
+	 * Get preview object.
+	 */
+	virtual void ResetPreviewObject() {}
+
+	/**
+	 * Get owner of this object ( Usally PlayerState or GameState if it controlled by game.
 	 */
 	virtual AActor* GetOwningPlayer(); // RENAME?
 	
 	/**
-	 *
+	 * Get PlayerController if object owned by Player.
 	 */
 	virtual APlayerController* GetOwningPlayerController(); // RENAME?
 
 	/**
-	 * EI 부착
+	 * Attach effect instance to apply effects.
 	 */
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI);
 	

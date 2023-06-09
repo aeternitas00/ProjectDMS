@@ -90,7 +90,6 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
 
-
 	CurrentSequence = iSeq;
 	CurrentSequence->OnSequenceInitiate();
 
@@ -139,9 +138,21 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 
 				// Run sequence ( Notifying steps and apply )
 				DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="),*pSequenceN->GetName());
-				ApplySequence(pSequenceN);
 
-				// Prevent self notifing 
+				auto EffectHandler = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+
+				EffectHandler->Resolve(pSequenceN, [=](bool Successed) {
+					if (Successed){
+						ApplySequence(pSequenceN);
+					}
+					else{
+						// Print some failed message.
+						// Resetting preview objects.
+					}
+				}, true);
+	
+
+				// Unlock receiving notify. 
 				for (auto EI : pSequenceN->EIs)
 				{
 					EI->ChangeEIState(EDMSEIState::EIS_Default);
@@ -223,8 +234,8 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 		DMS_LOG_SIMPLE(TEXT("==== %s : RESOLVE START ===="), *BeforeSequence->GetName());
 
 		EffectHandler->Resolve(BeforeSequence,
-		[=, DuringSequence=BeforeSequence]() {
-				// ==== ON RESOLVE COMPLETED ====
+		[=, DuringSequence=BeforeSequence](bool Successed) {
+			// ==== ON RESOLVE COMPLETED ====
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *DuringSequence->GetName(), SeqManager->GetDepth(DuringSequence));
 			// 'During Timing' broadcast starts.

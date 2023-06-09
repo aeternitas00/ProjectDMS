@@ -3,6 +3,8 @@
 
 #include "Scenario/DMSLevelScriptActor.h"
 #include "Library/DMSCoreFunctionLibrary.h"
+#include "Player/DMSPlayerState.h"
+#include "Player/DMSPlayerController.h"
 #include "GameModes/DMSGameMode.h"
 #include "GameModes/DMSGameState.h"
 #include "Location/DMSLocationBase.h"
@@ -14,7 +16,6 @@
 ADMSLevelScriptActor::ADMSLevelScriptActor(/*const FObjectInitializer& ObjectInitializer*/)//:Super(ObjectInitializer)
 {
 	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
-
 }
 
 
@@ -22,8 +23,6 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 {
 	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
 	check(GM);
-
-	GM->RegisterNotifyObject(this);
 
 	auto GS = GM->GetDMSGameState();
 	check(GS);
@@ -51,11 +50,13 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 	for (auto Actor : LevelPlacedActors)
 		GM->RegisterNotifyObject(Actor);
 	
+	// Duplicating LSA in same outer makes crash... 
+	PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
+
 	TArray<FGameplayTag> Keys;
 	ScenarioRules.GetKeys(Keys);
 	for (auto& Key : Keys)
-	EffectManagerComponent->SetupOwnEffect(ScenarioRules[Key],Key);
-
+		EffectManagerComponent->SetupOwnEffect(ScenarioRules[Key],Key);
 }
 
 TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()

@@ -34,6 +34,7 @@ enum class EDMSEIState : uint8
 	EIS_Pending UMETA(DisplayName = "Pending to apply"), // Prevent self notifing 
 	EIS_Persistent UMETA(DisplayName = "Persistent"),
 	EIS_PendingKill UMETA(DisplayName = "Pending to kill"),
+	EIS_Preview UMETA(DisplayName = "Preview Dummy"),
 	//...
 };
 
@@ -59,6 +60,10 @@ public:
 	UDMSEffectInstance();
 		
 protected:
+
+	UPROPERTY()
+	TObjectPtr<UDMSEffectInstance> PreviewDummy;
+
 	/** 
 	 * State flag of Effect instance.For preview or persistant things.
 	 */
@@ -88,7 +93,7 @@ protected:
 	 * @param	SourceSequence					Current applying sequence.
 	 */
 	UFUNCTION()
-	void ApplyNextEffectDefinition(UDMSSequence* SourceSequence);
+	void ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed = true);
 
 public:
 
@@ -122,25 +127,33 @@ public:
 
 public:
 	/**
-	 * Apply effect to Outer.
+	 * Apply effect with effect node.
 	 * @return	Sequence						Current sequence.
 	 * @return	OnApplyCompleted				Delegate executed when apply completed.
 	 */
-	FORCEINLINE void Apply(UDMSSequence* Sequence,const FResolveIteratingDelegate& OnApplyCompleted);
+	void Apply(UDMSSequence* Sequence, const FResolveIteratingDelegate& OnApplyCompleted);
+
+	/**
+	 * Get apply target.
+	 * Will be used in ED->Work function.
+	 */
+	IDMSEffectorInterface* GetApplyTarget();
+
+	void SetToPendingKill();
 
 	/** 
 	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
 	 * @param	iNode
 	 * @param	iSet.
 	 */
-	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet = nullptr);
+	void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet = nullptr);
 	
 	/**
 	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
 	 * @param	iNode
 	 * @param	iSeq.
 	 */
-	FORCEINLINE void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
+	void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
 
 	/**
 	 * Create new sequence from owning datas. ( node, datas .... )
@@ -152,6 +165,7 @@ public:
 
 	// =========== INTERFACE FUNCTION =========== // 
 	//virtual UObject* GetObject() override { return this; } 
+	virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;
