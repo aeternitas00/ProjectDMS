@@ -44,8 +44,9 @@ public:
 	 * @return	true if modifying was successful
 	 */
 	UFUNCTION(BlueprintCallable)
-	bool TryModAttribute(const FDMSAttributeModifier& Modifier);
+	bool TryModAttribute(const FDMSAttributeModifier& Modifier, float& OutValue, bool Apply = true);
 	
+
 	/**
 	 * Make named attribute if component doesn't contain param name.
 	 * @param	AttributeName						key of Attributes

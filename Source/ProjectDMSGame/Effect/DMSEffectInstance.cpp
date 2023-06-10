@@ -46,7 +46,7 @@ IDMSEffectorInterface* UDMSEffectInstance::GetApplyTarget()
 {
 	auto Outer = Cast<IDMSEffectorInterface>(GetOuter());
 	if (CurrentState == EDMSEIState::EIS_Preview)
-		return Outer==nullptr ? nullptr : Outer->GetPreviewObject();
+		return Outer==nullptr ? nullptr : Cast<UDMSEffectInstance>(Outer)->GetApplyTarget();
 	else 
 		return Outer;
 }
@@ -88,7 +88,7 @@ void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence,
 				UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));
 
 			// Predict first
-			if ( CurrentDef->Predict(SourceSequence, this))
+			if ( CurrentDef->Predict(SourceSequence, this) )
 				CurrentDef->Work(SourceSequence, this, IteratingDelegate);
 			// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
 			else
@@ -108,9 +108,7 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iS
 	CurrentState = EDMSEIState::EIS_Pending; 
 	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); 
 	
-	// NOTE :: 자기 자신에게 체이닝 되는 이펙트들을 위한 프리뷰 더미이므로 부착은 자신 (EI) 에게 해놓을것..
-	PreviewDummy = DuplicateObject<UDMSEffectInstance>(this,this,FName(GetName() + TEXT("_Preview")));
-	PreviewDummy->CurrentState = EDMSEIState::EIS_Preview;
+	SetupPreviewDummy();
 }
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
@@ -120,8 +118,18 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 	DataSet = iSeq->EIDatas; 
 	CurrentState = EDMSEIState::EIS_Pending; 
 
+	SetupPreviewDummy();
+}
+
+void UDMSEffectInstance::SetupPreviewDummy()
+{
+	// NOTE :: 자기 자신에게 체이닝 되는 이펙트들을 위한 프리뷰 더미이므로 부착은 자신 (EI) 에게 해놓을것..
+
 	PreviewDummy = DuplicateObject<UDMSEffectInstance>(this, this, FName(GetName() + TEXT("_Preview")));
 	PreviewDummy->CurrentState = EDMSEIState::EIS_Preview;
+	// Reference update
+	PreviewDummy->SourceObject = SourceObject;
+	PreviewDummy->SourcePlayer = SourcePlayer;
 }
 
 UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 

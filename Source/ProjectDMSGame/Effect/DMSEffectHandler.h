@@ -111,14 +111,14 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
 	if (Sequence->EIs.Num() == 0) {
-		DMS_LOG_SIMPLE(TEXT("No Resolve Target"));
-		goto ResolveFailed;
+		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
+		goto ResolveSkipped;
 	}
 	// seperate for logging
 	if (Sequence->SequenceState != EDMSSequenceState::SS_Default) {
-		DMS_LOG_SIMPLE(TEXT("Sequence is canceled or ignored"));
-	ResolveFailed:
-		OnResolveCompleted(false);
+		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : Sequence is canceled or ignored"));
+	ResolveSkipped:
+		OnResolveCompleted(true);
 		return;
 	}
 

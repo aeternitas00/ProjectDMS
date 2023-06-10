@@ -141,13 +141,16 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 
 				auto EffectHandler = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 
-				EffectHandler->Resolve(pSequenceN, [=](bool Successed) {
+				EffectHandler->Resolve(pSequenceN, [=](bool Successed) __declspec(noinline) {
 					if (Successed){
+						DMS_LOG_SIMPLE(TEXT("==== %s : Preview Resolve successed  ===="), *pSequenceN->GetName());
 						ApplySequence(pSequenceN);
 					}
-					else{
+					else {
+						DMS_LOG_SIMPLE(TEXT("==== %s : Preview Resolve failed  ===="), *pSequenceN->GetName());
 						// Print some failed message.
 						// Resetting preview objects.
+						CompleteSequence(pSequenceN);
 					}
 				}, true);
 	

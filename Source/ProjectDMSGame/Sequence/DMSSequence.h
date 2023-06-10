@@ -33,7 +33,7 @@ enum class EDMSSequenceState : uint8
 {
 	SS_Default UMETA(DisplayName = "Default"),
 	SS_Canceled UMETA(DisplayName = "Canceled"),
-	SS_Ignored UMETA(DisplayName = "After")
+	SS_Ignored UMETA(DisplayName = "Ignored")
 };
 
 DECLARE_DYNAMIC_DELEGATE(FOnSequenceStateChanged_Signature);

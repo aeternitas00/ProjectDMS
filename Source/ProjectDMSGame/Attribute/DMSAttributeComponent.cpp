@@ -9,13 +9,14 @@ UDMSAttributeComponent::UDMSAttributeComponent()
 
 }
 
-bool UDMSAttributeComponent::TryModAttribute(const FDMSAttributeModifier& Modifier)
+bool UDMSAttributeComponent::TryModAttribute(const FDMSAttributeModifier& Modifier,float& OutValue,bool Apply)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
 	if (!Attributes.Contains(Modifier.AttributeTag)) return false; // log or what
 
-	return Attributes[Modifier.AttributeTag]->ModAttribute(Modifier);
+	return Attributes[Modifier.AttributeTag]->TryModAttribute(Modifier, OutValue, Apply);
 }
+
 
 //bool UDMSAttributeComponent::GetAttributeValue(const FName& AttributeName, float& outValue) const
 //{

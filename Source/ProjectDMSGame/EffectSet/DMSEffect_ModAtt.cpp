@@ -40,15 +40,22 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	
 	if (bCreateIfNull)	AttComp->MakeAttribute(Value.AttributeTag);
 	
-	AttComp->TryModAttribute(Value);
+	//float OutValue=0.0f;
+	//bool rv = AttComp->TryModAttribute(Value, OutValue, false);
+	//if (rv)	AttComp->TryModAttribute(Value, OutValue);
 
-	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
+	float OutValue = 0.0f;
+	AttComp->TryModAttribute(Value, OutValue);
+
+	OnWorkCompleted.ExecuteIfBound(SourceSequence, true);
 }
 
 bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
 {
-
-	AActor* tOuter = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
+	auto Interface = iEI->GetApplyTarget();
+	if (Interface == nullptr)
+		return false;
+	AActor* tOuter = Cast<AActor>(Interface->GetObject());
 	if (tOuter == nullptr) 
 		return false;
 
@@ -56,7 +63,27 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDM
 	if (AttComp == nullptr && !bCreateIfNull)
 		return false;
 		
-	return AttComp->TryModAttribute(Value);
+	float PredictValue=0.0f;
+	bool rv = AttComp->TryModAttribute(Value, PredictValue, false);
+
+	if (rv && bExistFailureCondition)
+	{
+		switch (FailureConditionOperator)
+		{
+		case EDMSComparisonOperator::BO_Equal:
+			rv = rv && PredictValue == FailureConditionValue; break;
+		case EDMSComparisonOperator::BO_Greater:
+			rv = rv && PredictValue > FailureConditionValue; break;
+		case EDMSComparisonOperator::BO_Less:
+			rv = rv && PredictValue < FailureConditionValue; break;
+		case EDMSComparisonOperator::BO_GreaterEqual:
+			rv = rv && PredictValue >= FailureConditionValue; break;
+		case EDMSComparisonOperator::BO_LessEqual:
+			rv = rv && PredictValue <= FailureConditionValue; break;
+		default: break;
+		}
+	}
+	return rv;
 }
 
 FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()

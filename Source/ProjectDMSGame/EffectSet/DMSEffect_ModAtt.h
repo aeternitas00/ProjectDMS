@@ -65,8 +65,20 @@ public:
 	bool bCreateIfNull;
 
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
-	bool bFailIfResultIsNegative;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Exist failure condition"))
+	bool bExistFailureCondition;
+
+	/**
+	 * Checking operator.
+	 */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
+	EDMSComparisonOperator FailureConditionOperator;
+
+	/**
+	 * Operating value.
+	 */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
+	int FailureConditionValue; // float? 
 
 	/**
 	 *

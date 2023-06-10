@@ -111,7 +111,7 @@ public:
 	 * Modify attribute value with Modifier
 	 */
 	UFUNCTION(BlueprintCallable)
-	bool ModAttribute(const FDMSAttributeModifier& Modifier);
+	bool TryModAttribute(const FDMSAttributeModifier& Modifier,float& OutValue, bool Apply = true);
 
 	/**
 	 * Bind to OnAttributeModified
