@@ -31,21 +31,21 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 	switch (Node->PresetTargetFlag)
 	{
 	case EDMSPresetTargetFlag::PTF_Self:
-		if (iSequence->SourceObject->Implements<UDMSEffectorInterface>()) {
-			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourceObject));
+		if (iSequence->GetSourceObject()->Implements<UDMSEffectorInterface>()) {
+			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->GetSourceObject()));
 			//DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourceObject->GetName());
 		}
 		break;
 	case EDMSPresetTargetFlag::PTF_OC:
-		if (iSequence->SourcePlayer->Implements<UDMSEffectorInterface>()) {
-			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->SourcePlayer));
+		if (iSequence->GetSourcePlayer()->Implements<UDMSEffectorInterface>()) {
+			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(iSequence->GetSourcePlayer()));
 			//DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
 		}
 		break;
 	case EDMSPresetTargetFlag::PTF_Parent:
 		if (iSequence->ParentSequence == nullptr)
 			break;
-		TempTarget.Append(iSequence->ParentSequence->Targets);
+		TempTarget.Append(iSequence->ParentSequence->GetTargets());
 		//DMS_LOG_SCREEN(TEXT("EH: CreateEI [%s] To %s"), *iSequence->GetName(), *iSequence->SourcePlayer->GetName());
 		break;
 	case EDMSPresetTargetFlag::PTF_Effect:
@@ -60,7 +60,7 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateApplyTarget_Implementation(UDMSSequence* iSequence)
 {
-	return iSequence->Targets;
+	return iSequence->GetTargets();
 }
 
 UDMSEffectNode::UDMSEffectNode() : bForced(false), PresetTargetFlag(EDMSPresetTargetFlag::PTF_Self), bIsChainableEffect(true) 

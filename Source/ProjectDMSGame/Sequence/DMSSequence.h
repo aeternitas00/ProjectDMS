@@ -52,16 +52,39 @@ class UDMSSequence : public UObject
 {
 	GENERATED_BODY()
 
+protected:
+
+	// === COMMENT TO REFERENCES OF SOURCE === //
+	// Originally, IDMSEffectorInterface should be used.
+	// But due to the inconvenience of TScriptInterface, it has been implemented using pointers of UObject-based classes instead.
+
+	/**
+	 * The player or actor that triggers the sequence.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<AActor> SourcePlayer;
+
+	/**
+	 * The object that triggers the sequence.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UObject> SourceObject; 
+
+	/**
+	 * Explicit targets of this sequence. Override EffectNode's preset target flag.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
+
 public:
 	// Default Initializer
-	UDMSSequence( ) { 
-		Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
-		SequenceState = EDMSSequenceState::SS_Default;
-		SourceObject = nullptr;
-		ParentSequence = nullptr;
-		ChildSequence = nullptr;
-		// 
-	}
+	UDMSSequence();
+
+	/**
+	 * Current state of this sequence.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsPreviewSequence;
 
 	/**
 	 * Current state of this sequence.
@@ -75,31 +98,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSTimingFlag Progress;
 
-
 	/**
 	 * Effect that will be applied when the 'sequence is applied'.
 	 * Sequence : EffectNode = 1 : 1 / Corresponds to the actual meaning of this sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSEffectNode> OriginalEffectNode;
-
-	/**
-	 * Explicit targets of this sequence. Override EffectNode's preset target flag.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
-
-	/**
-	 * The player or actor that triggers the sequence.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<AActor> SourcePlayer;
-
-	/**
-	 * The object that triggers the sequence.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UObject> SourceObject; // IDMSEffectorInterface
 
 	/**
 	 * Effect instances (One EI attached to One target)
@@ -125,6 +129,21 @@ public:
 	 */
 	TObjectPtr<UDMSSequence> ParentSequence;
 	TObjectPtr<UDMSSequence> ChildSequence;
+
+	UFUNCTION(BlueprintCallable)
+	UObject* GetSourceObject(bool ForceGetOriginal = false);
+
+	UFUNCTION(BlueprintCallable)
+	AActor* GetSourcePlayer(bool ForceGetOriginal = false);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<TScriptInterface<IDMSEffectorInterface>> GetTargets();
+
+	UFUNCTION(BlueprintCallable)
+	bool SetSourceObject(UObject* NewSourceObject);
+
+	UFUNCTION(BlueprintCallable)
+	bool SetSourcePlayer(AActor* NewSourcePlayer);
 
 	/**
 	 * Attach child sequence.
@@ -177,6 +196,8 @@ protected:
 	FOnSequenceStateChanged_Dynamic OnSequenceFinished_Dynamic;
 
 public:
+
+
 	template<typename FuncInitiated>
 	void AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated);
 

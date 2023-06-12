@@ -71,10 +71,11 @@ public:
 
 	/**
 	 * Run param sequence.
-	 * @param	iSeq
+	 * @param	iSeq			Running sequence.
+	 * @param	WithPreview		Run sequence with previewing.  
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RunSequence(UDMSSequence* iSeq);
+	void RunSequence(UDMSSequence* iSeq, bool WithPreview=false);
 
 protected:
 	/**

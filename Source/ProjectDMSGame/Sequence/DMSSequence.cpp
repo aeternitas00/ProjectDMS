@@ -9,6 +9,56 @@
 #include "Player/DMSPlayerState.h"
 #include "Gamemodes/DMSGameState.h"
 
+
+// Default Initializer
+
+UDMSSequence::UDMSSequence() :SourceObject(nullptr), SourcePlayer(nullptr), bIsPreviewSequence(false) {
+
+	Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
+	SequenceState = EDMSSequenceState::SS_Default;
+
+	ParentSequence = nullptr;
+	ChildSequence = nullptr;
+	// 
+}
+
+UObject* UDMSSequence::GetSourceObject(bool ForceGetOriginal)
+{
+	return bIsPreviewSequence && !ForceGetOriginal ? Cast<IDMSEffectorInterface>(SourceObject)->GetPreviewObject()->_getUObject() : SourceObject;
+}
+
+AActor* UDMSSequence::GetSourcePlayer(bool ForceGetOriginal)
+{
+	return bIsPreviewSequence && !ForceGetOriginal ? (AActor*)(Cast<IDMSEffectorInterface>(SourcePlayer)->GetPreviewObject()->_getUObject()) : SourcePlayer;
+}
+
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets()
+{
+	if (!bIsPreviewSequence)
+		return Targets;
+
+	TArray<TScriptInterface<IDMSEffectorInterface>> rv;
+
+	for (auto& T : Targets)
+		rv.Add(T->GetPreviewObject()->_getUObject());
+	return rv;
+	
+}
+
+bool UDMSSequence::SetSourceObject(UObject* NewSourceObject)
+{
+	bool rv = SourceObject->Implements<UDMSEffectorInterface>();
+	SourceObject = rv ? NewSourceObject : nullptr;
+	return rv;
+}
+
+bool UDMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
+{
+	bool rv = SourceObject->Implements<UDMSEffectorInterface>();
+	SourcePlayer= rv ? NewSourcePlayer : nullptr;
+	return false;
+}
+
 void UDMSSequence::AddToOnSequenceInitiated(const FOnSequenceStateChanged_Signature& iOnSequenceInitiated)
 {
 	OnSequenceInitiated_Dynamic.Add(iOnSequenceInitiated);

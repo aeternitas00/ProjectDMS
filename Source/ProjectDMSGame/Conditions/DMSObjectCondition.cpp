@@ -18,14 +18,14 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 			Rv.Add(Cast<IDMSEffectorInterface>(Caller)->GetOwningPlayer());
 		break;
 	case EDMSObjectSelectorFlag::OSF_SourceObj:
-		Rv.Add(iSeq->SourceObject);
+		Rv.Add(iSeq->GetSourceObject());
 		break;
 	case EDMSObjectSelectorFlag::OSF_SourceCtr:
-		Rv.Add(iSeq->SourcePlayer);
+		Rv.Add(iSeq->GetSourcePlayer());
 		break;
 	case EDMSObjectSelectorFlag::OSF_Target:
-		for (auto InterfaceScript : iSeq->Targets)
-			Rv.Add(InterfaceScript.GetObject());
+		for (auto Interface : iSeq->GetTargets())
+			Rv.Add(Interface->GetObject());
 		break;
 	case EDMSObjectSelectorFlag::OSF_EffectNode:
 		//Rv.Append(iSeq->OriginalEffectNode->GenerateConditionTarget(iSeq));

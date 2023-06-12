@@ -37,7 +37,6 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 	OnApplyCompletedMap.Add(SourceSequence);
 	OnApplyCompletedMap[SourceSequence].CompletedDelegate=OnApplyCompleted;
 	OnApplyCompletedMap[SourceSequence].Index = 0;
-
 	//
 	ApplyNextEffectDefinition(SourceSequence, true);
 }
@@ -113,8 +112,8 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iS
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 { 
-	EffectNode = iNode; SourcePlayer=iSeq->SourcePlayer; 
-	SourceObject = iSeq->SourceObject; 
+	EffectNode = iNode; SourcePlayer=iSeq->GetSourcePlayer(true); 
+	SourceObject = iSeq->GetSourceObject(true); 
 	DataSet = iSeq->EIDatas; 
 	CurrentState = EDMSEIState::EIS_Pending; 
 

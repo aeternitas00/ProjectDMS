@@ -79,6 +79,7 @@ protected:
 	struct FApplyDelegateCounter {
 		FOnApplyCompleted CompletedDelegate;
 		uint8 Index;
+		bool bIsPreview;
 	};
 
 	FOnWorkCompleted IteratingDelegate;

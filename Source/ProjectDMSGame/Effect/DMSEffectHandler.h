@@ -49,6 +49,7 @@ protected:
 		uint8 Count=0;
 		FResolveIteratingDelegate IteratingDelegate;
 		FEIGetter Getter;
+		bool bIsPreview;
 	};
 
 	/**
@@ -101,12 +102,12 @@ public:
 	 * @param	OnResolveCompleted			Lambda executed when resolve completed.
 	 */
 	template <typename FuncFinished>
-	void Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted,bool Preview = false);
+	void Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted);
 
 };
 
 template <typename FuncFinished>
-void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted, bool Preview)
+void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
@@ -128,7 +129,8 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 	OnResolveCompletedMap[Sequence].Count = 0;
 	OnResolveCompletedMap[Sequence].IteratingDelegate.BindUObject(this, &UDMSEffectHandler::ApplyNextEffectInstance);
 
-	if (Preview)
+	// 타겟 결정도 시퀀스쪽에서?
+	if (Sequence->bIsPreviewSequence)
 		OnResolveCompletedMap[Sequence].Getter.BindLambda( [this](UDMSSequence* SourceSequence){
 			return Cast<UDMSEffectInstance>(SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++]->GetPreviewObject());
 		});

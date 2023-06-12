@@ -37,8 +37,8 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 {
 	// No Selected Target ( Passed or No selector for this effect node )
 	// If PARAM_TARGET is exist, it will override preset generating.
-	if (Sequence->Targets.Num() == 0) 
-		Sequence->Targets = UDMSEffectNode::GeneratePresetTarget(EffectNode,Sequence);
+	if (Sequence->GetTargets().Num() == 0)
+		Sequence->SetTarget(UDMSEffectNode::GeneratePresetTarget(EffectNode,Sequence));
 
 	for (auto TargetObject : EffectNode->GenerateApplyTarget(Sequence))
 	{
