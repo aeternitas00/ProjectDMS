@@ -46,8 +46,8 @@ public:
 	ADMSPlayerState(const FObjectInitializer& Initializer);
 
 protected:
-	UPROPERTY()
-	TObjectPtr<ADMSPlayerState> PreviewDummy;
+	//UPROPERTY()
+	//TObjectPtr<ADMSPlayerState> PreviewDummy;
 	/**
 	 * Card manager component.
 	 * Manage player's card containers like deck, hand, discard pile...
@@ -155,7 +155,7 @@ public:
 	//		INTERFACE FUNCTIONS
 	// ============================= //
 	virtual AActor* GetOwningPlayer() { return this; }
-	virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
+	//virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 	// TODO :: Match with BA ?
 	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
 

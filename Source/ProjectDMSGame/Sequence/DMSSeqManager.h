@@ -75,7 +75,7 @@ public:
 	 * @param	WithPreview		Run sequence with previewing.  
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RunSequence(UDMSSequence* iSeq, bool WithPreview=false);
+	void RunSequence(UDMSSequence* iSeq);
 
 protected:
 	/**
@@ -88,7 +88,7 @@ protected:
 	 * Complete param sequence. sort of cleanup.
 	 * @param	Sequence
 	 */
-	void CompleteSequence(UDMSSequence* Sequence);	
+	void CompleteSequence(UDMSSequence* Sequence, bool Successed = true);
 
 	/**
 	 * Clear sequence tree. 

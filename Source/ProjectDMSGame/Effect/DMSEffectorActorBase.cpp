@@ -13,8 +13,15 @@ ADMSEffectorActorBase::ADMSEffectorActorBase(const FObjectInitializer& ObjectIni
 	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
 }
 
-void ADMSEffectorActorBase::OnInitialized_Implementation() {
+//void ADMSEffectorActorBase::ResetPreviewObject()
+//{
+//	if (PreviewDummy!=nullptr) PreviewDummy->Destroy();
+//	PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
+//	PreviewDummy->SetActorHiddenInGame(true);
+//}
+
+void ADMSEffectorActorBase::OnInitialized_Implementation() 
+{
 	Super::OnInitialized_Implementation();
-	PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
-	PreviewDummy->SetActorHiddenInGame(true);
+	//ResetPreviewObject();
 }

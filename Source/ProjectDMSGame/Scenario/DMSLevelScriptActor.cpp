@@ -51,7 +51,7 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 		GM->RegisterNotifyObject(Actor);
 	
 	// Duplicating LSA in same outer makes crash... 
-	PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
+	//PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
 
 	TArray<FGameplayTag> Keys;
 	ScenarioRules.GetKeys(Keys);

@@ -44,7 +44,7 @@ void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequen
 			AddedEIs.Append(UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Target->GetObject(), Node->GetEffectNode()));
 	}
 	
-	SourceSequence->AddToOnSequenceFinished_Native([AddedEIs](){
+	SourceSequence->AddToOnSequenceFinished_Native([AddedEIs](bool){
 		for (auto& EI : AddedEIs)	{EI->ChangeEIState(EDMSEIState::EIS_Persistent);}
 	});
 	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);

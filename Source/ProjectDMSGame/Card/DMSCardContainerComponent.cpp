@@ -51,6 +51,20 @@ void UDMSCardContainerComponent::Insert(TArray<ADMSCardBase*> iContainer, uint16
 	OnContainerAdded(iContainer);
 }
 
+void UDMSCardContainerComponent::Insert(ADMSCardBase* iCard, uint16 Idx)
+{	
+	uint16 Dest = Idx;
+	if (CardList.Cards.Num() < Dest) Dest= CardList.Cards.Num();
+	iCard->SetOwningContainer(this);
+	CardList.Cards.Insert(iCard,Dest);
+	OnContainerAdded({iCard});
+}
+
+uint16 UDMSCardContainerComponent::Find(ADMSCardBase* iCard)
+{
+	return CardList.Cards.Find(iCard);
+}
+
 void UDMSCardContainerComponent::Remove(ADMSCardBase* iCard)
 {
 	CardList.Cards.Remove(iCard);

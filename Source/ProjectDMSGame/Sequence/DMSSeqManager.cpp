@@ -54,8 +54,8 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 			RootSequence = Sequence;
 
 			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
-			RootSequence->OnSequenceFinished.AddUObject(this, &UDMSSeqManager::CleanupSequenceTree);			
-			RootSequence->OnSequenceFinished.AddUObject(this, &UDMSSeqManager::OnSequenceTreeCompleted);
+			RootSequence->OnSequenceFinished.AddLambda([this](bool){CleanupSequenceTree();});			
+			RootSequence->OnSequenceFinished.AddLambda([this](bool) {CleanupSequenceTree();});
 		}
 		else if (CurrentSequence != nullptr)
 			CurrentSequence->AttachChildSequence(Sequence);
@@ -85,14 +85,9 @@ void UDMSSeqManager::RemoveSequence(UDMSSequence* Sequence)
 	}
 }
 
-
-void UDMSSeqManager::RunSequence(UDMSSequence* iSeq, bool WithPreview)
+void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
-
-	// Prevent preview of preview.
-	if (iSeq->ParentSequence != nullptr && iSeq->ParentSequence->bIsPreviewSequence ) iSeq->bIsPreviewSequence = false;
-	else iSeq->bIsPreviewSequence = WithPreview;
 
 	CurrentSequence = iSeq;
 	CurrentSequence->OnSequenceInitiate();
@@ -118,7 +113,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq, bool WithPreview)
 	if (!iSeq->SetupWidgetQueue(Widgets))
 	{
 		DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
-		CompleteSequence(iSeq);
+		CompleteSequence(iSeq, false);
 		return;
 	}
 
@@ -134,7 +129,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq, bool WithPreview)
 		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(pSequence, WidgetOwner))))
 		{
 			DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
-			CompleteSequence(pSequence);
+			CompleteSequence(pSequence, false);
 			return;
 		}
 
@@ -147,33 +142,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq, bool WithPreview)
 
 			auto EffectHandler = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 			
-			if (pSequenceN->bIsPreviewSequence){
-
-				DMS_LOG_SIMPLE(TEXT("==== %s : Preview ===="), *pSequenceN->GetName());
-
-				// TODO :: change to applying preview sequence with IGNORE CHAIN ( not resolve ) 
-				EffectHandler->Resolve(pSequenceN, [=](bool Successed) __declspec(noinline) {
-
-					pSequenceN->bIsPreviewSequence = false;
-					// Unlock receiving notify. 
-
-					if (Successed){
-						DMS_LOG_SIMPLE(TEXT("==== %s : Preview Resolve successed  ===="), *pSequenceN->GetName());
-						ApplySequence(pSequenceN);
-					}
-					else {
-						DMS_LOG_SIMPLE(TEXT("==== %s : Preview Resolve failed  ===="), *pSequenceN->GetName());
-						// Print some failed message.
-						// Resetting preview objects.
-						CompleteSequence(pSequenceN);
-					}
-				});
-			}
-			else {
-
-				DMS_LOG_SIMPLE(TEXT("==== %s : Skip Preview ===="), *pSequenceN->GetName());
-				ApplySequence(pSequenceN);
-			}
+			ApplySequence(pSequenceN);
 
 			for (auto EI : pSequenceN->EIs)
 			{
@@ -183,7 +152,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq, bool WithPreview)
 		[this](UDMSSequence* pSequenceN) {
 			// Selection Canceled
 			DMS_LOG_SIMPLE(TEXT("Selection Canceled"));
-			CompleteSequence(pSequenceN);
+			CompleteSequence(pSequenceN, false);
 			// Cleanup this seq
 		} // Runwidgetqueue end.
 		);
@@ -193,7 +162,7 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq, bool WithPreview)
 		// Decision canceled
 		DMS_LOG_SIMPLE(TEXT("Decision canceled"));
 		// Cleanup this seq
-		CompleteSequence(pSequence);
+		CompleteSequence(pSequence, false);
 		//...
 	}
 	);
@@ -242,7 +211,7 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 	//DMS_LOG_SCREEN(TEXT("==-- BEFORE [ Depth : %d ] --=="),GetDepth(Sequence));
 	// 'Before Timing' broadcast starts.
 	Sequence->Progress = EDMSTimingFlag::T_Before;
-	NotifyManager->BroadCast(Sequence, 
+	NotifyManager->Broadcast(Sequence, 
 	[=, BeforeSequence=Sequence]() {
 			// ==== ON BEFORE TIMING RESPONSE ENDED ====
 		DMS_LOG_SIMPLE(TEXT("==== %s : ON BEFORE TIMING RESPONSE ENDED [ Depth : %d ] ===="), *BeforeSequence->GetName(), GetDepth(BeforeSequence));
@@ -256,65 +225,71 @@ void UDMSSeqManager::ApplySequence(UDMSSequence* Sequence)
 		DMS_LOG_SIMPLE(TEXT("==== %s : RESOLVE START ===="), *BeforeSequence->GetName());
 
 		EffectHandler->Resolve(BeforeSequence,
-		[=, DuringSequence=BeforeSequence](bool Successed) {
+		[=, DuringSequence=BeforeSequence](bool ResolveSuccessed) {
 			// ==== ON RESOLVE COMPLETED ====
 
-			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *DuringSequence->GetName(), SeqManager->GetDepth(DuringSequence));
-			// 'During Timing' broadcast starts.
-			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
-			NotifyManager->BroadCast(BeforeSequence, 
-			[=, DurningSequence = BeforeSequence]() __declspec(noinline) {
+			if ( ResolveSuccessed )
+			{
+				DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *DuringSequence->GetName(), SeqManager->GetDepth(DuringSequence));
+				// 'During Timing' broadcast starts.
+				auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+				NotifyManager->Broadcast(BeforeSequence, 
+				[=, DurningSequence = BeforeSequence]() __declspec(noinline) {
 					// ==== ON DURING TIMING RESPONSE ENDED ====
-				DMS_LOG_SIMPLE(TEXT("==== %s : ON DURING TIMING RESPONSE ENDED [ Depth : %d ] ===="), *DurningSequence->GetName(), SeqManager->GetDepth(DurningSequence));
-				// Proceed to 'After Timing'
-				DurningSequence->Progress = EDMSTimingFlag::T_After;
 
-				//DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
+					DMS_LOG_SIMPLE(TEXT("==== %s : ON DURING TIMING RESPONSE ENDED [ Depth : %d ] ===="), *DurningSequence->GetName(), SeqManager->GetDepth(DurningSequence));
+					// Proceed to 'After Timing'
+					DurningSequence->Progress = EDMSTimingFlag::T_After;
 
-				// 'After Timing' broadcast starts.
-				NotifyManager->BroadCast(DurningSequence, 
-				[=, AfterSequence = DurningSequence]() __declspec(noinline) {
-						// ==== ON AFTER TIMING RESPONSE ENDED ====
-					DMS_LOG_SIMPLE(TEXT("==== %s : ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *AfterSequence->GetName(), SeqManager->GetDepth(AfterSequence));
+					//DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
+
+					// 'After Timing' broadcast starts.
+					NotifyManager->Broadcast(DurningSequence, 
+					[=, AfterSequence = DurningSequence]() __declspec(noinline) {
+							// ==== ON AFTER TIMING RESPONSE ENDED ====
+						DMS_LOG_SIMPLE(TEXT("==== %s : ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *AfterSequence->GetName(), SeqManager->GetDepth(AfterSequence));
 					
-					// Run child effect if exist.
-					if (AfterSequence->SequenceState!=EDMSSequenceState::SS_Canceled &&
-						AfterSequence->OriginalEffectNode->ChildEffect != nullptr && AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode() != nullptr &&
-						AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(AfterSequence->SourceObject, AfterSequence))	{
+						// Run child effect if exist.
+						if (AfterSequence->SequenceState!=EDMSSequenceState::SS_Canceled &&
+							AfterSequence->OriginalEffectNode->ChildEffect != nullptr && AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode() != nullptr &&
+							AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(AfterSequence->SourceObject, AfterSequence))	{
 
-						// Proceed to run child effect sequence.
-						DMS_LOG_SIMPLE(TEXT("==== %s : OnNotifyReceived -> Advance ===="), *AfterSequence->GetName());
-						auto ChildNode = AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
-						// follows parents data. 
-						auto NewSeq = RequestCreateSequence(AfterSequence->SourceObject, AfterSequence->SourcePlayer, ChildNode,
-							TArray<TScriptInterface<IDMSEffectorInterface>>(), AfterSequence->EIDatas, AfterSequence);
+							// Proceed to run child effect sequence.
+							DMS_LOG_SIMPLE(TEXT("==== %s : OnNotifyReceived -> Advance ===="), *AfterSequence->GetName());
+							auto ChildNode = AfterSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
+							// follows parents data. 
+							auto NewSeq = RequestCreateSequence(AfterSequence->SourceObject, AfterSequence->SourcePlayer, ChildNode,
+								TArray<TScriptInterface<IDMSEffectorInterface>>(), AfterSequence->EIDatas, AfterSequence);
 				
-						// Set delegates when child effect sequence completed.
-						NewSeq->AddToOnSequenceFinished_Native(
-						[=, ParentSequence= AfterSequence]() __declspec(noinline) {
-								// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
-							DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
+							// Set delegates when child effect sequence completed.
+							NewSeq->AddToOnSequenceFinished_Native(
+							[=, ParentSequence= AfterSequence](bool Successed) __declspec(noinline) {
+									// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
+								DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
 
-							auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+								auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
 					
-							// Resume parent sequence closing
-							SeqManager->CompleteSequence(ParentSequence);
-						});
+								// Resume parent sequence closing
+								SeqManager->CompleteSequence(ParentSequence);
+							});
 
-						// Run setuped child effect sequence.
-						SeqManager->RunSequence(NewSeq);
-					}
-					else //Complete this sequence.
-						SeqManager->CompleteSequence(AfterSequence);
+							// Run setuped child effect sequence.
+							SeqManager->RunSequence(NewSeq);
+						}
+						else //Complete this sequence.
+							SeqManager->CompleteSequence(AfterSequence);
+					});
 				});
-			});
-			
+			}
+			else {
+				SeqManager->CompleteSequence(DuringSequence, false);
+			}
 		});
 	});
 
 }
 
-void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence)
+void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence, bool Successed)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Complete Sequence ===="), *Sequence->GetName());
 
@@ -326,7 +301,7 @@ void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence)
 	else
 		CurrentSequence = Sequence->ParentSequence;
 
-	Sequence->OnSequenceFinish();
+	Sequence->OnSequenceFinish(Successed);
 
 }
 

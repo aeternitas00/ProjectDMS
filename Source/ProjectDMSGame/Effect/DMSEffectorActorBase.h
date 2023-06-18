@@ -5,6 +5,7 @@
 #include "ProjectDMS.h"
 #include "Common/DMSSpawnableDataBase.h"
 #include "Effect/DMSEffectorInterface.h"
+#include "Common/DMSPreviewInterface.h"
 #include "DMSEffectorActorBase.generated.h"
 
 class UDMSEIManagerComponent;
@@ -25,11 +26,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 	
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TObjectPtr<ADMSEffectorActorBase> PreviewDummy;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	//TObjectPtr<ADMSEffectorActorBase> PreviewDummy;
 
 public:	
-	virtual IDMSEffectorInterface* GetPreviewObject() {return PreviewDummy;}
-	virtual void ResetPreviewObject() override {}
+	//virtual IDMSEffectorInterface* GetPreviewObject() {return PreviewDummy;}
+	//virtual void ResetPreviewObject() override;
 	virtual void OnInitialized_Implementation() override;
 };

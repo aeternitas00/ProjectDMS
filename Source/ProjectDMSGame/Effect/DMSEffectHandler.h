@@ -129,15 +129,10 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 	OnResolveCompletedMap[Sequence].Count = 0;
 	OnResolveCompletedMap[Sequence].IteratingDelegate.BindUObject(this, &UDMSEffectHandler::ApplyNextEffectInstance);
 
-	// 타겟 결정도 시퀀스쪽에서?
-	if (Sequence->bIsPreviewSequence)
-		OnResolveCompletedMap[Sequence].Getter.BindLambda( [this](UDMSSequence* SourceSequence){
-			return Cast<UDMSEffectInstance>(SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++]->GetPreviewObject());
-		});
-	else 
-		OnResolveCompletedMap[Sequence].Getter.BindLambda( [this](UDMSSequence* SourceSequence){
-			return SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++];
-		});
+
+	OnResolveCompletedMap[Sequence].Getter.BindLambda( [this](UDMSSequence* SourceSequence){
+		return SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++];
+	});
 
 	ApplyNextEffectInstance(Sequence, true);
 }

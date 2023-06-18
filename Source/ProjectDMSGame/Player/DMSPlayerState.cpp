@@ -72,7 +72,7 @@ void ADMSPlayerState::SetupDefaults()
 	// -> 
 	// Spawn Players Character
 
-	PreviewDummy = DuplicateObject(this,this,FName(GetName()+TEXT("_Preview")));
+	//PreviewDummy = DuplicateObject(this,this,FName(GetName()+TEXT("_Preview")));
 	// Referencer initalize
 	//PreviewDummy->CharacterRef = Cast<ADMSCharacterBase>(CharacterRef->GetPreviewObject());
 }
@@ -82,16 +82,6 @@ UDMSCardContainerComponent* ADMSPlayerState::SearchContainer(const FName& Contai
 	return CardManagerComponent ? CardManagerComponent->SearchContainer(ContainerName) : nullptr;
 }
 
-//void ADMSPlayerState::AttachEffectInstance(UDMSEffectInstance* EI)
-//{
-//	EffectManagerComponent->AttachEffectInstance(EI);
-//}
-
-//bool ADMSPlayerState::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects,
-//	bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
-//{
-//	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
-//}
 
 void ADMSPlayerState::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
 {

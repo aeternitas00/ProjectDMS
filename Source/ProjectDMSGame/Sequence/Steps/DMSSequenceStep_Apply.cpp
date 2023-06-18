@@ -23,7 +23,7 @@ void UDMSSequenceStep_Apply::OnBefore_Implementation()
 	//DMS_LOG_SCREEN(TEXT("==-- BEFORE [ Depth : %d ] --=="), GetDepth(Sequence));
 	//// 'Before Timing' broadcast starts.
 	//Sequence->Progress = EDMSTimingFlag::T_Before;
-	//NotifyManager->BroadCast(Sequence,
+	//NotifyManager->Broadcast(Sequence,
 	//	[=, BeforeSequence = Sequence]() {
 	//		// ==== ON BEFORE TIMING RESPONSE ENDED ====
 	//		DMS_LOG_SIMPLE(TEXT("==== %s : ON BEFORE TIMING RESPONSE ENDED [ Depth : %d ] ===="), *BeforeSequence->GetName(), GetDepth(BeforeSequence));
@@ -43,7 +43,7 @@ void UDMSSequenceStep_Apply::OnBefore_Implementation()
 	//				DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *DuringSequence->GetName(), SeqManager->GetDepth(DuringSequence));
 	//				// 'During Timing' broadcast starts.
 	//				auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
-	//				NotifyManager->BroadCast(BeforeSequence,
+	//				NotifyManager->Broadcast(BeforeSequence,
 	//					[=, DurningSequence = BeforeSequence]() __declspec(noinline) {
 	//					// ==== ON DURING TIMING RESPONSE ENDED ====
 	//					DMS_LOG_SIMPLE(TEXT("==== %s : ON DURING TIMING RESPONSE ENDED [ Depth : %d ] ===="), *DurningSequence->GetName(), SeqManager->GetDepth(DurningSequence));
@@ -53,7 +53,7 @@ void UDMSSequenceStep_Apply::OnBefore_Implementation()
 	//					DMS_LOG_SCREEN(TEXT("==-- AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(DurningSequence));
 
 	//					// 'After Timing' broadcast starts.
-	//					NotifyManager->BroadCast(DurningSequence,
+	//					NotifyManager->Broadcast(DurningSequence,
 	//						[=, AfterSequence = DurningSequence]() __declspec(noinline) {
 	//						// ==== ON AFTER TIMING RESPONSE ENDED ====
 	//						DMS_LOG_SIMPLE(TEXT("==== %s : ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *AfterSequence->GetName(), SeqManager->GetDepth(AfterSequence));

@@ -22,7 +22,7 @@
 
 //
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTDMSGAME_API UDMSAttributeComponent : public UActorComponent//, public IDMSAttributeInterface
+class PROJECTDMSGAME_API UDMSAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

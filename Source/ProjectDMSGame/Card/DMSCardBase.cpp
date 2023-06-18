@@ -13,6 +13,7 @@
 #include "EffectSet/DMSEffect_ActivateEffect.h"
 #include "EffectSet/DMSEffectNode_PlayCard.h"
 #include "Player/DMSPlayerController.h"
+#include "Card/DMSCardManagerComponent.h"
 
 // Sets default values
 ADMSCardBase::ADMSCardBase(const FObjectInitializer& ObjectInitializer) : ADMSEffectorActorBase(ObjectInitializer)
@@ -44,6 +45,7 @@ void ADMSCardBase::SetCardDefinition(const UDMSCardDefinition* iCardDefinition)
 }
 
 
+
 void ADMSCardBase::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
 {
 	//LocationRef = iLoc;
@@ -67,6 +69,34 @@ bool ADMSCardBase::LocatingTo_Implementation(ADMSLocationBase* TargetLocation)
 
 	return false;
 }
+
+//void ADMSCardBase::ResetPreviewObject()
+//{
+//	ADMSCardBase* OldDummy = (ADMSCardBase*)PreviewDummy;
+//	if(OldDummy != nullptr)	OldDummy->OwningContainer->Remove(OldDummy);
+//
+//	Super::ResetPreviewObject();
+//
+//	ADMSCardBase* ResetDummy = (ADMSCardBase*)PreviewDummy;
+//
+//	auto OwningPlayer = GetOwningPlayer();
+//	if (OwningPlayer ==nullptr) return;
+//
+//	auto Manager = Cast<AActor>(Owner)->FindComponentByClass<UDMSCardManagerComponent>();
+//	if (Manager == nullptr) return;
+//
+//	auto Container = Manager->SearchContainer(OwningContainer->GetContainerName());
+//	if (Container==nullptr) return;
+//
+//	auto OwningPlayerDummy = Cast<IDMSEffectorInterface>(OwningPlayer)->GetPreviewObject();
+//	auto ManagerDummy = Cast<AActor>(OwningPlayerDummy)->FindComponentByClass<UDMSCardManagerComponent>();
+//	auto ContainerDummy = Manager->SearchContainer(OwningContainer->GetContainerName());
+//	if (ContainerDummy==nullptr) return;
+//
+//	ContainerDummy->Insert(ResetDummy, Container->Find(this));
+//}
+//
+
 
 void ADMSCardBase::OnInitialized_Implementation()
 {

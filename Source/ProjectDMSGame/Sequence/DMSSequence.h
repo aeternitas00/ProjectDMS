@@ -36,8 +36,14 @@ enum class EDMSSequenceState : uint8
 	SS_Ignored UMETA(DisplayName = "Ignored")
 };
 
-DECLARE_DYNAMIC_DELEGATE(FOnSequenceStateChanged_Signature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceStateChanged_Dynamic);
+DECLARE_DELEGATE_OneParam(FOnSequenceFinished_Signature, bool);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSequenceFinished, bool);
+
+DECLARE_DYNAMIC_DELEGATE(FOnSequenceInitiatedDynamic_Signature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceInitiatedDynamic);
+
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Successed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Successed);
 
 /** 
  * 	========================================
@@ -84,12 +90,6 @@ public:
 	 * Current state of this sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bIsPreviewSequence;
-
-	/**
-	 * Current state of this sequence.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSSequenceState SequenceState;
 
 	/**
@@ -131,10 +131,10 @@ public:
 	TObjectPtr<UDMSSequence> ChildSequence;
 
 	UFUNCTION(BlueprintCallable)
-	UObject* GetSourceObject(bool ForceGetOriginal = false);
+	UObject* GetSourceObject();
 
 	UFUNCTION(BlueprintCallable)
-	AActor* GetSourcePlayer(bool ForceGetOriginal = false);
+	AActor* GetSourcePlayer();
 
 	UFUNCTION(BlueprintCallable)
 	TArray<TScriptInterface<IDMSEffectorInterface>> GetTargets();
@@ -144,6 +144,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool SetSourcePlayer(AActor* NewSourcePlayer);
+
+	bool IsChainableSequence();
 
 	/**
 	 * Attach child sequence.
@@ -181,7 +183,7 @@ public:
 	/**
 	 * Executed when sequence is finished.
 	 */
-	void OnSequenceFinish();
+	void OnSequenceFinish(bool Successed);
 
 	APlayerController* GetWidgetOwner();
 
@@ -190,10 +192,10 @@ public:
 	// ================================ //
 protected:
 	FSimpleMulticastEventSignature OnSequenceInitiated;
-	FSimpleMulticastEventSignature OnSequenceFinished;
+	FOnSequenceFinished OnSequenceFinished;
 
-	FOnSequenceStateChanged_Dynamic OnSequenceInitiated_Dynamic;
-	FOnSequenceStateChanged_Dynamic OnSequenceFinished_Dynamic;
+	FOnSequenceInitiatedDynamic OnSequenceInitiated_Dynamic;
+	FOnSequenceFinishedDynamic OnSequenceFinishedDynamic;
 
 public:
 
@@ -205,10 +207,10 @@ public:
 	void AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished);
 
 	UFUNCTION(BlueprintCallable)
-	void AddToOnSequenceInitiated(const FOnSequenceStateChanged_Signature& iOnSequenceInitiated);
+	void AddToOnSequenceInitiated(const FOnSequenceInitiatedDynamic_Signature& iOnSequenceInitiated);
 
 	UFUNCTION(BlueprintCallable)
-	void AddToOnSequenceFinished(const FOnSequenceStateChanged_Signature& OnSequenceFinished);
+	void AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& OnSequenceFinished);
 
 
 // STEP 

@@ -103,7 +103,7 @@ public:
 	 * @param	ResponseCompleted				
 	 */
 	template<typename FuncCompleted >
-	void BroadCast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted);
+	void Broadcast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.
@@ -139,7 +139,7 @@ public:
 };
 
 template<typename FuncCompleted>
-void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted)
+void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : BROADCASTING  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
 
@@ -155,7 +155,7 @@ void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 	for (auto& Object : NotifyObjects)
 	{
 		//DMS_LOG_SIMPLE(TEXT("%s"), (Object==nullptr) ? TEXT("Object is NULLPTR") : *(Object->GetObject()->GetName()));
-		Object->OnNotifyReceived(ResponsedObjects, NotifyData->OriginalEffectNode->bIsChainableEffect, NotifyData);
+		Object->OnNotifyReceived(ResponsedObjects, NotifyData->IsChainableSequence(), NotifyData);
 	}
 
 	//OnResponseCompleted[NotifyData].BindUObject();
@@ -209,7 +209,7 @@ void UDMSNotifyManager::BroadCast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->Progress));
 
 				auto NewSeq = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Value->CreateSequenceFromNode(ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Key, Sequence);
-				NewSeq->AddToOnSequenceFinished_Native([this, Sequence]() {ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence); });
+				NewSeq->AddToOnSequenceFinished_Native([this, Sequence](bool) {ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence); });
 				ForcedEIMap[Sequence].Count++;
 				UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
 			}

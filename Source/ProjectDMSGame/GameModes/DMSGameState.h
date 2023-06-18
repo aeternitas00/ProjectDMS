@@ -19,9 +19,6 @@ class PROJECTDMSGAME_API ADMSGameState : public AGameStateBase, public IDMSEffec
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY()
-	TObjectPtr<ADMSGameState> PreviewDummy;
-
 	UPROPERTY(BlueprintReadOnly)
 	UDMSEIManagerComponent* EffectManagerComponent;
 
@@ -62,5 +59,4 @@ public:
 	ADMSGameState(const FObjectInitializer& Initializer);
 
 	virtual AActor* GetOwningPlayer() override { return this; }
-	virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 };

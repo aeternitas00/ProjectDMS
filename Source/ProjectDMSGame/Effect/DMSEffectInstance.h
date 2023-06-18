@@ -156,7 +156,7 @@ public:
 	 */
 	void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
 
-	void SetupPreviewDummy();
+	//void SetupPreviewDummy();
 	/**
 	 * Create new sequence from owning datas. ( node, datas .... )
 	 * @param	SourceTweak						Source object of new sequence.

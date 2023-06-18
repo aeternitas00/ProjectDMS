@@ -60,9 +60,12 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDM
 		return false;
 
 	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
-	if (AttComp == nullptr && !bCreateIfNull)
-		return false;
-		
+	if (AttComp == nullptr)	
+	{
+		if (!bCreateIfNull) return false;		
+		AttComp = Cast<UDMSAttributeComponent>(tOuter->AddComponentByClass(UDMSAttributeComponent::StaticClass(), false, FTransform(), false));
+		AttComp->MakeAttribute(Value.AttributeTag);
+	}
 	float PredictValue=0.0f;
 	bool rv = AttComp->TryModAttribute(Value, PredictValue, false);
 
@@ -71,15 +74,15 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDM
 		switch (FailureConditionOperator)
 		{
 		case EDMSComparisonOperator::BO_Equal:
-			rv = rv && PredictValue == FailureConditionValue; break;
+			rv = !(rv && PredictValue == FailureConditionValue); break;
 		case EDMSComparisonOperator::BO_Greater:
-			rv = rv && PredictValue > FailureConditionValue; break;
+			rv = !(rv && PredictValue > FailureConditionValue); break;
 		case EDMSComparisonOperator::BO_Less:
-			rv = rv && PredictValue < FailureConditionValue; break;
+			rv = rv && !(PredictValue < FailureConditionValue); break;
 		case EDMSComparisonOperator::BO_GreaterEqual:
-			rv = rv && PredictValue >= FailureConditionValue; break;
+			rv = rv && !(PredictValue >= FailureConditionValue); break;
 		case EDMSComparisonOperator::BO_LessEqual:
-			rv = rv && PredictValue <= FailureConditionValue; break;
+			rv = rv && !(PredictValue <= FailureConditionValue); break;
 		default: break;
 		}
 	}

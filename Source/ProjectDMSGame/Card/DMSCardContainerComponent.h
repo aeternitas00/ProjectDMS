@@ -62,12 +62,9 @@ class PROJECTDMSGAME_API UDMSCardContainerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-protected:
-	//UPROPERTY()
-	//FName ContainerName;
-
 public:
-
+	UPROPERTY()
+	FName ContainerName;
 	/**
 	 * Wrapper of card array. 
 	 */
@@ -82,7 +79,8 @@ public:
 	TArray<ADMSCardBase*> PopAt(uint16 Idx);
 	TArray<ADMSCardBase*> PopAt(uint16 Idx,uint16 Num);
 	void Insert(TArray<ADMSCardBase*> iContainer, uint16 Idx);
-	void Find(uint16 Idx, uint16 Range);
+	void Insert(ADMSCardBase* iCard, uint16 Idx);
+	uint16 Find(ADMSCardBase* iCard);
 	void Remove(ADMSCardBase* iCard);
 	void Remove(TArray<ADMSCardBase*> iCards);
 
@@ -102,7 +100,7 @@ public:
 	void ShuffleTopNCards(int Num=0);
 
 	UFUNCTION(BlueprintPure,BlueprintCallable)
-	FName GetContainerName() const {return FName(*GetName())/*ContainerName */; }
+	FName GetContainerName() const {return ContainerName; }
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);

@@ -61,11 +61,6 @@ TArray<ADMSCardBase*> UDMSCardManagerComponent::GetAllCards()
 void UDMSCardManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	//DOREPLIFETIME(UDMSCardManagerComponent, Containers);
-	//DOREPLIFETIME(UDMSCardManagerComponent, Deck);
-	//DOREPLIFETIME(UDMSCardManagerComponent, Hand);
-	//DOREPLIFETIME(UDMSCardManagerComponent, PlayArea);
-	//DOREPLIFETIME(UDMSCardManagerComponent, DiscardPile);
 }
 
 UDMSCardContainerComponent* UDMSCardManagerComponent::SearchContainer(const FName& ContainerName)
@@ -82,7 +77,7 @@ void UDMSCardManagerComponent::ConstructContainer(const FName& ContainerName, TS
 	UDMSCardContainerComponent* NewContainer = NewObject<UDMSCardContainerComponent>(this, ContainerClass, ContainerName);
 	
 	Containers.Add(ContainerName, NewContainer);
-
+	NewContainer->ContainerName = ContainerName;
 	NewContainer->RegisterComponent();
 }
 

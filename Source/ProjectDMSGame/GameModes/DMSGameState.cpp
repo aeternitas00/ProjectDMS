@@ -16,7 +16,7 @@ ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) /*: Super(In
 
 void ADMSGameState::SetupDefaults()
 {
-	PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));
+
 }
 
 void ADMSGameState::SetPlayersFocusTarget(AActor* Target)

@@ -12,7 +12,7 @@
 
 // Default Initializer
 
-UDMSSequence::UDMSSequence() :SourceObject(nullptr), SourcePlayer(nullptr), bIsPreviewSequence(false) {
+UDMSSequence::UDMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr) {
 
 	Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
 	SequenceState = EDMSSequenceState::SS_Default;
@@ -22,26 +22,26 @@ UDMSSequence::UDMSSequence() :SourceObject(nullptr), SourcePlayer(nullptr), bIsP
 	// 
 }
 
-UObject* UDMSSequence::GetSourceObject(bool ForceGetOriginal)
+UObject* UDMSSequence::GetSourceObject()
 {
-	return bIsPreviewSequence && !ForceGetOriginal ? Cast<IDMSEffectorInterface>(SourceObject)->GetPreviewObject()->_getUObject() : SourceObject;
+	return SourceObject;
 }
 
-AActor* UDMSSequence::GetSourcePlayer(bool ForceGetOriginal)
+AActor* UDMSSequence::GetSourcePlayer()
 {
-	return bIsPreviewSequence && !ForceGetOriginal ? (AActor*)(Cast<IDMSEffectorInterface>(SourcePlayer)->GetPreviewObject()->_getUObject()) : SourcePlayer;
+	return SourcePlayer;
 }
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets()
 {
-	if (!bIsPreviewSequence)
+	//if (!bIsPreviewSequence)
 		return Targets;
 
-	TArray<TScriptInterface<IDMSEffectorInterface>> rv;
+	//TArray<TScriptInterface<IDMSEffectorInterface>> rv;
 
-	for (auto& T : Targets)
-		rv.Add(T->GetPreviewObject()->_getUObject());
-	return rv;
+	//for (auto& T : Targets)
+	//	rv.Add(T->GetPreviewObject()->_getUObject());
+	//return rv;
 	
 }
 
@@ -59,19 +59,25 @@ bool UDMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
 	return false;
 }
 
-void UDMSSequence::AddToOnSequenceInitiated(const FOnSequenceStateChanged_Signature& iOnSequenceInitiated)
+
+bool UDMSSequence::IsChainableSequence()
+{
+	return OriginalEffectNode->bIsChainableEffect;
+}
+
+void UDMSSequence::AddToOnSequenceInitiated(const FOnSequenceInitiatedDynamic_Signature& iOnSequenceInitiated)
 {
 	OnSequenceInitiated_Dynamic.Add(iOnSequenceInitiated);
 }
 
-void UDMSSequence::AddToOnSequenceFinished(const FOnSequenceStateChanged_Signature& iOnSequenceFinished)
+void UDMSSequence::AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& iOnSequenceFinished)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
 
-	if (OnSequenceFinished_Dynamic.IsBound()) {
+	if (OnSequenceFinishedDynamic.IsBound()) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
 	}
-	OnSequenceFinished_Dynamic.Add(iOnSequenceFinished);
+	OnSequenceFinishedDynamic.Add(iOnSequenceFinished);
 }
 
 void UDMSSequence::InitializeSteps(const TArray<TSubclassOf<UDMSSequenceStep>>& StepClasses)
@@ -121,14 +127,14 @@ void UDMSSequence::OnSequenceInitiate()
 	OnSequenceInitiated_Dynamic.Broadcast();
 }
 
-void UDMSSequence::OnSequenceFinish()
+void UDMSSequence::OnSequenceFinish(bool Successed)
 {
 	auto temp = std::move(OnSequenceFinished);
-	auto temp_Dynamic = std::move(OnSequenceFinished_Dynamic);
-	OnSequenceFinished = FSimpleMulticastEventSignature();
-	OnSequenceFinished_Dynamic = FOnSequenceStateChanged_Dynamic();
-	temp.Broadcast();
-	temp_Dynamic.Broadcast();
+	auto temp_Dynamic = std::move(OnSequenceFinishedDynamic);
+	OnSequenceFinished = FOnSequenceFinished();
+	OnSequenceFinishedDynamic = FOnSequenceFinishedDynamic();
+	temp.Broadcast(Successed);
+	temp_Dynamic.Broadcast(Successed);
 	// Cleanup 
 	
 }

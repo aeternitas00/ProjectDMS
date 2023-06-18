@@ -36,7 +36,7 @@ void UDMSSequenceStep::Progress_Before()
 
 	check(NotifyManager);
 
-	NotifyManager->BroadCast(OwnerSequence,[this](){OnBefore();});
+	NotifyManager->Broadcast(OwnerSequence,[this](){OnBefore();});
 	
 }
 
@@ -46,7 +46,7 @@ void UDMSSequenceStep::Progress_During()
 
 	check(NotifyManager);
 
-	NotifyManager->BroadCast(OwnerSequence, [this]() {OnDuring();});
+	NotifyManager->Broadcast(OwnerSequence, [this]() {OnDuring();});
 	
 }
 
@@ -56,7 +56,7 @@ void UDMSSequenceStep::Progress_After()
 
 	check(NotifyManager);
 
-	NotifyManager->BroadCast(OwnerSequence, [this]() {OnAfter();});
+	NotifyManager->Broadcast(OwnerSequence, [this]() {OnAfter();});
 
 }
 

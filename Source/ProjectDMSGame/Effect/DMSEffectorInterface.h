@@ -44,16 +44,6 @@ public:
 	 * ( ex) EI Manager Comp 같은 경우 Outer(카드, 적 등등)를 반환 
 	 */
 	virtual UObject* GetObject();
-	
-	/**
-	 * Get preview object.
-	 */
-	virtual IDMSEffectorInterface* GetPreviewObject() = 0;
-
-	/**
-	 * Get preview object.
-	 */
-	virtual void ResetPreviewObject() {}
 
 	/**
 	 * Get owner of this object ( Usally PlayerState or GameState if it controlled by game.

@@ -66,9 +66,11 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->OwnerSeq);
 		
-		NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->OwnerSeq ](){
+		NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->OwnerSeq ](bool PreviousResult){
 			
 			// Replay response 
+
+			// NOTE :: What can we do with the Result of previous response? ( PreviousResult )
 
 			TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> LocalNRO;
 

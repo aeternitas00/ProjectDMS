@@ -90,8 +90,10 @@ public:
 	//bool IsCommittable();
 
 	// Attach Card to Location
+
 	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc);
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
 	virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);
 	virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);
+	//virtual void ResetPreviewObject() override;
 };

@@ -107,29 +107,29 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iS
 	CurrentState = EDMSEIState::EIS_Pending; 
 	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); 
 	
-	SetupPreviewDummy();
+	//SetupPreviewDummy();
 }
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 { 
-	EffectNode = iNode; SourcePlayer=iSeq->GetSourcePlayer(true); 
-	SourceObject = iSeq->GetSourceObject(true); 
+	EffectNode = iNode; SourcePlayer=iSeq->GetSourcePlayer(); 
+	SourceObject = iSeq->GetSourceObject(); 
 	DataSet = iSeq->EIDatas; 
 	CurrentState = EDMSEIState::EIS_Pending; 
 
-	SetupPreviewDummy();
+	//SetupPreviewDummy();
 }
 
-void UDMSEffectInstance::SetupPreviewDummy()
-{
+//void UDMSEffectInstance::SetupPreviewDummy()
+//{
 	// NOTE :: 자기 자신에게 체이닝 되는 이펙트들을 위한 프리뷰 더미이므로 부착은 자신 (EI) 에게 해놓을것..
 
-	PreviewDummy = DuplicateObject<UDMSEffectInstance>(this, this, FName(GetName() + TEXT("_Preview")));
-	PreviewDummy->CurrentState = EDMSEIState::EIS_Preview;
+	//PreviewDummy = DuplicateObject<UDMSEffectInstance>(this, this, FName(GetName() + TEXT("_Preview")));
+	//PreviewDummy->CurrentState = EDMSEIState::EIS_Preview;
 	// Reference update
-	PreviewDummy->SourceObject = SourceObject;
-	PreviewDummy->SourcePlayer = SourcePlayer;
-}
+	//PreviewDummy->SourceObject = SourceObject;
+	//PreviewDummy->SourcePlayer = SourcePlayer;
+//}
 
 UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 
 {
