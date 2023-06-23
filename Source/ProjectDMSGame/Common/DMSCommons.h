@@ -84,7 +84,7 @@ enum class EDMSObjectSelectorFlag : uint8
 	OSF_Target UMETA(DisplayName = "Seq -> Target"),
 	// Seq-> other nodes?
 	// Seq-> EffectInstances?
-	OSF_Custom UMETA(DisplayName = "Custom (UNUSABLE)"),
+	OSF_Custom UMETA(DisplayName = "Custom ( Condition Object )"),
 };
 
 /**

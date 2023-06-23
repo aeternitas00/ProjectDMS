@@ -54,8 +54,8 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 			RootSequence = Sequence;
 
 			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
-			RootSequence->OnSequenceFinished.AddLambda([this](bool){CleanupSequenceTree();});			
-			RootSequence->OnSequenceFinished.AddLambda([this](bool) {CleanupSequenceTree();});
+			RootSequence->OnSequenceFinished.AddLambda([this](bool){OnSequenceTreeCompleted();});
+			RootSequence->OnSequenceFinished.AddLambda([this](bool){CleanupSequenceTree();});
 		}
 		else if (CurrentSequence != nullptr)
 			CurrentSequence->AttachChildSequence(Sequence);

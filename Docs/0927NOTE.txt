@@ -1,7 +1,0 @@
-이펙트 중점으로 예상 플로우 : 
-
-가정 ) 시퀀스에 이펙트 + 이펙트 발현자 ( + 오너 PC ) 존재
-
-~~~ -> Seq.Before가 통과되어 EffectHandler에에 도착 -> [Seq.During] Resolve 시작 -> EH가 이펙트 읽고 셀렉터가 존재하면 셀렉터에게 CreateWidget(PC) 실행
-
--> 셀렉트된 값을 이펙트의 Work(Param) 으로 넘겨서 실행 -> ~~~

@@ -11,6 +11,7 @@
  */
 
 #include "Conditions/DMSConditionObject.h"
+#include "Common/DMSTargetGenerator.h"
 #include "Common/DMSCommons.h"
 #include "DMSObjectCondition.generated.h"
 
@@ -29,13 +30,19 @@ class PROJECTDMSGAME_API UDMSObjectConditionBase : public UDMSConditionObject
 	GENERATED_BODY()
 
 public:
-	UDMSObjectConditionBase(){}
+	UDMSObjectConditionBase();
+
+//	virtual void PostInitProperties() override;
 
 	/**
 	 * Flag that how to get target from checking sequence.
 	 */
-	UPROPERTY(EditDefaultsOnly, Category = Condition)
+	UPROPERTY(EditDefaultsOnly, Category = LEGACY)
 	EDMSObjectSelectorFlag TargetFlag;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Condition)
+	TObjectPtr<UDMSTargetGenerator> CompareTargetGenerator;
 
 	/**
 	 * If it is true, CheckOperation returns true only if all of object checkings were true
@@ -52,11 +59,11 @@ public:
 	 * @param	iTargetFlag
 	 * @return	
 	 */
-	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const EDMSObjectSelectorFlag& iTargetFlag) const;
+	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const UDMSTargetGenerator* TargetGenerator) const;
 
-	UFUNCTION(BlueprintNativeEvent)
-	TArray<UObject*> GetCustomCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const EDMSObjectSelectorFlag& iTargetFlag) const;
-	TArray<UObject*> GetCustomCompareTarget_Implementation(UObject* Caller, UDMSSequence* iSeq, const EDMSObjectSelectorFlag& iTargetFlag) const;
+	UFUNCTION(BlueprintNativeEvent, Category = LEGACY)
+	TArray<UObject*> GetCustomCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	TArray<UObject*> GetCustomCompareTarget_Implementation(UObject* Caller, UDMSSequence* iSeq) const;
 
 	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 
@@ -67,7 +74,7 @@ public:
 	 * @param	Target
 	 * return	Result of check condition.
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintPure)
+	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = Condition)
 	bool SingleCheckCondition(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
 	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const {
 		return bNullIsTrue;

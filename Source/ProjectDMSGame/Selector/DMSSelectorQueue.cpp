@@ -57,3 +57,10 @@ void FDMSSelectorQueue::RunNextSelector()
 	SelectorQueue[LocalIdx]->PopupSelector();
 
 }
+
+void FDMSSelectorQueue::RedoWidgetQueue()
+{
+	CurrentIndex = -1;
+	for (auto sWidget : SelectorQueue) { sWidget->CloseSelector(); }
+	RunNextSelector();
+}

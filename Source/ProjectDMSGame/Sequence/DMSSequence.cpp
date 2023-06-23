@@ -32,7 +32,7 @@ AActor* UDMSSequence::GetSourcePlayer()
 	return SourcePlayer;
 }
 
-TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets()
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets() const
 {
 	//if (!bIsPreviewSequence)
 		return Targets;
@@ -137,6 +137,11 @@ void UDMSSequence::OnSequenceFinish(bool Successed)
 	temp_Dynamic.Broadcast(Successed);
 	// Cleanup 
 	
+}
+
+void UDMSSequence::RedoWidgetQueue()
+{
+	SelectorQueue.RedoWidgetQueue();
 }
 
 APlayerController* UDMSSequence::GetWidgetOwner()

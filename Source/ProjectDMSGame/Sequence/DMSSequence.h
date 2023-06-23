@@ -137,7 +137,7 @@ public:
 	AActor* GetSourcePlayer();
 
 	UFUNCTION(BlueprintCallable)
-	TArray<TScriptInterface<IDMSEffectorInterface>> GetTargets();
+	TArray<TScriptInterface<IDMSEffectorInterface>> GetTargets() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool SetSourceObject(UObject* NewSourceObject);
@@ -184,6 +184,9 @@ public:
 	 * Executed when sequence is finished.
 	 */
 	void OnSequenceFinish(bool Successed);
+
+	UFUNCTION(BlueprintCallable)
+	void RedoWidgetQueue();
 
 	APlayerController* GetWidgetOwner();
 

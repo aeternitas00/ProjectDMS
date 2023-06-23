@@ -12,9 +12,8 @@ class UDMSEffectInstance;
 class UDMSCardDefinition;
 
 // ======================================
-// 이 컴포넌트의 실용성에 대해 재고해보기.
+//			DEPRECATED
 // ======================================
-// Rename :: CardEffectComponent
 UCLASS( ClassGroup=(Card), meta=(BlueprintSpawnableComponent) )
 class PROJECTDMSGAME_API UDMSCardComponent : public UActorComponent
 {

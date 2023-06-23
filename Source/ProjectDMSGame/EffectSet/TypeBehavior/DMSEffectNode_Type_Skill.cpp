@@ -25,6 +25,7 @@ UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill()
 	UDMSObjectComparer_IsTarget* IsSelf = CreateDefaultSubobject<UDMSObjectComparer_IsTarget>("IsSelf");
 	OC->bAllObjectMustPassed=true;
 	OC->TargetFlag = EDMSObjectSelectorFlag::OSF_Target;
+	OC->CompareTargetGenerator = CreateDefaultSubobject<UDMSTargetGenerator_SequenceTarget>("CompareTargetGenerator");
 	OC->Comparer= IsSelf;
 
 	Conditions->Conditions.Add(OC);

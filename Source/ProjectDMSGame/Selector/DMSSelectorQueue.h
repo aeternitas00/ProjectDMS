@@ -82,4 +82,7 @@ struct FDMSSelectorQueue
 	 * Run next selector (internal).
 	 */
 	void RunNextSelector();
+
+
+	void RedoWidgetQueue();
 };

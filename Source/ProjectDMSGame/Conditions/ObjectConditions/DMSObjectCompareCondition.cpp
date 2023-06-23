@@ -2,10 +2,46 @@
 #include "DMSObjectCompareCondition.h"
 #include "Location/DMSLocatableInterface.h"
 
+UDMSObjectCompareCondition::UDMSObjectCompareCondition() : UDMSObjectConditionBase() 
+{
+
+}
+
+//void UDMSObjectCompareCondition::PostInitProperties()
+//{	
+//	Super::PostInitProperties();
+//
+//	switch (SourceFlag)
+//	{
+//	case EDMSObjectSelectorFlag::OSF_Default:
+//		SourceGenerator = NewObject<UDMSTargetGenerator_Caller>(this, "SourceGenerator");
+//		break;
+//	case EDMSObjectSelectorFlag::OSF_OwningPlayer:
+//		SourceGenerator = NewObject<UDMSTargetGenerator_OwnerOfCaller>(this, "SourceGenerator");
+//		break;
+//	case EDMSObjectSelectorFlag::OSF_SourceObj:
+//		SourceGenerator = NewObject<UDMSTargetGenerator_SourceObject>(this, "SourceGenerator");
+//		break;
+//	case EDMSObjectSelectorFlag::OSF_SourceCtr:
+//		SourceGenerator = NewObject<UDMSTargetGenerator_SourcePlayer>(this, "SourceGenerator");
+//		break;
+//	case EDMSObjectSelectorFlag::OSF_Target:
+//		SourceGenerator = NewObject<UDMSTargetGenerator_SequenceTarget>(this, "SourceGenerator");
+//		break;
+//	case EDMSObjectSelectorFlag::OSF_EffectNode:
+//		//Rv.Append(iSeq->OriginalEffectNode->GenerateConditionTarget(iSeq));
+//		break;
+//	case EDMSObjectSelectorFlag::OSF_Custom:
+//		//Rv.Append(GetCustomCompareTarget(Caller, iSeq));
+//		break;
+//	default:	break;
+//	}
+//}
+
 bool UDMSObjectCompareCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
-	auto SourceObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, SourceFlag);
-	auto TargetObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, TargetFlag);
+	auto SourceObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, SourceGenerator);
+	auto TargetObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, CompareTargetGenerator);
 	bool outResult = bAllSourcesMustPassed;
 	
 	// 'bAllSourcesMustPassed' and 'bAllObjectMustPassed' flag desc )

@@ -60,13 +60,6 @@ public:
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
 
 	/**
-	 * AttachEffectInstance for blueprint
-	 * @param	EI								Attaching new ei.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Attach Effect Instance"))
-	void AttachEffectInstance_BP(UDMSEffectInstance* EI) { AttachEffectInstance(EI); }
-
-	/**
 	 * 
 	 */
 	void OnInitialized_Implementation() override;

@@ -16,6 +16,7 @@
 #include "UObject/NoExportTypes.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Common/DMSCommonDelegates.h"
+#include "Common/DMSTargetGenerator.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
 
@@ -248,7 +249,7 @@ public:
 	 * Implements on BP.How to initializing decision widget's candidate or search range. 
 	 * @param	iWidget						Param's order follows "DecisionWidgetClasses" property's one.
 	 */ 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, Category = Effect)
 	void InitializeDecisionWidget(const TArray<UDMSDecisionWidget*>& iWidget);
 	virtual void InitializeDecisionWidget_Implementation(const TArray<UDMSDecisionWidget*>& iWidget) {};
 
@@ -263,19 +264,27 @@ public:
 	TArray<UDMSEffectDefinition*> EffectDefinitions;
 
 	/** 
+	 * ** DEPRECATED **
 	 * Flag for the effect's predefined target.
 	 * ex ) effect that Add some resource to "Actvivated player". 
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = LEGACY)
 	EDMSPresetTargetFlag PresetTargetFlag;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TObjectPtr<UDMSTargetGenerator> TargetGenerator;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TObjectPtr<UDMSTargetGenerator> ApplyTargetGenerator;
+
 	/**
+	 * ** DEPRECATED ** 
 	 * Using with "PresetTargetFlag" property.
 	 * Use this when effect has to set targets with runtime data ( Sequence ).
 	 * @param	iSequence						Current sequence.
 	 * @return	Generated targets.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,Category = Effect)
 	static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
 
 	/**
@@ -283,7 +292,7 @@ public:
 	 * @param	iSequence						Current sequence.
 	 * @return	Generated targets.
 	 */
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, Category = LEGACY)
 	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget(UDMSSequence* iSequence);
 	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget_Implementation(UDMSSequence* iSequence);
 	
@@ -292,7 +301,7 @@ public:
 	 * @param	iSequence						Current sequence.
 	 * @return	Generated apply targets.
 	 */
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, Category = LEGACY)
 	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget(UDMSSequence* iSequence);
 	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget_Implementation(UDMSSequence* iSequence);
 
@@ -328,7 +337,7 @@ public:
 	bool bIsChainableEffect;
 
 	//virtual void Serialize(FArchive& Ar) override;
-
+	//virtual void PostInitProperties() override;
 
 };
 
@@ -339,13 +348,13 @@ public:
  *
  *	=========================================
  */
-UCLASS(Abstract,BlueprintType, Const, DefaultToInstanced, EditInlineNew, ClassGroup = (Condition))
+UCLASS(Abstract,BlueprintType, Const, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect))
 class PROJECTDMSGAME_API UDMSEffectNodeWrapper : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintPure,BlueprintCallable, meta = (DisplayName = "Get Effect Node"))
+	UFUNCTION(BlueprintPure,BlueprintCallable, Category = Effect, meta = (DisplayName = "Get Effect Node"))
 	UDMSEffectNode* GetEffectNodeBP() { return GetEffectNode(); }
 	virtual UDMSEffectNode* GetEffectNode(){return nullptr;}
 	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){}
@@ -427,7 +436,7 @@ public:
 	 */
 	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Effect)
 	TArray<UDMSEffectNodeWrapper*> GetEffectNodeWithComparer(const FNodeComparer& Comparer);
 
 	//virtual void Serialize(FArchive & Ar) override;
