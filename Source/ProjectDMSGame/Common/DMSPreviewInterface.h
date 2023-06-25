@@ -7,7 +7,7 @@
 // *
 // *	DMS_CORE_MODULE
 // *
-// *	Interface that can be affected or affect other object must implements.
+// *	
 // *
 // *	========================================
 // */

@@ -5,7 +5,7 @@
  *
  *	DMS_CORE_MODULE
  *
- *	State checking part of Effect's condition.
+ *	Class for condition checking between objects through comparison.
  *
  * =========================================
  */
@@ -29,14 +29,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = LEGACY)
 	EDMSObjectSelectorFlag SourceFlag;
 
+	/**
+	 * Target generator that get the other side of objects for comparison.
+	 * TODO :: RENAME?
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Condition)
 	TObjectPtr<UDMSTargetGenerator> SourceGenerator;
+
 	/**
 	 * If it is true, CheckOperation returns true only if all of target check was true
 	 */
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	bool bAllSourcesMustPassed;
 
+	/**
+	 * Comparer that determines how to perform comparison between given objects.
+	 */
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced, Category = Condition)
 	UDMSObjectComparer* Comparer;
 

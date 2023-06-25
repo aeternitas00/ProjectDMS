@@ -8,8 +8,10 @@
 
 class UDMSEffectSet;
 class ADMSLocationBase;
+
+
 /**
- * 
+ * DataAsset for storiging dms location.
  */
 UCLASS()
 class PROJECTDMSGAME_API UDMSLocationData : public UDMSSpawnableDataBase
@@ -17,12 +19,21 @@ class PROJECTDMSGAME_API UDMSLocationData : public UDMSSpawnableDataBase
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Original name of location
+	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName LocationName;
 
+	/**
+	 * Location's effect
+	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UDMSEffectSet> LocationEffect;
 
+	/**
+	 * Traits of location
+	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TArray<FGameplayTag> LocationTraits;
 
@@ -31,5 +42,8 @@ public:
 	//FBrush LocationBG;
 
 	// location gatherable resources ( further farming system )
+
+
+
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 };

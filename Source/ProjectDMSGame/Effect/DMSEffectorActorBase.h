@@ -26,12 +26,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 	
-	//UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	//TObjectPtr<ADMSEffectorActorBase> PreviewDummy;
-
 public:	
-	//virtual IDMSEffectorInterface* GetPreviewObject() {return PreviewDummy;}
-	//virtual void ResetPreviewObject() override;
 
 	/**
 	 * AttachEffectInstance for blueprint

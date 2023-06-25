@@ -11,7 +11,7 @@ class UDMSCharacterData;
 
 
 /**
- * 
+ * Data for scenario selection.
  */
 UCLASS()
 class PROJECTDMSGAME_API UDMSScenarioData : public UDataAsset

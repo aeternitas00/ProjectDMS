@@ -57,15 +57,27 @@ protected:
 	//TObjectPtr<const UDMSLocationData> LocationData;
 
 public:
+	/**
+	 * Flag whether it can be the starting location of a scenario or not.
+	 */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	bool CanbeStartingLocation;
 
+	/**
+	 * Flag indicating accessibility for locatable actors.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EDMSLocationState LocationStateFlag;
 
+	/**
+	 * Array of locations where connected with this one.
+	 */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<TObjectPtr<ADMSLocationBase>> ConnectingLocations;
 
+	/**
+	 * Array of locatable actors on this location.
+	 */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<TScriptInterface<IDMSLocatableInterface>> ActorsOnLocation;
 
@@ -74,25 +86,40 @@ public:
 
 	//UFUNCTION(BlueprintCallable)
 	//EDMSLocationState BitOperateWithLocationFlag(const EBitOperatorType& Operator, const EDMSLocationState& inFlag);
+	
+	// Simple state checking functions
 
+	// return true if player's locatable can enter
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool CanPlayerEnter() const;
 
+	// return true if player's locatable can leave
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool CanPlayerLeave() const;
-
+	
+	// Function that will be executed when an actor enter this location.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnActorEntered(const TScriptInterface<IDMSLocatableInterface>& Locatable);
 
+	// Function that will be executed when an actor leave this location.
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnActorLeaved(const TScriptInterface<IDMSLocatableInterface>& Locatable);
 
-	//UFUNCTION(BlueprintImplementableEvent)
-	//void InitializeLocation(const FDMSScenarioLocatingData& iLocData);
-
+	/**
+	 * Move param Locatable actor to Dest Location.
+	 * @param	Dest		Move destination.
+	 * @param	Locatable	Actor that will be moved to the Dest.
+	 * @return	true if movement was successful.
+	 */
 	UFUNCTION(BlueprintCallable)
 	static bool MoveActorToDMSLocation(ADMSLocationBase* Dest, const TScriptInterface<IDMSLocatableInterface>& Locatable);
 
+	/**
+	 * Setup connection between param locations.
+	 * @param	Start		Start of connection.
+	 * @param	Dest		Destination of connection.
+	 * @param	IsOneWay	Whether the connection to be created will be unidirectional or bidirectional.
+	 */
 	UFUNCTION(BlueprintCallable)
 	static void ConnectLocations(ADMSLocationBase* Start,ADMSLocationBase* Dest,const bool& IsOneWay);
 

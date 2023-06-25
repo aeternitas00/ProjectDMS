@@ -196,6 +196,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	FGameplayTag NodeTag;
 
+	/**
+	 * It returns a container that consolidates all the tags associated with the node like EffectDefinition's one (e.g., tags for the target attribute in ED_ModAtt). 
+	 */
 	FGameplayTagContainer GenerateTagContainer();
 	
 	UFUNCTION(BlueprintNativeEvent)
@@ -271,9 +274,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = LEGACY)
 	EDMSPresetTargetFlag PresetTargetFlag;
 
+	/**
+	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
+	 * The EffectNode uses this target generator to set the target of sequence by itself.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSTargetGenerator> TargetGenerator;
 
+	/**
+	 * Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSTargetGenerator> ApplyTargetGenerator;
 
@@ -306,15 +316,6 @@ public:
 	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget_Implementation(UDMSSequence* iSequence);
 
 	/**
-	 * Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
-	 * @param	iSequence						Current sequence.
-	 * @return	Generated apply targets.
-	 */
-	//UFUNCTION(BlueprintNativeEvent)
-	//TArray<UObject*> GenerateConditionTarget(UDMSSequence* iSequence);
-	//virtual TArray<UObject*> GenerateConditionTarget_Implementation(UDMSSequence* iSequence);
-
-	/**
 	 * Create paired selector widget from "EffectDefinitions".
 	 * @param	OwnerSeq
 	 * @param	WidgetOwner
@@ -338,7 +339,6 @@ public:
 
 	//virtual void Serialize(FArchive& Ar) override;
 	//virtual void PostInitProperties() override;
-
 };
 
 /** 

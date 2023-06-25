@@ -103,7 +103,7 @@ public:
 	TObjectPtr<ADMSCharacterBase> CharacterRef;
 
 	/**
-	 *
+	 * 
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 EXP;
@@ -132,16 +132,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCardDatas(const TArray<FDMSCardData>& InDatas);
 
+	/**
+	 * Setup defaults of player state ( component, effect, ... ).
+	 */
 	UFUNCTION(BlueprintCallable)
 	void SetupDefaults();
 
 	/**
-	 *
+	 * Setup player's CardManager.
 	 */
 	void SetupCardContainers();
 
 	/**
-	 *
+	 * Setup player's AttributeManager.
 	 */
 	void SetupAttributes();
 

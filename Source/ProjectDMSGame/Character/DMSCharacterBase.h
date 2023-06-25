@@ -18,7 +18,7 @@ class PROJECTDMSGAME_API ADMSCharacterBase : public ADMSEffectorActorBase , publ
 	
 protected:
 	/**
-	 * Character's data.
+	 * Casted character's data.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<const UDMSCharacterDefinition> CharacterDefinition;
@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 
+	/**
+	 * Reference of current location.
+	 */
 	TObjectPtr<ADMSLocationBase> CurrentLocationRef;
 public:	
 	// Sets default values for this actor's properties

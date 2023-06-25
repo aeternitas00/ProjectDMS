@@ -73,6 +73,9 @@ enum class EDMSComparisonOperator : uint8
 	BO_Greater UMETA(DisplayName = ">")
 };
 
+/**
+ * LEGACY 
+ */
 UENUM()
 enum class EDMSObjectSelectorFlag : uint8
 {
@@ -88,7 +91,7 @@ enum class EDMSObjectSelectorFlag : uint8
 };
 
 /**
- *
+ * LEGACY
  */
 UENUM()
 enum class EDMSPresetTargetFlag : uint8

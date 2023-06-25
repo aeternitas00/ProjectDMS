@@ -6,3 +6,12 @@ FPrimaryAssetId UDMSSpawnableDataBase::GetPrimaryAssetId() const
 {
 	return FPrimaryAssetId();
 }
+
+void ADMSSpawnableBase::Initialize(const UDMSSpawnableDataBase* inData)
+{
+	OriginalData = inData; 
+	
+	OnInitialized();
+	
+	PostInitialize();
+}

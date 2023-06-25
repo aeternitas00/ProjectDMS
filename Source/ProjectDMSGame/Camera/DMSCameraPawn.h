@@ -12,6 +12,9 @@ class UFloatingPawnMovement;
 class UPlayerMappableInputConfig;
 struct FInputActionValue;
 
+/**
+ * 카메라 제어용 폰 ( 기본 플로팅 폰 대신 마우스 휠 사용 확대 축소 인풋 처리 구현하기 위함 )
+ */
 UCLASS()
 class PROJECTDMSGAME_API ADMSCameraPawn : public APawn
 {

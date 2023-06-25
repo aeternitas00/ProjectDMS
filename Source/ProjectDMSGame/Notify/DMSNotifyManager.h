@@ -90,7 +90,7 @@ protected:
 	TMap<UDMSSequence*, FForcedEICounter> ForcedEIMap;
 
 	/**
-	 * 
+	 * Widget class to be used for selecting response objects in the game mode that uses this notify manager.
 	 */
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TSubclassOf<UDMSNotifyRespondentSelector> ResponsedObjectSelector;
@@ -151,19 +151,17 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 
 	TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> ResponsedObjects;
 
-
+	// Collect responsed objects 
 	for (auto& Object : NotifyObjects)
 	{
 		//DMS_LOG_SIMPLE(TEXT("%s"), (Object==nullptr) ? TEXT("Object is NULLPTR") : *(Object->GetObject()->GetName()));
 		Object->OnNotifyReceived(ResponsedObjects, NotifyData->IsChainableSequence(), NotifyData);
 	}
 
-	//OnResponseCompleted[NotifyData].BindUObject();
-
 	OnResponseCompleted.Add(NotifyData);	ForcedEIMap.Add(NotifyData);
 	OnResponseCompleted[NotifyData].BindLambda(ResponseCompleted);
 
-	// DO FORCED FIRST
+	// Search forced effects
 	TArray<TScriptInterface<IDMSEffectorInterface>> Keys;
 	ResponsedObjects.GetKeys(Keys);
 	for (auto& ResponsedObject : Keys) {
@@ -180,15 +178,10 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 		}
 	}
 
-
-	if (ForcedEIMap[NotifyData].ForcedObjects.Num() == 0)
+	// Process forced effect first, followed by processing the selectable.
+	if (ForcedEIMap[NotifyData].ForcedObjects.Num() != 0)
 	{
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
-
-		ForcedEIMap.Remove(NotifyData);
-		CreateRespondentSelector(NotifyData, ResponsedObjects);
-	}
-	else {
+		// Resolve forced effect
 		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATING FORCED EFFECT START  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
 
 		ForcedEIMap[NotifyData].NonForcedObjects = ResponsedObjects;
@@ -198,7 +191,8 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 			auto temp = std::move(ForcedEIMap[Sequence]);
 			ForcedEIMap.Remove(Sequence);
 			CreateRespondentSelector(Sequence, temp.NonForcedObjects);
-			});
+		});
+
 		ForcedEIMap[NotifyData].IteratingDelegate.BindLambda([this](UDMSSequence* Sequence) {
 
 			if (ForcedEIMap[Sequence].Count == ForcedEIMap[Sequence].ForcedObjects.Num()) {
@@ -213,8 +207,18 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 				ForcedEIMap[Sequence].Count++;
 				UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
 			}
-			});
+		});
 
 		ForcedEIMap[NotifyData].IteratingDelegate.ExecuteIfBound(NotifyData);
+	}
+	else 
+	{
+		// No remaining forced effect
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+
+		ForcedEIMap.Remove(NotifyData);
+
+		// Selectable effects.
+		CreateRespondentSelector(NotifyData, ResponsedObjects);
 	}
 }

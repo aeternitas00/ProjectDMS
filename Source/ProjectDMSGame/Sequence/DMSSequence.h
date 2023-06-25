@@ -67,13 +67,13 @@ protected:
 	/**
 	 * The player or actor that triggers the sequence.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourcePlayer, BlueprintSetter = SetSourcePlayer)
 	TObjectPtr<AActor> SourcePlayer;
 
 	/**
 	 * The object that triggers the sequence.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourceObject , BlueprintSetter = SetSourceObject)
 	TObjectPtr<UObject> SourceObject; 
 
 	/**
@@ -130,21 +130,46 @@ public:
 	TObjectPtr<UDMSSequence> ParentSequence;
 	TObjectPtr<UDMSSequence> ChildSequence;
 
+	/**
+	 * Simple getter of SourceObject
+	 */
 	UFUNCTION(BlueprintCallable)
 	UObject* GetSourceObject();
 
+	/**
+	 * Simple getter of SourcePlayer
+	 */
 	UFUNCTION(BlueprintCallable)
 	AActor* GetSourcePlayer();
 
-	UFUNCTION(BlueprintCallable)
-	TArray<TScriptInterface<IDMSEffectorInterface>> GetTargets() const;
-
+	/**
+	 * Simple setter of SourceObject
+	 * @return	True if NewSourceObject implements IDMSEffectorInterface.
+	 */
 	UFUNCTION(BlueprintCallable)
 	bool SetSourceObject(UObject* NewSourceObject);
 
+	/**
+	 * Simple setter of SourcePlayer
+	 * @return	true if NewSourcePlayer implements IDMSEffectorInterface.
+	 */
 	UFUNCTION(BlueprintCallable)
 	bool SetSourcePlayer(AActor* NewSourcePlayer);
 
+	/**
+	 * Get the player controller to handle selections for this sequence.
+	 */
+	APlayerController* GetWidgetOwner();
+
+	/**
+	 * Simple getter of Targets.
+	 */
+	UFUNCTION(BlueprintCallable)
+	TArray<TScriptInterface<IDMSEffectorInterface>> GetTargets() const;
+
+	/**
+	 * Check sequence is chainable
+	 */
 	bool IsChainableSequence();
 
 	/**
@@ -185,10 +210,11 @@ public:
 	 */
 	void OnSequenceFinish(bool Successed);
 
+	/**
+	 * Resets the progress of the widget queue and starts over.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void RedoWidgetQueue();
-
-	APlayerController* GetWidgetOwner();
 
 	// ================================ //
 	//		Delegates and binders.
@@ -201,8 +227,6 @@ protected:
 	FOnSequenceFinishedDynamic OnSequenceFinishedDynamic;
 
 public:
-
-
 	template<typename FuncInitiated>
 	void AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated);
 
@@ -214,7 +238,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& OnSequenceFinished);
-
 
 // STEP 
 public:

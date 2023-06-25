@@ -140,6 +140,9 @@ public:
 	 */
 	IDMSEffectorInterface* GetApplyTarget();
 
+	/**
+	 * Setting the state of EffectInstance to pending kill (it will be cleaned up at the end of the sequence tree).
+	 */
 	void SetToPendingKill();
 
 	/** 
@@ -156,7 +159,6 @@ public:
 	 */
 	void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
 
-	//void SetupPreviewDummy();
 	/**
 	 * Create new sequence from owning datas. ( node, datas .... )
 	 * @param	SourceTweak						Source object of new sequence.
@@ -165,7 +167,9 @@ public:
 	 */
 	UDMSSequence* CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence);
 
+
 	// =========== INTERFACE FUNCTION =========== // 
+	// 
 	//virtual UObject* GetObject() override { return this; } 
 	virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }

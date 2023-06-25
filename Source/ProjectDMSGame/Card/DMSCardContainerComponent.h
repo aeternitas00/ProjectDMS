@@ -63,8 +63,14 @@ class PROJECTDMSGAME_API UDMSCardContainerComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+
+	/**
+	 * Name of container 
+	 * NOTE :: TO TAG?
+	 */
 	UPROPERTY()
 	FName ContainerName;
+
 	/**
 	 * Wrapper of card array. 
 	 */

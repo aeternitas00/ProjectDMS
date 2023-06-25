@@ -9,36 +9,41 @@
 #include "DMSSaveGame.generated.h"
 
 /**
- * 
+ *	Save data per player profile.
  */
 UCLASS()
 class PROJECTDMSGAME_API UDMSSaveGame : public USaveGame
 {
 	GENERATED_BODY()
+
 public:
+
+	// Decklist ( original card data asset, attached effects, ~~~ )
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	TArray<FDMSCardData> SavedCardDatas;
-	// Decklist ( original card data asset, attached effects, ~~~ )
 
 	// Character datas ( exp, ~~ )
-		// Character datas ( exp, ~~ )
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FDMSPlayerCharacterData	SavedCharacterData;
 
 
 	// Scenario datas ( campain progress, ~~ )
+
 	/**
-	 *
+	 *	Experince point
 	 */
 	UPROPERTY(BlueprintReadWrite)
 	int32 EXP;
 
 	/**
-	 *
+	 *	Current Level
 	 */
 	UPROPERTY(BlueprintReadWrite)
 	int32 Level;
 
+	/**
+	 *	Loads card assets used by this players with [SavedCardDatas].
+	 */
 	UFUNCTION(BlueprintCallable)
 	void LoadSavedCardData();
 

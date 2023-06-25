@@ -55,16 +55,6 @@ protected:
 	TObjectPtr<UDMSCardContainerComponent> OwningContainer;
 
 public:	
-
-	// IDMSEffectorInterface Implements.
-	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
-
-	/**
-	 * 
-	 */
-	void OnInitialized_Implementation() override;
-	//virtual void PostInitialize_Implementation() override;
-
 	/**
 	 * Native Get,Setter
 	 */
@@ -74,15 +64,15 @@ public:
 	UDMSCardContainerComponent* GetOwningContainer() {return OwningContainer;}
 	void SetOwningContainer(UDMSCardContainerComponent* Container) { OwningContainer = Container;}
 
-	/// Some query functions
 
-	/**
-	 *
-	 */
-	//UFUNCTION(BlueprintCallable)
-	//bool IsCommittable();
 
-	// Attach Card to Location
+	// == Virtual functions == //
+
+	// IDMSEffectorInterface Implements.
+	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
+
+	virtual void OnInitialized_Implementation() override;
+	//virtual void PostInitialize_Implementation() override;
 
 	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc);
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation();

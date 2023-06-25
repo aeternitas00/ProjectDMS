@@ -40,7 +40,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = LEGACY)
 	EDMSObjectSelectorFlag TargetFlag;
 
-
+	/**
+	 * Target generator that get the other side of objects for condition checking.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Condition)
 	TObjectPtr<UDMSTargetGenerator> CompareTargetGenerator;
 
@@ -56,8 +58,7 @@ public:
 	 * Get compare target with TargetFlag.
 	 * @param	CheckingGameObject
 	 * @param	CurrentSequence
-	 * @param	iTargetFlag
-	 * @return	
+	 * @return	Compare targets[]
 	 */
 	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const UDMSTargetGenerator* TargetGenerator) const;
 

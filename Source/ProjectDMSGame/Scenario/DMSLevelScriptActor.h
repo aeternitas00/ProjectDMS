@@ -18,8 +18,9 @@ struct FDMSLocatingActors
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TArray<TObjectPtr<ADMSSpawnableBase>> Actors;
 };
+
 /**
- * 
+ * Actor for script processing within the DMS level.
  */
 UCLASS()
 class PROJECTDMSGAME_API ADMSLevelScriptActor : public ALevelScriptActor, public IDMSEffectorInterface
@@ -30,22 +31,41 @@ protected:
 	//UPROPERTY()
 	//TObjectPtr<ADMSLevelScriptActor> PreviewDummy;
 
+	/**
+	 * Targets managed by script actors among the actors placed in the world, excluding those used for cosmetics.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	TMap<TObjectPtr<ADMSLocationBase>, FDMSLocatingActors> SpawnedDMSActors;
-
+	
+	/**
+	 * LEGACY
+	 */
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly, Category = Scenario)
 	TArray<TObjectPtr<ADMSLocationBase>> SpawnedLocations;
 
+	/**
+	 * LEGACY
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Scenario)
 	TArray<TObjectPtr<ADMSLocationBase>> StartingLocations;
 
+	/**
+	 * Whether the starting location can be chosen by the player.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Scenario)
 	bool bIsStartingSelectable;
 
+	/**
+	 * Effect manager for handling scenario effects.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Scenario)
 	class UDMSEIManagerComponent* EffectManagerComponent;
 
 public:
+
+	/**
+	 * Rules & effect of scenario.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Scenario)
 	TMap<FGameplayTag, TObjectPtr<UDMSEffectSet>> ScenarioRules;
 
