@@ -22,12 +22,12 @@ UDMSSequence::UDMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr) {
 	// 
 }
 
-UObject* UDMSSequence::GetSourceObject()
+UObject* UDMSSequence::GetSourceObject() const
 {
 	return SourceObject;
 }
 
-AActor* UDMSSequence::GetSourcePlayer()
+AActor* UDMSSequence::GetSourcePlayer() const
 {
 	return SourcePlayer;
 }

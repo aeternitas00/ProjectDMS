@@ -38,7 +38,7 @@ protected:
 	/**
 	 * The player state ID of the player who owns the ownership of this actor.
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, BlueprintGetter = GetOwnerID , BlueprintSetter = SetOwnerID)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, BlueprintGetter = GetOwnerID)
 	int32 OwnerID;
 
 public:
@@ -46,7 +46,7 @@ public:
 	 * Simple getter of OwnerID
 	 */
 	UFUNCTION(BlueprintCallable)
-	int32 GetOwnerID() {return OwnerID;}
+	int32 GetOwnerID() const {return OwnerID;}
 
 	/**
 	 * Simple setter of OwnerID
@@ -58,7 +58,7 @@ public:
 	 * Simple getter of OriginalData
 	 */
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE const UDMSSpawnableDataBase* GetOriginalData(){return OriginalData;}
+	FORCEINLINE const UDMSSpawnableDataBase* GetOriginalData() const {return OriginalData;}
 
 	/**
 	 * Initialization function for the actor using the OriginalData.

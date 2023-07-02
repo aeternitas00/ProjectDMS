@@ -67,13 +67,13 @@ protected:
 	/**
 	 * The player or actor that triggers the sequence.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourcePlayer, BlueprintSetter = SetSourcePlayer)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourcePlayer)
 	TObjectPtr<AActor> SourcePlayer;
 
 	/**
 	 * The object that triggers the sequence.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourceObject , BlueprintSetter = SetSourceObject)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourceObject)
 	TObjectPtr<UObject> SourceObject; 
 
 	/**
@@ -134,13 +134,13 @@ public:
 	 * Simple getter of SourceObject
 	 */
 	UFUNCTION(BlueprintCallable)
-	UObject* GetSourceObject();
+	UObject* GetSourceObject() const;
 
 	/**
 	 * Simple getter of SourcePlayer
 	 */
 	UFUNCTION(BlueprintCallable)
-	AActor* GetSourcePlayer();
+	AActor* GetSourcePlayer() const;
 
 	/**
 	 * Simple setter of SourceObject
