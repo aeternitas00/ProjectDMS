@@ -57,7 +57,7 @@ enum class EDMSTimingFlag : uint8
 	T_Before UMETA(DisplayName = "Before"),
 	T_During UMETA(DisplayName = "During"),
 	T_After UMETA(DisplayName = "After"),
-	T_Null UMETA(DisplayName = "NULL (Undefined)"),
+	T_Null UMETA(DisplayName = "Null (Any)"),
 };
 
 /*

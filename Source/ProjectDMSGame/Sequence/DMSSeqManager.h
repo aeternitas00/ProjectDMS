@@ -61,7 +61,7 @@ public:
 		UObject* SourceObject, 
 		AActor* SourcePlayer,
 		UDMSEffectNode* EffectNode, 
-		TArray<TScriptInterface<IDMSEffectorInterface>> Targets = TArray<TScriptInterface<IDMSEffectorInterface>>(),
+		TArray<TScriptInterface<IDMSEffectorInterface>> Targets,
 		UDMSDataObjectSet* Datas = nullptr, 
 		UDMSSequence* ParentSequence = nullptr
 	);	
