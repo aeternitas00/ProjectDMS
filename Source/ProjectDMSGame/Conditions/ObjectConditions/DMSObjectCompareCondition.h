@@ -66,7 +66,7 @@ public:
 
 };
 
-UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Target has Source Object"))
+UCLASS(BlueprintType, meta = (DisplayName = "Comparer : Targets Arr has Source Object"))
 class UDMSObjectComparer_IsTarget : public UDMSObjectComparer
 {
 	GENERATED_BODY()
