@@ -32,14 +32,6 @@ class PROJECTDMSGAME_API UDMSObjectConditionBase : public UDMSConditionObject
 public:
 	UDMSObjectConditionBase();
 
-//	virtual void PostInitProperties() override;
-
-	/**
-	 * Flag that how to get target from checking sequence.
-	 */
-	UPROPERTY(EditDefaultsOnly, Category = LEGACY)
-	EDMSObjectSelectorFlag TargetFlag;
-
 	/**
 	 * Target generator that get the other side of objects for condition checking.
 	 */
@@ -52,8 +44,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Condition)
 	bool bAllObjectMustPassed;
 
-
-
 	/**
 	 * Get compare target with TargetFlag.
 	 * @param	CheckingGameObject
@@ -61,10 +51,6 @@ public:
 	 * @return	Compare targets[]
 	 */
 	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const UDMSTargetGenerator* TargetGenerator) const;
-
-	UFUNCTION(BlueprintNativeEvent, Category = LEGACY)
-	TArray<UObject*> GetCustomCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
-	TArray<UObject*> GetCustomCompareTarget_Implementation(UObject* Caller, UDMSSequence* iSeq) const;
 
 	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
 

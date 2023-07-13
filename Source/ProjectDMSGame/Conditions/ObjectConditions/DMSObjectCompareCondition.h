@@ -24,11 +24,6 @@ class PROJECTDMSGAME_API UDMSObjectCompareCondition : public UDMSObjectCondition
 public:
 	UDMSObjectCompareCondition();
 
-//	virtual void PostInitProperties() override;
-
-	UPROPERTY(EditDefaultsOnly, Category = LEGACY)
-	EDMSObjectSelectorFlag SourceFlag;
-
 	/**
 	 * Target generator that get the other side of objects for comparison.
 	 * TODO :: RENAME?

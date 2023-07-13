@@ -109,7 +109,6 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 			DMS_LOG_SIMPLE(TEXT("CONDITION DUPLICATION FAILED"));
 		Node->bIsChainableEffect = false;
 		Node->bForced = Effect->bForced;
-		Node->PresetTargetFlag = EDMSPresetTargetFlag::PTF_Self;
 		Node->TargetGenerator = NewObject<UDMSTargetGenerator_SourceObject>(Node,"TargetGenerator");
 		//AActor* CardOwner = GetOwningPlayer();
 

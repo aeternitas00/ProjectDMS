@@ -15,40 +15,7 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 	
 	Rv = TargetGenerator == nullptr ? TArray<UObject*>() : TargetGenerator->GetTargets(Caller, iSeq);
 
-	//switch (iTargetFlag)
-	//{
-	//case EDMSObjectSelectorFlag::OSF_Default:
-	//	Rv.Add(Caller);
-	//	break;
-	//case EDMSObjectSelectorFlag::OSF_OwningPlayer:
-	//	if (Caller->Implements<UDMSEffectorInterface>())
-	//		Rv.Add(Cast<IDMSEffectorInterface>(Caller)->GetOwningPlayer());
-	//	break;
-	//case EDMSObjectSelectorFlag::OSF_SourceObj:
-	//	Rv.Add(iSeq->GetSourceObject());
-	//	break;
-	//case EDMSObjectSelectorFlag::OSF_SourceCtr:
-	//	Rv.Add(iSeq->GetSourcePlayer());
-	//	break;
-	//case EDMSObjectSelectorFlag::OSF_Target:
-	//	for (auto Interface : iSeq->GetTargets())
-	//		Rv.Add(Interface->GetObject());
-	//	break;
-	//case EDMSObjectSelectorFlag::OSF_EffectNode:
-	//	//Rv.Append(iSeq->OriginalEffectNode->GenerateConditionTarget(iSeq));
-	//	break;
-	//case EDMSObjectSelectorFlag::OSF_Custom:
-	//	Rv.Append(GetCustomCompareTarget(Caller,iSeq));
-	//	break;
-	//default:	break;
-	//}
-
 	return Rv;
-}
-
-TArray<UObject*> UDMSObjectConditionBase::GetCustomCompareTarget_Implementation(UObject* Caller, UDMSSequence* iSeq) const
-{
-	return TArray<UObject*>();
 }
 
 bool UDMSObjectConditionBase::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const

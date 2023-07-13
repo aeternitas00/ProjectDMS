@@ -266,14 +266,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
 	TArray<UDMSEffectDefinition*> EffectDefinitions;
 
-	/** 
-	 * ** DEPRECATED **
-	 * Flag for the effect's predefined target.
-	 * ex ) effect that Add some resource to "Actvivated player". 
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = LEGACY)
-	EDMSPresetTargetFlag PresetTargetFlag;
-
 	/**
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
 	 * The EffectNode uses this target generator to set the target of sequence by itself.
@@ -288,8 +280,6 @@ public:
 	TObjectPtr<UDMSTargetGenerator> ApplyTargetGenerator;
 
 	/**
-	 * ** DEPRECATED ** 
-	 * Using with "PresetTargetFlag" property.
 	 * Use this when effect has to set targets with runtime data ( Sequence ).
 	 * @param	iSequence						Current sequence.
 	 * @return	Generated targets.
@@ -323,7 +313,7 @@ public:
 	 */
 	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner);
 
-//=================== Child effect ===================//
+	//=================== Child effect ===================//
 
 	/**
 	 * Effect's child(sub) effect
@@ -336,6 +326,11 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIsChainableEffect;
+
+	//=================== Step ===================//
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TArray<TObjectPtr<UDMSSequenceStep>> UsingSteps;
 
 	//virtual void Serialize(FArchive& Ar) override;
 	//virtual void PostInitProperties() override;
