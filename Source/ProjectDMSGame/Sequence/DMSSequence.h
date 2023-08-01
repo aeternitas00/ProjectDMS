@@ -243,7 +243,7 @@ public:
 public:
 	TObjectPtr<UDMSSequenceStep> CurrentStep;
 	// 이펙트 노드에서 스텝 리스트 정해놓고 생성?
-	void InitializeSteps(const TArray<TSubclassOf<UDMSSequenceStep>>& StepClasses);
+	void InitializeSteps(const TArray<TObjectPtr<UDMSSequenceStep>>& StepClasses);
 
 	void RunStepQueue();
 

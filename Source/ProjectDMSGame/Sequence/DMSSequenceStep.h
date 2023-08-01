@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ProjectDMS.h"
+#include "Sequence/DMSSequence.h"
 #include "Common/DMSCommons.h"
 #include "DMSSequenceStep.generated.h"
 
@@ -66,6 +67,8 @@ public:
 	FOnStepProgressChanged OnStepFinished_Delegate;
 	
 	void ProgressComplete();
+
+	friend class UDMSSequence;
 };
 
 template<typename Func>

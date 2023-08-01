@@ -77,18 +77,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RunSequence(UDMSSequence* iSeq);
 
-protected:
-	/**
-	 * Apply param sequence.
-	 * @param	Sequence				
-	 */
-	void ApplySequence(UDMSSequence* Sequence);
-
 	/**
 	 * Complete param sequence. sort of cleanup.
 	 * @param	Sequence
 	 */
 	void CompleteSequence(UDMSSequence* Sequence, bool Successed = true);
+
+protected:
+
+	/**
+	 * Apply param sequence.
+	 * @param	Sequence				
+	 */
+	//void ApplySequence(UDMSSequence* Sequence);
 
 	/**
 	 * Clear sequence tree. 

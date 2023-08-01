@@ -2,6 +2,7 @@
 
 
 #include "Sequence/DMSSequenceStep.h"
+
 #include "Notify/DMSNotifyManager.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
@@ -9,9 +10,6 @@ UDMSSequenceStep::UDMSSequenceStep()
 {
 	Progress=EDMSTimingFlag::T_Before;
 }
-
-
-
 
 void UDMSSequenceStep::RunStep()
 {
@@ -28,10 +26,13 @@ void UDMSSequenceStep::OnStepInitiated()
 void UDMSSequenceStep::OnStepFinished()
 {
 	OnStepFinished_Delegate.Broadcast();
+	NextStep->RunStep();
 }
 
 void UDMSSequenceStep::Progress_Before()
 {
+	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress Before ===="), *GetClass()->GetName());
+
 	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
 
 	check(NotifyManager);
@@ -42,6 +43,8 @@ void UDMSSequenceStep::Progress_Before()
 
 void UDMSSequenceStep::Progress_During()
 {
+	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress During ===="), *GetClass()->GetName());
+
 	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
 
 	check(NotifyManager);
@@ -52,6 +55,8 @@ void UDMSSequenceStep::Progress_During()
 
 void UDMSSequenceStep::Progress_After()
 {
+	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress After ===="), *GetClass()->GetName());
+
 	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
 
 	check(NotifyManager);

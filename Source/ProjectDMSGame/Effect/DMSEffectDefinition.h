@@ -200,10 +200,6 @@ public:
 	 * It returns a container that consolidates all the tags associated with the node like EffectDefinition's one (e.g., tags for the target attribute in ED_ModAtt). 
 	 */
 	FGameplayTagContainer GenerateTagContainer();
-	
-	UFUNCTION(BlueprintNativeEvent)
-	TArray<TSubclassOf<UDMSSequenceStep>> GetStepRequirements();
-	virtual TArray<TSubclassOf<UDMSSequenceStep>> GetStepRequirements_Implementation();
 
 	/**
 	 * Execute param tag query to generated node tag container.
@@ -288,22 +284,12 @@ public:
 	static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
 
 	/**
-	 * Implement custom generating method when targets cannot be generated with PTF.
-	 * @param	iSequence						Current sequence.
-	 * @return	Generated targets.
-	 */
-	UFUNCTION(BlueprintNativeEvent, Category = LEGACY)
-	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget(UDMSSequence* iSequence);
-	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateTarget_Implementation(UDMSSequence* iSequence);
-	
-	/**
 	 * Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
 	 * @param	iSequence						Current sequence.
 	 * @return	Generated apply targets.
 	 */
-	UFUNCTION(BlueprintNativeEvent, Category = LEGACY)
+	UFUNCTION(BlueprintCallable, Category = Effect)
 	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget(UDMSSequence* iSequence);
-	virtual TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget_Implementation(UDMSSequence* iSequence);
 
 	/**
 	 * Create paired selector widget from "EffectDefinitions".
@@ -329,8 +315,11 @@ public:
 
 	//=================== Step ===================//
 
+public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	TArray<TObjectPtr<UDMSSequenceStep>> UsingSteps;
+	TArray<TObjectPtr<UDMSSequenceStep>> StepRequirements;
+
+
 
 	//virtual void Serialize(FArchive& Ar) override;
 	//virtual void PostInitProperties() override;

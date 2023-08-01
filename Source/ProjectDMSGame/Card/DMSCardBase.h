@@ -55,6 +55,7 @@ protected:
 	TObjectPtr<UDMSCardContainerComponent> OwningContainer;
 
 public:	
+
 	/**
 	 * Native Get,Setter
 	 */

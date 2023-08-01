@@ -98,12 +98,13 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 	uint8 idx = 0;
 	for (auto EffectWrapper : EffectNodes)
 	{
-		UDMSEffectNode* Node = ActivatorNodeGenerator(SetName, idx++);
 		auto Effect = EffectWrapper->GetEffectNode();
 
-		Node->Rename(nullptr, this);
 		if (Effect->Conditions == nullptr)
-			DMS_LOG_SIMPLE(TEXT("NO CONDITION"));
+			{DMS_LOG_SIMPLE(TEXT("NO CONDITION"));continue;}
+
+		UDMSEffectNode* Node = ActivatorNodeGenerator(SetName, idx++);
+		Node->Rename(nullptr, this);
 		Node->Conditions = DuplicateObject(Effect->Conditions, Node);
 		if (Node->Conditions == nullptr)
 			DMS_LOG_SIMPLE(TEXT("CONDITION DUPLICATION FAILED"));

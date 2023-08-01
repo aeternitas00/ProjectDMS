@@ -19,12 +19,6 @@ AActor* UDMSEffectDefinition::GetPlayerFocusTarget_Implementation(UDMSSequence* 
 	return iEI->GetTypedOuter<AActor>();
 }
 
-TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateTarget_Implementation(UDMSSequence* iSequence)
-{
-	TArray<TScriptInterface<IDMSEffectorInterface>> rv;
-	return rv;
-}
-
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence)
 {	
 	TArray<TScriptInterface<IDMSEffectorInterface>> TempTarget;
@@ -40,7 +34,7 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 	return TempTarget;
 }
 
-TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateApplyTarget_Implementation(UDMSSequence* iSequence)
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateApplyTarget(UDMSSequence* iSequence)
 {
 	if (ApplyTargetGenerator == nullptr) return iSequence->GetTargets();
 
@@ -59,6 +53,8 @@ UDMSEffectNode::UDMSEffectNode() : bForced(false), bIsChainableEffect(true)
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 
+	StepRequirements.Add(CreateDefaultSubobject<UDMSSequenceStep_Decision>("DecisionStep"));
+	StepRequirements.Add(CreateDefaultSubobject<UDMSSequenceStep_Apply>("ApplyStep"));
 }
 
 FGameplayTagContainer UDMSEffectNode::GenerateTagContainer()
@@ -68,17 +64,6 @@ FGameplayTagContainer UDMSEffectNode::GenerateTagContainer()
 	for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
 
 	return ctn;
-}
-
-TArray<TSubclassOf<UDMSSequenceStep>> UDMSEffectNode::GetStepRequirements_Implementation()
-{
-	//TArray<TSubclassOf<UDMSSequenceStep>> rv;
-	//for (auto ED : EffectDefinitions)
-	//{
-	//	rv.Append(ED->GetStepRequirements());
-	//}
-
-	return { UDMSSequenceStep_Decision::StaticClass(),UDMSSequenceStep_Apply::StaticClass() };
 }
 
 bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)

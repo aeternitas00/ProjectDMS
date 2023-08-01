@@ -2,6 +2,16 @@
 
 
 #include "Sequence/Steps/DMSSequenceStep_Decision.h"
+#include "Sequence/DMSSeqManager.h"
+
+#include "Library/DMSCoreFunctionLibrary.h"
+#include "Effect/DMSEffectDefinition.h"
+#include "Effect/DMSEffectHandler.h"
+#include "Effect/DMSEffectInstance.h"
+#include "GameFramework/PlayerController.h"
+#include "Selector/DMSDecisionWidget.h"
+
+
 
 //void UDMSSequenceStep_Decision::OnBefore_Implementation()
 //{
@@ -13,64 +23,70 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 {
 	// Behavior
 
-	//TArray<UDMSConfirmWidgetBase*> Widgets;
-	////if (!iSeq->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
-	////	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
-	//Widgets.Append(TArray<UDMSConfirmWidgetBase*>(iSeq->OriginalEffectNode->CreateDecisionWidgets(WidgetOwner)));
-	//if (!iSeq->SetupWidgetQueue(Widgets))
-	//{
-	//	DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
-	//	CompleteSequence(iSeq);
-	//	return;
-	//}
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
 
-	//iSeq->RunWidgetQueue(
-	//	[&, WidgetOwner](UDMSSequence* pSequence) {
-	//		// Decision confirmed or no decision widget
 
-	//		// Create EI first for preview.
-	//		UDMSCoreFunctionLibrary::GetDMSEffectHandler()->CreateEffectInstance(pSequence, pSequence->OriginalEffectNode);
+	auto WidgetOwner = OwnerSequence->GetWidgetOwner();
 
-	//		// ====== Effect Data Selection Step ====== //
-	//		// ( ex. User set value of effect's damage amount , ... )
-	//		if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(pSequence, WidgetOwner))))
-	//		{
-	//			DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
-	//			CompleteSequence(pSequence);
-	//			return;
-	//		}
+	TArray<UDMSConfirmWidgetBase*> Widgets;
+	//if (!OwnerSequence->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
+	//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
+	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(OwnerSequence->OriginalEffectNode->CreateDecisionWidgets(OwnerSequence,WidgetOwner)));
+	if (!OwnerSequence->SetupWidgetQueue(Widgets))
+	{
+		DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
+		SM->CompleteSequence(OwnerSequence);
+		return;
+	}
 
-	//		pSequence->RunWidgetQueue(
-	//			[this](UDMSSequence* pSequenceN) {
-	//				// Selection completed
+	OwnerSequence->RunWidgetQueue(
+		[=](UDMSSequence* pSequence) {
+			// Decision confirmed or no decision widget
 
-	//				// Run sequence ( Notifying steps and apply )
-	//				DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequenceN->GetName());
-	//				ApplySequence(pSequenceN);
+			// Create EI first.
+			EH->CreateEffectInstance(pSequence, pSequence->OriginalEffectNode);
 
-	//				// Prevent self notifing 
-	//				for (auto EI : pSequenceN->EIs)
-	//				{
-	//					EI->ChangeEIState(EDMSEIState::EIS_Default);
-	//				}
-	//			},
-	//			[this](UDMSSequence* pSequenceN) {
-	//				// Selection Canceled
-	//				DMS_LOG_SIMPLE(TEXT("Selection Canceled"));
-	//				CompleteSequence(pSequenceN);
-	//				// Cleanup this seq
-	//			} // Runwidgetqueue end.
-	//			);
-	//	},
+			// ====== Effect Data Selection Step ====== //
+			// ( ex. User set value of effect's damage amount , ... )
+			if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(pSequence, WidgetOwner))))
+			{
+				DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
+				SM->CompleteSequence(pSequence);
+				return;
+			}
 
-	//	[this](UDMSSequence* pSequence) {
-	//		// Decision canceled
-	//		DMS_LOG_SIMPLE(TEXT("Decision canceled"));
-	//		// Cleanup this seq
-	//		CompleteSequence(pSequence);
-	//		//...
-	//	}
-	//	);
+			pSequence->RunWidgetQueue(
+				[=](UDMSSequence* pSequenceN) {
+					// Selection completed
+
+					// Run sequence ( Notifying steps and apply )
+					DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequenceN->GetName());
+
+					// Prevent self notifing 
+					for (auto EI : pSequenceN->EIs)
+					{
+						EI->ChangeEIState(EDMSEIState::EIS_Default);
+					}
+				},
+				[=](UDMSSequence* pSequenceN) {
+					// Selection Canceled
+					DMS_LOG_SIMPLE(TEXT("Selection Canceled"));
+					SM->CompleteSequence(pSequenceN);
+					// Cleanup this seq
+				} // Runwidgetqueue end.
+				);
+		},
+
+		[=](UDMSSequence* pSequence) {
+			// Decision canceled
+			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
+			// Cleanup this seq
+			SM->CompleteSequence(pSequence);
+			//...
+		}
+	);
+
 	ProgressComplete();
 }
 

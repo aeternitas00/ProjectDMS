@@ -80,14 +80,16 @@ void UDMSSequence::AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Sign
 	OnSequenceFinishedDynamic.Add(iOnSequenceFinished);
 }
 
-void UDMSSequence::InitializeSteps(const TArray<TSubclassOf<UDMSSequenceStep>>& StepClasses)
+void UDMSSequence::InitializeSteps(const TArray<TObjectPtr<UDMSSequenceStep>>& OriginalSteps)
 {
 	CurrentStep=nullptr;
-	if (StepClasses.Num()==0) return;
-	InstancedSteps.Empty(StepClasses.Num());
-	for (auto& StepClass : StepClasses)
-		InstancedSteps.Add(NewObject<UDMSSequenceStep>(this,StepClass));
-
+	if (OriginalSteps.Num()==0) return;
+	InstancedSteps.Empty(OriginalSteps.Num());
+	for (auto& OriginalStep : OriginalSteps) {
+		auto InstancedStep = DuplicateObject<UDMSSequenceStep>(OriginalStep, this);
+		InstancedStep->OwnerSequence = this;
+		InstancedSteps.Add(InstancedStep);
+	}
 	CurrentStep = InstancedSteps[0];
 	for (int i=0 ; i< InstancedSteps.Num()-1;i++)
 		InstancedSteps[i]->NextStep = InstancedSteps[i+1];
@@ -95,6 +97,12 @@ void UDMSSequence::InitializeSteps(const TArray<TSubclassOf<UDMSSequenceStep>>& 
 
 void UDMSSequence::RunStepQueue()
 {
+	DMS_LOG_SIMPLE(TEXT("==== %s : RUN Step Queue ===="), *GetName());
+	if (CurrentStep==nullptr) 
+	{
+		DMS_LOG_SIMPLE(TEXT("==== %s : Current Step was nullptr ===="), *GetName());
+		return;
+	}
 	CurrentStep->RunStep();
 }
 
