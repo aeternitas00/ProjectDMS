@@ -27,7 +27,7 @@ bool UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterf
 
 void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects)
 {
-	FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->Progress);
+	FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->GetCurrentProgress());
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : Create Respondent Selector  ===="), *CurrentSequence->GetName(), *TimingStr);
 
 	if (ResponsedObjects.Num() == 0) {

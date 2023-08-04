@@ -17,16 +17,19 @@ void UDMSSequenceStep::RunStep()
 	Progress_Before();
 }
 
-
 void UDMSSequenceStep::OnStepInitiated()
 {
 	OnStepInitiated_Delegate.Broadcast();
 }
 
-void UDMSSequenceStep::OnStepFinished()
+void UDMSSequenceStep::OnStepFinished(bool bSuccessed)
 {
-	OnStepFinished_Delegate.Broadcast();
-	NextStep->RunStep();
+	OnStepFinished_Delegate.Broadcast(bSuccessed);
+	
+	if (bSuccessed && NextStep != nullptr) NextStep->RunStep();
+	
+	else OwnerSequence->CompleteStepQueue(bSuccessed);
+		
 }
 
 void UDMSSequenceStep::Progress_Before()
@@ -83,9 +86,11 @@ void UDMSSequenceStep::OnAfter_Implementation()
 	ProgressComplete();
 }
 
-void UDMSSequenceStep::ProgressComplete()
+void UDMSSequenceStep::ProgressComplete(bool bSuccessed)
 {
-	if (Progress == EDMSTimingFlag::T_After) { OnStepFinished();return; }
+	if (!bSuccessed) { OnStepFinished(false); return; }
+
+	if (Progress == EDMSTimingFlag::T_After) { OnStepFinished(); return; }
 	Progress = EDMSTimingFlag((uint8)Progress + 1);
 	switch (Progress)
 	{

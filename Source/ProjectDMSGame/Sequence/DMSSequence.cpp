@@ -14,12 +14,17 @@
 
 UDMSSequence::UDMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr) {
 
-	Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
+	//Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
 	SequenceState = EDMSSequenceState::SS_Default;
 
 	ParentSequence = nullptr;
 	ChildSequence = nullptr;
 	// 
+}
+
+EDMSTimingFlag UDMSSequence::GetCurrentProgress() 
+{
+	return CurrentStep->Progress;
 }
 
 UObject* UDMSSequence::GetSourceObject() const
@@ -85,11 +90,13 @@ void UDMSSequence::InitializeSteps(const TArray<TObjectPtr<UDMSSequenceStep>>& O
 	CurrentStep=nullptr;
 	if (OriginalSteps.Num()==0) return;
 	InstancedSteps.Empty(OriginalSteps.Num());
+
 	for (auto& OriginalStep : OriginalSteps) {
 		auto InstancedStep = DuplicateObject<UDMSSequenceStep>(OriginalStep, this);
 		InstancedStep->OwnerSequence = this;
 		InstancedSteps.Add(InstancedStep);
 	}
+
 	CurrentStep = InstancedSteps[0];
 	for (int i=0 ; i< InstancedSteps.Num()-1;i++)
 		InstancedSteps[i]->NextStep = InstancedSteps[i+1];
@@ -145,6 +152,12 @@ void UDMSSequence::OnSequenceFinish(bool Successed)
 	temp_Dynamic.Broadcast(Successed);
 	// Cleanup 
 	
+}
+
+void UDMSSequence::CompleteStepQueue(bool Successed)
+{
+	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+	SeqManager->CompleteSequence(this, Successed); 
 }
 
 void UDMSSequence::RedoWidgetQueue()

@@ -7,14 +7,8 @@
 
 bool UDMSSeqTimingCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
-	return (CurrentSequence->Progress == Timing || Timing == EDMSTimingFlag::T_Null)
+	return (CurrentSequence->GetCurrentProgress() == Timing || Timing == EDMSTimingFlag::T_Null)
 		&& CurrentSequence->OriginalEffectNode->ExecuteTagQuery(EffectTagQuery)
-	;
-
-	// TODO :: Check Step
-
-	return (CurrentSequence->CurrentStep->Progress == Timing || Timing == EDMSTimingFlag::T_Null)
-		&& CurrentSequence->GenerateTagContainer().MatchesQuery(EffectTagQuery)
 	;
 }
 

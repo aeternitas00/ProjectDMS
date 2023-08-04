@@ -141,7 +141,7 @@ public:
 template<typename FuncCompleted>
 void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted)
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : BROADCASTING  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : BROADCASTING  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress()));
 
 	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled) {
 		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
@@ -182,12 +182,12 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 	if (ForcedEIMap[NotifyData].ForcedObjects.Num() != 0)
 	{
 		// Resolve forced effect
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATING FORCED EFFECT START  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATING FORCED EFFECT START  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress()));
 
 		ForcedEIMap[NotifyData].NonForcedObjects = ResponsedObjects;
 
 		ForcedEIMap[NotifyData].Delegate.BindLambda([this](UDMSSequence* Sequence) {
-			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->Progress));
+			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
 			auto temp = std::move(ForcedEIMap[Sequence]);
 			ForcedEIMap.Remove(Sequence);
 			CreateRespondentSelector(Sequence, temp.NonForcedObjects);
@@ -196,11 +196,11 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 		ForcedEIMap[NotifyData].IteratingDelegate.BindLambda([this](UDMSSequence* Sequence) {
 
 			if (ForcedEIMap[Sequence].Count == ForcedEIMap[Sequence].ForcedObjects.Num()) {
-				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->Progress));
+				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
 				ForcedEIMap[Sequence].Delegate.ExecuteIfBound(Sequence);
 			}
 			else {
-				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->Progress));
+				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
 
 				auto NewSeq = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Value->CreateSequenceFromNode(ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Key, Sequence);
 				NewSeq->AddToOnSequenceFinished_Native([this, Sequence](bool) {ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence); });
@@ -214,7 +214,7 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 	else 
 	{
 		// No remaining forced effect
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->Progress));
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress()));
 
 		ForcedEIMap.Remove(NotifyData);
 

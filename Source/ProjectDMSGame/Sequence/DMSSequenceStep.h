@@ -35,14 +35,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSSequence> OwnerSequence;
 
-	template<typename Func>
-	void InitializeDelegates(Func&& FuncStepInitiated, Func&& StepFinished);
+	template<typename FuncInitiated, typename FuncFinished>
+	void InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished);
 
 	void RunStep();
 
 	// IMPLEMENTS :: Step Behaviour
 	virtual void OnStepInitiated();
-	virtual void OnStepFinished();
+	virtual void OnStepFinished(bool bSuccessed = true);
 
 	void Progress_Before();
 	void Progress_During();
@@ -61,19 +61,20 @@ public:
 	void OnAfter();
 	virtual void OnAfter_Implementation();
 
-	DECLARE_MULTICAST_DELEGATE(FOnStepProgressChanged);
+	DECLARE_MULTICAST_DELEGATE(FOnStepInitiated);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
 
-	FOnStepProgressChanged OnStepInitiated_Delegate;
-	FOnStepProgressChanged OnStepFinished_Delegate;
+	FOnStepInitiated OnStepInitiated_Delegate;
+	FOnStepFinished OnStepFinished_Delegate;
 	
-	void ProgressComplete();
+	void ProgressComplete(bool bSuccessed = true);
 
 	friend class UDMSSequence;
 };
 
-template<typename Func>
-void UDMSSequenceStep::InitializeDelegates(Func&& FuncStepInitiated, Func&& StepFinished)
+template<typename FuncInitiated, typename FuncFinished>
+void UDMSSequenceStep::InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished)
 {
-	OnStepInitiated_Delegate.AddLambda(FuncStepInitiated);
+	OnStepInitiated_Delegate.AddLambda(StepInitiated);
 	OnStepFinished_Delegate.AddLambda(StepFinished);
 }

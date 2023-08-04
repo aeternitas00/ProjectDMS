@@ -17,8 +17,8 @@ FString UDMSCoreFunctionLibrary::GetTimingString(const EDMSTimingFlag& Flag)
 {
 	switch (Flag)	{
 		case EDMSTimingFlag::T_Before:	return "BEFORE";
-		case EDMSTimingFlag::T_During:return "DURING"; ;
-		case EDMSTimingFlag::T_After:return "AFTER"; 
+		case EDMSTimingFlag::T_During:	return "DURING"; ;
+		case EDMSTimingFlag::T_After:	return "AFTER"; 
 		default: return "";
 	}
 }

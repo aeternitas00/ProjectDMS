@@ -36,14 +36,23 @@ enum class EDMSSequenceState : uint8
 	SS_Ignored UMETA(DisplayName = "Ignored")
 };
 
-DECLARE_DELEGATE_OneParam(FOnSequenceFinished_Signature, bool);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnSequenceFinished, bool);
 
 DECLARE_DYNAMIC_DELEGATE(FOnSequenceInitiatedDynamic_Signature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceInitiatedDynamic);
 
+DECLARE_DELEGATE_OneParam(FOnSequenceFinished_Signature, bool);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSequenceFinished, bool);
+
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Successed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Successed);
+
+//DECLARE_DELEGATE_OneParam(FOnStepFinished_Signature, bool);
+//DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
+//
+//DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStepFinishedDynamic_Signature, bool, Successed);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStepFinishedDynamic, bool, Successed);
+
+
 
 /** 
  * 	========================================
@@ -95,8 +104,11 @@ public:
 	/**
 	 * Current timing of this sequence. DEPRECATED :: [Step]
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EDMSTimingFlag Progress;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//EDMSTimingFlag Progress;
+
+	UFUNCTION(BlueprintCallable)
+	EDMSTimingFlag GetCurrentProgress();
 
 	/**
 	 * Effect that will be applied when the 'sequence is applied'.
@@ -209,6 +221,8 @@ public:
 	 * Executed when sequence is finished.
 	 */
 	void OnSequenceFinish(bool Successed);
+
+	void CompleteStepQueue(bool Successed);
 
 	/**
 	 * Resets the progress of the widget queue and starts over.
