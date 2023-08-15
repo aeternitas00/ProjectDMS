@@ -15,7 +15,7 @@ void UDMSEffect_CancelEffect::Work_Implementation(UDMSSequence* SourceSequence, 
 	DMS_LOG_SIMPLE(TEXT("CancelEffect Working"));
 	auto SearchSeq = SourceSequence->ParentSequence;
 	while (SearchSeq !=nullptr){
-		if (SearchSeq->OriginalEffectNode->ExecuteTagQuery(CancelTargetTagQuery)) {
+		if (SearchSeq->GenerateTagContainer().MatchesQuery(CancelTargetTagQuery)) {
 			SearchSeq->SequenceState = EDMSSequenceState::SS_Canceled;
 			break;
 		}
@@ -29,7 +29,7 @@ void UDMSEffect_IgnoreEffect::Work_Implementation(UDMSSequence* SourceSequence, 
 {
 	auto SearchSeq = SourceSequence->ParentSequence;
 	while (SearchSeq != nullptr) {
-		if (SearchSeq->OriginalEffectNode->ExecuteTagQuery(IgnoreTargetTagQuery)) {
+		if (SearchSeq->GenerateTagContainer().MatchesQuery(IgnoreTargetTagQuery)) {
 			if (IgnoreWholeSequence) 
 				SearchSeq->SequenceState = EDMSSequenceState::SS_Ignored;
 			else

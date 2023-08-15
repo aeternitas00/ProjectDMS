@@ -148,6 +148,12 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 	bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 {
 	bool rv=false;
+
+	if (EffectNode->bIgnoreNotify) {
+		//DMS_LOG_SIMPLE(TEXT("Ignore Notify"));
+		return rv;
+	}
+
 	if (!iChainable && !EffectNode->bForced) return rv;
 
 	if (CurrentState == EDMSEIState::EIS_Pending) return rv;

@@ -40,7 +40,14 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 	if (Sequence->GetTargets().Num() == 0)
 		Sequence->SetTarget(UDMSEffectNode::GeneratePresetTarget(EffectNode,Sequence));
 
-	for (auto TargetObject : EffectNode->GenerateApplyTarget(Sequence))
+	auto ApplyTargets = EffectNode->GenerateApplyTarget(Sequence);
+
+	if (ApplyTargets.Num() == 0)
+	{
+		DMS_LOG_SCREEN(TEXT("%s : ApplyTargets is emtpy "), *EffectNode->GetName());
+	}
+
+	for (auto TargetObject : ApplyTargets)
 	{
 		UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(TargetObject.GetObject());
 		EffectInstance->Initialize(EffectNode, Sequence);

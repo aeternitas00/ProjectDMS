@@ -53,7 +53,9 @@ bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEff
 	for (auto OwnEI : OwnEffectInstances)
 	{
 		if (OwnEI->OnNotifyReceived(ResponsedObjects, iChainable, Seq, SourceTweak)){ 
-			rv=true;
+
+			if (OwnEI->EffectNode->bIgnoreNotify){ DMS_LOG_SIMPLE(TEXT("%s : Ignore Notify"), *OwnEI->GetName());}
+			else {rv = true;}
 		}
 	}
 	return rv;
@@ -110,6 +112,7 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 			DMS_LOG_SIMPLE(TEXT("CONDITION DUPLICATION FAILED"));
 		Node->bIsChainableEffect = false;
 		Node->bForced = Effect->bForced;
+		Node->bIgnoreNotify = Effect->bIgnoreNotify;
 		Node->TargetGenerator = NewObject<UDMSTargetGenerator_SourceObject>(Node,"TargetGenerator");
 		//AActor* CardOwner = GetOwningPlayer();
 

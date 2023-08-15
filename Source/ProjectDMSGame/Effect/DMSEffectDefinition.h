@@ -220,8 +220,15 @@ public:
 	 * Has a choice about triggering the effect ? 
 	 * true : Forced trigger when meet the conditions. / false : Can choose Y / N of trigger.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "!bIgnoreNotify", EditConditionHides))
 	bool bForced;
+
+	/**
+	 * 
+	 * 
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	bool bIgnoreNotify;
 
 	/**
 	 * Effect's Cost. It's different with cost of playing card.

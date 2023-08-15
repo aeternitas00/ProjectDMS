@@ -11,13 +11,21 @@
 #include "GameFramework/PlayerController.h"
 #include "Selector/DMSDecisionWidget.h"
 
+UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_Decision, "Step.Decision");
 
+UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
+{
+	StepTag = TAG_DMS_Step_Decision;
+}
 
-//void UDMSSequenceStep_Decision::OnBefore_Implementation()
-//{
-//	// Behavior
-//	ProgressComplete();
-//}
+void UDMSSequenceStep_Decision::OnBefore_Implementation()
+{
+	// Behavior
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+
+	DMS_LOG_SCREEN(TEXT("==-- DecisionStep_BEFORE [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	ProgressComplete();
+}
 
 void UDMSSequenceStep_Decision::OnDuring_Implementation()
 {
@@ -26,6 +34,7 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
 
+	DMS_LOG_SCREEN(TEXT("==-- DecisionStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 
 	auto WidgetOwner = OwnerSequence->GetWidgetOwner();
 
@@ -36,7 +45,8 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 	if (!OwnerSequence->SetupWidgetQueue(Widgets))
 	{
 		DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
-		SM->CompleteSequence(OwnerSequence);
+		ProgressComplete(false);
+		//SM->CompleteSequence(OwnerSequence);
 		return;
 	}
 
@@ -45,14 +55,15 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 			// Decision confirmed or no decision widget
 
 			// Create EI first.
-			EH->CreateEffectInstance(pSequence, pSequence->OriginalEffectNode);
+			//EH->CreateEffectInstance(pSequence, pSequence->OriginalEffectNode);
 
 			// ====== Effect Data Selection Step ====== //
 			// ( ex. User set value of effect's damage amount , ... )
 			if (!pSequence->SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*>(pSequence->OriginalEffectNode->CreateSelectors(pSequence, WidgetOwner))))
 			{
 				DMS_LOG_SIMPLE(TEXT("Can't setup Effect selector"));
-				SM->CompleteSequence(pSequence);
+				ProgressComplete(false);
+				//SM->CompleteSequence(pSequence);
 				return;
 			}
 
@@ -68,11 +79,15 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 					{
 						EI->ChangeEIState(EDMSEIState::EIS_Default);
 					}
+					
+					ProgressComplete();
+
 				},
 				[=](UDMSSequence* pSequenceN) {
 					// Selection Canceled
 					DMS_LOG_SIMPLE(TEXT("Selection Canceled"));
-					SM->CompleteSequence(pSequenceN);
+					ProgressComplete(false);
+					//SM->CompleteSequence(pSequenceN);
 					// Cleanup this seq
 				} // Runwidgetqueue end.
 				);
@@ -82,16 +97,19 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 			// Decision canceled
 			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
 			// Cleanup this seq
-			SM->CompleteSequence(pSequence);
+			ProgressComplete(false);
+			//SM->CompleteSequence(pSequence);
 			//...
 		}
 	);
 
-	ProgressComplete();
+	//ProgressComplete();
 }
 
-//void UDMSSequenceStep_Decision::OnAfter_Implementation()
-//{
-//	// Behavior
-//	ProgressComplete();
-//}
+void UDMSSequenceStep_Decision::OnAfter_Implementation()
+{
+	// Behavior
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+	DMS_LOG_SCREEN(TEXT("==-- DecisionStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	ProgressComplete();
+}

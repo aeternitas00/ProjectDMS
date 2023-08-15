@@ -88,7 +88,13 @@ void UDMSSequenceStep::OnAfter_Implementation()
 
 void UDMSSequenceStep::ProgressComplete(bool bSuccessed)
 {
-	if (!bSuccessed) { OnStepFinished(false); return; }
+	//auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+	//
+
+	if (!bSuccessed) { 
+		DMS_LOG_SIMPLE(TEXT("==== %s : [%s] Failed ===="), *OwnerSequence->GetName(), *GetName());
+		OnStepFinished(false); return; 
+	}
 
 	if (Progress == EDMSTimingFlag::T_After) { OnStepFinished(); return; }
 	Progress = EDMSTimingFlag((uint8)Progress + 1);

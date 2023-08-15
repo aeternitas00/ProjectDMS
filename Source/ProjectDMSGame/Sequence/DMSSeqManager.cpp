@@ -32,8 +32,8 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UDMSSequence* ParentSequence
 )
 {
-	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
-	if (EH==nullptr) { return nullptr; }
+	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();	check(EH);
+	//if (EH==nullptr) { return nullptr; }
 
 	// Initialize new sequence
 	UDMSSequence* Sequence = NewObject<UDMSSequence>(this/*, FName(*SeqName)*/);
@@ -89,9 +89,12 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
 
+	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();	check(EH);
+
 	CurrentSequence = iSeq;
 	CurrentSequence->OnSequenceInitiate();
 
+	EH->CreateEffectInstance(iSeq, iSeq->OriginalEffectNode);
 	CurrentSequence->RunStepQueue();
 	
 	// ====== Decision Making Step ====== //

@@ -5,6 +5,8 @@
 #include "Sequence/DMSSequenceStep.h"
 #include "DMSSequenceStep_Apply.generated.h"
 
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_Apply)
+
 /**
  * Smallest unit of a sequence.
  */
@@ -14,8 +16,10 @@ class PROJECTDMSGAME_API UDMSSequenceStep_Apply : public UDMSSequenceStep
 	GENERATED_BODY()
 
 public:
+	UDMSSequenceStep_Apply();
+
 	virtual void OnBefore_Implementation() override;
-	virtual void OnDuring_Implementation();
-	virtual void OnAfter_Implementation();
+	virtual void OnDuring_Implementation() override;
+	virtual void OnAfter_Implementation() override;
 };
 

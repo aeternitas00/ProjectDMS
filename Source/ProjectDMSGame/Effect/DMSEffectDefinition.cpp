@@ -49,7 +49,7 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateApplyTar
 	return TempTarget;
 }
 
-UDMSEffectNode::UDMSEffectNode() : bForced(false), bIsChainableEffect(true) 
+UDMSEffectNode::UDMSEffectNode() : bForced(false), bIsChainableEffect(true), bIgnoreNotify(false)
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 

@@ -50,7 +50,7 @@ struct FDMSSelectorQueue
 	 * @param	OwnerSeq					Owner sequence of selector queue.
 	 * @return	true if Setup was successful.
 	 */
-	bool SetupQueue(UDMSSequence* OwnerSeq);
+	__declspec(noinline) bool SetupQueue(UDMSSequence* OwnerSeq);
 
 	/**
 	 * Add confirm widget to SelectorQueue.
