@@ -18,6 +18,8 @@ class PROJECTDMSGAME_API UDMSSequenceStep_Apply : public UDMSSequenceStep
 public:
 	UDMSSequenceStep_Apply();
 
+	virtual void Progress_During() override;
+
 	virtual void OnBefore_Implementation() override;
 	virtual void OnDuring_Implementation() override;
 	virtual void OnAfter_Implementation() override;

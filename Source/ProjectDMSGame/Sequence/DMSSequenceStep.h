@@ -17,36 +17,51 @@ class PROJECTDMSGAME_API UDMSSequenceStep : public UObject
 
 public:
 	UDMSSequenceStep();
+
 	/**
 	 * Current timing of this step.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSTimingFlag Progress;
 	
+	/**
+	 * Main tag of step. ( like name )
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayTag StepTag;
 
 	/**
-	 * Pseudo list
+	 * Reference of next step for Pseudo list,
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSSequenceStep> NextStep;
 
+	/**
+	 * Reference owner sequence.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSSequence> OwnerSequence;
 
+	/**
+	 * Initiate step delegates.
+	 * @param	StepInitiated			
+	 * @param	StepFinished			
+	 */
 	template<typename FuncInitiated, typename FuncFinished>
 	void InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished);
 
+	/**
+	 * Run this step.
+	 */
 	void RunStep();
 
 	// IMPLEMENTS :: Step Behaviour
 	virtual void OnStepInitiated();
 	virtual void OnStepFinished(bool bSuccessed = true);
 
-	void Progress_Before();
-	void Progress_During();
-	void Progress_After();
+	virtual void Progress_Before();
+	virtual void Progress_During();
+	virtual void Progress_After();
 
 	// Actual step's behavior, Must call ProgressComplete while progress ending.
 	UFUNCTION(BlueprintNativeEvent)

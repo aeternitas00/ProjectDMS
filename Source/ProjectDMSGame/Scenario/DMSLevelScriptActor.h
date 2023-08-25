@@ -72,9 +72,15 @@ public:
 public:
 	ADMSLevelScriptActor(/*const FObjectInitializer& ObjectInitializer*/);
 
+	/**
+	 * 
+	 */
 	UFUNCTION(BlueprintCallable)
 	void InitializeDMSGame(/*UPARAM(ref) TArray<ADMSLocationBase*>& Locations*/);
 
+	/**
+	 *
+	 */
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSLocationBase*> GetStartingLocations(/*UPARAM(ref) TArray<ADMSLocationBase*>& Locations*/);
 

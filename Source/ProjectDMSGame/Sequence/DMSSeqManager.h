@@ -144,9 +144,18 @@ public:
 	void OnSequenceTreeCompleted();
 
 	// TEST
+
+	/**
+	 * Testing
+	 */
 	UPROPERTY()
 	TMap<TObjectPtr<UDMSSequence>, TObjectPtr<UDMSDataObjectSet>> DataObjectMap;
 
+	/**
+	 * Starting with a parameter sequence, traversing the sequence tree to a data set containing a given tag as a key.
+	 * @param	StartingSequence			Starting node of sequence tree.
+	 * @param	SerachingTag				Searching target tag.
+	 */
 	UFUNCTION(BlueprintCallable)
 	UDMSDataObjectSet* SearchNearestDataObject(UDMSSequence* StartingSequence, FGameplayTag SerachingTag) const;
 

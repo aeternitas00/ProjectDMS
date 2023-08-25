@@ -83,6 +83,8 @@ struct FDMSSelectorQueue
 	 */
 	void RunNextSelector();
 
-
+	/**
+	 * Redo widget queue.
+	 */
 	void RedoWidgetQueue();
 };

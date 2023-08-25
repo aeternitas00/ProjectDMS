@@ -154,9 +154,10 @@ void UDMSSequence::OnSequenceFinish(bool Successed)
 	
 }
 
-void UDMSSequence::CompleteStepQueue(bool Successed)
+void UDMSSequence::OnStepQueueCompleted(bool Successed)
 {
 	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+
 	SeqManager->CompleteSequence(this, Successed); 
 }
 

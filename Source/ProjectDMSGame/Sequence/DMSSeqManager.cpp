@@ -97,6 +97,8 @@ void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
 	EH->CreateEffectInstance(iSeq, iSeq->OriginalEffectNode);
 	CurrentSequence->RunStepQueue();
 	
+	// LEGACY 
+	
 	// ====== Decision Making Step ====== //
 	// ( ex. User Choose target, ... )
 		

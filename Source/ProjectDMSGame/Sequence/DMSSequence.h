@@ -219,16 +219,20 @@ public:
 
 	/**
 	 * Executed when sequence is finished.
+	 * @param	Successed				Whether the sequence was successful or not.
 	 */
 	void OnSequenceFinish(bool Successed);
-
-	void CompleteStepQueue(bool Successed);
 
 	/**
 	 * Resets the progress of the widget queue and starts over.
 	 */
 	UFUNCTION(BlueprintCallable)
 	void RedoWidgetQueue();
+
+	/**
+	 * Generate tag container for notifying.
+	 */
+	FGameplayTagContainer GenerateTagContainer();
 
 	// ================================ //
 	//		Delegates and binders.
@@ -253,17 +257,34 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& OnSequenceFinished);
 
-// STEP 
+	// STEP 
 public:
+	/**
+	 * Reference of CurrentStep.
+	 */
 	TObjectPtr<UDMSSequenceStep> CurrentStep;
-	// 이펙트 노드에서 스텝 리스트 정해놓고 생성?
+
+	/**
+	 * Instancing & initiate steps with effect node.
+	 * @param	StepClasses				Step classes to instantiate & initialize.
+	 */
 	void InitializeSteps(const TArray<TObjectPtr<UDMSSequenceStep>>& StepClasses);
 
+	/**
+	 * Run registered steps synchronously.
+	 */
 	void RunStepQueue();
 
-	FGameplayTagContainer GenerateTagContainer();
+	/**
+	 * Executed when step queue completed.
+	 * @param	Successed				Whether the step queue was successful or not..
+	 */
+	void OnStepQueueCompleted(bool Successed);
 
 protected:	
+	/**
+	 * Store instanced steps.
+	 */
 	TArray<TObjectPtr<UDMSSequenceStep>> InstancedSteps;
 	
 	friend class UDMSSequenceStep;

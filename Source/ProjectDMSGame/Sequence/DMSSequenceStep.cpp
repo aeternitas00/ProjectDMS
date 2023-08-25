@@ -13,6 +13,7 @@ UDMSSequenceStep::UDMSSequenceStep()
 
 void UDMSSequenceStep::RunStep()
 {
+	Progress=EDMSTimingFlag::T_Before;
 	OnStepInitiated();
 	Progress_Before();
 }
@@ -26,9 +27,9 @@ void UDMSSequenceStep::OnStepFinished(bool bSuccessed)
 {
 	OnStepFinished_Delegate.Broadcast(bSuccessed);
 	
-	if (bSuccessed && NextStep != nullptr) NextStep->RunStep();
+	if (bSuccessed && NextStep != nullptr) { OwnerSequence->CurrentStep = NextStep; NextStep->RunStep(); }
 	
-	else OwnerSequence->CompleteStepQueue(bSuccessed);
+	else OwnerSequence->OnStepQueueCompleted(bSuccessed);
 		
 }
 
@@ -40,8 +41,7 @@ void UDMSSequenceStep::Progress_Before()
 
 	check(NotifyManager);
 
-	NotifyManager->Broadcast(OwnerSequence,[this](){OnBefore();});
-	
+	NotifyManager->Broadcast(OwnerSequence, [this]() {OnBefore();});
 }
 
 void UDMSSequenceStep::Progress_During()
@@ -53,7 +53,6 @@ void UDMSSequenceStep::Progress_During()
 	check(NotifyManager);
 
 	NotifyManager->Broadcast(OwnerSequence, [this]() {OnDuring();});
-	
 }
 
 void UDMSSequenceStep::Progress_After()
@@ -65,7 +64,6 @@ void UDMSSequenceStep::Progress_After()
 	check(NotifyManager);
 
 	NotifyManager->Broadcast(OwnerSequence, [this]() {OnAfter();});
-
 }
 
 void UDMSSequenceStep::OnBefore_Implementation()
