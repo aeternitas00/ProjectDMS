@@ -4,7 +4,7 @@
 #include "EffectSet/TypeBehavior/DMSEffectNode_Type_Skill.h"
 #include "Conditions/DMSConditionObject.h"
 #include "Conditions/DMSSequenceCondition.h"
-#include "Conditions/ObjectConditions/DMSObjectCompareCondition.h"
+#include "Conditions/DMSObjectCompareCondition.h"
 #include "EffectSet/DMSEffectNode_PlayCard.h"
 #include "EffectSet/DMSEffect_MoveCard.h"
 

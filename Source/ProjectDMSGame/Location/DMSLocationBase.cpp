@@ -4,6 +4,7 @@
 #include "Location/DMSLocationBase.h"
 #include "Scenario/DMSScenarioData.h"
 #include "Location/DMSLocationData.h"
+#include "Common/DMSGameTags.h"
 #include "Effect/DMSEIManagerComponent.h"
 
 ADMSLocationBase::ADMSLocationBase(const FObjectInitializer& ObjectInitializer):ADMSEffectorActorBase(ObjectInitializer)

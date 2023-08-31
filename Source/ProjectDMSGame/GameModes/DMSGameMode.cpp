@@ -26,12 +26,12 @@
 #include "GameFramework/GameStateBase.h"
 #include "Common/DMSSpawnableDataBase.h"
 
-ADMSGameMode::ADMSGameMode()
+ADMSGameMode::ADMSGameMode() : ADMSGameModeBase()
 {
-	EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("CardEffectHandler"));
-	NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));
-	PhaseManagerClass= UDMSPhaseManager::StaticClass();
-	SequenceManagerClass = UDMSSeqManager::StaticClass();
+	//EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("CardEffectHandler"));
+	//NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));
+	//PhaseManagerClass= UDMSPhaseManager::StaticClass();
+	//SequenceManagerClass = UDMSSeqManager::StaticClass();
 }
 
 void ADMSGameMode::BeginPlay()
@@ -45,7 +45,7 @@ void ADMSGameMode::BeginPlay()
 	//DMSGameState=GetGameState<ADMSGameState>();
 }
 
-ADMSGameState* ADMSGameMode::GetDMSGameState() { return GetGameState<ADMSGameState>(); }
+//ADMSGameState* ADMSGameMode::GetDMSGameState() { return GetGameState<ADMSGameState>(); }
 
 void ADMSGameMode::PreInitializeComponents()
 {
@@ -82,14 +82,14 @@ ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardDat
 	return SpawnedCard;
 }
 
-void ADMSGameMode::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object)
-{
-	NotifyManager->RegisterNotifyObject(Object);
-}
+//void ADMSGameMode::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object)
+//{
+//	NotifyManager->RegisterNotifyObject(Object);
+//}
 
 void ADMSGameMode::SetupDMSGame_Implementation()
 {
-	auto GS = GetDMSGameState();
+	ADMSGameState* GS = Cast<ADMSGameState>(GetDMSGameState());
 	check(GS);
 
 	// Setup game system thingys.

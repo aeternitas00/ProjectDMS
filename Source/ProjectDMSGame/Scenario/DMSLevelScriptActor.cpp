@@ -24,7 +24,7 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
 	check(GM);
 
-	auto GS = GM->GetDMSGameState();
+	ADMSGameState* GS = Cast<ADMSGameState>(GM->GetDMSGameState());
 	check(GS);
 
 	GS->Locations = SpawnedLocations;

@@ -5,14 +5,14 @@
 #include "Player/DMSPlayerState.h"
 #include "Player/DMSPlayerController.h"
 #include "Camera/DMSCameraPawn.h"
-#include "Effect/DMSEIManagerComponent.h"
+//#include "Effect/DMSEIManagerComponent.h"
 
-ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
-{
-	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
-
-}
+//ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
+//{
+//	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
+//	//EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
+//
+//}
 
 void ADMSGameState::SetupDefaults()
 {
@@ -32,19 +32,19 @@ void ADMSGameState::SetPlayersFocusTarget(AActor* Target)
 		PC->GetCameraPawn()->FocusToLocation(FVector(OrLoc.X, Loc.Y, Loc.Z));
 	}
 }
-
-bool ADMSGameState::SetLeaderPlayer(int32 inLeaderID)
-{
-	for (auto& Player : PlayerArray)
-	{
-		if (inLeaderID == Player->GetPlayerId())
-		{
-			LeaderPlayerID= inLeaderID;
-			return true;
-		}
-	}
-	return false;
-}
+//
+//bool ADMSGameState::SetLeaderPlayer(int32 inLeaderID)
+//{
+//	for (auto& Player : PlayerArray)
+//	{
+//		if (inLeaderID == Player->GetPlayerId())
+//		{
+//			LeaderPlayerID= inLeaderID;
+//			return true;
+//		}
+//	}
+//	return false;
+//}
 
 TArray<ADMSPlayerState*> ADMSGameState::GetDMSPlayers()
 {
@@ -71,19 +71,19 @@ TArray<ADMSPlayerController*> ADMSGameState::GetDMSPlayerControllers()
 
 	return rv;
 }
-
-APlayerState* ADMSGameState::FindPlayerFromId(int32 OwnerID)
-{
-	for (auto& Player : PlayerArray)
-	{
-		if (OwnerID == Player->GetPlayerId())
-			return Player;
-	}
-	return nullptr;
-}
-
-APlayerController* ADMSGameState::FindPlayerControllerFromId(int32 OwnerID)
-{
-	return FindPlayerFromId(OwnerID) == nullptr ? FindPlayerFromId(LeaderPlayerID)->GetPlayerController() : FindPlayerFromId(OwnerID)->GetPlayerController();
-}
-
+//
+//APlayerState* ADMSGameState::FindPlayerFromId(int32 OwnerID)
+//{
+//	for (auto& Player : PlayerArray)
+//	{
+//		if (OwnerID == Player->GetPlayerId())
+//			return Player;
+//	}
+//	return nullptr;
+//}
+//
+//APlayerController* ADMSGameState::FindPlayerControllerFromId(int32 OwnerID)
+//{
+//	return FindPlayerFromId(OwnerID) == nullptr ? FindPlayerFromId(LeaderPlayerID)->GetPlayerController() : FindPlayerFromId(OwnerID)->GetPlayerController();
+//}
+//

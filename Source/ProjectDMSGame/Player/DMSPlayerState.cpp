@@ -14,7 +14,7 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "Character/DMSCharacterBase.h"
 
-#include "Library/DMSCoreFunctionLibrary.h"
+#include "Library/DMSGameFunctionLibrary.h"
 
 ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
 {
@@ -59,7 +59,7 @@ void ADMSPlayerState::SetCardDatas(const TArray<FDMSCardData>& InDatas)
 	for (auto& Data : OriginalCardDatas) 
 	{
 		Data.LoadCardDefinition(); 
-		UDMSCoreFunctionLibrary::SetDataOwner(Data,this);
+		UDMSGameFunctionLibrary::SetCardDataOwner(Data,this);
 	}
 }
 

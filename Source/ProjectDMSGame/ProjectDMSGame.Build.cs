@@ -16,19 +16,20 @@ public class ProjectDMSGame : ModuleRules
 
 		PrivateIncludePaths.AddRange(
 			new string[] {
-			}
+            }
 		);
 
 		PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core", 
 			"CoreUObject", 
 			"Engine",
-			"GameplayTags",
 			"InputCore",
-			"ModularGameplay",
+            "GameplayTags",
+            "ModularGameplay",
 			"GameFeatures",
-			"Niagara"
-		});
+			"Niagara",
+            "DMSCore"
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

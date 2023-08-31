@@ -25,10 +25,6 @@
 			]
 		},
 		{
-			"Name": "DMSVanillaCards",
-			"Enabled": false
-		},
-		{
 			"Name": "ModularGameplay",
 			"Enabled": true
 		},
@@ -46,6 +42,10 @@
 		},
 		{
 			"Name": "LiveLink",
+			"Enabled": true
+		},
+		{
+			"Name": "DMSCore",
 			"Enabled": true
 		}
 	]

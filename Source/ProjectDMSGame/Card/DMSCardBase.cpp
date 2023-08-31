@@ -10,7 +10,7 @@
 #include "Effect/DMSEffectHandler.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "Effect/DMSEffectorInterface.h"
-#include "EffectSet/DMSEffect_ActivateEffect.h"
+#include "Effect/DMSEffect_ActivateEffect.h"
 #include "EffectSet/DMSEffectNode_PlayCard.h"
 #include "Player/DMSPlayerController.h"
 #include "Card/DMSCardManagerComponent.h"

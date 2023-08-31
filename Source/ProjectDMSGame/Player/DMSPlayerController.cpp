@@ -10,7 +10,7 @@
 
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
-#include "EffectSet/DMSEffect_ActivateEffect.h"
+#include "Effect/DMSEffect_ActivateEffect.h"
 
 #include "Card/DMSCardDefinition.h"
 #include "Card/DMSCardBase.h"

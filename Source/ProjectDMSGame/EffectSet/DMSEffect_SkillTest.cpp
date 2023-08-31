@@ -4,7 +4,7 @@
 #include "EffectSet/DMSEffect_SkillTest.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Attribute/DMSAttributeComponent.h"
-#include "Library/DMSCoreFunctionLibrary.h"
+#include "Library/DMSGameFunctionLibrary.h"
 #include "Player/DMSPlayerController.h"
 #include "Sequence/DMSSequence.h"
 #include "card/DMSCardDefinition.h"
@@ -30,7 +30,7 @@ void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDM
 	if (!SkillTestData.bGetAttributeTargetIsPlayer)	SourceActor = Cast<AActor>(iEI->SourceObject);
 	else	SourceActor = iEI->SourcePlayer;
 
-	if ( !UDMSCoreFunctionLibrary::GetAttributeFromActor(SourceActor, SkillTestData.StatName, SourceValue)){ OnWorkCompleted.ExecuteIfBound(SourceSequence, false); return;}
+	if ( !UDMSGameFunctionLibrary::GetAttributeFromActor(SourceActor, SkillTestData.StatName, SourceValue)){ OnWorkCompleted.ExecuteIfBound(SourceSequence, false); return;}
 
 	float SkillBonus =0.0f;
 
@@ -48,7 +48,7 @@ void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDM
 	}
 	else {
 		float TargetValue = 0.0f;
-		UDMSCoreFunctionLibrary::GetAttributeFromActor(Target, SkillTestData.StatName, TargetValue);
+		UDMSGameFunctionLibrary::GetAttributeFromActor(Target, SkillTestData.StatName, TargetValue);
 		SkillTestResult = SourceValue + SkillBonus - TargetValue;
 	}
 

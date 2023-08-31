@@ -14,5 +14,11 @@
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
-	"BuiltInInitialFeatureState": "Active"
+	"BuiltInInitialFeatureState": "Active",
+	"Plugins": [
+		{
+			"Name": "DMSCore",
+			"Enabled": true
+		}
+	]
 }

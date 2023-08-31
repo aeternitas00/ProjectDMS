@@ -15,6 +15,7 @@
 #include "ProjectDMS.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameModes/DMSGameModeBase.h"
 #include "DMSGameMode.generated.h"
 
 
@@ -36,7 +37,7 @@ class ADMSSpawnableBase;
  *  ========================================
  */
 UCLASS(/*Blueprintable, Config = Game*/)
-class PROJECTDMSGAME_API ADMSGameMode: public AGameModeBase
+class PROJECTDMSGAME_API ADMSGameMode: public ADMSGameModeBase
 {
 	GENERATED_BODY()
 
@@ -45,23 +46,6 @@ public:
 	//ADMSGameMode(const FObjectInitializer& ObjectInitializer);
 
 protected:
-
-	/**
-	 * Manager objects / components.
-	 */
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Instanced)
-	UDMSEffectHandler* EffectHandler;
-	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly)
-	UDMSSeqManager* SequenceManager;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
-	UDMSNotifyManager* NotifyManager;
-	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly)
-	UDMSPhaseManager* PhaseManager;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSubclassOf<UDMSSeqManager> SequenceManagerClass;
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSubclassOf<UDMSPhaseManager> PhaseManagerClass;
-
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TMap<FPrimaryAssetType, TSubclassOf<ADMSSpawnableBase>> DefaultSpawningClasses;
 
@@ -69,15 +53,9 @@ protected:
 	//ADMSGameState* DMSGameState;
 
 protected:
-
 	virtual void BeginPlay() override;
+
 public:
-	FORCEINLINE UDMSSeqManager* GetSequenceManager() {return SequenceManager;}
-	FORCEINLINE UDMSEffectHandler* GetEffectHandler() {return EffectHandler;}
-	FORCEINLINE UDMSNotifyManager* GetNotifyManager() { return NotifyManager; }
-	FORCEINLINE UDMSPhaseManager* GetPhaseManager() { return PhaseManager; }
-	UFUNCTION(BlueprintCallable,BlueprintPure,meta = (CompactNodeTitle = "DMS Game State"))
-	ADMSGameState* GetDMSGameState();
 
 	virtual void PreInitializeComponents() override;
 
@@ -92,16 +70,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	ADMSCardBase* SpawnCard(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName=TEXT("Deck"));
 	virtual ADMSCardBase* SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName = NAME_None);
-	/**
-	 *
-	 */
-	UFUNCTION(BlueprintCallable)
-	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetupDMSGame();
 	virtual void SetupDMSGame_Implementation();
 
+	// Spawn with "DMS LOCATION"
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Spawn DMS Game Actor_ID"))
 	ADMSSpawnableBase* SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
 
