@@ -47,6 +47,10 @@
 		{
 			"Name": "DMSCore",
 			"Enabled": true
+		},
+		{
+			"Name": "BlueprintRetarget",
+			"Enabled": false
 		}
 	]
 }
