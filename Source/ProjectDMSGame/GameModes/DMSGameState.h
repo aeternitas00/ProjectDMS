@@ -19,7 +19,7 @@ class PROJECTDMSGAME_API ADMSGameState : public ADMSGameStateBase
 	
 protected:
 	//UPROPERTY(BlueprintReadOnly)
-	//UDMSEIManagerComponent* EffectManagerComponent;
+	//UDMSEIManagerComponent* EIManagerComponent;
 
 	//UPROPERTY(BlueprintReadOnly)
 	//int32 LeaderPlayerID;

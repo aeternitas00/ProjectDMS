@@ -10,7 +10,7 @@
 /**
  * Smallest unit of a sequence.
  */
-UCLASS()
+UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract)
 class DMSCORE_API UDMSSequenceStep : public UObject
 {
 	GENERATED_BODY()

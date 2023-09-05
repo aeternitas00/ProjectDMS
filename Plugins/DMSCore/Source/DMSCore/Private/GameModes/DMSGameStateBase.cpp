@@ -10,7 +10,7 @@
 ADMSGameStateBase::ADMSGameStateBase(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
 {
 	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
+	EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 
 }
 

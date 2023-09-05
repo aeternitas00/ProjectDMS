@@ -19,7 +19,7 @@ class DMSCORE_API ADMSGameStateBase : public AGameStateBase, public IDMSEffector
 	
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	UDMSEIManagerComponent* EffectManagerComponent;
+	UDMSEIManagerComponent* EIManagerComponent;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 LeaderPlayerID;

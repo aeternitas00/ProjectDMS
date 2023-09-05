@@ -66,7 +66,7 @@ protected:
 	 * Manage effects that targeting players or triggered.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
+	TObjectPtr<UDMSEIManagerComponent> EIManagerComponent;
 
 	/**
 	 * Attribute component.

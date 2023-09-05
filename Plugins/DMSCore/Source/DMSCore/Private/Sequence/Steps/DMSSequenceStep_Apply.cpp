@@ -72,6 +72,8 @@ void UDMSSequenceStep_Apply::Progress_During()
 		}
 		else {
 			DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING : Failed [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+
+			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE FAILED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 			ProgressComplete(false);
 		}
 	});

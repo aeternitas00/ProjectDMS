@@ -76,7 +76,7 @@ void ADMSCardBase::OnInitialized_Implementation()
 	SetCardDefinition(Cast<UDMSCardDefinition>(OriginalData));
 
 	Super::OnInitialized_Implementation();
-	// EffectManagerComponent->CleanupOwnEffect(); ?
+	// EIManagerComponent->CleanupOwnEffect(); ?
 	// 
 
 
@@ -85,8 +85,9 @@ void ADMSCardBase::OnInitialized_Implementation()
 	TArray<FGameplayTag> Keys;
 	CardDefinition->CardEffectSets.GetKeys(Keys);
 
+
 	for(auto& Key : Keys)
-		EffectManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
+		EIManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
 }
 
 //void ADMSCardBase::PostInitialize_Implementation()

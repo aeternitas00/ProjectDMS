@@ -19,7 +19,7 @@
 ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
 {
 	CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
+	EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
 
 	DefaultStats.Add(TAG_DMS_Attribute_Resource, 10);

@@ -15,7 +15,7 @@
 
 ADMSLevelScriptActor::ADMSLevelScriptActor(/*const FObjectInitializer& ObjectInitializer*/)//:Super(ObjectInitializer)
 {
-	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
+	EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 }
 
 
@@ -56,7 +56,7 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 	TArray<FGameplayTag> Keys;
 	ScenarioRules.GetKeys(Keys);
 	for (auto& Key : Keys)
-		EffectManagerComponent->SetupOwnEffect(ScenarioRules[Key],Key);
+		EIManagerComponent->SetupOwnEffect(ScenarioRules[Key],Key);
 }
 
 TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()
@@ -69,12 +69,12 @@ TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()
 //
 //void ADMSLevelScriptActor::AttachEffectInstance(UDMSEffectInstance* EI)
 //{
-//	EffectManagerComponent->AttachEffectInstance(EI);
+//	EIManagerComponent->AttachEffectInstance(EI);
 //}
 //
 //bool ADMSLevelScriptActor::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 //{
-//	return EffectManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
+//	return EIManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
 //}
 
 UDMSEffectSet* ADMSLevelScriptActor::GetOwningEffectSet(const FGameplayTag& iSetName)

@@ -59,5 +59,5 @@ void ADMSLocationBase::OnInitialized_Implementation()
 
 	auto LocData = Cast<UDMSLocationData>(OriginalData);
 	
-	EffectManagerComponent->SetupOwnEffect(LocData->LocationEffect, TAG_DMS_EffectType_Effect);
+	EIManagerComponent->SetupOwnEffect(LocData->LocationEffect, TAG_DMS_EffectType_Effect);
 }

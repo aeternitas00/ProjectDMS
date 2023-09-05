@@ -67,7 +67,7 @@ public:
  *
  *	========================================
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class DMSCORE_API UDMSNotifyManager : public UObject
 {
 	GENERATED_BODY()

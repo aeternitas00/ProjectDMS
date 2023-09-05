@@ -28,7 +28,7 @@
 
 ADMSGameModeBase::ADMSGameModeBase()
 {
-	EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("CardEffectHandler"));
+	EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("EffectHandler"));
 	NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));
 	PhaseManagerClass= UDMSPhaseManager::StaticClass();
 	SequenceManagerClass = UDMSSeqManager::StaticClass();

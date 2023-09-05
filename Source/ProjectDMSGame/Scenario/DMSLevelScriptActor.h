@@ -59,7 +59,7 @@ protected:
 	 * Effect manager for handling scenario effects.
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = Scenario)
-	class UDMSEIManagerComponent* EffectManagerComponent;
+	class UDMSEIManagerComponent* EIManagerComponent;
 
 public:
 

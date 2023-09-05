@@ -49,7 +49,7 @@ protected:
 	/**
 	 * Manager objects / components.
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Instanced)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
 	UDMSEffectHandler* EffectHandler;
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly)
 	UDMSSeqManager* SequenceManager;

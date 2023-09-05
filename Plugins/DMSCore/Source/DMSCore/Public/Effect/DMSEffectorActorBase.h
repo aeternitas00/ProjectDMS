@@ -23,7 +23,7 @@ protected:
 	 * Actor's effector component.
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
+	TObjectPtr<UDMSEIManagerComponent> EIManagerComponent;
 	
 public:	
 

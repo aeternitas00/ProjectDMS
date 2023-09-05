@@ -26,7 +26,7 @@ class IDMSEffectorInterface;
 /**
  *	working...
  */
-UCLASS(/*ClassGroup = (Effect)*/)
+UCLASS(BlueprintType, Blueprintable/*ClassGroup = (Effect)*/)
 class DMSCORE_API UDMSEffectHandler : public UObject // or ActorComponent to attach GM
 {
 	GENERATED_BODY()
