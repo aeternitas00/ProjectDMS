@@ -62,6 +62,15 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
 		UDMSEffectInstance* EffectInstance = Cast<UDMSEffectInstance>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
 		
+		if (EffectInstance == nullptr)
+		{
+			// Widget didn't made proper data.
+			NotifyManager->CallResponseCompleted(InstancedWidget->OwnerSeq);
+			//InstancedWidget->OwnerSeq->OnSequenceFinish();
+			InstancedWidget->CloseSelector();
+			return;
+		}
+
 		// prepare for resume. ( we'll check again but except responded one.)
 		InstancedWidget->ResponsedObjects.Remove(Respondent);
 		TArray<TScriptInterface<IDMSEffectorInterface>> NewRespondents;
@@ -100,11 +109,11 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		//InstancedWidget->OwnerSeq->OnSequenceFinish();
 		InstancedWidget->CloseSelector();
 		//...
-		}, [&,InstancedWidget]() {
+		}, [NotifyManager=this , InstancedWidget]() {
 			// [ X Bttn ]
 
 			// Player choose to not run EI
-			CallResponseCompleted(InstancedWidget->OwnerSeq);
+			NotifyManager->CallResponseCompleted(InstancedWidget->OwnerSeq);
 			//InstancedWidget->OwnerSeq->OnSequenceFinish();
 			InstancedWidget->CloseSelector();
 
