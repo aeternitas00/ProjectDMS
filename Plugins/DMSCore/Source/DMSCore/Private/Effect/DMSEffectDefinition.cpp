@@ -7,11 +7,18 @@
 #include "Sequence/DMSSequence.h"
 #include "GameModes/DMSGameStateBase.h"
 #include "Effect/DMSEffectInstance.h"
+#include "Effect/DMSEffectOption.h"
 #include "Sequence/Steps/DMSSequenceStep_Decision.h"
 #include "Sequence/Steps/DMSSequenceStep_Apply.h"
 #include "Conditions/DMSConditionObject.h"
 
 
+void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
+{
+	EffectOption->ExecuteOption([=]() {
+		Work(SourceSequence, iEI, OnExecuteCompleted);
+	});
+}
 
 AActor* UDMSEffectDefinition::GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
 {

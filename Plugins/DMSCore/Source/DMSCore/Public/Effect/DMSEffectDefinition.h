@@ -20,6 +20,7 @@
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
 
+class UDMSEffectOption;
 class UDMSSequenceStep;
 class UDMSDecisionWidget;
 class UDMSDataObjectSet;
@@ -48,7 +49,7 @@ struct FDMSEffectValueDef
 };
 
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnWorkCompleted, UDMSSequence*, SourceSequence, bool, Successed);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
 
 /**
  * 	========================================
@@ -84,7 +85,12 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	FGameplayTagContainer GetEffectTags();
+
 	virtual FGameplayTagContainer GetEffectTags_Implementation(){return FGameplayTagContainer(EffectTag);}
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TObjectPtr<UDMSEffectOption> EffectOption;
+
 public:
 	UDMSEffectDefinition(): bIsUsingSelector(false), bHasPairedSelector(false){}
 
@@ -92,16 +98,18 @@ public:
 	// 이것은 카드 종류 하나에 실행부 하나만을 두기 까지 압축하는 것을 의도
 	// 성공 여부 파악, 체인 확장을 위한 핸들 리턴?
 
+	void ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted);
+
 	/**
-	 * Get effect's tag.
+	 * Execution part of the this effect.
 	 * @param	SourceSequence					Target sequence.
 	 * @param	iEi								Source effect instance
 	 * @param	OnWorkCompleted					Delegate excuted when work comple
 	 * @return	Return EffectTag with additional tags for further identification in each child class.
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	void Work(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted); // temp
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(SourceSequence,true); }
+	void Work(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted); // temp
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(true); }
 
 	/**
 	 * Predict whether work will succeed or fail
@@ -144,6 +152,7 @@ public:
 	 */
 	 UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	 bool bPlayerHasToBeFocused;
+
 	/**
 	 * Implements returning paired selector class if effect has paired selector.
 	 * @return	Paired selector class.
@@ -166,6 +175,7 @@ public:
 
 	//virtual void Serialize(FArchive& Ar) override;
 };
+
 
 
 /**

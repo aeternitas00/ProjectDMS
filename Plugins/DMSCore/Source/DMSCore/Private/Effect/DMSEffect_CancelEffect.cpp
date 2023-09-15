@@ -10,7 +10,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_IgnoreEffect, "Effect.IgnoreEffect");
 //{
 //}
 
-void UDMSEffect_CancelEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
+void UDMSEffect_CancelEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("CancelEffect Working"));
 	auto SearchSeq = SourceSequence->ParentSequence;
@@ -22,10 +22,10 @@ void UDMSEffect_CancelEffect::Work_Implementation(UDMSSequence* SourceSequence, 
 		SearchSeq = SearchSeq->ParentSequence;
 	}
 	
-	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
+	OnWorkCompleted.ExecuteIfBound(true);
 }
 
-void UDMSEffect_IgnoreEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
+void UDMSEffect_IgnoreEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	auto SearchSeq = SourceSequence->ParentSequence;
 	while (SearchSeq != nullptr) {
@@ -39,5 +39,5 @@ void UDMSEffect_IgnoreEffect::Work_Implementation(UDMSSequence* SourceSequence, 
 		SearchSeq = SearchSeq->ParentSequence;
 	}
 	
-	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
+	OnWorkCompleted.ExecuteIfBound(true);
 }

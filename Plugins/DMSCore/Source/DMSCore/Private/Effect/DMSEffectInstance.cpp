@@ -18,7 +18,10 @@
 //#include "Card/DMSCardBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
-UDMSEffectInstance::UDMSEffectInstance() :CurrentState(EDMSEIState::EIS_Default) { IteratingDelegate.BindDynamic(this, &UDMSEffectInstance::ApplyNextEffectDefinition); }
+UDMSEffectInstance::UDMSEffectInstance() :CurrentState(EDMSEIState::EIS_Default) 
+{ 
+	//IteratingDelegate.BindDynamic(this, &UDMSEffectInstance::ApplyNextEffectDefinition); 
+}
 
 
 void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
@@ -34,11 +37,18 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 		return;
 	}
 
-	OnApplyCompletedMap.Add(SourceSequence);
-	OnApplyCompletedMap[SourceSequence].CompletedDelegate=OnApplyCompleted;
-	OnApplyCompletedMap[SourceSequence].Index = 0;
-	//
-	ApplyNextEffectDefinition(SourceSequence, true);
+	UDMSEffectApplyWorker* NewWorker = NewObject<UDMSEffectApplyWorker>(this);
+	ApplyWorkers.Add(NewWorker);
+	NewWorker->SetupWorker(SourceSequence,this, OnApplyCompleted);
+	NewWorker->ApplyNextEffectDef(true);
+
+	//OnApplyCompletedMap.Add(SourceSequence);
+	//OnApplyCompletedMap[SourceSequence].CompletedDelegate=OnApplyCompleted;
+	//OnApplyCompletedMap[SourceSequence].IteratingDelegate.BindLambda([this,SourceSequence](bool Successed){ApplyNextEffectDefinition(SourceSequence,Successed);});
+	////OnApplyCompletedMap[SourceSequence].IteratingDelegate.BindDynamic(this, &UDMSEffectInstance::ApplyNextEffectDefinition);
+	//OnApplyCompletedMap[SourceSequence].Index = 0;
+	////
+	//ApplyNextEffectDefinition(SourceSequence, true);
 }
 
 IDMSEffectorInterface* UDMSEffectInstance::GetApplyTarget()
@@ -55,54 +65,55 @@ void UDMSEffectInstance::SetToPendingKill()
 	else if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
 }
 
-void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed)
-{
-	if (!PrevSuccessed)
-	{
-		// DISCUSSION :: Stopping immediately when failed is FINE?
-		SetToPendingKill();
-		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence, false);
-		return;
-	}
+//void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed)
+//{
+	//if (!PrevSuccessed)
+	//{
+	//	// DISCUSSION :: Stopping immediately when failed is FINE?
+	//	SetToPendingKill();
+	//	OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence, false);
+	//	return;
+	//}
 
-	if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num()) {
-		SetToPendingKill();
-		OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence,true);
-	}
-	else {
-		auto CurrentDef = EffectNode->EffectDefinitions[OnApplyCompletedMap[SourceSequence].Index++];
+	//if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num()) {
+	//	SetToPendingKill();
+	//	OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence,true);
+	//}
+	//else {
+	//	auto CurrentDef = EffectNode->EffectDefinitions[OnApplyCompletedMap[SourceSequence].Index++];
 
-		// ====================== //
-		//    Effect Canceling    //
-		// ====================== // 
-		// Have to think about more complicated situations.
+	//	// ====================== //
+	//	//    Effect Canceling    //
+	//	// ====================== // 
+	//	// Have to think about more complicated situations.
 
 
-		// Check CurrentDef which is a part of EI's effect has to be ignored.
-		FGameplayTagQuery Query;
-		if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) && 
-		SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>()) 
-			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
-		
-		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
-			/*if (CurrentDef->bPlayerHasToBeFocused) 	
-				UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));*/
+	//	// Check CurrentDef which is a part of EI's effect has to be ignored.
+	//	FGameplayTagQuery Query;
+	//	if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) && 
+	//	SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>()) 
+	//		Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
+	//	
+	//	if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
+	//		/*if (CurrentDef->bPlayerHasToBeFocused) 	
+	//			UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));*/
 
-			// Predict first
-			if ( CurrentDef->Predict(SourceSequence, this) )
-				CurrentDef->Work(SourceSequence, this, IteratingDelegate);
-			// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
-			else
-				ApplyNextEffectDefinition(SourceSequence, false);
-		}
+	//		// Predict first
+	//		if ( CurrentDef->Predict(SourceSequence, this) )
+	//			CurrentDef->ExecuteEffectDefinition(SourceSequence, this, OnApplyCompletedMap[SourceSequence].IteratingDelegate);
+	//			//CurrentDef->Work(SourceSequence, this, IteratingDelegate);
+	//		// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
+	//		else
+	//			ApplyNextEffectDefinition(SourceSequence, false);
+	//	}
 
-		else {
+	//	else {
 
-			// Ignored effect is considered to successed.
-			ApplyNextEffectDefinition(SourceSequence, true);
-		}
-	}
-}
+	//		// Ignored effect is considered to successed.
+	//		ApplyNextEffectDefinition(SourceSequence, true);
+	//	}
+	//}
+//}
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
 { 
@@ -225,3 +236,63 @@ void UDMSEffectInstance::Serialize(FArchive& Ar)
 //	EI->Serialize(Ar);
 //	return Ar;
 //}
+
+void UDMSEffectApplyWorker::SetupWorker(UDMSSequence* iSequence, UDMSEffectInstance* iEI, const FOnApplyCompleted& iOnApplyCompleted)
+{
+	SourceSequence = iSequence;
+	OwnerInstance = iEI;
+	ApplyingEffect = iEI->EffectNode;
+	CurrentEDIndex = 0;
+	CompletedDelegate = iOnApplyCompleted;
+	IteratingDelegate.BindDynamic(this, &UDMSEffectApplyWorker::ApplyNextEffectDef);
+}
+
+void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
+{
+	if (!PrevSuccessed)
+	{
+		// DISCUSSION :: Stopping immediately when failed is FINE?
+		OwnerInstance->SetToPendingKill();
+		CompletedDelegate.ExecuteIfBound(SourceSequence, false);
+		return;
+	}
+
+	if (CurrentEDIndex == ApplyingEffect->EffectDefinitions.Num()) {
+		OwnerInstance->SetToPendingKill();
+		CompletedDelegate.ExecuteIfBound(SourceSequence, true);
+	}
+	else {
+		auto CurrentDef = ApplyingEffect->EffectDefinitions[CurrentEDIndex++];
+
+		// ====================== //
+		//    Effect Canceling    //
+		// ====================== // 
+		// Have to think about more complicated situations.
+
+
+		// Check CurrentDef which is a part of EI's effect has to be ignored.
+		FGameplayTagQuery Query;
+		if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) &&
+			SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>())
+			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
+
+		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))) {
+			/*if (CurrentDef->bPlayerHasToBeFocused)
+				UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));*/
+
+				// Predict first
+			if (CurrentDef->Predict(SourceSequence, OwnerInstance))
+				CurrentDef->ExecuteEffectDefinition(SourceSequence, OwnerInstance, IteratingDelegate);
+			//CurrentDef->Work(SourceSequence, this, IteratingDelegate);
+		// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
+			else
+				ApplyNextEffectDef(false);
+		}
+
+		else {
+
+			// Ignored effect is considered to successed.
+			ApplyNextEffectDef(true);
+		}
+	}
+}

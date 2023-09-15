@@ -16,7 +16,7 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 	bHasPairedSelector=true;
 }
 
-void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
+void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : ModAtt"), *iEI->GetName());
 	
@@ -25,7 +25,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	AActor* tOuter = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
 	if(tOuter== nullptr) 	{
 		//DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *iEI->GetName(),*iEI->GetOuter()->GetName());
-		OnWorkCompleted.ExecuteIfBound(SourceSequence,false);
+		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
 
@@ -33,7 +33,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	if (AttComp == nullptr)
 	{	
 		if(!bCreateIfNull)	{
-			OnWorkCompleted.ExecuteIfBound(SourceSequence, false); return;
+			OnWorkCompleted.ExecuteIfBound(false); return;
 		}
 		AttComp = Cast<UDMSAttributeComponent>(tOuter->AddComponentByClass(UDMSAttributeComponent::StaticClass(),false,FTransform(),false));
 	}
@@ -47,7 +47,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	float OutValue = 0.0f;
 	AttComp->TryModAttribute(Value, OutValue);
 
-	OnWorkCompleted.ExecuteIfBound(SourceSequence, true);
+	OnWorkCompleted.ExecuteIfBound(true);
 }
 
 bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)

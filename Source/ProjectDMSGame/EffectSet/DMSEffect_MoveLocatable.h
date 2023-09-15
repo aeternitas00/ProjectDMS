@@ -18,7 +18,7 @@ class PROJECTDMSGAME_API UDMSEffect_MoveLocatable : public UDMSEffectDefinition
 public:
 	UDMSEffect_MoveLocatable();
 
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted) override;
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
 
 	virtual AActor* GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) override;
 };

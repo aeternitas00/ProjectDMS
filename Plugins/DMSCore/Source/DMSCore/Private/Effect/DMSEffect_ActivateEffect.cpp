@@ -18,18 +18,18 @@ UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() :EffectIdx(0)
 	bHasPairedSelector=true;
 }
 
-void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
+void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iEI->GetName(), *EffectTag.ToString());
 
 	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
-	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/OnWorkCompleted.ExecuteIfBound(SourceSequence, false); return;}
+	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
 
 	auto Set= GetEffectSetFromOuter(iEI);
 	if (Set == nullptr) { 
 		//DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *iEI->GetApplyTarget()->GetName());
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
-		OnWorkCompleted.ExecuteIfBound(SourceSequence,false);
+		OnWorkCompleted.ExecuteIfBound(false);
 		return; 
 	}
 	
@@ -47,7 +47,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	if (NodeWrapper == nullptr) { 
 		/*DMS_LOG_SCREEN(TEXT("%s : Can't Find Effect Node"), *iEI->GetName() );*/ 
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
-		OnWorkCompleted.ExecuteIfBound(SourceSequence, false);
+		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
 	//DMS_LOG_SCREEN(TEXT("%s : Found Effect Node"), *iEI->GetName());
@@ -60,7 +60,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	// 차일드 노드 끝날때 박는게 아니고 파라미터로 델리게이트를 넘겨서 패런츠의 ONRESUME을 하는게 나아보임.
 	NewSeq->AddToOnSequenceFinished_Native([=](bool ChildSeqSuccessed) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
-		OnWorkCompleted.ExecuteIfBound(SourceSequence, ChildSeqSuccessed);
+		OnWorkCompleted.ExecuteIfBound(ChildSeqSuccessed);
 	});
 	SeqMan->RunSequence(NewSeq);
 }

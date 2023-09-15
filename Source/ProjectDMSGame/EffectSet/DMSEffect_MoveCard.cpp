@@ -16,7 +16,7 @@ UDMSEffect_MoveCard::UDMSEffect_MoveCard()
 	EffectTag = TAG_DMS_Effect_MoveCard;
 }
 
-void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
+void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	UDMSCardContainerComponent* FromTemp;
 	UDMSCardContainerComponent* Container_Destination=nullptr;
@@ -26,7 +26,7 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMS
 	if (Card==nullptr)
 	{	
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, TEXT("Outer is not card")); 
-		OnWorkCompleted.ExecuteIfBound(SourceSequence,false); 
+		OnWorkCompleted.ExecuteIfBound(false); 
 		return; 
 	}
 	FromTemp = Card->GetOwningContainer();
@@ -44,7 +44,7 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMS
 	{
 		/*No proper container.. continue; */ 
 		//DMS_LOG_SCREEN(TEXT("%s : Move Card Failed"), *iEI->GetName());
-		OnWorkCompleted.ExecuteIfBound(SourceSequence, false);
+		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
 	else 
@@ -55,6 +55,6 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMS
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : MOVE CARD WORK COMPLETED ===="), *SourceSequence->GetName());
 
-	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
+	OnWorkCompleted.ExecuteIfBound(true);
 }
 

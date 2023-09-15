@@ -50,6 +50,26 @@ enum class EDMSEIState : uint8
  *	Is it good enough? 
  */
 
+UCLASS()
+class DMSCORE_API UDMSEffectApplyWorker : public UObject
+{
+	GENERATED_BODY()
+
+private:
+	TObjectPtr<UDMSEffectInstance> OwnerInstance;
+	TObjectPtr<UDMSSequence> SourceSequence;
+
+	TObjectPtr<UDMSEffectNode> ApplyingEffect;
+	uint8 CurrentEDIndex;
+public:
+	FOnExecuteCompleted IteratingDelegate;
+	FOnApplyCompleted CompletedDelegate;
+public:
+	void SetupWorker(UDMSSequence* iSequence, UDMSEffectInstance* iEI, const FOnApplyCompleted& iOnApplyCompleted);
+	
+	UFUNCTION()
+	void ApplyNextEffectDef(bool PrevSuccessed);
+};
 
 UCLASS(BlueprintType)
 class DMSCORE_API UDMSEffectInstance : public UObject , public IDMSEffectorInterface
@@ -76,25 +96,31 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<UDMSEffectInstance>> SubEI;
 
-	struct FApplyDelegateCounter {
-		FOnApplyCompleted CompletedDelegate;
-		uint8 Index;
-		bool bIsPreview;
-	};
+	//DECLARE_DELEGATE_OneParam(FOnWorkIteratingDelegate, bool);
 
-	FOnWorkCompleted IteratingDelegate;
+	//struct FApplyDelegateCounter {
+	//	FOnApplyCompleted CompletedDelegate;	
+	//	FOnWorkIteratingDelegate IteratingDelegate;
+	//	// 델리게이트 말고 다른 스트럭쳐 기반으로
+	//	uint8 Index;
+	//};
 
-	/**
-	 * 상호 발동형 이펙트를 통해 체인 내에 같은 EI가 Reapply 될 경우 꼬일 가능성 존재하므로 흐름 단위인 '시퀀스'를 키로 잡음.
-	 */
-	TMap<TObjectPtr<UDMSSequence>, FApplyDelegateCounter> OnApplyCompletedMap;
+
+
+	///**
+	// * 상호 발동형 이펙트를 통해 체인 내에 같은 EI가 Reapply 될 경우 꼬일 가능성 존재하므로 흐름 단위인 '시퀀스'를 키로 잡음.
+	// */
+	//TMap<TObjectPtr<UDMSSequence>, FApplyDelegateCounter> OnApplyCompletedMap;
+
+	// Hard ref for workers
+	TArray<TObjectPtr<UDMSEffectApplyWorker>> ApplyWorkers;
 
 	/**
 	 * Function for chained delegates. Will be bound to IteratingDelegate.
 	 * @param	SourceSequence					Current applying sequence.
 	 */
-	UFUNCTION()
-	void ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed = true);
+	//UFUNCTION()
+	//void ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed = true);
 
 public:
 

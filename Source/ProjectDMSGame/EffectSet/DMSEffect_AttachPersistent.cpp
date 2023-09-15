@@ -19,14 +19,14 @@ UDMSEffect_AttachPersistent::UDMSEffect_AttachPersistent() {
 	OutDataKey = TAG_DMS_Effect_AttachPersistent;
 	bHasPairedSelector = true;
 }
-void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
+void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	TArray<UDMSEffectInstance*> AddedEIs;
 
 	auto Target = iEI->GetApplyTarget();
 
 	if (Target == nullptr) {
-		OnWorkCompleted.ExecuteIfBound(SourceSequence, false);
+		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
 
@@ -47,7 +47,7 @@ void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequen
 	SourceSequence->AddToOnSequenceFinished_Native([AddedEIs](bool){
 		for (auto& EI : AddedEIs)	{EI->ChangeEIState(EDMSEIState::EIS_Persistent);}
 	});
-	OnWorkCompleted.ExecuteIfBound(SourceSequence,true);
+	OnWorkCompleted.ExecuteIfBound(true);
 }
 
 void UDMSEffect_AttachPersistent::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)

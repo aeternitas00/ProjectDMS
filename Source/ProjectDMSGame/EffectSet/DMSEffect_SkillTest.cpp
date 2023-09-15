@@ -22,7 +22,7 @@ UDMSEffect_SkillTest::UDMSEffect_SkillTest()
 	bHasPairedSelector = true;
 }
 
-void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnWorkCompleted& OnWorkCompleted)
+void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	AActor* SourceActor;
 	float SourceValue;
@@ -30,7 +30,7 @@ void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDM
 	if (!SkillTestData.bGetAttributeTargetIsPlayer)	SourceActor = Cast<AActor>(iEI->SourceObject);
 	else	SourceActor = iEI->SourcePlayer;
 
-	if ( !UDMSGameFunctionLibrary::GetAttributeFromActor(SourceActor, SkillTestData.StatName, SourceValue)){ OnWorkCompleted.ExecuteIfBound(SourceSequence, false); return;}
+	if ( !UDMSGameFunctionLibrary::GetAttributeFromActor(SourceActor, SkillTestData.StatName, SourceValue)){ OnWorkCompleted.ExecuteIfBound(false); return;}
 
 	float SkillBonus =0.0f;
 
@@ -38,7 +38,7 @@ void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDM
 
 	AActor* Target = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
 
-	if (Target == nullptr){OnWorkCompleted.ExecuteIfBound(SourceSequence, false);return;}
+	if (Target == nullptr){OnWorkCompleted.ExecuteIfBound(false);return;}
 
 	// if Target don't have that att => Target Value is 0.0f 
 	float SkillTestResult=0.0f;
@@ -54,7 +54,7 @@ void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDM
 
 	iEI->DataSet->SetData(OutDataKey, SkillTestResult, true);
 
-	OnWorkCompleted.ExecuteIfBound(SourceSequence, true);
+	OnWorkCompleted.ExecuteIfBound(true);
 }
 
 void UDMSEffect_SkillTest::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
