@@ -74,3 +74,15 @@ class DMSCORE_API UDMSTargetGenerator_OwnerOfCaller : public UDMSTargetGenerator
 public:
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
 };
+
+UCLASS()
+class DMSCORE_API UDMSTargetGenerator_FromData : public UDMSTargetGenerator
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
+	FGameplayTag DataTag;
+
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+};

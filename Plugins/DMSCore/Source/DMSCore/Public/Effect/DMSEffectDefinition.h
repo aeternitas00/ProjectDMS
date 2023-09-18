@@ -48,7 +48,7 @@ struct FDMSEffectValueDef
 	bool IsStatic = true;
 };
 
-
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOptionCompleted,UDMSEffectOption*,CompletedOption);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
 
 /**
@@ -88,16 +88,19 @@ public:
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation(){return FGameplayTagContainer(EffectTag);}
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	TObjectPtr<UDMSEffectOption> EffectOption;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	TArray<TObjectPtr<UDMSEffectOption>> EffectOptions;
 
 public:
-	UDMSEffectDefinition(): bIsUsingSelector(false), bHasPairedSelector(false){}
+	UDMSEffectDefinition(): bIsUsingSelector(false), bHasPairedSelector(false){
+	/*	EffectOptions = CreateDefaultSubobject<UDMSEffectOptionSet>("EffectOptions");*/
+	}
 
 	// 실행할 함수의 중복을 줄이기 위해 CardDefinition - DMSEffect에 실행부인 (Work)를 두는 것으로 하였음.
 	// 이것은 카드 종류 하나에 실행부 하나만을 두기 까지 압축하는 것을 의도
 	// 성공 여부 파악, 체인 확장을 위한 핸들 리턴?
-
+	
+	void ExecuteEffectOptions(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
 	void ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted);
 
 	/**
@@ -121,9 +124,9 @@ public:
 	bool Predict(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI); // temp
 	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) { return true; }
 
-	UFUNCTION(BlueprintNativeEvent)
-	AActor* GetPlayerFocusTarget(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
-	virtual AActor* GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
+	//UFUNCTION(BlueprintNativeEvent)
+	//AActor* GetPlayerFocusTarget(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
+	//virtual AActor* GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
 
 	// ====================== //
 	//		For selector
@@ -147,11 +150,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Effect,meta = (EditCondition = false, EditConditionHides))
 	bool bHasPairedSelector;
 
-	/**
-	 * true : move the player's camera pawn to make the effect source visible when the effect is triggered.
-	 */
-	 UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	 bool bPlayerHasToBeFocused;
+	///**
+	// * true : move the player's camera pawn to make the effect source visible when the effect is triggered.
+	// */
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	// bool bPlayerHasToBeFocused;
 
 	/**
 	 * Implements returning paired selector class if effect has paired selector.

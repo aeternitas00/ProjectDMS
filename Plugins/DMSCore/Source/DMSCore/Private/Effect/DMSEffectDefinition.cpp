@@ -13,17 +13,21 @@
 #include "Conditions/DMSConditionObject.h"
 
 
-void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
+void UDMSEffectDefinition::ExecuteEffectOptions(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
-	EffectOption->ExecuteOption([=]() {
-		Work(SourceSequence, iEI, OnExecuteCompleted);
-	});
+	if (EffectOptions.Num()== 0 ) {OnOptionCompleted.Execute(nullptr);return;}
+	for (auto& EO : EffectOptions)
+	{
+		EO->ExecuteOption(SourceSequence, iEI, OnOptionCompleted);
+	}
 }
 
-AActor* UDMSEffectDefinition::GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
+void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
 {
-	// Default source target is Effect's Target.
-	return iEI->GetTypedOuter<AActor>();
+	//EffectOption->ExecuteOption(SourceSequence, iEI, [=]() {
+	//	Work(SourceSequence, iEI, OnExecuteCompleted);
+	//});
+	Work(SourceSequence, iEI, OnExecuteCompleted);
 }
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence)
@@ -75,10 +79,6 @@ FGameplayTagContainer UDMSEffectNode::GenerateTagContainer()
 
 bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 {
-	//FGameplayTagContainer ctn;
-	//ctn.AddTagFast(NodeTag);
-	//for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
-
 	return GenerateTagContainer().MatchesQuery(EffectTagQuery);
 }
 
@@ -91,12 +91,6 @@ bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 
 	return false;
 }
-
-
-//TArray<UObject*> UDMSEffectNode::GenerateConditionTarget_Implementation(UDMSSequence* iSequence)
-//{
-//	return TArray<UObject*>();
-//}
 
 TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner)
 {

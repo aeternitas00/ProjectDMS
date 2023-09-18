@@ -51,3 +51,14 @@ TArray<UObject*> UDMSTargetGenerator_OwnerOfCaller::GetTargets_Implementation(UO
 	if (Caller->Implements<UDMSEffectorInterface>()) return { Cast<IDMSEffectorInterface>(Caller)->GetOwningPlayer() };
 	return {};
 }
+
+TArray<UObject*> UDMSTargetGenerator_FromData::GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const
+{
+	UObject* TempObject=nullptr;
+	TArray<UObject*> TempArr;
+	if (CurrentSequence->EIDatas->GetValidDataValue<UObject*>(DataTag, TempObject))
+		return { TempObject };
+	else if (CurrentSequence->EIDatas->GetValidDataValue<TArray<UObject*>>(DataTag, TempArr))
+		return TempArr;
+	return {};
+}

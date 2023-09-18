@@ -3,9 +3,12 @@
 #pragma once
 
 #include "DMSCoreIncludes.h"
+#include "Effect/DMSEffectDefinition.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSEffectOption.generated.h"
 
+class UDMSSequence;
+class UDMSEffectInstance;
 /**
  * 
  */
@@ -13,20 +16,22 @@ UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, ClassGroup = 
 class DMSCORE_API UDMSEffectOption : public UObject
 {
 	GENERATED_BODY()
-	
-public:
 
+
+public:
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Instanced)
+	TObjectPtr<UDMSEffectOption> NextOption;
 	/*
 	 * @param	OnOptionCompleted	()->void lambda param 
 	 */
-	template<typename FuncCompleted >
-	void ExecuteOption(FuncCompleted&& OnOptionCompleted);
+	void ExecuteOption(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
+
+	//void ExecuteOption(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnOptionCompleted);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnExecuteOption(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	virtual void OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI , const FOnOptionCompleted& OnOptionCompleted);
+
 };
 
-template<typename FuncCompleted>
-void UDMSEffectOption::ExecuteOption(FuncCompleted&& OnOptionCompleted)
-{
-	// ... DO SOMETHING ...
 
-	OnOptionCompleted();
-}

@@ -61,15 +61,25 @@ private:
 
 	TObjectPtr<UDMSEffectNode> ApplyingEffect;
 	uint8 CurrentEDIndex;
+
+	uint8 ExecutedOptionNum;
+	FOnOptionCompleted EffectOptionCompleted;
+	TObjectPtr<UDMSEffectDefinition> CurrentDef;
+
 public:
 	FOnExecuteCompleted IteratingDelegate;
 	FOnApplyCompleted CompletedDelegate;
+	
 public:
 	void SetupWorker(UDMSSequence* iSequence, UDMSEffectInstance* iEI, const FOnApplyCompleted& iOnApplyCompleted);
 	
 	UFUNCTION()
 	void ApplyNextEffectDef(bool PrevSuccessed);
+
+	UFUNCTION()
+	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
 };
+
 
 UCLASS(BlueprintType)
 class DMSCORE_API UDMSEffectInstance : public UObject , public IDMSEffectorInterface
@@ -80,9 +90,6 @@ public:
 	UDMSEffectInstance();
 		
 protected:
-
-	UPROPERTY()
-	TObjectPtr<UDMSEffectInstance> PreviewDummy;
 
 	/** 
 	 * State flag of Effect instance.For preview or persistant things.
@@ -96,31 +103,8 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<UDMSEffectInstance>> SubEI;
 
-	//DECLARE_DELEGATE_OneParam(FOnWorkIteratingDelegate, bool);
-
-	//struct FApplyDelegateCounter {
-	//	FOnApplyCompleted CompletedDelegate;	
-	//	FOnWorkIteratingDelegate IteratingDelegate;
-	//	// 델리게이트 말고 다른 스트럭쳐 기반으로
-	//	uint8 Index;
-	//};
-
-
-
-	///**
-	// * 상호 발동형 이펙트를 통해 체인 내에 같은 EI가 Reapply 될 경우 꼬일 가능성 존재하므로 흐름 단위인 '시퀀스'를 키로 잡음.
-	// */
-	//TMap<TObjectPtr<UDMSSequence>, FApplyDelegateCounter> OnApplyCompletedMap;
-
 	// Hard ref for workers
 	TArray<TObjectPtr<UDMSEffectApplyWorker>> ApplyWorkers;
-
-	/**
-	 * Function for chained delegates. Will be bound to IteratingDelegate.
-	 * @param	SourceSequence					Current applying sequence.
-	 */
-	//UFUNCTION()
-	//void ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed = true);
 
 public:
 
@@ -197,7 +181,7 @@ public:
 	// =========== INTERFACE FUNCTION =========== // 
 	// 
 	//virtual UObject* GetObject() override { return this; } 
-	virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
+	//virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;

@@ -14,6 +14,7 @@
 #include "GameModes/DMSGameModeBase.h"
 
 #include "Effect/DMSEffect_CancelEffect.h"
+#include "Effect/DMSEffectOption.h"
 //#include "EffectSet/DMSEffect_ActivateEffect.h"
 //#include "Card/DMSCardBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -262,7 +263,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
 		CompletedDelegate.ExecuteIfBound(SourceSequence, true);
 	}
 	else {
-		auto CurrentDef = ApplyingEffect->EffectDefinitions[CurrentEDIndex++];
+		CurrentDef = ApplyingEffect->EffectDefinitions[CurrentEDIndex++];
 
 		// ====================== //
 		//    Effect Canceling    //
@@ -277,13 +278,16 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
 			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
 
 		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))) {
-			/*if (CurrentDef->bPlayerHasToBeFocused)
-				UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));*/
+			
+			// Predict first
+			if (CurrentDef->Predict(SourceSequence, OwnerInstance)){
 
-				// Predict first
-			if (CurrentDef->Predict(SourceSequence, OwnerInstance))
-				CurrentDef->ExecuteEffectDefinition(SourceSequence, OwnerInstance, IteratingDelegate);
-			//CurrentDef->Work(SourceSequence, this, IteratingDelegate);
+				ExecutedOptionNum = 0;
+				EffectOptionCompleted.Unbind();
+				EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
+				CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
+				
+			}
 		// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
 			else
 				ApplyNextEffectDef(false);
@@ -294,5 +298,18 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
 			// Ignored effect is considered to successed.
 			ApplyNextEffectDef(true);
 		}
+	}
+}
+
+void UDMSEffectApplyWorker::OnEffectOptionCompleted(UDMSEffectOption* CompletedOption)
+{
+	if (CompletedOption!=nullptr && CompletedOption->NextOption != nullptr)
+	{
+		CompletedOption->NextOption->ExecuteOption(SourceSequence, OwnerInstance, EffectOptionCompleted);
+		return;
+	}
+	if (CurrentDef->EffectOptions.Num() <= ++ExecutedOptionNum)
+	{
+		CurrentDef->ExecuteEffectDefinition(SourceSequence, OwnerInstance, IteratingDelegate);
 	}
 }

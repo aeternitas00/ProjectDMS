@@ -21,7 +21,8 @@ class UDMSSequence;
 //			Delegates
 //	========================= //
 
-DECLARE_DELEGATE(FSimpleEventSignature);
+//DECLARE_DYNAMIC_DELEGATE(FOnOptionCompleted);
+
 DECLARE_MULTICAST_DELEGATE(FSimpleMulticastEventSignature);
 
 DECLARE_DELEGATE_OneParam(FOnResolveCompleted, bool);
