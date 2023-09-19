@@ -43,7 +43,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->SourceObject = SourceObject;
 	Sequence->SourcePlayer = SourcePlayer;
 	Sequence->EIDatas = NewData;
-	Sequence->Targets = Targets;
+	Sequence->SetTarget(Targets);
 	
 	// Test Feature
 	Sequence->InitializeSteps(EffectNode->StepRequirements);

@@ -309,7 +309,7 @@ public:
 	 * @return	Generated apply targets.
 	 */
 	UFUNCTION(BlueprintCallable, Category = Effect)
-	TArray<TScriptInterface<IDMSEffectorInterface>> GenerateApplyTarget(UDMSSequence* iSequence);
+	static TArray<FDMSSequenceEIStorage> GenerateApplyTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
 
 	/**
 	 * Create paired selector widget from "EffectDefinitions".

@@ -13,6 +13,7 @@
  */
 
 #include "DMSCoreIncludes.h"
+#include "Sequence/DMSSequenceEIStorage.h"
 #include "UObject/NoExportTypes.h"
 #include "Common/DMSCommonDelegates.h"
 #include "DMSEffectHandler.generated.h"
@@ -49,6 +50,7 @@ protected:
 		uint8 Count=0;
 		FResolveIteratingDelegate IteratingDelegate;
 		FEIGetter Getter;
+		TArray<UDMSEffectInstance*> ApplyingEIs;
 		bool bIsPreview;
 	};
 
@@ -94,7 +96,7 @@ public:
 	 * @param	EffectNode
 	 * @return	Created effect instances.
 	 */
-	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode );
+	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode);
 
 	/**
 	 * Resolve param sequence and executed paramed lambda function when resolve completed.
@@ -111,7 +113,7 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 {
 	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
-	if (Sequence->EIs.Num() == 0) {
+	if (Sequence->GetAllEIs().Num() == 0) {
 		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
 		goto ResolveSkipped;
 	}
@@ -128,10 +130,10 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 	OnResolveCompletedMap[Sequence].Delegate.BindLambda(OnResolveCompleted);
 	OnResolveCompletedMap[Sequence].Count = 0;
 	OnResolveCompletedMap[Sequence].IteratingDelegate.BindUObject(this, &UDMSEffectHandler::ApplyNextEffectInstance);
+	OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllEIs();
 
-
-	OnResolveCompletedMap[Sequence].Getter.BindLambda( [this](UDMSSequence* SourceSequence){
-		return SourceSequence->EIs[OnResolveCompletedMap[SourceSequence].Count++];
+	OnResolveCompletedMap[Sequence].Getter.BindLambda( [this,Sequence](UDMSSequence* SourceSequence){
+		return OnResolveCompletedMap[Sequence].ApplyingEIs[OnResolveCompletedMap[SourceSequence].Count++];
 	});
 
 	ApplyNextEffectInstance(Sequence, true);

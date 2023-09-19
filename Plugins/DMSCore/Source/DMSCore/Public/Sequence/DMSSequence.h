@@ -14,6 +14,7 @@
  */
 
 #include "DMSCoreIncludes.h"
+#include "Sequence/DMSSequenceEIStorage.h"
 #include "Common/DMSCommons.h"
 #include "Common/DMSCommonDelegates.h"
 #include "Selector/DMSSelectorQueue.h"
@@ -53,7 +54,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succ
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStepFinishedDynamic, bool, Successed);
 
 
-
 /** 
  * 	========================================
  *
@@ -89,7 +89,7 @@ protected:
 	 * Explicit targets of this sequence. Override EffectNode's preset target flag.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
+	TArray<FDMSSequenceEIStorage> TargetAndEIs;
 
 public:
 	// Default Initializer
@@ -117,11 +117,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSEffectNode> OriginalEffectNode;
 
-	/**
-	 * Effect instances (One EI attached to One target)
-	 */
-	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	TArray<TObjectPtr<UDMSEffectInstance>> EIs;
+	///**
+	// * Effect instances (One EI attached to One target)
+	// */
+	//UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
+	//TArray<TObjectPtr<UDMSEffectInstance>> EIs;
 	
 	/**
 	 * Container for widgets used by the player to make decisions during the progress of a sequence.
@@ -195,7 +195,13 @@ public:
 	 * @param	iTargets					New targets.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets){ Targets = iTargets;}
+	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FDMSSequenceEIStorage>& GetEIStorage();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<UDMSEffectInstance*> GetAllEIs();
 
 	/**
 	 * Setup owning widget queue with param widgets.

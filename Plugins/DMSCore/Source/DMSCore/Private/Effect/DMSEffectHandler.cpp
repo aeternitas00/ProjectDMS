@@ -39,28 +39,36 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 {
 	// No Selected Target ( Passed or No selector for this effect node )
 	// If PARAM_TARGET is exist, it will override preset generating.
+
+	TArray<FDMSSequenceEIStorage>& Storages = Sequence->GetEIStorage();
+
 	if (Sequence->GetTargets().Num() == 0)
 		Sequence->SetTarget(UDMSEffectNode::GeneratePresetTarget(EffectNode,Sequence));
 
-	auto ApplyTargets = EffectNode->GenerateApplyTarget(Sequence);
+	UDMSEffectNode::GenerateApplyTarget(EffectNode,Sequence);
 
-	if (ApplyTargets.Num() == 0)
+	if (Storages.Num() == 0)
 	{
-		DMS_LOG_SCREEN(TEXT("%s : ApplyTargets is emtpy "), *EffectNode->GetName());
+		DMS_LOG_SIMPLE(TEXT("%s : ApplyTargets is emtpy "), *EffectNode->GetName());
 	}
 
-	for (auto TargetObject : ApplyTargets)
+	TArray<UDMSEffectInstance*> rv;
+	for (auto& ApplyStorage : Storages)
 	{
-		UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(TargetObject.GetObject());
-		EffectInstance->Initialize(EffectNode, Sequence);
+		for (auto& Target : ApplyStorage.ApplyTargets)
+		{
+			UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(Target->GetObject());
+			EffectInstance->Initialize(EffectNode, Sequence);
 
-		TargetObject->AttachEffectInstance(EffectInstance);
+			Target->AttachEffectInstance(EffectInstance);
 
-		EIList.Add(EffectInstance);
-		Sequence->EIs.Add(EffectInstance);
+			EIList.Add(EffectInstance);
+			ApplyStorage.EIs.Add(EffectInstance);
+			rv.Add(EffectInstance);
+		}
 	}
 	
-	return Sequence->EIs;
+	return rv;
 }
 
 
@@ -73,7 +81,7 @@ void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence, bo
 		return;
 	}
 
-	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->EIs.Num())
+	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->GetAllEIs().Num())
 		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound(true);
 	else
 		OnResolveCompletedMap[SourceSequence].Getter.Execute(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].IteratingDelegate);

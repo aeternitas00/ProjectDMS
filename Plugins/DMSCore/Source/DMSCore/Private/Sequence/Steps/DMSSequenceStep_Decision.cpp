@@ -75,7 +75,7 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 					DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequenceN->GetName());
 
 					// Prevent self notifing 
-					for (auto EI : pSequenceN->EIs)
+					for (auto EI : pSequenceN->GetAllEIs())
 					{
 						EI->ChangeEIState(EDMSEIState::EIS_Default);
 					}

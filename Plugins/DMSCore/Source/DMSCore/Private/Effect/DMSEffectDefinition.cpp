@@ -45,19 +45,30 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 	return TempTarget;
 }
 
-TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GenerateApplyTarget(UDMSSequence* iSequence)
+TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode* Node, UDMSSequence* iSequence)
 {
-	if (ApplyTargetGenerator == nullptr) return iSequence->GetTargets();
+	TArray<FDMSSequenceEIStorage>& Storages = iSequence->GetEIStorage();
 
-	TArray<TScriptInterface<IDMSEffectorInterface>> TempTarget;
+	for (auto& Storage : Storages)
+		Storage.ApplyTargets.Reset();
+	
 
-	for (auto Target : ApplyTargetGenerator->GetTargets(iSequence->GetSourceObject(), iSequence))
-	{
-		if (Target->Implements<UDMSEffectorInterface>())
-			TempTarget.Add(TScriptInterface<IDMSEffectorInterface>(Target));
+	if (Node->ApplyTargetGenerator == nullptr) {
+		for ( auto& Storage : Storages )
+			Storage.ApplyTargets.Add(Storage.MainTarget);
+		return Storages;
 	}
 
-	return TempTarget;
+	for (auto& Storage : Storages)
+	{
+		for (auto& Target : Node->ApplyTargetGenerator->GetTargets(Storage.MainTarget->GetObject(), iSequence))
+		{
+			if (Target->Implements<UDMSEffectorInterface>())
+				Storage.ApplyTargets.Add(TScriptInterface<IDMSEffectorInterface>(Target));
+		}
+	}
+
+	return Storages;
 }
 
 UDMSEffectNode::UDMSEffectNode() : bForced(false),bIgnoreNotify(false), bIsChainableEffect(true)

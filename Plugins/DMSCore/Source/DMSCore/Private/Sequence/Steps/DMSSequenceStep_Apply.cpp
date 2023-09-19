@@ -104,8 +104,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 	DMS_LOG_SIMPLE(TEXT("==== %s : ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 
 	// Run child effect if exist.
-	if (OwnerSequence->SequenceState != EDMSSequenceState::SS_Canceled &&
-		OwnerSequence->OriginalEffectNode->ChildEffect != nullptr && OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode() != nullptr &&
+	if (OwnerSequence->OriginalEffectNode->ChildEffect != nullptr && OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode() != nullptr &&
 		OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(OwnerSequence->GetSourceObject(), OwnerSequence)) {
 
 		DMS_LOG_SCREEN(TEXT("==-- Child Sequence Created [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));

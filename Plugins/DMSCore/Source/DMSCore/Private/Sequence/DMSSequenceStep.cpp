@@ -89,7 +89,7 @@ void UDMSSequenceStep::ProgressComplete(bool bSuccessed)
 	//auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
 	//
 
-	if (!bSuccessed) { 
+	if (!bSuccessed || (OwnerSequence->SequenceState == EDMSSequenceState::SS_Canceled)){
 		DMS_LOG_SIMPLE(TEXT("==== %s : [%s] Failed ===="), *OwnerSequence->GetName(), *GetName());
 		OnStepFinished(false); return; 
 	}

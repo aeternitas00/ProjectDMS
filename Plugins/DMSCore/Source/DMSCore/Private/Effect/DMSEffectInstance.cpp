@@ -277,7 +277,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
 			SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>())
 			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
 
-		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))) {
+		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->GetEffectTags()))) {
 			
 			// Predict first
 			if (CurrentDef->Predict(SourceSequence, OwnerInstance)){

@@ -38,19 +38,6 @@ AActor* UDMSSequence::GetSourcePlayer() const
 	return SourcePlayer;
 }
 
-TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets() const
-{
-	//if (!bIsPreviewSequence)
-		return Targets;
-
-	//TArray<TScriptInterface<IDMSEffectorInterface>> rv;
-
-	//for (auto& T : Targets)
-	//	rv.Add(T->GetPreviewObject()->_getUObject());
-	//return rv;
-	
-}
-
 bool UDMSSequence::SetSourceObject(UObject* NewSourceObject)
 {
 	bool rv = SourceObject->Implements<UDMSEffectorInterface>();
@@ -126,6 +113,39 @@ void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq)
 {
 	iSeq->ParentSequence = this;
 	ChildSequence = iSeq;
+}
+
+void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
+{
+	for ( auto& TargetToEI :TargetAndEIs )
+	{ 
+		for (auto& EI : TargetToEI. EIs) EI->SetToPendingKill();
+	}
+	TargetAndEIs.Reset();
+
+	for (auto& Target : iTargets) TargetAndEIs.Add(FDMSSequenceEIStorage(Target));
+}
+
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets() const
+{
+	TArray<TScriptInterface<IDMSEffectorInterface>> rv;
+	for (auto& Storage : TargetAndEIs) rv.Add(Storage.MainTarget);
+	return rv;
+}
+
+TArray<FDMSSequenceEIStorage>& UDMSSequence::GetEIStorage()
+{
+	return TargetAndEIs;
+}
+
+TArray<UDMSEffectInstance*> UDMSSequence::GetAllEIs()
+{
+	TArray<UDMSEffectInstance*> rv;
+
+	for (auto& Storage : TargetAndEIs)
+		rv.Append(Storage.EIs);
+
+	return rv;
 }
 
 bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets)

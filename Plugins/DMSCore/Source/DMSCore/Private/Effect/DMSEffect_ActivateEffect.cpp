@@ -83,7 +83,7 @@ void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelect
 
 	auto& iSeq = WidgetInstance->OwnerSeq;
 	
-	for (auto& EI : iSeq->EIs)
+	for (auto& EI : iSeq->GetAllEIs())
 	{
 		auto Set = GetEffectSetFromOuter(EI);
 		if (Set == nullptr) 
