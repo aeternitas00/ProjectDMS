@@ -14,10 +14,11 @@ bool UDMSGameFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FGamep
 {
 	if (iActor == nullptr) goto INVSOURCE;
 
-	UActorComponent* Comp;
-	Comp = iActor->GetComponentByClass(UDMSAttributeComponent::StaticClass());
+	//UActorComponent* Comp;
+	//
+	//Comp = iActor->GetComponentByClass(UDMSAttributeComponent::StaticClass());
 
-	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(Comp);
+	UDMSAttributeComponent* AttComp = iActor->GetComponentByClass<UDMSAttributeComponent>();
 	if (AttComp == nullptr) goto INVSOURCE;
 
 	float SourceValue;

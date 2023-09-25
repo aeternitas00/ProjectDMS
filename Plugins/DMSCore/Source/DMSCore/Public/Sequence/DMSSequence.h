@@ -195,7 +195,7 @@ public:
 	 * @param	iTargets					New targets.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets);
+	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets, bool CreateEIs = false);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FDMSSequenceEIStorage>& GetEIStorage();

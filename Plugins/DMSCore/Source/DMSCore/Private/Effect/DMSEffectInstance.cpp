@@ -28,10 +28,6 @@ UDMSEffectInstance::UDMSEffectInstance() :CurrentState(EDMSEIState::EIS_Default)
 void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
-	//for (auto EffectDefinition : EffectNode->EffectDefinitions )
-	//{
-	//	EffectDefinition->Work(this);
-	//}
 
 	if (EffectNode->EffectDefinitions.Num() == 0) {
 		OnApplyCompleted.ExecuteIfBound(SourceSequence,true);
@@ -43,78 +39,23 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 	NewWorker->SetupWorker(SourceSequence,this, OnApplyCompleted);
 	NewWorker->ApplyNextEffectDef(true);
 
-	//OnApplyCompletedMap.Add(SourceSequence);
-	//OnApplyCompletedMap[SourceSequence].CompletedDelegate=OnApplyCompleted;
-	//OnApplyCompletedMap[SourceSequence].IteratingDelegate.BindLambda([this,SourceSequence](bool Successed){ApplyNextEffectDefinition(SourceSequence,Successed);});
-	////OnApplyCompletedMap[SourceSequence].IteratingDelegate.BindDynamic(this, &UDMSEffectInstance::ApplyNextEffectDefinition);
-	//OnApplyCompletedMap[SourceSequence].Index = 0;
-	////
-	//ApplyNextEffectDefinition(SourceSequence, true);
 }
 
 IDMSEffectorInterface* UDMSEffectInstance::GetApplyTarget()
 {
 	auto Outer = Cast<IDMSEffectorInterface>(GetOuter());
-	if (CurrentState == EDMSEIState::EIS_Preview)
-		return Outer==nullptr ? nullptr : Cast<UDMSEffectInstance>(Outer)->GetApplyTarget();
-	else 
-		return Outer;
+	//if (CurrentState == EDMSEIState::EIS_Preview)
+	//	return Outer==nullptr ? nullptr : Cast<UDMSEffectInstance>(Outer)->GetApplyTarget();
+	//else 	return Outer;
+	return Outer;
 }
 void UDMSEffectInstance::SetToPendingKill()
 {
-	if (CurrentState == EDMSEIState::EIS_Preview ){ if(GetTypedOuter<UDMSEffectInstance>()->CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill; }
-	else if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
+	//if (CurrentState == EDMSEIState::EIS_Preview ){ if(GetTypedOuter<UDMSEffectInstance>()->CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill; }
+	//else if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
+
+	if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
 }
-
-//void UDMSEffectInstance::ApplyNextEffectDefinition(UDMSSequence* SourceSequence, bool PrevSuccessed)
-//{
-	//if (!PrevSuccessed)
-	//{
-	//	// DISCUSSION :: Stopping immediately when failed is FINE?
-	//	SetToPendingKill();
-	//	OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence, false);
-	//	return;
-	//}
-
-	//if (OnApplyCompletedMap[SourceSequence].Index == EffectNode->EffectDefinitions.Num()) {
-	//	SetToPendingKill();
-	//	OnApplyCompletedMap[SourceSequence].CompletedDelegate.ExecuteIfBound(SourceSequence,true);
-	//}
-	//else {
-	//	auto CurrentDef = EffectNode->EffectDefinitions[OnApplyCompletedMap[SourceSequence].Index++];
-
-	//	// ====================== //
-	//	//    Effect Canceling    //
-	//	// ====================== // 
-	//	// Have to think about more complicated situations.
-
-
-	//	// Check CurrentDef which is a part of EI's effect has to be ignored.
-	//	FGameplayTagQuery Query;
-	//	if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) && 
-	//	SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>()) 
-	//		Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
-	//	
-	//	if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->EffectTag))){
-	//		/*if (CurrentDef->bPlayerHasToBeFocused) 	
-	//			UDMSCoreFunctionLibrary::GetDMSGameState()->SetPlayersFocusTarget(CurrentDef->GetPlayerFocusTarget(SourceSequence, this));*/
-
-	//		// Predict first
-	//		if ( CurrentDef->Predict(SourceSequence, this) )
-	//			CurrentDef->ExecuteEffectDefinition(SourceSequence, this, OnApplyCompletedMap[SourceSequence].IteratingDelegate);
-	//			//CurrentDef->Work(SourceSequence, this, IteratingDelegate);
-	//		// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
-	//		else
-	//			ApplyNextEffectDefinition(SourceSequence, false);
-	//	}
-
-	//	else {
-
-	//		// Ignored effect is considered to successed.
-	//		ApplyNextEffectDefinition(SourceSequence, true);
-	//	}
-	//}
-//}
 
 void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
 { 
@@ -132,19 +73,8 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 	DataSet = iSeq->EIDatas; 
 	CurrentState = EDMSEIState::EIS_Pending; 
 
-	//SetupPreviewDummy();
 }
 
-//void UDMSEffectInstance::SetupPreviewDummy()
-//{
-	// NOTE :: 자기 자신에게 체이닝 되는 이펙트들을 위한 프리뷰 더미이므로 부착은 자신 (EI) 에게 해놓을것..
-
-	//PreviewDummy = DuplicateObject<UDMSEffectInstance>(this, this, FName(GetName() + TEXT("_Preview")));
-	//PreviewDummy->CurrentState = EDMSEIState::EIS_Preview;
-	// Reference update
-	//PreviewDummy->SourceObject = SourceObject;
-	//PreviewDummy->SourcePlayer = SourcePlayer;
-//}
 
 UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 
 {

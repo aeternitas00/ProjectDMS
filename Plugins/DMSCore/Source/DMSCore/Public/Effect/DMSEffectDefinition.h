@@ -243,11 +243,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIgnoreNotify;
 
-	/**
-	 * Effect's Cost. It's different with cost of playing card.
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	TObjectPtr<UDMSEffectSet> EffectCost;
+	///**
+	// * Effect's Cost. It's different with cost of playing card.
+	// */
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	//TObjectPtr<UDMSEffectSet> EffectCost;
 
 //=================== Pre-activate ( Decision step ) ===================//
 

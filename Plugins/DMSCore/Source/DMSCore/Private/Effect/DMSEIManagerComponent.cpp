@@ -79,6 +79,7 @@ UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTa
 	UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>(Node);
 
 	AEffect->EffectIdx = idx;
+	AEffect->UseEffectFromOuter = true;
 	AEffect->EffectSetName = EffectSetName;
 	// NODE INITIALIZER?
 	Node->EffectDefinitions.Add(AEffect);
@@ -90,6 +91,8 @@ UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTa
 
 void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGameplayTag& SetName )
 {
+
+	DMS_LOG_SIMPLE(TEXT("%s : Setup own effects [%s]"), *GetOwner()->GetName(), *SetName.ToString());
 	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
 	auto EffectNodes = EffectSet->EffectNodes;
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
@@ -97,25 +100,26 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 
 
 	uint8 idx = 0;
-	for (auto EffectWrapper : EffectNodes)
+	for (auto& EffectWrapper : EffectNodes)
 	{
 		auto Effect = EffectWrapper->GetEffectNode();
 
 		if (Effect->Conditions == nullptr)
 			{DMS_LOG_SIMPLE(TEXT("NO CONDITION"));continue;}
 
-		UDMSEffectNode* Node = ActivatorNodeGenerator(SetName, idx++);
-		Node->Rename(nullptr, this);
-		Node->Conditions = DuplicateObject(Effect->Conditions, Node);
-		if (Node->Conditions == nullptr)
-			DMS_LOG_SIMPLE(TEXT("CONDITION DUPLICATION FAILED"));
-		Node->bIsChainableEffect = false;
-		Node->bForced = Effect->bForced;
-		Node->bIgnoreNotify = Effect->bIgnoreNotify;
-		Node->TargetGenerator = NewObject<UDMSTargetGenerator_SourceObject>(Node,"TargetGenerator");
+		//UDMSEffectNode* Node = ActivatorNodeGenerator(SetName, idx++);
+		//Node->Rename(nullptr, this);
+		//Node->Conditions = DuplicateObject(Effect->Conditions, Node);
+		//if (Node->Conditions == nullptr)
+		//	DMS_LOG_SIMPLE(TEXT("CONDITION DUPLICATION FAILED"));
+		//Node->bIsChainableEffect = false;
+		//Node->bForced = Effect->bForced;
+		//Node->bIgnoreNotify = Effect->bIgnoreNotify;
+		//Node->TargetGenerator = NewObject<UDMSTargetGenerator_SourceObject>(Node,"TargetGenerator");
 		//AActor* CardOwner = GetOwningPlayer();
 
-		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), GetOwner(), Node);
+		//auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), GetOwner(), Node);
+		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), GetOwner(), Effect);
 		EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
 		OwnEffectInstances.Add(EIs[0]);
 	}

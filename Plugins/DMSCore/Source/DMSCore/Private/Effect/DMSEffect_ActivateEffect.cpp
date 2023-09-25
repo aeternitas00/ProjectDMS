@@ -11,7 +11,7 @@
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ActivateEffect, "Effect.ActivateEffect");
 
-UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() :EffectIdx(0)
+UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() : UseEffectFromOuter(false), EffectIdx(0)
 { 
 	EffectSetName = TAG_DMS_EffectType_Effect;
 	EffectTag = TAG_DMS_Effect_ActivateEffect;
@@ -24,36 +24,44 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 
 	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
+	
+	UDMSEffectNodeWrapper* NodeWrapper = nullptr;
 
-	auto Set= GetEffectSetFromOuter(iEI);
-	if (Set == nullptr) { 
-		//DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *iEI->GetApplyTarget()->GetName());
-		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
-		OnWorkCompleted.ExecuteIfBound(false);
-		return; 
-	}
-	
-	// Use Preset Idx;
-	uint8 Idx = EffectIdx;
-	
-	// Override with Input Data ( Skip if data doesn't exist. )
-	UDMSDataObject* rData = iEI->DataSet->GetData(EffectTag);
-	if (rData != nullptr && rData->TypeCheck<uint8>() && rData->Get<uint8>() < Set->EffectNodes.Num()) {
-		Idx = rData->Get<uint8>();
+	if (!UseEffectFromOuter) {
+		NodeWrapper = StaticEffect;
 	}
 
-	// Get proper EffectNode from EffectSet
-	auto NodeWrapper = (Set != nullptr && Set->EffectNodes.Num()>Idx ) ? Set->EffectNodes[Idx] : nullptr;
-	if (NodeWrapper == nullptr) { 
-		/*DMS_LOG_SCREEN(TEXT("%s : Can't Find Effect Node"), *iEI->GetName() );*/ 
+	else {
+		auto Set= GetEffectSetFromOuter(iEI);
+		if (Set == nullptr) { 
+			//DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *iEI->GetApplyTarget()->GetName());
+			DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
+			OnWorkCompleted.ExecuteIfBound(false);
+			return; 
+		}
+	
+		// Use Preset Idx;
+		uint8 Idx = EffectIdx;
+	
+		// Override with Input Data ( Skip if data doesn't exist. )
+		UDMSDataObject* rData = iEI->DataSet->GetData(EffectTag);
+		if (rData != nullptr && rData->TypeCheck<uint8>() && rData->Get<uint8>() < Set->EffectNodes.Num()) {
+			Idx = rData->Get<uint8>();
+		}
+
+		// Get proper EffectNode from EffectSet
+		NodeWrapper = (Set != nullptr && Set->EffectNodes.Num()>Idx ) ? Set->EffectNodes[Idx] : nullptr;
+
+		//DMS_LOG_SCREEN(TEXT("%s : Found Effect Node"), *iEI->GetName());
+	}
+
+	if (NodeWrapper == nullptr || NodeWrapper->GetEffectNode() == nullptr) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
-	//DMS_LOG_SCREEN(TEXT("%s : Found Effect Node"), *iEI->GetName());
 
 	auto Node = NodeWrapper->GetEffectNode();
-
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
 	auto NewSeq = SeqMan->RequestCreateSequence(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
 	

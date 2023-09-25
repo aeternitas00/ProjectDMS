@@ -7,6 +7,8 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
 //#include "Player/DMSPlayerState.h"
+#include "Effect/DMSEffectHandler.h"
+#include "Library/DMSCoreFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
 #include "GameModes/DMSGameStateBase.h"
 
@@ -115,7 +117,7 @@ void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq)
 	ChildSequence = iSeq;
 }
 
-void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
+void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets, bool CreateEIs)
 {
 	for ( auto& TargetToEI :TargetAndEIs )
 	{ 
@@ -124,6 +126,12 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 	TargetAndEIs.Reset();
 
 	for (auto& Target : iTargets) TargetAndEIs.Add(FDMSSequenceEIStorage(Target));
+
+	if (CreateEIs)
+	{
+		auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();	check(EH);
+		EH->CreateEffectInstance(this,OriginalEffectNode);
+	}
 }
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets() const

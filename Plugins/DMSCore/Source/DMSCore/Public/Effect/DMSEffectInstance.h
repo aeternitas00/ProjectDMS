@@ -34,7 +34,7 @@ enum class EDMSEIState : uint8
 	EIS_Pending UMETA(DisplayName = "Pending to apply"), // Prevent self notifing 
 	EIS_Persistent UMETA(DisplayName = "Persistent"),
 	EIS_PendingKill UMETA(DisplayName = "Pending to kill"),
-	EIS_Preview UMETA(DisplayName = "Preview Dummy"),
+	//EIS_Preview UMETA(DisplayName = "Preview Dummy"),
 	//...
 };
 
