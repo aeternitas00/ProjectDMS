@@ -78,6 +78,7 @@ protected:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourcePlayer)
 	TObjectPtr<AActor> SourcePlayer;
+	//TScriptInterface<IDMSEffectorOwnableInterface> SourcePlayer;
 
 	/**
 	 * The object that triggers the sequence.
@@ -171,7 +172,7 @@ public:
 	/**
 	 * Get the player controller to handle selections for this sequence.
 	 */
-	APlayerController* GetWidgetOwner();
+	//APlayerController* GetWidgetOwner();
 
 	/**
 	 * Simple getter of Targets.

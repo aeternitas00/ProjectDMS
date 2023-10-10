@@ -20,7 +20,7 @@
 
 #include "Location/DMSLocatableInterface.h"
 #include "Effect/DMSEffectorInterface.h"
-
+#include "Effect/DMSEffectorOwnableInterface.h"
 #include "DMSPlayerState.generated.h"
 
 class UDMSCardManagerComponent;
@@ -38,7 +38,7 @@ class UDMSEffectNode;
  *	========================================
  */
 UCLASS(Blueprintable)
-class PROJECTDMSGAME_API ADMSPlayerState : public APlayerState, public IDMSEffectorInterface, public IDMSLocatableInterface
+class PROJECTDMSGAME_API ADMSPlayerState : public APlayerState, public IDMSEffectorInterface, public IDMSLocatableInterface, public IDMSEffectorOwnableInterface
 {
 	GENERATED_BODY()
 	
@@ -166,4 +166,5 @@ public:
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
 	virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);
 	virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);
+	virtual APlayerController* GetWidgetOwner() override { return GetPlayerController(); }
 };

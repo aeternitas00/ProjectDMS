@@ -3,9 +3,10 @@
 
 #include "Sequence/Steps/DMSSequenceStep_Decision.h"
 #include "Sequence/DMSSeqManager.h"
-
+#include "Common/DMSTargetGenerator.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Effect/DMSEffectDefinition.h"
+#include "Effect/DMSEffectorOwnableInterface.h"
 #include "Effect/DMSEffectHandler.h"
 #include "Effect/DMSEffectInstance.h"
 #include "GameFramework/PlayerController.h"
@@ -16,6 +17,21 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_Decision, "Step.Decision");
 UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
 {
 	StepTag = TAG_DMS_Step_Decision;
+	DecisionMaker = CreateDefaultSubobject<UDMSTargetGenerator_SourcePlayer>("DecisionMaker");
+}
+
+TArray<UDMSDecisionWidget*> UDMSSequenceStep_Decision::CreateDecisionWidgets(APlayerController* WidgetOwner)
+{
+	TArray<UDMSDecisionWidget*> rv;
+	for (auto& WidgetClass : DecisionWidgetClasses)
+	{
+		auto NewWidget = CreateWidget<UDMSDecisionWidget>(WidgetOwner, WidgetClass);
+		NewWidget->OwnerSeq = OwnerSequence;
+		rv.Add(NewWidget);
+	}
+
+	//InitializeDecisionWidget(rv);
+	return rv;
 }
 
 void UDMSSequenceStep_Decision::OnBefore_Implementation()
@@ -35,13 +51,24 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
 
 	DMS_LOG_SCREEN(TEXT("==-- DecisionStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	
+	APlayerController* WidgetOwner = nullptr;
 
-	auto WidgetOwner = OwnerSequence->GetWidgetOwner();
+	auto DecisionMakers = DecisionMaker->GetTargets(OwnerSequence->GetSourceObject(), OwnerSequence);
+	
+	// 디시전을 여러명이서 순차 진행하는 케이스가 있을까? 
+	if (DecisionMakers[0]->IsA<UDMSEffectorInterface>()) 
+		WidgetOwner = Cast<IDMSEffectorInterface>(DecisionMakers[0])->GetOwningPlayerController();
+	
+	if ( WidgetOwner == nullptr ) {
+		ProgressComplete(false); return;
+	}
 
-	TArray<UDMSConfirmWidgetBase*> Widgets;
+	TArray<UDMSConfirmWidgetBase*> Widgets(OwnerSequence->OriginalEffectNode->CreateDecisionWidgets(OwnerSequence, WidgetOwner));
+	
 	//if (!OwnerSequence->OriginalEffectNode->bForced && DefaultYNWidget != nullptr)
 	//	Widgets.Add(NewObject<UDMSConfirmWidgetBase>(this, DefaultYNWidget.Get()));
-	Widgets.Append(TArray<UDMSConfirmWidgetBase*>(OwnerSequence->OriginalEffectNode->CreateDecisionWidgets(OwnerSequence,WidgetOwner)));
+	//Widgets.Append(TArray<UDMSConfirmWidgetBase*>(OwnerSequence->OriginalEffectNode->CreateDecisionWidgets(OwnerSequence,WidgetOwner)));
 	if (!OwnerSequence->SetupWidgetQueue(Widgets))
 	{
 		DMS_LOG_SIMPLE(TEXT("Can't setup Decision selector"));
@@ -96,10 +123,7 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 		[=](UDMSSequence* pSequence) {
 			// Decision canceled
 			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
-			// Cleanup this seq
 			ProgressComplete(false);
-			//SM->CompleteSequence(pSequence);
-			//...
 		}
 	);
 

@@ -22,7 +22,11 @@ struct FDMSSkillTestData
 
 	// Get stat from who?
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
-	TObjectPtr<UDMSTargetGenerator> TesterTargetor;
+	TObjectPtr<UDMSTargetGenerator> TesterGenerator;
+
+	// Get stat from who?
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, meta = (EditCondition = "!bTestToStaticValue", EditConditionHides))
+	TObjectPtr<UDMSTargetGenerator> TestTargetGenerator;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	bool bTestToStaticValue;
@@ -41,7 +45,7 @@ struct FDMSSkillTestData
 };
 
 /**
- * 
+ * Skill test is for one tester : one test target 
  */
 UCLASS()
 class PROJECTDMSGAME_API UDMSSequenceStep_SkillTest : public UDMSSequenceStep
@@ -49,7 +53,9 @@ class PROJECTDMSGAME_API UDMSSequenceStep_SkillTest : public UDMSSequenceStep
 	GENERATED_BODY()
 
 protected:
-	TArray<TObjectPtr<AActor>> Testers;
+
+	TArray<TObjectPtr<UObject>> Testers;
+	TArray<TObjectPtr<UObject>> TestTargets;
 	float SourceValue;
 	
 public:
@@ -62,12 +68,14 @@ public:
 	TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
 
 	static const FGameplayTag SkillBonusTag;
-
+	void SetupTargets(TArray<TObjectPtr<UObject>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
 	virtual void OnStepInitiated() override;
 
 	virtual void OnBefore_Implementation() override;
 	virtual void OnDuring_Implementation() override;
 	virtual void OnAfter_Implementation() override;
+
+	float CalculateSkillTestResult();
 };
 
 
@@ -93,7 +101,7 @@ public:
 	//virtual void OnPopupSelector_Implementation() override;
 	//virtual void OnCloseSelector_Implementation() override;
 
-	//virtual UDMSDataObjectSet* MakeOutputData_Implementation();
+	virtual UDMSDataObjectSet* MakeOutputData_Implementation();
 	//virtual	bool SetupWidget_Implementation();
 
 	//friend class UDMSEffect_SkillTest;

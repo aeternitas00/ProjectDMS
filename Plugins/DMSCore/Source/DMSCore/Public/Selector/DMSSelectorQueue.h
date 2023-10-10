@@ -88,3 +88,12 @@ struct FDMSSelectorQueue
 	 */
 	void RedoWidgetQueue();
 };
+
+template<typename FuncCompleted, typename FuncCanceled >
+void FDMSSelectorQueue::RunSelectors(FuncCompleted&& iOnSelectorsCompleted, FuncCanceled&& iOnSelectorsCanceled)
+{
+	//OnSelectorsCompleted.BindLambda(std::forward<FuncCompleted&&>(iOnSelectorsCompleted));
+	OnSelectorsCompleted.BindLambda(iOnSelectorsCompleted);
+	OnSelectorsCanceled.BindLambda(iOnSelectorsCanceled);
+	RunNextSelector();
+}

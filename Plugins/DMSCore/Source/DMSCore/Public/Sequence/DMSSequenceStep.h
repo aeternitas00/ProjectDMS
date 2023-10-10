@@ -54,6 +54,7 @@ public:
 	 * Run this step.
 	 */
 	void RunStep();
+	void CloseStep(bool bSuccessed = true);
 
 	// IMPLEMENTS :: Step Behaviour
 	virtual void OnStepInitiated();

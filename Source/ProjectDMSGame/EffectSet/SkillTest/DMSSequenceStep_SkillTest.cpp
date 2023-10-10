@@ -11,6 +11,8 @@
 #include "Card/DMSCardManagerComponent.h"
 #include "Conditions/DMSConditionObject.h"
 #include "Library/DMSCoreFunctionLibrary.h"
+#include "Player/DMSPlayerController.h"
+#include "GameModes/DMSGameStateBase.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest, "Step.SkillTest");
 
@@ -19,20 +21,20 @@ const FGameplayTag UDMSSequenceStep_SkillTest::SkillBonusTag = FGameplayTag::Req
 UDMSSequenceStep_SkillTest::UDMSSequenceStep_SkillTest()
 {
 	StepTag = TAG_DMS_Step_SkillTest;
+	SkillTestData.TesterGenerator = CreateDefaultSubobject<UDMSTargetGenerator_SourceObject>("TesterGenerator");
+	SkillTestData.TestTargetGenerator = CreateDefaultSubobject<UDMSTargetGenerator_SequenceTarget>("TestTargetGenerator");
 }
 
 void UDMSSequenceStep_SkillTest::OnStepInitiated()
 {
+	if (SkillTestWidgetClass == nullptr) { CloseStep(false); return; }
 	// == INIT REFERENCES == //
-	for (auto& TestObj : SkillTestData.TesterTargetor->GetTargets(OwnerSequence->GetSourceObject(), OwnerSequence))
-	{
-		AActor* Tester = Cast<AActor>(TestObj);
-		if (Tester != nullptr) Testers.Add(Tester);
-	}
 
-	AActor* SourceActor = Cast<AActor>(OwnerSequence->GetSourceObject());
+	SetupTargets(Testers,SkillTestData.TesterGenerator);
+	SetupTargets(TestTargets, SkillTestData.TestTargetGenerator);
+	//AActor* SourceActor = Cast<AActor>(OwnerSequence->GetSourceObject());
 
-	UDMSGameFunctionLibrary::GetAttributeFromActor(SourceActor, SkillTestData.StatName, SourceValue);
+	//UDMSGameFunctionLibrary::GetAttributeFromActor(SourceActor, SkillTestData.StatName, SourceValue);
 
 	UDMSSequenceStep::OnStepInitiated();
 }
@@ -50,7 +52,61 @@ void UDMSSequenceStep_SkillTest::OnDuring_Implementation()
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
 
 	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	
+//	TArray<UDMSConfirmWidgetBase*> Widgets;
+//	
+//	// To Leader player
+//;
+//	auto NewWidget = CreateWidget<UDMSConfirmWidgetBase>(UDMSCoreFunctionLibrary::GetDMSGameState()->GetLeaderPlayerController(), SkillTestWidgetClass);
+//	NewWidget->OwnerSeq = OwnerSequence;
+//	Widgets.Add(NewWidget);
+//
+//	if (!OwnerSequence->SetupWidgetQueue(Widgets))
+//	{
+//		DMS_LOG_SIMPLE(TEXT("Can't setup Skill test widget"));
+//		ProgressComplete(false);
+//		return;
+//	}
+//
+//	OwnerSequence->RunWidgetQueue(
+//		[=](UDMSSequence* pSequence) {
+//			// Calculate skill test result
+//			CalculateSkillTestResult();
+//			
+//			ProgressComplete();
+//		},
+//		[=](UDMSSequence* pSequence) {
+//			// Skillt test canceled
+//			DMS_LOG_SIMPLE(TEXT("Skill Test canceled"));
+//
+//			ProgressComplete(false);
+//		}
+//	);
 
+	ProgressComplete();
+}
+
+void UDMSSequenceStep_SkillTest::OnAfter_Implementation()
+{
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+
+	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+
+	ProgressComplete();
+}
+
+void UDMSSequenceStep_SkillTest::SetupTargets(TArray<TObjectPtr<UObject>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator)
+{
+	for (auto& TObj : Generator->GetTargets(OwnerSequence->GetSourceObject(), OwnerSequence))
+	{
+		if (!TObj->IsA<AActor>() || !TObj->Implements<UDMSEffectorInterface>())	continue;
+
+		Arr.Add(TObj);
+	}
+}
+
+float UDMSSequenceStep_SkillTest::CalculateSkillTestResult()
+{
 
 	//	iEI->DataSet->GetValidDataValue<float>(SkillBonusName,SkillBonus);
 	//
@@ -72,14 +128,14 @@ void UDMSSequenceStep_SkillTest::OnDuring_Implementation()
 	//
 	//	iEI->DataSet->SetData(OutDataKey, SkillTestResult, true);
 	//
-	ProgressComplete();
+	return 0.0f;
 }
 
-void UDMSSequenceStep_SkillTest::OnAfter_Implementation()
+UDMSDataObjectSet* UDMSSelector_SkillTest::MakeOutputData_Implementation()
 {
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+	UDMSDataObjectSet* rv = NewObject<UDMSDataObjectSet>(OwnerSeq);
 
-	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	rv->SetData(UDMSSequenceStep_SkillTest::SkillBonusTag, OutBonusValue, true);
 
-	ProgressComplete();
+	return rv;
 }

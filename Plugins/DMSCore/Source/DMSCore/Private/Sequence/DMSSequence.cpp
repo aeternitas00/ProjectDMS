@@ -194,15 +194,13 @@ void UDMSSequence::RedoWidgetQueue()
 {
 	SelectorQueue.RedoWidgetQueue();
 }
-
-APlayerController* UDMSSequence::GetWidgetOwner()
-{
-	if (SourcePlayer->GetClass()->IsChildOf<APlayerState>())
-		return Cast<APlayerState>(SourcePlayer)->GetPlayerController();
-	
-	//if (SourcePlayer->GetClass()->IsChildOf<ADMSGameState>())
-	return Cast<ADMSGameStateBase>(SourcePlayer)->GetLeaderPlayerController();
-
-	
-}
+//
+//APlayerController* UDMSSequence::GetWidgetOwner()
+//{
+//	if (SourcePlayer->GetClass()->IsChildOf<APlayerState>())
+//		return Cast<APlayerState>(SourcePlayer)->GetPlayerController();
+//	
+//	//if (SourcePlayer->GetClass()->IsChildOf<ADMSGameState>())
+//	return Cast<ADMSGameStateBase>(SourcePlayer)->GetLeaderPlayerController();
+//}
 

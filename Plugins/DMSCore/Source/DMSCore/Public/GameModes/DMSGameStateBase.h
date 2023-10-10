@@ -5,6 +5,7 @@
 #include "DMSCoreIncludes.h"
 #include "GameFramework/GameStateBase.h"
 #include "Effect/DMSEffectorInterface.h"
+#include "Effect/DMSEffectorOwnableInterface.h"
 #include "DMSGameStateBase.generated.h"
 
 class UDMSEIManagerComponent;
@@ -13,7 +14,7 @@ class ADMSPlayerStateBase;
  * 
  */
 UCLASS()
-class DMSCORE_API ADMSGameStateBase : public AGameStateBase, public IDMSEffectorInterface
+class DMSCORE_API ADMSGameStateBase : public AGameStateBase, public IDMSEffectorInterface, public IDMSEffectorOwnableInterface
 {
 	GENERATED_BODY()
 	
@@ -45,4 +46,5 @@ public:
 	ADMSGameStateBase(const FObjectInitializer& Initializer);
 
 	virtual AActor* GetOwningPlayer() override { return this; }
+	virtual APlayerController* GetWidgetOwner() override { return GetLeaderPlayerController(); }
 };

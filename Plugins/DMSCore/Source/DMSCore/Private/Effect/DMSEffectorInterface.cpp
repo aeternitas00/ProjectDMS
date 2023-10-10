@@ -2,6 +2,7 @@
 
 
 #include "Effect/DMSEffectorInterface.h"
+#include "Effect/DMSEffectorOwnableInterface.h"
 #include "Sequence/DMSSequence.h"
 #include "Common/DMSSpawnableDataBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -25,19 +26,15 @@ AActor* IDMSEffectorInterface::GetOwningPlayer()
 	auto Spawnable = Cast<ADMSSpawnableBase>(this);
 	auto GS = UDMSCoreFunctionLibrary::GetDMSGameMode()->GetDMSGameState();
 	auto Player = Spawnable == nullptr ? nullptr : GS->FindPlayerFromId(Spawnable->GetOwnerID());
-	return Player==nullptr ? (AActor*)GS : (AActor*)Player;
+	return Player == nullptr ? (AActor*)GS : (AActor*)Player;
 }
 
 APlayerController* IDMSEffectorInterface::GetOwningPlayerController()
 {
-	auto Owner = GetOwningPlayer();
+	auto Owner = Cast<IDMSEffectorOwnableInterface>(GetOwningPlayer());
 	if (Owner==nullptr) return nullptr;
-	if (Owner->GetClass()->IsChildOf<APlayerState>())
-		return Cast<APlayerState>(Owner)->GetPlayerController();
-	if (Owner->GetClass()->IsChildOf<ADMSGameStateBase>())
-		return Cast<ADMSGameStateBase>(Owner)->GetLeaderPlayerController();
-
-	return nullptr;
+	//
+	return Owner->GetWidgetOwner();
 }
 
 void IDMSEffectorInterface::AttachEffectInstance(UDMSEffectInstance* EI)

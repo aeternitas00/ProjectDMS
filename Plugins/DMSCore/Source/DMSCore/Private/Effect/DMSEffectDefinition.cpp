@@ -123,7 +123,7 @@ TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSeq
 TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(UDMSSequence* OwnerSequence,APlayerController* WidgetOwner)
 {
 	TArray<UDMSDecisionWidget*> rv;
-	for (auto WidgetClass : DecisionWidgetClasses)
+	for (auto& WidgetClass : DecisionWidgetClasses)
 	{
 		auto NewWidget = CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass);
 		NewWidget->OwnerSeq= OwnerSequence;

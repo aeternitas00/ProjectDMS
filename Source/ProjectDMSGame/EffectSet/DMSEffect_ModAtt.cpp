@@ -18,8 +18,6 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 
 void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
-
-	
 	// predict에 valid check 를 다 하고가니 이런거 필요 한가 다시 생각해보긴 해야할텐데...
 	
 	AActor* tOuter = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
@@ -28,7 +26,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
-
+		
 	DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *tOuter->GetName());
 
 	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));

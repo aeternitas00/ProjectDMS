@@ -80,7 +80,9 @@ UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, U
 {
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if (SM == nullptr) return nullptr;
-	return SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, {}, DataSet, ChainingSequence);
+	TArray<TScriptInterface<IDMSEffectorInterface>> Target;
+	Target.Add(GetOuter());
+	return SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, Target, DataSet, ChainingSequence);
 }
 
 void UDMSEffectInstance::AttachEffectInstance(UDMSEffectInstance* EI)

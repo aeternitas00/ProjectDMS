@@ -15,12 +15,17 @@ void UDMSSequenceStep::RunStep()
 {
 	Progress=EDMSTimingFlag::T_Before;
 	OnStepInitiated();
-	Progress_Before();
+}
+
+void UDMSSequenceStep::CloseStep(bool bSuccessed)
+{
+	OnStepFinished(bSuccessed);
 }
 
 void UDMSSequenceStep::OnStepInitiated()
 {
 	OnStepInitiated_Delegate.Broadcast();
+	Progress_Before();
 }
 
 void UDMSSequenceStep::OnStepFinished(bool bSuccessed)
@@ -91,10 +96,10 @@ void UDMSSequenceStep::ProgressComplete(bool bSuccessed)
 
 	if (!bSuccessed || (OwnerSequence->SequenceState == EDMSSequenceState::SS_Canceled)){
 		DMS_LOG_SIMPLE(TEXT("==== %s : [%s] Failed ===="), *OwnerSequence->GetName(), *GetName());
-		OnStepFinished(false); return; 
+		CloseStep(false); return;
 	}
 
-	if (Progress == EDMSTimingFlag::T_After) { OnStepFinished(); return; }
+	if (Progress == EDMSTimingFlag::T_After) { CloseStep(); return; }
 	Progress = EDMSTimingFlag((uint8)Progress + 1);
 	switch (Progress)
 	{
