@@ -2,8 +2,9 @@
 
 
 #include "Effect/DMSEffectorOwnableInterface.h"
+#include "Player/DMSPlayerControllerBase.h"
 
-APlayerController* IDMSEffectorOwnableInterface::GetWidgetOwner()
+ADMSPlayerControllerBase* IDMSEffectorOwnableInterface::GetWidgetOwner()
 {
 	return nullptr;
 }

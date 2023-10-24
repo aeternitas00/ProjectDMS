@@ -58,7 +58,7 @@ void UDMSSequenceStep_SkillTest::OnDuring_Implementation()
 //	// To Leader player
 //;
 //	auto NewWidget = CreateWidget<UDMSConfirmWidgetBase>(UDMSCoreFunctionLibrary::GetDMSGameState()->GetLeaderPlayerController(), SkillTestWidgetClass);
-//	NewWidget->OwnerSeq = OwnerSequence;
+//	NewWidget->CurrentSequence = OwnerSequence;
 //	Widgets.Add(NewWidget);
 //
 //	if (!OwnerSequence->SetupWidgetQueue(Widgets))
@@ -130,12 +130,12 @@ float UDMSSequenceStep_SkillTest::CalculateSkillTestResult()
 	//
 	return 0.0f;
 }
-
-UDMSDataObjectSet* UDMSSelector_SkillTest::MakeOutputData_Implementation()
-{
-	UDMSDataObjectSet* rv = NewObject<UDMSDataObjectSet>(OwnerSeq);
-
-	rv->SetData(UDMSSequenceStep_SkillTest::SkillBonusTag, OutBonusValue, true);
-
-	return rv;
-}
+//
+//UDMSDataObjectSet* UDMSSelector_SkillTest::MakeOutputData_Implementation()
+//{
+//	UDMSDataObjectSet* rv = NewObject<UDMSDataObjectSet>(CurrentSequence);
+//
+//	rv->SetData(UDMSSequenceStep_SkillTest::SkillBonusTag, OutBonusValue, true);
+//
+//	return rv;
+//}

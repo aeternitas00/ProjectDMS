@@ -52,6 +52,15 @@ enum class EDMSComparisonOperator : uint8
 	BO_Greater UMETA(DisplayName = ">")
 };
 
+UENUM(BlueprintType)
+enum class EDMSDataType : uint8
+{
+	DT_Integer UMETA(DisplayName = "Integer"),
+	DT_Float UMETA(DisplayName = "Float"),
+	DT_String UMETA(DisplayName = "String"),
+	DT_NetGUID UMETA(DisplayName = "NetGUID"),
+};
+
 /**
  *	std::any 를 BP에 올려서 사용하기 위한 일종의 래퍼.
  *	게임내에 돌아다니는 데이터들의 타입 제한을 조금 더 느슨하게 해보고자 해서 도입

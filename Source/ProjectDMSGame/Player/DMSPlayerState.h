@@ -13,7 +13,7 @@
  */
 
 #include "ProjectDMS.h"
-#include "GameFramework/PlayerState.h"
+#include "Player/DMSPlayerStateBase.h"
 
 #include "Card/DMSCardData.h"
 #include "Character/DMSPlayerCharacterData.h"
@@ -38,7 +38,7 @@ class UDMSEffectNode;
  *	========================================
  */
 UCLASS(Blueprintable)
-class PROJECTDMSGAME_API ADMSPlayerState : public APlayerState, public IDMSEffectorInterface, public IDMSLocatableInterface, public IDMSEffectorOwnableInterface
+class PROJECTDMSGAME_API ADMSPlayerState : public ADMSPlayerStateBase, public IDMSLocatableInterface
 {
 	GENERATED_BODY()
 	
@@ -61,12 +61,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TMap<FName, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
-	/**
-	 * Effect manager component.
-	 * Manage effects that targeting players or triggered.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UDMSEIManagerComponent> EIManagerComponent;
+	///**
+	// * Effect manager component.
+	// * Manage effects that targeting players or triggered.
+	// */
+	//UPROPERTY(BlueprintReadOnly)
+	//TObjectPtr<UDMSEIManagerComponent> EIManagerComponent;
 
 	/**
 	 * Attribute component.
@@ -157,7 +157,6 @@ public:
 	// ============================= //
 	//		INTERFACE FUNCTIONS
 	// ============================= //
-	virtual AActor* GetOwningPlayer() { return this; }
 	//virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 	// TODO :: Match with BA ?
 	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
@@ -166,5 +165,4 @@ public:
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
 	virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);
 	virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);
-	virtual APlayerController* GetWidgetOwner() override { return GetPlayerController(); }
 };

@@ -13,6 +13,7 @@
  */
 
 #include "DMSCoreIncludes.h"
+#include "Selector/DMSSelectorQueue.h"
 #include "Common/DMSCommons.h"
 #include "GameModes/DMSGameModeBase.h"
 #include "UObject/NoExportTypes.h"
@@ -26,6 +27,7 @@ class UDMSEffectorInterface;
 class UDMSDecisionWidget;
 
 DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
+
 
 /**
  *	========================================
@@ -41,7 +43,9 @@ class DMSCORE_API UDMSSeqManager : public UActorComponent // or ActorComponent t
 
 private:
 	//Test feature
-	bool bUsingSteps;
+	//bool bUsingSteps;
+
+protected:
 
 public:
 	UDMSSeqManager();
@@ -56,7 +60,7 @@ public:
 	 * @param	ParentSequence				Explicit parent sequence. Default is Current sequence of SequenceManager.
 	 * @return	Created sequence : nullptr if request was failed.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable/*, Server*/)
 	UDMSSequence* RequestCreateSequence(
 		UObject* SourceObject, 
 		AActor* SourcePlayer,
@@ -65,7 +69,7 @@ public:
 		UDMSDataObjectSet* Datas = nullptr, 
 		UDMSSequence* ParentSequence = nullptr
 	);	
-	
+
 	UFUNCTION(BlueprintCallable)
 	void RemoveSequence(UDMSSequence* Sequence);
 
@@ -84,12 +88,6 @@ public:
 	void CompleteSequence(UDMSSequence* Sequence, bool Successed = true);
 
 protected:
-
-	/**
-	 * Apply param sequence.
-	 * @param	Sequence				
-	 */
-	//void ApplySequence(UDMSSequence* Sequence);
 
 	/**
 	 * Clear sequence tree. 
@@ -116,8 +114,8 @@ public:
 	 * Default YN widget class will be added as final confirmation with preview to the decision step.
 	 * TEST
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	//TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
 
 	/**
 	 * Get depth of sequence in tree.
@@ -143,13 +141,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSequenceTreeCompleted();
 
+
 	// TEST
 
 	/**
 	 * Testing
 	 */
-	UPROPERTY()
-	TMap<TObjectPtr<UDMSSequence>, TObjectPtr<UDMSDataObjectSet>> DataObjectMap;
+	//UPROPERTY()
+	//TMap<TObjectPtr<UDMSSequence>, TObjectPtr<UDMSDataObjectSet>> DataObjectMap;
 
 	/**
 	 * Starting with a parameter sequence, traversing the sequence tree to a data set containing a given tag as a key.
@@ -158,6 +157,8 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	UDMSDataObjectSet* SearchNearestDataObject(UDMSSequence* StartingSequence, FGameplayTag SerachingTag) const;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	friend class UDMSSequence;
 };

@@ -10,13 +10,15 @@
  *	Base of effect relative selector widget. ( RENAME? )
  *
  *	========================================
+ * 
+ *  개편예정
  */
 
 //#include "DMSCoreIncludes.h"
-#include "Selector/DMSConfirmWidgetBase.h"
-#include "DMSEffectElementSelectorWidget.generated.h"
+#//include "Selector/DMSConfirmWidgetBase.h"
+//#include "DMSEffectElementSelectorWidget.generated.h"
 
-class UDMSEffectDefinition;
+//class UDMSEffectDefinition;
 
 /**
  *	It is simillar to Decision Widget but has a little difference.
@@ -24,56 +26,37 @@ class UDMSEffectDefinition;
  *	So we decided to use this widget paired with ED, and the added members are for that. 
  *	( See the Effect_ModAtt for usage examples. )
  */
-UCLASS(Blueprintable, Abstract)
-class DMSCORE_API UDMSEffectElementSelectorWidget : public UDMSConfirmWidgetBase
-{
-	GENERATED_BODY()
-	
-public:
-
-	/**
-	 * Is this selection has to be for each target?
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bForEachTarget;
-
-	/**
-	 * Storing candidate data before this widget is popped up.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	TArray<UDMSDataObject*> CandidatesData;
-protected:
-
-	/**
-	 * Paired effect definition.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	UDMSEffectDefinition* SourceEffectDefinition;
-
-public:
-	UDMSEffectElementSelectorWidget(const FObjectInitializer& ObjectInitializer) :
-	UDMSConfirmWidgetBase(ObjectInitializer),bForEachTarget(false),SourceEffectDefinition(nullptr)
-	{}
-	
-	/**
-	 * Processes the result selected in the widget for sending it to the sequence's EI Data.
-	 * @return	New UDMSDataObjectSet. Use OutDataKey of paired ED.
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	UDMSDataObjectSet* MakeOutputData();
-	virtual UDMSDataObjectSet* MakeOutputData_Implementation(){return NewObject<UDMSDataObjectSet>(); }
-
-	/**
-	 * Setter of SourceEffectDefinition
-	 */
-	FORCEINLINE void SetSourceEffectDefinition(UDMSEffectDefinition* iDef) { SourceEffectDefinition = iDef;}
-	
-	/**
-	 * Getter of CandidatesData's item.
-	 * @param	TargetIdx					CandidatesData's index
-	 * @return	CandidatesData[TargetIdx]
-	 */
-	FORCEINLINE UDMSDataObject* GetCandidatesData(const uint8& TargetIdx) { return CandidatesData[TargetIdx]; }
-
-};
+//UCLASS(Blueprintable, Abstract)
+//class DMSCORE_API UDMSEffectElementSelectorWidget : public UDMSConfirmWidgetBase
+//{
+//	GENERATED_BODY()
+//	
+//public:
+//
+//protected:
+//
+//	/**
+//	 * Paired effect definition.
+//	 */
+//	UPROPERTY(BlueprintReadOnly)
+//	UDMSEffectDefinition* SourceEffectDefinition;
+//
+//public:
+//	UDMSEffectElementSelectorWidget(const FObjectInitializer& ObjectInitializer) :
+//	UDMSConfirmWidgetBase(ObjectInitializer),SourceEffectDefinition(nullptr)
+//	{}
+//	
+//	/**
+//	 * Processes the result selected in the widget for sending it to the sequence's EI Data.
+//	 * @return	New UDMSDataObjectSet. Use OutDataKey of paired ED.
+//	 */
+//	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+//	UDMSDataObjectSet* MakeOutputData();
+//	virtual UDMSDataObjectSet* MakeOutputData_Implementation(){return NewObject<UDMSDataObjectSet>(); }
+//
+//	/**
+//	 * Setter of SourceEffectDefinition
+//	 */
+//	FORCEINLINE void SetSourceEffectDefinition(UDMSEffectDefinition* iDef) { SourceEffectDefinition = iDef;}
+//};
 

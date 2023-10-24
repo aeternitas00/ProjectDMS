@@ -4,6 +4,7 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "Effect/DMSEffectInstance.h"
 
+
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute, "Effect.ModAttribute");
 
 // 자손임을 표현하기 위해 파생 키워드들은 + ".~~" 하는 형태? ex) ModifyAttribute.Deal 
@@ -11,59 +12,66 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute, "Effect.ModAttribute");
 
 UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 { 
-	//Keyword = TEXT("ModifyAttribute"); 
 	EffectTag = TAG_DMS_Effect_ModAttribute;
-	bHasPairedSelector=true;
+	
+}
+
+bool UDMSEffect_ModAtt::GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp)
+{
+	auto Interface = iEI->GetApplyTarget();
+	if (Interface == nullptr)
+		return false;
+	AActor* tOuter = Cast<AActor>(Interface->GetObject());
+	if (tOuter == nullptr)
+		return false;
+
+	OutComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
+	return true;
 }
 
 void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	// predict에 valid check 를 다 하고가니 이런거 필요 한가 다시 생각해보긴 해야할텐데...
-	
-	AActor* tOuter = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
-	if(tOuter== nullptr) 	{
-		//DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *iEI->GetName(),*iEI->GetOuter()->GetName());
-		OnWorkCompleted.ExecuteIfBound(false);
-		return;
-	}
-		
-	DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *tOuter->GetName());
 
-	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
-	if (AttComp == nullptr)
+	DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *iEI->GetOuter()->GetName());	
+
+	AActor* Outer=nullptr;
+	UDMSAttributeComponent* AttComp=nullptr;
+
+	FDMSAttributeModifier Value;
+	if (!GenerateModifier(iEI, Value)) {
+		OnWorkCompleted.ExecuteIfBound(false); return;
+	}
+
+	if (!GetTargetAttComp(iEI, Outer,AttComp))
 	{	
 		if(!bCreateIfNull)	{
 			OnWorkCompleted.ExecuteIfBound(false); return;
 		}
-		AttComp = Cast<UDMSAttributeComponent>(tOuter->AddComponentByClass(UDMSAttributeComponent::StaticClass(),false,FTransform(),false));
+		AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(),false,FTransform(),false));
 	}
 	
 	if (bCreateIfNull)	AttComp->MakeAttribute(Value.AttributeTag);
 	
-	//float OutValue=0.0f;
-	//bool rv = AttComp->TryModAttribute(Value, OutValue, false);
-	//if (rv)	AttComp->TryModAttribute(Value, OutValue);
-
 	float OutValue = 0.0f;
 	AttComp->TryModAttribute(Value, OutValue);
+
 
 	OnWorkCompleted.ExecuteIfBound(true);
 }
 
 bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
 {
-	auto Interface = iEI->GetApplyTarget();
-	if (Interface == nullptr)
-		return false;
-	AActor* tOuter = Cast<AActor>(Interface->GetObject());
-	if (tOuter == nullptr) 
-		return false;
+	AActor* Outer = nullptr;
+	UDMSAttributeComponent* AttComp;
 
-	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
-	if (AttComp == nullptr)	
+	FDMSAttributeModifier Value;
+	if (!GenerateModifier(iEI, Value)) 	return false;
+
+	if (!GetTargetAttComp(iEI, Outer, AttComp))
 	{
-		if (!bCreateIfNull) return false;		
-		AttComp = Cast<UDMSAttributeComponent>(tOuter->AddComponentByClass(UDMSAttributeComponent::StaticClass(), false, FTransform(), false));
+		if (Outer == nullptr || !bCreateIfNull) return false;
+		AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(), false, FTransform(), false));
 		AttComp->MakeAttribute(Value.AttributeTag);
 	}
 	float PredictValue=0.0f;
@@ -92,13 +100,31 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDM
 FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
 { 
 	FGameplayTagContainer Rv(EffectTag);
+//	Rv.AddTag(GenerateModifier().AttributeTag);
+	return Rv;
+}
+
+FGameplayTagContainer UDMSEffect_ModAtt_Static::GetEffectTags_Implementation()
+{ 
+	FGameplayTagContainer Rv(EffectTag);
 	Rv.AddTag(Value.AttributeTag);
 	return Rv;
 }
 
-void UDMSEffect_ModAtt::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
+
+UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
 {
-	auto CastedWidget = Cast<UDMSSelector_ModAtt>(WidgetInstance);
-	if (CastedWidget==nullptr) return;
-	CastedWidget->SelectorData = SelectorData;
+	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
+}
+
+bool UDMSEffect_ModAtt_Variable::GenerateModifier(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue)
+{
+	auto ValueData = EI->DataSet->GetData(SelectorData.OutDataKey);
+	if (ValueData == nullptr || !ValueData->TypeCheck<FDMSAttributeModifier>()) 
+		return false;
+
+	else
+		OutValue = ValueData->Get<FDMSAttributeModifier>();
+	
+	return true;
 }

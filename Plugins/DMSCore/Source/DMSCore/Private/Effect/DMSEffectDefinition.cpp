@@ -71,6 +71,24 @@ TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode
 	return Storages;
 }
 
+TArray<FDMSValueSelectionForm> UDMSEffectNode::GetSelectionFormsFromEffects()
+{
+	TArray<FDMSValueSelectionForm> rv;
+
+	for (auto ED : EffectDefinitions)
+	{
+		UClass* Class = ED->StaticClass();
+
+		for (TFieldIterator<FStructProperty> PropIt(Class); PropIt; ++PropIt)
+		{
+			FStructProperty* StructProperty = *PropIt;
+			if (StructProperty->Struct == (FDMSValueSelectionForm::StaticStruct()))
+				rv.Add(*StructProperty->ContainerPtrToValuePtr<FDMSValueSelectionForm>(ED));
+		}
+	}
+	return rv;
+}
+
 UDMSEffectNode::UDMSEffectNode() : bForced(false),bIgnoreNotify(false), bIsChainableEffect(true)
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
@@ -103,64 +121,62 @@ bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
 	return false;
 }
 
-TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner)
-{
-	// TODO :: Callback and Queued Selectors
+//TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner)
+//{
+//	// TODO :: Callback and Queued Selectors
+//
+//	//DMS_LOG_SCREEN(TEXT("CreateSelectors"));
+//	TArray<UDMSEffectElementSelectorWidget*> rv;
+//	for (auto ED : EffectDefinitions)
+//	{
+//		//rv.Append(ED->CreateSelectors());
+//		auto t= ED->CreatePairedSelector(OwnerSeq,WidgetOwner);	
+//		if(t==nullptr) continue;
+//		rv.Add(t);
+//	}
+//	return rv;
+//
+//}
+//
+//TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(UDMSSequence* OwnerSequence,APlayerController* WidgetOwner)
+//{
+//	TArray<UDMSDecisionWidget*> rv;
+//	for (auto& WidgetClass : DecisionWidgetClasses)
+//	{
+//		auto NewWidget = CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass);
+//		NewWidget->CurrentSequence= OwnerSequence;
+//		rv.Add(NewWidget);
+//	}
+//
+//	InitializeDecisionWidget(rv);
+//	return rv;
+//}
 
-	//DMS_LOG_SCREEN(TEXT("CreateSelectors"));
-	TArray<UDMSEffectElementSelectorWidget*> rv;
-	for (auto ED : EffectDefinitions)
-	{
-		//rv.Append(ED->CreateSelectors());
-		auto t= ED->CreatePairedSelector(OwnerSeq,WidgetOwner);	
-		if(t==nullptr) continue;
-		rv.Add(t);
-	}
-	return rv;
+//UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner)
+//{
+//	if(!bIsUsingSelector) return nullptr;
+//	
+//	auto rv = GetPairedSelector().Get() != nullptr ? CreateWidget<UDMSEffectElementSelectorWidget>(WidgetOwner, GetPairedSelector().Get()) : nullptr;
+//	
+//	// Never happen?
+//	if (rv == nullptr) return nullptr;
+//	rv->SetSourceEffectDefinition(this);
+//	rv->CurrentSequence = OwnerSeq;
+//	InitializePairedSelector(rv);
+//
+//	return rv;
+//}
 
-}
-
-TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(UDMSSequence* OwnerSequence,APlayerController* WidgetOwner)
-{
-	TArray<UDMSDecisionWidget*> rv;
-	for (auto& WidgetClass : DecisionWidgetClasses)
-	{
-		auto NewWidget = CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass);
-		NewWidget->OwnerSeq= OwnerSequence;
-		rv.Add(NewWidget);
-	}
-
-	InitializeDecisionWidget(rv);
-	return rv;
-}
-
-
-
-UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner)
-{
-	if(!bIsUsingSelector) return nullptr;
-	
-	auto rv = GetPairedSelector().Get() != nullptr ? CreateWidget<UDMSEffectElementSelectorWidget>(WidgetOwner, GetPairedSelector().Get()) : nullptr;
-	
-	// Never happen?
-	if (rv == nullptr) return nullptr;
-	rv->SetSourceEffectDefinition(this);
-	rv->OwnerSeq = OwnerSeq;
-	InitializePairedSelector(rv);
-
-	return rv;
-}
-
-TArray<UDMSEffectNodeWrapper*> UDMSEffectSet::GetEffectNodeWithComparer(const FNodeComparer& Comparer)
-{
-	TArray<UDMSEffectNodeWrapper*> rv;
-
-	for (auto NodeWrapper : EffectNodes)
-	{
-		if (Comparer.Execute(NodeWrapper->GetEffectNode())) rv.Add(NodeWrapper);
-	}
-	return rv;
-}
+//TArray<UDMSEffectNodeWrapper*> UDMSEffectSet::GetEffectNodeWithComparer(const FNodeComparer& Comparer)
+//{
+//	TArray<UDMSEffectNodeWrapper*> rv;
+//
+//	for (auto NodeWrapper : EffectNodes)
+//	{
+//		if (Comparer.Execute(NodeWrapper->GetEffectNode())) rv.Add(NodeWrapper);
+//	}
+//	return rv;
+//}
 
 
 // SERIALIZATIONS

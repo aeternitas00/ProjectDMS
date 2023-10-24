@@ -24,7 +24,7 @@
 
 
 ADMSPlayerController::ADMSPlayerController(const FObjectInitializer& ObjectInitializer)
-	/*: Super(ObjectInitializer)*//*, InteractionMode(EDMSCardInteractionMode::PIM_Play)*/
+	: ADMSPlayerControllerBase(ObjectInitializer)/*, InteractionMode(EDMSCardInteractionMode::PIM_Play)*/
 {
 	bShowMouseCursor=true;
 	bEnableClickEvents=true;
@@ -46,9 +46,7 @@ void ADMSPlayerController::PostInitializeComponents()
 }
 
 
-void/**/ ADMSPlayerController::PopupSelectorWidget(TSubclassOf<UDMSEffectElementSelectorWidget> WidgetClass)
-{
-}
+
 
 ADMSCameraPawn* ADMSPlayerController::GetCameraPawn()
 {

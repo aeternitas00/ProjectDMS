@@ -14,7 +14,7 @@
 
 #include "DMSCoreIncludes.h"
 #include "Sequence/DMSSequenceEIStorage.h"
-#include "UObject/NoExportTypes.h"
+#include "Components/ActorComponent.h"
 #include "Common/DMSCommonDelegates.h"
 #include "DMSEffectHandler.generated.h"
 
@@ -28,7 +28,7 @@ class IDMSEffectorInterface;
  *	working...
  */
 UCLASS(BlueprintType, Blueprintable/*ClassGroup = (Effect)*/)
-class DMSCORE_API UDMSEffectHandler : public UObject // or ActorComponent to attach GM
+class DMSCORE_API UDMSEffectHandler : public UActorComponent // or ActorComponent to attach GM
 {
 	GENERATED_BODY()
 	

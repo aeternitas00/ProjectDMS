@@ -13,9 +13,8 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ActivateEffect, "Effect.ActivateEffect");
 
 UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() : UseEffectFromOuter(false), EffectIdx(0)
 { 
-	EffectSetName = TAG_DMS_EffectType_Effect;
 	EffectTag = TAG_DMS_Effect_ActivateEffect;
-	bHasPairedSelector=true;
+	EffectSetName = TAG_DMS_EffectType_Effect;
 }
 
 void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
@@ -26,36 +25,8 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
 	
 	UDMSEffectNodeWrapper* NodeWrapper = nullptr;
-
-	if (!UseEffectFromOuter) {
-		NodeWrapper = StaticEffect;
-	}
-
-	else {
-		auto Set= GetEffectSetFromOuter(iEI);
-		if (Set == nullptr) { 
-			//DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *iEI->GetApplyTarget()->GetName());
-			DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
-			OnWorkCompleted.ExecuteIfBound(false);
-			return; 
-		}
 	
-		// Use Preset Idx;
-		uint8 Idx = EffectIdx;
-	
-		// Override with Input Data ( Skip if data doesn't exist. )
-		UDMSDataObject* rData = iEI->DataSet->GetData(EffectTag);
-		if (rData != nullptr && rData->TypeCheck<uint8>() && rData->Get<uint8>() < Set->EffectNodes.Num()) {
-			Idx = rData->Get<uint8>();
-		}
-
-		// Get proper EffectNode from EffectSet
-		NodeWrapper = (Set != nullptr && Set->EffectNodes.Num()>Idx ) ? Set->EffectNodes[Idx] : nullptr;
-
-		//DMS_LOG_SCREEN(TEXT("%s : Found Effect Node"), *iEI->GetName());
-	}
-
-	if (NodeWrapper == nullptr || NodeWrapper->GetEffectNode() == nullptr) {
+	if ( !GetEffectNodeWrapper(iEI,NodeWrapper) || NodeWrapper == nullptr || NodeWrapper->GetEffectNode() == nullptr) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
@@ -82,38 +53,40 @@ UDMSEffectSet* UDMSEffect_ActivateEffect::GetEffectSetFromOuter(UDMSEffectInstan
 	return tOuter != nullptr ? tOuter->GetOwningEffectSet(EffectSetName) : nullptr;
 }
 
-void UDMSEffect_ActivateEffect::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
+UDMSEffect_ActivateEffect_Variable::UDMSEffect_ActivateEffect_Variable()
 {
-	auto CastedWidget = Cast<UDMSSelector_ActivateEffect>(WidgetInstance);
-	if (CastedWidget == nullptr) return;
-	
-	//CastedWidget->OutDataName = OutDataKey;
-
-	auto& iSeq = WidgetInstance->OwnerSeq;
-	
-	for (auto& EI : iSeq->GetAllEIs())
-	{
-		auto Set = GetEffectSetFromOuter(EI);
-		if (Set == nullptr) 
-		{ /*DMS_LOG_SCREEN(TEXT("%s : Set is Null"), *EI->GetApplyTarget()->GetName());*/ WidgetInstance->CandidatesData.Empty(); return; }
-
-		auto NewDataObj = NewObject<UDMSDataObject>();
-		TArray<UObject*> tArr;
-		for (UObject* i : Set->EffectNodes) tArr.Add(i);
-		NewDataObj->Set(tArr);
-
-		WidgetInstance->CandidatesData.Add(NewDataObj);
-	} 
+	SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
 }
-//
-//bool UDMSEffect_ActivateEffect::GetCandidates_Implementation(UDMSSequence* iSeq, TArray<UDMSDataObject*>& outDataObj)
-//{
-//	//return false;
-//
-//
-//}
 
-UDMSDataObjectSet* UDMSSelector_ActivateEffect::MakeOutputData_Implementation()
+bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper)
 { 
-	return NewObject<UDMSDataObjectSet>(); 
+	UDMSDataObject* rData = iEI->DataSet->GetData(SelectorData.OutDataKey);
+	uint8 Idx = UINT8_MAX;	
+	auto Selector = Cast<UDMSValueSelectorDefinition_Effect>(SelectorData.ValueSelector); 
+	UDMSEffectSet* Set = UseEffectFromOuter ? GetEffectSetFromOuter(iEI) : Selector->EffectSet;
+
+	// Get Input Data ( Skip if data doesn't exist. )
+	if (rData != nullptr && rData->TypeCheck<uint8>())	Idx = rData->Get<uint8>();
+	else	return false;
+	
+	if (Set != nullptr && Set->EffectNodes.Num() > Idx)	OutWrapper = Set->EffectNodes[Idx];
+	else	return false;
+
+	return true; 
+	
+}
+
+bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper) 
+{ 
+	if (UseEffectFromOuter){
+		auto Set = GetEffectSetFromOuter(iEI);
+		if (Set != nullptr && Set->EffectNodes.Num() > EffectIdx)
+			OutWrapper = Set->EffectNodes[EffectIdx];
+		else
+			return false;
+	}
+	else
+		OutWrapper = StaticEffect;
+
+	return true; 
 }

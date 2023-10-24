@@ -4,6 +4,7 @@
 
 #include "EngineMinimal.h"
 #include "Engine/Engine.h"
+#include "Net/UnrealNetwork.h"
 #include "NativeGameplayTags.h"
 //#include "Library/DMSCoreFunctionLibrary.h"
 

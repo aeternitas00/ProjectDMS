@@ -6,7 +6,6 @@
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
-//#include "Player/DMSPlayerState.h"
 #include "Effect/DMSEffectHandler.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
@@ -156,14 +155,7 @@ TArray<UDMSEffectInstance*> UDMSSequence::GetAllEIs()
 	return rv;
 }
 
-bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets)
-{ 
-	//for(auto Widget : iWidgets) Widget->SetOwningPlayer(WidgetOwner);
-	SelectorQueue.SelectorQueue.Empty();
-	SelectorQueue.SelectorQueue.Append(iWidgets); 
-	bool rv= SelectorQueue.SetupQueue(this);
-	return rv;
-}
+
 
 void UDMSSequence::OnSequenceInitiate()
 {
@@ -190,10 +182,19 @@ void UDMSSequence::OnStepQueueCompleted(bool Successed)
 	SeqManager->CompleteSequence(this, Successed); 
 }
 
-void UDMSSequence::RedoWidgetQueue()
-{
-	SelectorQueue.RedoWidgetQueue();
-}
+//bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets)
+//{ 
+//	//for(auto Widget : iWidgets) Widget->SetOwningPlayer(WidgetOwner);
+//	SelectorQueue.SelectorQueue.Empty();
+//	SelectorQueue.SelectorQueue.Append(iWidgets); 
+//	bool rv= SelectorQueue.SetupQueue(this);
+//	return rv;
+//}
+// 
+//void UDMSSequence::RedoWidgetQueue()
+//{
+//	SelectorQueue.RedoWidgetQueue();
+//}
 //
 //APlayerController* UDMSSequence::GetWidgetOwner()
 //{

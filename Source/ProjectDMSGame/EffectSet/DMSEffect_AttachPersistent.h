@@ -33,32 +33,32 @@ public:
 
 
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	TSubclassOf<UDMSSelector_AttachPersistent> PairedWidgetClass;
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
+//	TSubclassOf<UDMSSelector_AttachPersistent> PairedWidgetClass;
 
-	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation() { return PairedWidgetClass.Get(); }
+//	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation() { return PairedWidgetClass.Get(); }
 
 	// virtual FGameplayTagContainer GetEffectTags_Implementation() override;
 	
-	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance) override;
+//	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance) override;
 };
 
 
 
-UCLASS(Blueprintable, Abstract)
-class UDMSSelector_AttachPersistent : public UDMSEffectElementSelectorWidget
-{
-	GENERATED_BODY()
-
-protected:
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
-	uint8 Num;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<uint8> SelectedIndex;
-
-public:
-
-	virtual UDMSDataObjectSet* MakeOutputData_Implementation();
-
-};
+//UCLASS(Blueprintable, Abstract)
+//class UDMSSelector_AttachPersistent : public UDMSConfirmWidgetBase
+//{
+//	GENERATED_BODY()
+//
+//protected:
+//	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+//	uint8 Num;
+//
+//	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+//	TArray<uint8> SelectedIndex;
+//
+//public:
+//
+//	virtual UDMSDataObjectSet* MakeOutputData_Implementation();
+//
+//};

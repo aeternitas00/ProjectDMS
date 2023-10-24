@@ -65,7 +65,7 @@ public:
 	FDMSSkillTestData SkillTestData;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
+	TSubclassOf<UDMSConfirmWidgetBase> SkillTestWidgetClass;
 
 	static const FGameplayTag SkillBonusTag;
 	void SetupTargets(TArray<TObjectPtr<UObject>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
@@ -78,31 +78,31 @@ public:
 	float CalculateSkillTestResult();
 };
 
-
-UCLASS(Blueprintable, Abstract)
-class UDMSSelector_SkillTest : public UDMSConfirmWidgetBase
-{
-	GENERATED_BODY()
-
-
-public:
-	/**
-	 *
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	FDMSSkillTestData SkillTestData;
-
-	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<ADMSCardBase>> CommitableCards;
-
-	UPROPERTY(BlueprintReadWrite)
-	float OutBonusValue;
-
-	//virtual void OnPopupSelector_Implementation() override;
-	//virtual void OnCloseSelector_Implementation() override;
-
-	virtual UDMSDataObjectSet* MakeOutputData_Implementation();
-	//virtual	bool SetupWidget_Implementation();
-
-	//friend class UDMSEffect_SkillTest;
-};
+//
+//UCLASS(Blueprintable, Abstract)
+//class UDMSSelector_SkillTest : public UDMSConfirmWidgetBase
+//{
+//	GENERATED_BODY()
+//
+//
+//public:
+//	/**
+//	 *
+//	 */
+//	UPROPERTY(BlueprintReadOnly)
+//	FDMSSkillTestData SkillTestData;
+//
+//	UPROPERTY(BlueprintReadOnly)
+//	TArray<TObjectPtr<ADMSCardBase>> CommitableCards;
+//
+//	UPROPERTY(BlueprintReadWrite)
+//	float OutBonusValue;
+//
+//	//virtual void OnPopupSelector_Implementation() override;
+//	//virtual void OnCloseSelector_Implementation() override;
+//
+//	virtual UDMSDataObjectSet* MakeOutputData_Implementation();
+//	//virtual	bool SetupWidget_Implementation();
+//
+//	//friend class UDMSEffect_SkillTest;
+//};

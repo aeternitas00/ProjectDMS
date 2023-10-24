@@ -56,9 +56,9 @@ TArray<UObject*> UDMSTargetGenerator_FromData::GetTargets_Implementation(UObject
 {
 	UObject* TempObject=nullptr;
 	TArray<UObject*> TempArr;
-	if (CurrentSequence->EIDatas->GetValidDataValue<UObject*>(DataTag, TempObject))
+	if (CurrentSequence->SequenceDatas->GetValidDataValue<UObject*>(DataTag, TempObject))
 		return { TempObject };
-	else if (CurrentSequence->EIDatas->GetValidDataValue<TArray<UObject*>>(DataTag, TempArr))
+	else if (CurrentSequence->SequenceDatas->GetValidDataValue<TArray<UObject*>>(DataTag, TempArr))
 		return TempArr;
 	return {};
 }

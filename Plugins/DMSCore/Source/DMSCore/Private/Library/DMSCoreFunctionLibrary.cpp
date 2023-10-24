@@ -36,29 +36,29 @@ ADMSGameStateBase* UDMSCoreFunctionLibrary::GetDMSGameState()
 
 UDMSSeqManager* UDMSCoreFunctionLibrary::GetDMSSequenceManager()
 {
-	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
 
-	return GM != nullptr ? GM->GetSequenceManager() : nullptr;
+	return GS != nullptr ? GS->GetSequenceManager() : nullptr;
 }
 
 UDMSNotifyManager* UDMSCoreFunctionLibrary::GetDMSNotifyManager()
 {
-	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
 
-	return GM != nullptr ? GM->GetNotifyManager() : nullptr;
+	return GS != nullptr ? GS->GetNotifyManager() : nullptr;
 }
 
 UDMSEffectHandler* UDMSCoreFunctionLibrary::GetDMSEffectHandler()
 {
-	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
 
-	return GM != nullptr ? GM->GetEffectHandler() : nullptr;
+	return GS != nullptr ? GS->GetEffectHandler() : nullptr;
 }
 
 
 UDMSPhaseManager* UDMSCoreFunctionLibrary::GetDMSPhaseManager()
 {
-	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
 
-	return GM != nullptr ? GM->GetPhaseManager() : nullptr;
+	return GS != nullptr ? GS->GetPhaseManager() : nullptr;
 }

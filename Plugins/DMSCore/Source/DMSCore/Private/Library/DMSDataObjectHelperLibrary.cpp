@@ -84,33 +84,33 @@ bool UDMSDataObjectHelperLibrary::GetData_uint8(UDMSDataObject* iObj, uint8& out
 	return true;
 }
 
-float UDMSDataObjectHelperLibrary::SearchWithEffectValueDefs(UDMSDataObjectSet* iSet, const TArray<FDMSEffectValueDef>& DefArray, float DefaultValue)
-{
-	float rv = DefaultValue;
-	for (auto& Def : DefArray)
-	{
-		float i = Def.DefaultValue;
-		if (!Def.IsStatic)
-			iSet->GetValidDataValue<float>(Def.DataKey,i);
-		
-		switch (Def.Modifier){
-		case EDMSModifierType::MT_Add:
-			rv += i;
-			break;
-		case EDMSModifierType::MT_Sub:
-			rv -= i;
-			break;
-		case EDMSModifierType::MT_Mul:
-			rv *= i;
-			break;
-		case EDMSModifierType::MT_Set:
-			rv = i;
-			break;
-		case EDMSModifierType::MT_Div:
-			rv = i == 0.0f ? MAX_FLT : rv / i;
-			break;
-		default: break;
-		}
-	}
-	return rv;
-}
+//float UDMSDataObjectHelperLibrary::SearchWithEffectValueDefs(UDMSDataObjectSet* iSet, const TArray<FDMSEffectValueDef>& DefArray, float DefaultValue)
+//{
+//	float rv = DefaultValue;
+//	for (auto& Def : DefArray)
+//	{
+//		float i = Def.DefaultValue;
+//		if (!Def.IsStatic)
+//			iSet->GetValidDataValue<float>(Def.DataKey,i);
+//		
+//		switch (Def.Modifier){
+//		case EDMSModifierType::MT_Add:
+//			rv += i;
+//			break;
+//		case EDMSModifierType::MT_Sub:
+//			rv -= i;
+//			break;
+//		case EDMSModifierType::MT_Mul:
+//			rv *= i;
+//			break;
+//		case EDMSModifierType::MT_Set:
+//			rv = i;
+//			break;
+//		case EDMSModifierType::MT_Div:
+//			rv = i == 0.0f ? MAX_FLT : rv / i;
+//			break;
+//		default: break;
+//		}
+//	}
+//	return rv;
+//}

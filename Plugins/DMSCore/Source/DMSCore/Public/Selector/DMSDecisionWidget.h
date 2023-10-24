@@ -12,9 +12,9 @@
  * =========================================
  */
 
-#include "DMSCoreIncludes.h"
-#include "Selector/DMSConfirmWidgetBase.h"
-#include "DMSDecisionWidget.generated.h"
+//#include "DMSCoreIncludes.h"
+//#include "Selector/DMSConfirmWidgetBase.h"
+//#include "DMSDecisionWidget.generated.h"
 
 /**
  *	Definition of "Decision Step": It is a step that a player must go through when trying to activate an effect. 
@@ -24,12 +24,14 @@
  *	This widget is designed for the step of "collecting the necessary information", where the player has the choice to select the information and confirm it. 
  *	For example, if the effect can be activated on "one enemy", the widget for this would prompt the player to choose from the list of available enemies as the target.
  */
-UCLASS(Blueprintable, Abstract)
-class DMSCORE_API UDMSDecisionWidget : public UDMSConfirmWidgetBase
-{
-	GENERATED_BODY()
 
-public:
-
-
-};
+//
+//UCLASS(Blueprintable, Abstract)
+//class DMSCORE_API UDMSDecisionWidget : public UDMSConfirmWidgetBase
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UDMSDecisionWidget(const FObjectInitializer& ObjectInitializer) :UDMSConfirmWidgetBase(ObjectInitializer) {}
+//
+//};

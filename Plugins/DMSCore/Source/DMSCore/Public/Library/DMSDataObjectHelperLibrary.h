@@ -88,6 +88,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Data Object", meta = (Displayname = "Set Data uint8"))
 	static void SetData_uint8(UDMSDataObject* iObj, const uint8& inData) { iObj->Set(inData); }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static float SearchWithEffectValueDefs(UDMSDataObjectSet* iSet, const TArray<FDMSEffectValueDef>& DefArray, float DefaultValue=0.0f);
+	//UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	//static float SearchWithEffectValueDefs(UDMSDataObjectSet* iSet, const TArray<FDMSEffectValueDef>& DefArray, float DefaultValue=0.0f);
 };

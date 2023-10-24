@@ -7,7 +7,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_DealDamage, "Effect.ModAttribute.DealDamag
 UDMSEffect_Deal::UDMSEffect_Deal() 
 { 
 	EffectTag = TAG_DMS_Effect_DealDamage;
-	Value.ModifierType = EDMSModifierType::MT_Sub; 
+	//Value.ModifierType = EDMSModifierType::MT_Sub;
 }
 
 //void UDMSEffect_Deal::Work_Implementation(UDMSEffectInstance* iEI,  const FOnWorkCompletedDynamic& OnWorkCompleted)

@@ -14,7 +14,7 @@ UCLASS(Blueprintable, BlueprintType, Abstract, EditInlineNew)
 class DMSCORE_API UDMSTargetGenerator : public UObject
 {
 	GENERATED_BODY()
-	
+
 public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	TArray<UObject*> GetTargets(UObject* Caller, UDMSSequence* CurrentSequence) const;

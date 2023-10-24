@@ -13,7 +13,7 @@
  */
 
 #include "ProjectDMS.h"
-#include "GameFramework/PlayerController.h"
+#include "Player/DMSPlayerControllerBase.h"
 #include "Location/DMSLocatableInterface.h"
 #include "Common/DMSCommons.h"
 #include "DMSPlayerController.generated.h"
@@ -39,7 +39,7 @@ class ADMSCharacterBase;
  *	========================================
  */
 UCLASS(Blueprintable)
-class PROJECTDMSGAME_API ADMSPlayerController : public APlayerController
+class PROJECTDMSGAME_API ADMSPlayerController : public ADMSPlayerControllerBase
 {
 	GENERATED_BODY()
 
@@ -92,13 +92,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 
-
-	/**
-	 * Deprecated
-	 */
-	UFUNCTION(BlueprintCallable)
-	void PopupSelectorWidget(TSubclassOf<UDMSEffectElementSelectorWidget> WidgetClass);
-
 	/**
 	 * Play param card.
 	 * @param	Card					Playing card.
@@ -115,7 +108,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetupHUDWidgets();	
-	
+
 	UFUNCTION(BlueprintNativeEvent)
 	void OnLoadSaveGame(UDMSSaveGame* LoadedItem);
 	virtual void OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem);

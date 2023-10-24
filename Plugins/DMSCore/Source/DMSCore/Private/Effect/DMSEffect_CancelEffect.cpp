@@ -33,7 +33,7 @@ void UDMSEffect_IgnoreEffect::Work_Implementation(UDMSSequence* SourceSequence, 
 			if (IgnoreWholeSequence) 
 				SearchSeq->SequenceState = EDMSSequenceState::SS_Ignored;
 			else
-				SearchSeq->EIDatas->SetData(TAG_DMS_Effect_IgnoreEffect, IgnoreTargetTagQuery);
+				SearchSeq->SequenceDatas->SetData(TAG_DMS_Effect_IgnoreEffect, IgnoreTargetTagQuery);
 			break;
 		}
 		SearchSeq = SearchSeq->ParentSequence;

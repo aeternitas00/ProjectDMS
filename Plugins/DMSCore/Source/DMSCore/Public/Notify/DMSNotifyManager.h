@@ -16,18 +16,20 @@
  */
 
 #include "DMSCoreIncludes.h"
-#include "UObject/NoExportTypes.h"
+#include "Components/ActorComponent.h"
 #include "Sequence/DMSSequence.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
-#include "Selector/DMSDecisionWidget.h"
+#include "Selector/DMSConfirmWidgetBase.h"
 #include "DMSNotifyManager.generated.h"
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_Respondent)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_ActivatingEffect)
 
+
+// Not using selector form
 UCLASS()
-class DMSCORE_API UDMSNotifyRespondentSelector : public UDMSDecisionWidget
+class DMSCORE_API UDMSNotifyRespondentSelector : public UDMSConfirmWidgetBase
 {
 	GENERATED_BODY()
 
@@ -51,8 +53,11 @@ public:
 	 * @param	EffectInstance			Responsed EffectInstance. (belong to Respondent)
 	 * @return	Created UDMSDataObjectSet. ( Owner of UDMSDataObjectSet is widget's owning player state )
 	 */
+	//UFUNCTION(BlueprintCallable)
+	//UDMSDataObjectSet* MakeOutputDatas(UObject* Respondent, UObject* EffectInstance);
+
 	UFUNCTION(BlueprintCallable)
-	UDMSDataObjectSet* MakeOutputDatas(UObject* Respondent, UObject* EffectInstance);
+	void UpdateData(UDMSDataObjectSet* UpdatingData, UObject* Respondent, UObject* EffectInstance);
 
 	/**
 	 * 
@@ -68,7 +73,7 @@ public:
  *	========================================
  */
 UCLASS(BlueprintType, Blueprintable)
-class DMSCORE_API UDMSNotifyManager : public UObject
+class DMSCORE_API UDMSNotifyManager : public UActorComponent
 {
 	GENERATED_BODY()
 

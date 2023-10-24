@@ -118,23 +118,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSEffectNode> OriginalEffectNode;
 
-	///**
-	// * Effect instances (One EI attached to One target)
-	// */
-	//UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	//TArray<TObjectPtr<UDMSEffectInstance>> EIs;
-	
 	/**
 	 * Container for widgets used by the player to make decisions during the progress of a sequence.
 	 */
-	UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	FDMSSelectorQueue SelectorQueue;
+	//UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
+	//FDMSSelectorQueue SelectorQueue;
 
 	/** 
 	 * Data needed for sequence flow, such as 'Damage' by numerical values.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UDMSDataObjectSet> EIDatas;
+	TObjectPtr<UDMSDataObjectSet> SequenceDatas;
 
 	/** 
 	 * 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도
@@ -170,11 +164,6 @@ public:
 	bool SetSourcePlayer(AActor* NewSourcePlayer);
 
 	/**
-	 * Get the player controller to handle selections for this sequence.
-	 */
-	//APlayerController* GetWidgetOwner();
-
-	/**
 	 * Simple getter of Targets.
 	 */
 	UFUNCTION(BlueprintCallable)
@@ -204,20 +193,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<UDMSEffectInstance*> GetAllEIs();
 
-	/**
-	 * Setup owning widget queue with param widgets.
-	 * @param	iWidgets					Widgets going to used in widget queue.
-	 * @return	ture if setup was successful.
-	 */
-	bool SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets);
+	///**
+	// * Setup owning widget queue with param widgets.
+	// * @param	iWidgets					Widgets going to used in widget queue.
+	// * @return	ture if setup was successful.
+	// */
+	//bool SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets);
 
-	/**
-	 * Run owning widget queue.
-	 * @param	iOnSelectorFinished			Lambda parameter to be executed when the widget queue is successfully completed.
-	 * @param	iOnSelectorCanceled			Lambda parameter to be executed when the widget queue is canceled.
-	 */
-	template<typename FuncFinished, typename FuncCanceled >
-	void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
+	///**
+	// * Run owning widget queue.
+	// * @param	iOnSelectorFinished			Lambda parameter to be executed when the widget queue is successfully completed.
+	// * @param	iOnSelectorCanceled			Lambda parameter to be executed when the widget queue is canceled.
+	// */
+	//template<typename FuncFinished, typename FuncCanceled >
+	//void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
 
 	/**
 	 * Executed when sequence is initiated.
@@ -230,11 +219,11 @@ public:
 	 */
 	void OnSequenceFinish(bool Successed);
 
-	/**
-	 * Resets the progress of the widget queue and starts over.
-	 */
-	UFUNCTION(BlueprintCallable)
-	void RedoWidgetQueue();
+	///**
+	// * Resets the progress of the widget queue and starts over.
+	// */
+	//UFUNCTION(BlueprintCallable)
+	//void RedoWidgetQueue();
 
 	/**
 	 * Generate tag container for notifying.
@@ -297,16 +286,16 @@ protected:
 	friend class UDMSSequenceStep;
 	friend class UDMSSeqManager;
 };
-
-
-template<typename FuncFinished, typename FuncCanceled >
-void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
-{
-	SelectorQueue.RunSelectors(
-		std::forward<FuncFinished&&>(iOnSelectorFinished),
-		std::forward<FuncCanceled&&>(iOnSelectorCanceled)
-	);
-}
+//
+//
+//template<typename FuncFinished, typename FuncCanceled >
+//void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
+//{
+//	SelectorQueue.RunSelectors(
+//		std::forward<FuncFinished&&>(iOnSelectorFinished),
+//		std::forward<FuncCanceled&&>(iOnSelectorCanceled)
+//	);
+//}
 
 template<typename FuncInitiated>
 void UDMSSequence::AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated)

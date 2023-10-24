@@ -48,7 +48,7 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 	UGameplayStatics::GetAllActorsWithInterface(GetWorld(),UDMSEffectorInterface::StaticClass(), LevelPlacedActors);
 
 	for (auto Actor : LevelPlacedActors)
-		GM->RegisterNotifyObject(Actor);
+		GS->RegisterNotifyObject(Actor);
 	
 	// Duplicating LSA in same outer makes crash... 
 	//PreviewDummy = DuplicateObject(this, this, FName(GetName() + TEXT("_Preview")));

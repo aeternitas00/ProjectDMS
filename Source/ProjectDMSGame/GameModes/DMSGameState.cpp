@@ -16,7 +16,7 @@
 
 void ADMSGameState::SetupDefaults()
 {
-
+	
 }
 
 void ADMSGameState::SetPlayersFocusTarget(AActor* Target)

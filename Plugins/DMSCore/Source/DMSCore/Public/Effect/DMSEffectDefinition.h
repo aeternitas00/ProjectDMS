@@ -27,27 +27,6 @@ class UDMSDataObjectSet;
 class UDMSSequence;
 class UDMSConditionCombiner;
 
-USTRUCT(BlueprintType)
-struct FDMSEffectValueDef
-{
-	GENERATED_BODY()
-
-	/**
-	 * Custom referencer for tweaks.
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "!IsStatic", EditConditionHides))
-	FGameplayTag DataKey;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DefaultValue = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EDMSModifierType Modifier;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool IsStatic = true;
-};
-
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOptionCompleted,UDMSEffectOption*,CompletedOption);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
 
@@ -92,7 +71,7 @@ public:
 	TArray<TObjectPtr<UDMSEffectOption>> EffectOptions;
 
 public:
-	UDMSEffectDefinition(): bIsUsingSelector(false), bHasPairedSelector(false){
+	UDMSEffectDefinition()/*: bIsUsingSelector(false)*/{
 	/*	EffectOptions = CreateDefaultSubobject<UDMSEffectOptionSet>("EffectOptions");*/
 	}
 
@@ -135,46 +114,9 @@ public:
 	/**
 	 * Is this effect using selector?
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "bHasPairedSelector", EditConditionHides))
-	bool bIsUsingSelector;
-
-	/**
-	 * Custom referencer for tweaks.
-	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	FGameplayTag OutDataKey;
-
-	/**
-	 * Is this effect has paired selector?
-	 */
-	UPROPERTY(VisibleAnywhere, Category = Effect,meta = (EditCondition = false, EditConditionHides))
-	bool bHasPairedSelector;
-
-	///**
-	// * true : move the player's camera pawn to make the effect source visible when the effect is triggered.
-	// */
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	// bool bPlayerHasToBeFocused;
-
-	/**
-	 * Implements returning paired selector class if effect has paired selector.
-	 * @return	Paired selector class.
-	 */
-	UFUNCTION(BlueprintNativeEvent)
-	TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector();
-	virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation(){return nullptr;}
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	//bool bIsUsingSelector;
 	
-	/**
-	 * Implements how to initialize paired selector if effect has paired selector.
-	 */
-	virtual void InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance){}
-
-	/**
-	 * Instancing paired selector.
-	 * @param	OwnerSeq					Selector's owner sequence.
-	 * @param	WidgetOwner					Player who has to resolve created selector.
-	 */
-	UDMSEffectElementSelectorWidget* CreatePairedSelector(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner);
 
 	//virtual void Serialize(FArchive& Ar) override;
 };
@@ -254,23 +196,23 @@ public:
 	/**
 	 * Classes of decision widget what this effect will use.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	TArray<TSubclassOf<UDMSDecisionWidget>> DecisionWidgetClasses;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	//TArray<TSubclassOf<UDMSDecisionWidget>> DecisionWidgetClasses;
 
 	/**
 	 * Create decision widget with "DecisionWidgetClasses".
 	 * @param	WidgetOwner
 	 * @return	Crated widgets.
 	 */
-	TArray<UDMSDecisionWidget*> CreateDecisionWidgets(UDMSSequence* OwnerSequence, APlayerController* WidgetOwner);
+	//TArray<UDMSDecisionWidget*> CreateDecisionWidgets(UDMSSequence* OwnerSequence, APlayerController* WidgetOwner);
 
 	/**
 	 * Implements on BP.How to initializing decision widget's candidate or search range. 
 	 * @param	iWidget						Param's order follows "DecisionWidgetClasses" property's one.
 	 */ 
-	UFUNCTION(BlueprintNativeEvent, Category = Effect)
-	void InitializeDecisionWidget(const TArray<UDMSDecisionWidget*>& iWidget);
-	virtual void InitializeDecisionWidget_Implementation(const TArray<UDMSDecisionWidget*>& iWidget) {};
+	//UFUNCTION(BlueprintNativeEvent, Category = Effect)
+	//void InitializeDecisionWidget(const TArray<UDMSDecisionWidget*>& iWidget);
+	//virtual void InitializeDecisionWidget_Implementation(const TArray<UDMSDecisionWidget*>& iWidget) {};
 
 
 //=================== Main effect ===================//
@@ -311,13 +253,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Effect)
 	static TArray<FDMSSequenceEIStorage> GenerateApplyTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
 
+	TArray<FDMSValueSelectionForm> GetSelectionFormsFromEffects();
 	/**
 	 * Create paired selector widget from "EffectDefinitions".
-	 * @param	OwnerSeq
+	 * @param	CurrentSequence
 	 * @param	WidgetOwner
 	 * @return	
 	 */
-	TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner);
+	//TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner);
 
 	//=================== Child effect ===================//
 
@@ -361,7 +304,7 @@ public:
 	UFUNCTION(BlueprintPure,BlueprintCallable, Category = Effect, meta = (DisplayName = "Get Effect Node"))
 	UDMSEffectNode* GetEffectNodeBP() { return GetEffectNode(); }
 	virtual UDMSEffectNode* GetEffectNode(){return nullptr;}
-	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){}
+//	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){}
 };
 
 /**
@@ -383,7 +326,7 @@ public:
 	TObjectPtr<UDMSEffectNode> EffectNode;
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode; }
-	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode->CreateSelectors(OwnerSeq,WidgetOwner); }
+//	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode->CreateSelectors(OwnerSeq,WidgetOwner); }
 };
 
 /**
@@ -403,7 +346,6 @@ public:
 	TSubclassOf<UDMSEffectNode> EffectNode; 
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode.GetDefaultObject(); }
-	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode.GetDefaultObject()->CreateSelectors(OwnerSeq,WidgetOwner); }
 };
 
 
@@ -439,10 +381,5 @@ public:
 	 * @return	Query result.
 	 */
 	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
-
-	UFUNCTION(BlueprintCallable, Category = Effect)
-	TArray<UDMSEffectNodeWrapper*> GetEffectNodeWithComparer(const FNodeComparer& Comparer);
-
-	//virtual void Serialize(FArchive & Ar) override;
 };
 

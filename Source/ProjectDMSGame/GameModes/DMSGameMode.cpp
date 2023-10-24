@@ -49,14 +49,14 @@ void ADMSGameMode::BeginPlay()
 
 void ADMSGameMode::PreInitializeComponents()
 {
-	if(PhaseManagerClass->IsValidLowLevelFast()){
-		PhaseManager = NewObject<UDMSPhaseManager>(this, PhaseManagerClass,TEXT("PhaseManager"));
-		PhaseManager->RegisterComponent();
-	}
-	if (SequenceManagerClass->IsValidLowLevelFast()) {
-		SequenceManager = NewObject<UDMSSeqManager>(this, SequenceManagerClass, TEXT("SequenceManager"));
-		SequenceManager->RegisterComponent();
-	}
+	//if(PhaseManagerClass->IsValidLowLevelFast()){
+	//	PhaseManager = NewObject<UDMSPhaseManager>(this, PhaseManagerClass,TEXT("PhaseManager"));
+	//	PhaseManager->RegisterComponent();
+	//}
+	//if (SequenceManagerClass->IsValidLowLevelFast()) {
+	//	SequenceManager = NewObject<UDMSSeqManager>(this, SequenceManagerClass, TEXT("SequenceManager"));
+	//	SequenceManager->RegisterComponent();
+	//}
 	Super::PreInitializeComponents();
 }
 
@@ -93,7 +93,7 @@ void ADMSGameMode::SetupDMSGame_Implementation()
 	check(GS);
 
 	// Setup game system thingys.
-	RegisterNotifyObject(GS);
+	GS->RegisterNotifyObject(GS);
 	GS->SetupDefaults();
 
 	auto CurrentLSA = Cast<ADMSLevelScriptActor>(GetWorld()->GetLevelScriptActor());
@@ -161,7 +161,7 @@ ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor(const TSubclassOf<ADMSSpawnab
 	if (SpawnedActor->Implements<UDMSEffectorInterface>())
 	{
 		TScriptInterface<IDMSEffectorInterface> Effector = SpawnedActor;
-		NotifyManager->RegisterNotifyObject(Effector);
+		GetDMSGameState()->GetNotifyManager()->RegisterNotifyObject(Effector);
 	}
 	SpawnedActor->AddActorLocalTransform(inRelativeTransform);
 	//SpawnedActor->SetActorRelativeRotation(inRelativeTransform.GetRotation());

@@ -78,7 +78,7 @@ UDMSEffect_SkillTest::UDMSEffect_SkillTest()
 //
 //UDMSDataObjectSet* UDMSSelector_SkillTest::MakeOutputData_Implementation()
 //{
-//	UDMSDataObjectSet* rv = NewObject<UDMSDataObjectSet>(OwnerSeq);
+//	UDMSDataObjectSet* rv = NewObject<UDMSDataObjectSet>(CurrentSequence);
 //
 //	rv->SetData(UDMSEffect_SkillTest::SkillBonusName, OutBonusValue, true);
 //
@@ -88,19 +88,19 @@ UDMSEffect_SkillTest::UDMSEffect_SkillTest()
 //bool UDMSSelector_SkillTest::SetupWidget_Implementation()
 //{
 //	// LEGACY ( Decision broadcasting 하는 Notifymanager 사용으로 로직 변경 )
-//	//auto CM = OwnerSeq->SourcePlayer->FindComponentByClass<UDMSCardManagerComponent>();
+//	//auto CM = CurrentSequence->SourcePlayer->FindComponentByClass<UDMSCardManagerComponent>();
 //	//if(CM == nullptr) return false;
 //
 //	//auto Cards = CM->GetAllCards();
 //	//for (auto Card : Cards)
 //	//{
-//	//	DMS_LOG_SIMPLE(TEXT("%s"),*OwnerSeq->OriginalEffectNode->GenerateTagContainer().ToString());
+//	//	DMS_LOG_SIMPLE(TEXT("%s"),*CurrentSequence->OriginalEffectNode->GenerateTagContainer().ToString());
 //	//	if (!UDMSCoreFunctionLibrary::CheckCardIsCommitable(Card)) continue;
 //	//	auto& CommitEffectSet = Card->GetCardDefinition()->CardEffectSets[TAG_DMS_EffectType_Commit];
 //
 //	//	for (auto EffectNode : CommitEffectSet->EffectNodes)
 //	//	{
-//	//		if(EffectNode->GetEffectNode()->Conditions->CheckCondition(Card,OwnerSeq))
+//	//		if(EffectNode->GetEffectNode()->Conditions->CheckCondition(Card,CurrentSequence))
 //	//			CommitableCards.AddUnique(Card);
 //	//		// 체크 컨디션을 할 때 '매뉴얼 체킹' 만 따로 통과시키는걸 만들어야할까?
 //	//	}

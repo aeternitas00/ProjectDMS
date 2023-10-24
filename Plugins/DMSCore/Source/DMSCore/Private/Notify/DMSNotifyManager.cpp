@@ -48,7 +48,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 	InstancedWidget->ResponsedObjects = ResponsedObjects; 
 	ResponsedObjects.GetKeys(InstancedWidget->Respondents);
-	InstancedWidget->OwnerSeq = CurrentSequence;
+	InstancedWidget->CurrentSequence = CurrentSequence;
 	//InstancedWidget->OutTag=TAG_DMS_System_NotifyRespondent;
 
 	if (!InstancedWidget->SetupWidget()) {
@@ -57,16 +57,17 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		return;
 	}
 
-	InstancedWidget->SetupWidgetDelegates([InstancedWidget, NotifyManager=this](UDMSDataObjectSet* Data) {
+	InstancedWidget->SetupWidgetDelegates([InstancedWidget, NotifyManager=this]() {
 		// [ OK Bttn ]
+		UDMSDataObjectSet* Data = InstancedWidget->CurrentSequence->SequenceDatas;
 		TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
 		UDMSEffectInstance* EffectInstance = Cast<UDMSEffectInstance>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
 		
 		if (EffectInstance == nullptr)
 		{
 			// Widget didn't made proper data.
-			NotifyManager->CallResponseCompleted(InstancedWidget->OwnerSeq);
-			//InstancedWidget->OwnerSeq->OnSequenceFinish();
+			NotifyManager->CallResponseCompleted(InstancedWidget->CurrentSequence);
+			//InstancedWidget->CurrentSequence->OnSequenceFinish();
 			InstancedWidget->CloseSelector();
 			return;
 		}
@@ -76,9 +77,9 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		TArray<TScriptInterface<IDMSEffectorInterface>> NewRespondents;
 		InstancedWidget->ResponsedObjects.GetKeys(NewRespondents);
 
-		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->OwnerSeq);
+		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->CurrentSequence);
 		
-		NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->OwnerSeq , NotifyManager](bool PreviousResult){
+		NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->CurrentSequence , NotifyManager](bool PreviousResult){
 			
 			// Replay response 
 
@@ -106,15 +107,15 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 		UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
 
-		//InstancedWidget->OwnerSeq->OnSequenceFinish();
+		//InstancedWidget->CurrentSequence->OnSequenceFinish();
 		InstancedWidget->CloseSelector();
 		//...
 		}, [NotifyManager=this , InstancedWidget]() {
 			// [ X Bttn ]
 
 			// Player choose to not run EI
-			NotifyManager->CallResponseCompleted(InstancedWidget->OwnerSeq);
-			//InstancedWidget->OwnerSeq->OnSequenceFinish();
+			NotifyManager->CallResponseCompleted(InstancedWidget->CurrentSequence);
+			//InstancedWidget->CurrentSequence->OnSequenceFinish();
 			InstancedWidget->CloseSelector();
 
 		}
@@ -139,19 +140,25 @@ void UDMSNotifyManager::CallResponseCompleted(UDMSSequence* CurrentSequence)
 	temp.Unbind();
 }
 
+//
+//UDMSDataObjectSet* UDMSNotifyRespondentSelector::MakeOutputDatas(UObject* Respondent, UObject* EffectInstance)
+//{
+//	//UDMSDataObjectSet* NewSet = NewObject<UDMSDataObjectSet>(GetOwningPlayer());
+//	NewSet->SetData(TAG_DMS_System_Notify_Respondent, Respondent);
+//	NewSet->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
+//	return NewSet;
+//}
 
-UDMSDataObjectSet* UDMSNotifyRespondentSelector::MakeOutputDatas(UObject* Respondent, UObject* EffectInstance)
+
+void UDMSNotifyRespondentSelector::UpdateData(UDMSDataObjectSet* UpdatingData, UObject* Respondent, UObject* EffectInstance)
 {
-	UDMSDataObjectSet* NewSet = NewObject<UDMSDataObjectSet>(GetOwningPlayer());
-	NewSet->SetData(TAG_DMS_System_Notify_Respondent, Respondent);
-	NewSet->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
-	return NewSet;
+	UpdatingData->SetData(TAG_DMS_System_Notify_Respondent, Respondent);
+	UpdatingData->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
 }
-
 
 void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<UDMSEffectInstance*>& outArray)
 {
 	ResponsedObjects.MultiFind(iObject, outArray,true);
-	//(*ForcedObjects.Find(iObject))->CreateSequenceFromNode(iObject.GetObject(), OwnerSeq);
+	//(*ForcedObjects.Find(iObject))->CreateSequenceFromNode(iObject.GetObject(), CurrentSequence);
 	//return;
 }

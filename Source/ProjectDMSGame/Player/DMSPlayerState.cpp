@@ -16,10 +16,10 @@
 
 #include "Library/DMSGameFunctionLibrary.h"
 
-ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
+ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPlayerStateBase(Initializer)
 {
 	CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-	EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
+	//EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
 
 	DefaultStats.Add(TAG_DMS_Attribute_Resource, 10);

@@ -70,7 +70,10 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 { 
 	EffectNode = iNode; SourcePlayer=iSeq->GetSourcePlayer(); 
 	SourceObject = iSeq->GetSourceObject(); 
-	DataSet = iSeq->EIDatas; 
+
+	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(this);
+	NewData->Inherit(iSeq->SequenceDatas);
+	DataSet = NewData;
 	CurrentState = EDMSEIState::EIS_Pending; 
 
 }
@@ -205,9 +208,9 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
 
 		// Check CurrentDef which is a part of EI's effect has to be ignored.
 		FGameplayTagQuery Query;
-		if (SourceSequence->EIDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) &&
-			SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>())
-			Query = SourceSequence->EIDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
+		if (SourceSequence->SequenceDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) &&
+			SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>())
+			Query = SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
 
 		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->GetEffectTags()))) {
 			

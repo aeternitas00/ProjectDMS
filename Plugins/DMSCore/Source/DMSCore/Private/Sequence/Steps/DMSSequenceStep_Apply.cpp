@@ -113,7 +113,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 		auto ChildNode = OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
 		// follows parents data. 0
 		auto NewSeq = SeqManager->RequestCreateSequence(OwnerSequence->GetSourceObject(), OwnerSequence->GetSourcePlayer(), ChildNode,
-			TArray<TScriptInterface<IDMSEffectorInterface>>(), OwnerSequence->EIDatas, OwnerSequence);
+			TArray<TScriptInterface<IDMSEffectorInterface>>(), OwnerSequence->SequenceDatas, OwnerSequence);
 
 		// Set delegates when child effect sequence completed.
 		NewSeq->AddToOnSequenceFinished_Native(

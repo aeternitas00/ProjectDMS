@@ -32,13 +32,13 @@ protected:
 	/**
 	 * The data asset that the actor will reference. Initialization is performed through this asset.
 	 */
-	UPROPERTY(BlueprintReadWrite,EditAnywhere , BlueprintGetter = GetOriginalData)
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,/*Replicated, */BlueprintGetter = GetOriginalData)
 	TObjectPtr<const UDMSSpawnableDataBase> OriginalData;
 
 	/**
 	 * The player state ID of the player who owns the ownership of this actor.
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, BlueprintGetter = GetOwnerID)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere,/* Replicated,*/ BlueprintGetter = GetOwnerID)
 	int32 OwnerID;
 
 public:

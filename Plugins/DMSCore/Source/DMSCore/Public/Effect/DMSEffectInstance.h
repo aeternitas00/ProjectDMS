@@ -41,13 +41,10 @@ enum class EDMSEIState : uint8
 /**
  * 	========================================
  *
- *	EffectInstance : Class for objectification of 'effect'. Supports effect lifetime management, notify response, etc.
- *	
- *	EI Will be attached to each target and it'll be each EI's Outer.
- *	One EI per One Affected Object.
+ *	서버사이드에서 Apply Step 로직 처리를 할 때 사용 할 단순 워커
  * 
- *	======================================== 
- *	Is it good enough? 
+ *	========================================
+ *	
  */
 
 UCLASS()
@@ -80,9 +77,20 @@ public:
 	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
 };
 
+/**
+ * 	========================================
+ *
+ *	EffectInstance : Class for objectification of 'effect'. Supports effect lifetime management, notify response, etc.
+ *
+ *	EI Will be attached to each target and it'll be each EI's Outer.
+ *	One EI per One Affected Object.
+ *
+ *	========================================
+ *	Is it good enough?
+ */
 
 UCLASS(BlueprintType)
-class DMSCORE_API UDMSEffectInstance : public UObject , public IDMSEffectorInterface
+class DMSCORE_API UDMSEffectInstance : public UObject/*UActorComponent*/, public IDMSEffectorInterface
 {
 	GENERATED_BODY()
 	

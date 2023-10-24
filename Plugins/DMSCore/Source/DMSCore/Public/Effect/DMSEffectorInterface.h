@@ -19,6 +19,7 @@
 class UDMSEffectInstance;
 class UDMSSequence;
 class UDMSEffectSet;
+class ADMSPlayerControllerBase;
 
 UINTERFACE(MinimalAPI, BlueprintType)
 class UDMSEffectorInterface : public UInterface
@@ -50,10 +51,11 @@ public:
 	 */
 	virtual AActor* GetOwningPlayer(); // RENAME?
 	
+	virtual int32 GetOwnerPlayerID();
 	/**
 	 * Get PlayerController if object owned by Player.
 	 */
-	virtual APlayerController* GetOwningPlayerController(); // RENAME?
+	virtual ADMSPlayerControllerBase* GetOwningPlayerController(); // RENAME?
 
 	/**
 	 * Attach effect instance to apply effects.

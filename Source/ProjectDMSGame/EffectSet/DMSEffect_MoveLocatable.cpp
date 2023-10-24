@@ -29,7 +29,7 @@ void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence,
 		return;
 	}
 
-	if ( !SourceSequence->EIDatas->GetValidDataValue<UObject*>(EffectTag, DestLocation) )
+	if ( !SourceSequence->SequenceDatas->GetValidDataValue<UObject*>(EffectTag, DestLocation) )
 	{
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
@@ -40,12 +40,3 @@ void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence,
 	OnWorkCompleted.ExecuteIfBound(true);
 }
 
-//AActor* UDMSEffect_MoveLocatable::GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
-//{
-//	// Default source target is Effect's Target.
-//	UObject* FocusTarget;
-//	if (!SourceSequence->EIDatas->GetValidDataValue<UObject*>(EffectTag, FocusTarget)) return nullptr;
-//	return Cast<AActor>(FocusTarget);
-//
-//}
-//

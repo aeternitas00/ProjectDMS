@@ -29,7 +29,15 @@ AActor* IDMSEffectorInterface::GetOwningPlayer()
 	return Player == nullptr ? (AActor*)GS : (AActor*)Player;
 }
 
-APlayerController* IDMSEffectorInterface::GetOwningPlayerController()
+int32 IDMSEffectorInterface::GetOwnerPlayerID()
+{
+	auto Owner = Cast<IDMSEffectorOwnableInterface>(GetOwningPlayer());
+	if (Owner == nullptr) return -1;
+	//
+	return Owner->GetID();
+}
+
+ADMSPlayerControllerBase* IDMSEffectorInterface::GetOwningPlayerController()
 {
 	auto Owner = Cast<IDMSEffectorOwnableInterface>(GetOwningPlayer());
 	if (Owner==nullptr) return nullptr;

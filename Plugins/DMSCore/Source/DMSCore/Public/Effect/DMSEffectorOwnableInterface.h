@@ -19,6 +19,7 @@
 class UDMSEffectInstance;
 class UDMSSequence;
 class UDMSEffectSet;
+class ADMSPlayerControllerBase;
 
 UINTERFACE(MinimalAPI, BlueprintType)
 class UDMSEffectorOwnableInterface : public UInterface
@@ -42,5 +43,7 @@ public:
 	// Get 'PLAYER CONTROLLER' which handle widgets for this 'player' object.
 	// In default DMSGAME	-->	PlayerState will return Owner PC. 
 	//						-->	GameState will return LeaderPlayer's PC.
-	virtual APlayerController* GetWidgetOwner();
+	virtual ADMSPlayerControllerBase* GetWidgetOwner();
+
+	virtual int32 GetID() = 0 ;
 };
