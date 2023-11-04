@@ -2,112 +2,75 @@
 
 
 #include "Selector/DMSSelectorQueue.h"
-#include "Sequence/DMSSequence.h"
 #include "Selector/DMSConfirmWidgetBase.h"
+#include "Selector/DMSSelectorManager.h"
+
 #include "Library/DMSCoreFunctionLibrary.h"
+
 #include "GameModes/DMSGameStateBase.h"
+
 #include "Player/DMSPlayerControllerBase.h"
 #include "Sequence/DMSSeqManager.h"
-
+#include "Sequence/DMSSequence.h"
 
 void UDMSWidgetQueue::RedoWidgetQueue()
 {
 	CurrentIndex = -1;
-	for (auto sWidget : Widgets) { sWidget->CloseSelector(); }
+	OnSelectorsCompleted_Handle.Clear();
+	for ( auto& Handle : SelectorHandles ) {
+		Handle->CloseSelector();
+	}
+
 	PopupNextWidget();
 }
 
-void UDMSWidgetQueue::ClearQueue()
+UDMSWidgetQueue::UDMSWidgetQueue():CurrentIndex(-1)
 {
-	for (auto Widget : Widgets)
-	{
-		Widget->CloseSelector(); Widget->MarkAsGarbage();
-	}
-	
-	Widgets.Empty(); CurrentIndex = -1;
-	
 }
 
-bool UDMSWidgetQueue::InitializeQueue(TArray<FDMSValueSelectionForm> RequestForms, APlayerController* WidgetOwner, UDMSSequence* iSequenece)
+bool UDMSWidgetQueue::SetupQueue(UDMSSequence* SourceSequence,TArray<UDMSSelectorHandle*> Handles)
 {
-	ClearQueue();
-	CurrentSequence = iSequenece;
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
-	for (auto& RequestForm : RequestForms)
+	auto WidgetOwner = GetWidgetOwner();
+	if (WidgetOwner==nullptr) return false;
+	CurrentIndex = -1;
+	CurrentSequence=SourceSequence;
+	SelectorHandles = Handles;
+
+	for ( auto& Handle : SelectorHandles )
 	{
-		auto WidgetClass = RequestForm.ValueSelector->GetWidgetClass();
-		if (WidgetClass == nullptr) {
-			ClearQueue();
-			return false;
-		}
-		auto NewWidget = CreateWidget<UDMSConfirmWidgetBase>(WidgetOwner, WidgetClass);
-		if (!NewWidget->InitializeWidget(RequestForm, CurrentSequence)) {
-			ClearQueue();
-			return false;
-		}
-		NewWidget->SetupWidgetDelegates(
-			[this,Self = NewWidget](){	Self->CloseSelector();	PopupNextWidget(); },
-			[this](){ClearQueue(); OnSelectorsCanceled.Execute(CurrentSequence);}
+		if (!Handle->SetupSelector(WidgetOwner)) return false;
+		Handle->OwnerQueue=this;
+		Handle->SetupDelegates(
+			[this, Handle](){	Handle->Widget->CloseSelector();	PopupNextWidget(); } ,
+			[this](){ClearQueue(); OnSelectorsCanceled.Broadcast(CurrentSequence); }
 		);
-		Widgets.Add(NewWidget);
 	}
 
 	return true;
 }
 
+void UDMSWidgetQueue::ClearQueue()
+{
+	for (auto Handle : SelectorHandles)
+	{
+		Handle->CloseSelector(); Handle->MarkAsGarbage();
+	}
+	OnSelectorsCompleted.Clear();
+	OnSelectorsCompleted_Handle.Clear();
+	SelectorHandles.Empty(); CurrentIndex = -1;
+	
+}
+
 void UDMSWidgetQueue::PopupNextWidget()
 {
 	int8 LocalIdx = ++CurrentIndex;
-	if (Widgets.Num() <= LocalIdx) {
-		OnSelectorsCompleted.Execute(CurrentSequence);
+	if (SelectorHandles.Num() <= LocalIdx) {
+		auto CopiedCompleted = OnSelectorsCompleted;
+		auto CopiedCompleted_Handle = OnSelectorsCompleted_Handle;
+		ClearQueue();
+		CopiedCompleted.Broadcast(CurrentSequence);
+		CopiedCompleted_Handle.Broadcast(CurrentSequence);
 		return;
 	}
-	Widgets[LocalIdx]->PopupSelector();
+	SelectorHandles[LocalIdx]->RunSelector();
 }
-
-
-//
-//bool FDMSSelectorQueue::SetupQueue(UDMSSequence* OwnerSeq)
-//{
-//	Owner = OwnerSeq;
-//	if (SelectorQueue.Num()==0) return true;
-//	CurrentIndex = -1;
-//
-//	for (auto Selector : SelectorQueue){
-//		if (!Selector->SetupWidget() ) 
-//			return false;
-//	}
-//
-//	for (int32 i = SelectorQueue.Num() - 1; i >= 0; --i) {
-//
-//		SelectorQueue[i]->SetupWidgetDelegates([&, Self=SelectorQueue[i]](UDMSDataObjectSet* Data) {
-//			// [ OK Bttn ]
-//			Owner->SequenceDatas->Merge(Data);
-//			Self->CloseSelector();
-//			RunNextSelector();
-//			//...
-//		},	[&]() {
-//			// [ X Bttn ]
-//			//CurrentSequence->UpdateData(Data);
-//			for (auto sWidget : SelectorQueue) { sWidget->CloseSelector(); }
-//			OnSelectorsCanceled.Execute(Owner);
-//			//...
-//		});
-//
-//	}
-//	return true;
-//}
-
-
-
-
-//void FDMSSelectorQueue::RunNextSelector()
-//{
-//	int8 LocalIdx = ++CurrentIndex;
-//	if (SelectorQueue.Num() <= LocalIdx) {
-//		OnSelectorsCompleted.Execute(Owner);
-//		return;
-//	}
-//	SelectorQueue[LocalIdx]->PopupSelector();
-//
-//}

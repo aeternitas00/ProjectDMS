@@ -20,147 +20,198 @@
 
 class UDMSEffectDefinition;
 class UDMSEffectInstance;
-/**
- *	Ω√ƒˆΩ∫ ¡¯«‡ ∞˙¡§¡ﬂø° «√∑π¿ÃæÓ ¿«ªÁ∏¶ ºˆ¡˝«ÿæﬂ «œ¥¬ ªÛ»≤ø° ªÁøÎ«“ ¿ß¡¨µÈ¿« ∫£¿ÃΩ∫.
- *	øÎµµø° ∏¬∞‘ µΩ√¿¸ ¿ß¡¨∞˙ ¿Ã∆Â∆Æ ø§∏Æ∏’√˜ ºø∑∫≈Õ∑Œ ≥™¥©æÓº≠ ºº∫Œ¿˚¿Œ ªÁæÁ¿ª ±∏«ˆ.
- * 
- * TODO :: RENAME?
- */
+
+//==========================================//
+class UDMSSelectorHandle;
+
 UCLASS()
-class DMSCORE_API UDMSConfirmWidgetBase : public UUserWidget
+class DMSCORE_API UDMSSelectorBase : public UUserWidget
 {
 	GENERATED_BODY()
 
-protected:
-
 public:
-	UDMSConfirmWidgetBase(const FObjectInitializer& ObjectInitializer) :UUserWidget(ObjectInitializer), CurrentEIIndex(0){}
-	
-	/**
-	 * Owner sequence of widget.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UDMSSequence> CurrentSequence;
+	UDMSSelectorHandle* OwnerHandle;
 
-	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<UDMSEffectInstance>> EIArray;
+	UFUNCTION(BlueprintCallable,BlueprintPure,meta = (CompactNodeTitle = "SelectAmount"))
+	uint8 GetSelectAmount() const;
 
-	UPROPERTY(BlueprintReadOnly)
-	int CurrentEIIndex;
-
-	UPROPERTY(BlueprintReadOnly)
-	FDMSValueSelectionForm SelectionForm;
-
-	/**
-	 * Storing candidate data before this widget is popped up.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<UDMSDataObject>> CandidatesData;
-
-	UFUNCTION()
-	bool InitializeWidget(FDMSValueSelectionForm InitializeData, UDMSSequence* iSequence);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void GenerateCandidaes();
+	bool InitializeSelector(const TArray<UDMSDataObject*>& Candidates);
+
+	UFUNCTION(BlueprintCallable)
+	void CompleteSelect(const TArray<uint8>& SelectedIdx);
 
 	/**
-	 * Popup this widget.
-	 */
-	UFUNCTION(BlueprintCallable)
+	* Cancel this selector widget. ( This function have to be bound to widget's cancel button or something )
+	*/
+	UFUNCTION ( BlueprintCallable )
+	void CancelSelect();
+
+	//UFUNCTION ( BlueprintCallable )
 	void PopupSelector();
 
 	/**
-	 * Executed when widget popped up.
-	 */
-	UFUNCTION(BlueprintNativeEvent)
+	* Executed when widget popped up.
+	*/
+	UFUNCTION ( BlueprintImplementableEvent )
 	void OnPopupSelector();
-	virtual void OnPopupSelector_Implementation(){}
 
 	/**
-	 * Close this widget.
-	 */
-	UFUNCTION(BlueprintCallable)
+	* Close this widget.
+	*/
+	//UFUNCTION ( BlueprintCallable )
 	void CloseSelector();
 
 	/**
-	 * Executed when widget closed.
-	 */
-	UFUNCTION(BlueprintNativeEvent)
+	* Executed when widget closed.
+	*/
+	UFUNCTION ( BlueprintImplementableEvent )
 	void OnCloseSelector();
-	virtual void OnCloseSelector_Implementation(){}
-
-	/**
-	 * Complete this selector widget. ( This function have to be bound to widget's ok button or something )
-	 */
-	UFUNCTION(BlueprintCallable)
-	void CompleteSelect();
-
-	/**
-	 * Cancel this selector widget. ( This function have to be bound to widget's cancel button or something )
-	 */
-	UFUNCTION(BlueprintCallable)
-	void CancelSelect();
-
-	/**
-	 * Setup this selector widget's OnCompleted and OnCanceled delegates.
-	 * @param	iOnCompleted				Lambda parameter binded to OnSelectCompleted.
-	 * @param	iOnCanceled					Lambda parameter binded to OnSelectCanceled.
-	 */
-	template<typename FuncCompleted, typename FuncCanceled > // ≥™¡ﬂø° universal reference ¿–æÓ∫∏±‚
-	void SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled);
-
-
-	//UDELEGATE(BlueprintAuthorityOnly)
-	DECLARE_DELEGATE(FOnSelectCompleted);
-	DECLARE_DELEGATE(FOnSelectCanceled);
-
-	FOnSelectCompleted OnSelectCompleted;
-	FOnSelectCanceled OnSelectCanceled;
-
-	/**
-	 * Setup widget ( with CurrentSequence's data ).
-	 * @return	true if Setup was successful
-	 */
-	UFUNCTION(BlueprintImplementableEvent)
-	bool SetupWidget();
-
-	UFUNCTION(BlueprintCallable)
-	UDMSDataObject* GetCurrentCandidatesData();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	UDMSDataObjectSet* GetTargetDataSet();
-	virtual UDMSDataObjectSet* GetTargetDataSet_Implementation();
-	//virtual	bool SetupWidget_Implementation(){return true;}
 };
 
 
-template<typename FuncCompleted, typename FuncCanceled>
-void UDMSConfirmWidgetBase::SetupWidgetDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled/*, UDMSSequence* iOwnerSeq*/) {
-
-	//CurrentSequence = iOwnerSeq;
-	//if (!SetupWidget()){return false;};
-
-	OnSelectCompleted.Unbind();
-	OnSelectCanceled.Unbind();
-
-	OnSelectCompleted.BindLambda(std::forward<FuncCompleted&&>(iOnCompleted));
-	OnSelectCanceled.BindLambda(std::forward<FuncCanceled&&>(iOnCanceled));
-
-	//return true;
-}
+/**
+ *	ÏãúÌÄÄÏä§ ÏßÑÌñâ Í≥ºÏ†ïÏ§ëÏóê ÌîåÎ†àÏù¥Ïñ¥ ÏùòÏÇ¨Î•º ÏàòÏßëÌï¥Ïïº ÌïòÎäî ÏÉÅÌô©Ïóê ÏÇ¨Ïö©Ìï† ÏúÑÏ†ØÎì§Ïùò Î≤†Ïù¥Ïä§.
+ */
+//UCLASS()
+//class DMSCORE_API UDMSConfirmWidgetBase : public UUserWidget
+//{
+//	GENERATED_BODY()
+//
+//protected:
+//
+//public:
+//	UDMSConfirmWidgetBase(const FObjectInitializer& ObjectInitializer) :UUserWidget(ObjectInitializer), CurrentEIIndex(0){}
+//	
+//	/**
+//	 * Owner sequence of widget.
+//	 */
+//	UPROPERTY(BlueprintReadOnly)
+//	TObjectPtr<UDMSSequence> CurrentSequence;
+//
+//	UPROPERTY(BlueprintReadOnly)
+//	TArray<TObjectPtr<UDMSEffectInstance>> EIArray;
+//
+//	UPROPERTY(BlueprintReadOnly)
+//	int CurrentEIIndex;
+//
+//	//UPROPERTY(BlueprintReadOnly)
+//	//FDMSValueSelectionForm SelectionForm;
+//
+//	/**
+//	 * Storing candidate data before this widget is popped up.
+//	 */
+//	UPROPERTY(BlueprintReadOnly)
+//	TArray<TObjectPtr<UDMSDataObject>> CandidatesData;
+//
+//	UFUNCTION()
+//	bool InitializeWidget(FDMSValueSelectionForm InitializeData, UDMSSequence* iSequence);
+//
+//	UFUNCTION(BlueprintImplementableEvent)
+//	void GenerateCandidaes();
+//
+//	/**
+//	 * Popup this widget.
+//	 */
+//	UFUNCTION(BlueprintCallable)
+//	void PopupSelector();
+//
+//	/**
+//	 * Executed when widget popped up.
+//	 */
+//	UFUNCTION(BlueprintNativeEvent)
+//	void OnPopupSelector();
+//	virtual void OnPopupSelector_Implementation(){}
+//
+//	/**
+//	 * Close this widget.
+//	 */
+//	UFUNCTION(BlueprintCallable)
+//	void CloseSelector();
+//
+//	/**
+//	 * Executed when widget closed.
+//	 */
+//	UFUNCTION(BlueprintNativeEvent)
+//	void OnCloseSelector();
+//	virtual void OnCloseSelector_Implementation(){}
+//
+//	/**
+//	 * Complete this selector widget. ( This function have to be bound to widget's ok button or something )
+//	 */
+//	UFUNCTION(BlueprintCallable)
+//	void CompleteSelect();
+//
+//	/**
+//	 * Cancel this selector widget. ( This function have to be bound to widget's cancel button or something )
+//	 */
+//	UFUNCTION(BlueprintCallable)
+//	void CancelSelect();
+//
+//	/**
+//	 * Setup this selector widget's OnCompleted and OnCanceled delegates.
+//	 * @param	iOnCompleted				Lambda parameter binded to OnSelectCompleted.
+//	 * @param	iOnCanceled					Lambda parameter binded to OnSelectCanceled.
+//	 */
+//	template<typename FuncCompleted, typename FuncCanceled > // ÎÇòÏ§ëÏóê universal reference ÏùΩÏñ¥Î≥¥Í∏∞
+//	void SetupDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled);
+//
+//
+//	//UDELEGATE(BlueprintAuthorityOnly)
+//	DECLARE_DELEGATE(FOnSelectCompleted);
+//	DECLARE_DELEGATE(FOnSelectCanceled);
+//
+//	FOnSelectCompleted OnSelectCompleted;
+//	FOnSelectCanceled OnSelectCanceled;
+//
+//	/**
+//	 * Setup widget ( with CurrentSequence's data ).
+//	 * @return	true if Setup was successful
+//	 */
+//	UFUNCTION(BlueprintImplementableEvent)
+//	bool SetupWidget();
+//
+//	UFUNCTION(BlueprintCallable)
+//	UDMSDataObject* GetCurrentCandidatesData();
+//
+//	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+//	UDMSDataObjectSet* GetTargetDataSet();
+//	virtual UDMSDataObjectSet* GetTargetDataSet_Implementation();
+//	//virtual	bool SetupWidget_Implementation(){return true;}
+//};
+//
+//
+//template<typename FuncCompleted, typename FuncCanceled>
+//void UDMSConfirmWidgetBase::SetupDelegates(FuncCompleted&& iOnCompleted, FuncCanceled&& iOnCanceled/*, UDMSSequence* iOwnerSeq*/) {
+//
+//	//CurrentSequence = iOwnerSeq;
+//	//if (!SetupWidget()){return false;};
+//
+//	OnSelectCompleted.Unbind();
+//	OnSelectCanceled.Unbind();
+//
+//	OnSelectCompleted.BindLambda(std::forward<FuncCompleted&&>(iOnCompleted));
+//	OnSelectCanceled.BindLambda(std::forward<FuncCanceled&&>(iOnCanceled));
+//
+//	//return true;
+//}
 
 
 
 //==========================================//
 
 
+//
+//UCLASS()
+//class DMSCORE_API UDMSConfirmWidgetBase_uint8 : public UDMSConfirmWidgetBase
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	//UFUNCTION(BlueprintCallable)
+//	//void UpdateData(UDMSDataObjectSet* UpdatingData,uint8 Value){ UpdatingData->SetData(SelectionForm.DataKey,Value); }
+//};
 
-UCLASS()
-class DMSCORE_API UDMSConfirmWidgetBase_uint8 : public UDMSConfirmWidgetBase
-{
-	GENERATED_BODY()
 
-public:
-	UFUNCTION(BlueprintCallable)
-	void UpdateData(UDMSDataObjectSet* UpdatingData,uint8 Value){ UpdatingData->SetData(SelectionForm.OutDataKey,Value); }
-};
+

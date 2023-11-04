@@ -22,6 +22,7 @@ class ADMSGameStateBase;
 class UDMSSeqManager;
 class UDMSNotifyManager;
 class UDMSEffectHandler;
+class UDMSSelectorManager;
 class GetDMSPhaseManager;
 //enum class EDMSTimingFlag;
 
@@ -53,6 +54,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static UDMSPhaseManager* GetDMSPhaseManager();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	static UDMSSelectorManager* GetDMSSelectorManager();
 
 	static FString GetTimingString(const EDMSTimingFlag& Flag);
 

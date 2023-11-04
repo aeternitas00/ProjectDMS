@@ -144,6 +144,9 @@ public:
 
 	// TEST
 
+	//UPROPERTY ( EditDefaultsOnly , BlueprintReadOnly , Category = Decision )
+	//TSubclassOf<UDMSSelectorBase> DecisionMakerSelector;
+
 	/**
 	 * Testing
 	 */

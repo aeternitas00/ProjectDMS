@@ -11,9 +11,12 @@
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ActivateEffect, "Effect.ActivateEffect");
 
-UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect() : UseEffectFromOuter(false), EffectIdx(0)
+UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect()
 { 
 	EffectTag = TAG_DMS_Effect_ActivateEffect;
+}
+UDMSEffect_ActivateEffect_Static::UDMSEffect_ActivateEffect_Static() : UDMSEffect_ActivateEffect(),UseEffectFromOuter(false), EffectIdx(0)
+{ 
 	EffectSetName = TAG_DMS_EffectType_Effect;
 }
 
@@ -36,7 +39,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
 	auto NewSeq = SeqMan->RequestCreateSequence(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
 	
-	// ¬˜¿œµÂ ≥ÎµÂ ≥°≥Ø∂ß π⁄¥¬∞‘ æ∆¥œ∞Ì ∆ƒ∂ÛπÃ≈Õ∑Œ µ®∏Æ∞‘¿Ã∆Æ∏¶ ≥—∞‹º≠ ∆–∑±√˜¿« ONRESUME¿ª «œ¥¬∞‘ ≥™æ∆∫∏¿”.
+	// Ï∞®ÏùºÎìú ÎÖ∏Îìú ÎÅùÎÇ†Îïå Î∞ïÎäîÍ≤å ÏïÑÎãàÍ≥† ÌååÎùºÎØ∏ÌÑ∞Î°ú Îç∏Î¶¨Í≤åÏù¥Ìä∏Î•º ÎÑòÍ≤®ÏÑú Ìå®Îü∞Ï∏†Ïùò ONRESUMEÏùÑ ÌïòÎäîÍ≤å ÎÇòÏïÑÎ≥¥ÏûÑ.
 	NewSeq->AddToOnSequenceFinished_Native([=](bool ChildSeqSuccessed) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
 		OnWorkCompleted.ExecuteIfBound(ChildSeqSuccessed);
@@ -44,7 +47,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	SeqMan->RunSequence(NewSeq);
 }
 
-UDMSEffectSet* UDMSEffect_ActivateEffect::GetEffectSetFromOuter(UDMSEffectInstance* iEI)
+UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(UDMSEffectInstance* iEI)
 {
 	// Outer Validation
 	auto tOuter = iEI->GetApplyTarget();
@@ -55,25 +58,25 @@ UDMSEffectSet* UDMSEffect_ActivateEffect::GetEffectSetFromOuter(UDMSEffectInstan
 
 UDMSEffect_ActivateEffect_Variable::UDMSEffect_ActivateEffect_Variable()
 {
-	SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
+	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
 }
 
 bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper)
 { 
-	UDMSDataObject* rData = iEI->DataSet->GetData(SelectorData.OutDataKey);
-	uint8 Idx = UINT8_MAX;	
-	auto Selector = Cast<UDMSValueSelectorDefinition_Effect>(SelectorData.ValueSelector); 
-	UDMSEffectSet* Set = UseEffectFromOuter ? GetEffectSetFromOuter(iEI) : Selector->EffectSet;
+	// UseEffectFromOuter ÏÉÅÌô©Î≥Ñ Î∂ÑÍ∏∞ Ìè¨Ìï®ÏãúÏºúÏïºÌï®
+	UDMSDataObject* rData = SelectorData.Get(iEI->DataSet);
+
+	if (rData == nullptr) return false;
 
 	// Get Input Data ( Skip if data doesn't exist. )
-	if (rData != nullptr && rData->TypeCheck<uint8>())	Idx = rData->Get<uint8>();
-	else	return false;
-	
-	if (Set != nullptr && Set->EffectNodes.Num() > Idx)	OutWrapper = Set->EffectNodes[Idx];
-	else	return false;
-
-	return true; 
-	
+	else {
+		if (rData->TypeCheck<UDMSEffectNodeWrapper*>())	{
+			OutWrapper = rData->Get<UDMSEffectNodeWrapper*>();
+			return true; 
+		}
+		else	
+			return false;
+	}
 }
 
 bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper) 
@@ -89,4 +92,46 @@ bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrapper(UDMSEffectInstance* 
 		OutWrapper = StaticEffect;
 
 	return true; 
+}
+
+TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI)
+{	
+	// ÌîÑÎ°úÌçºÌã∞Î°ú Ïä§ÌÉúÌã±Ï§ëÏóêÏÑú Í≥†Î•¥Í∏∞ or EI OuterÏóêÏÑú Í≥†Î•¥Í∏∞ Ïùò Î∂ÑÍ∏∞ ÎÇòÎàÑÍ∏∞.
+
+	TArray<UDMSDataObject*> rv;
+	if (UseEffectFromOuter) {
+		if (TargetEI != nullptr)
+			rv = MakeDataArray(TargetEI);
+	
+		else {
+			for ( auto& EI :Sequence->GetAllEIs())
+				rv.Append(MakeDataArray(EI));
+		}
+	}
+	else {
+		for (auto& EN : StaticEffects)
+		{
+			auto NewData = NewObject<UDMSDataObject>(TargetEI == nullptr ? (UObject*)Sequence : (UObject*)TargetEI);
+			NewData->Set((UObject*)EN);
+			rv.Add(NewData);
+		}
+	}
+	return rv;
+}
+
+TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::MakeDataArray(UDMSEffectInstance* TargetEI)
+{
+	TArray<UDMSDataObject*> rv;
+	auto tOuter = TargetEI->GetApplyTarget();
+
+	if(tOuter == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName());*/ return rv; }
+
+	for(auto& EN : tOuter->GetOwningEffectSet(EffectSetTag)->EffectNodes)
+	{
+		auto NewData = NewObject<UDMSDataObject>(TargetEI);
+		NewData->Set((UObject*)EN);
+		rv.Add(NewData);
+	}
+
+	return rv;
 }

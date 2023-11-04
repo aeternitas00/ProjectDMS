@@ -11,7 +11,6 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Conditions/DMSConditionObject.h"
 #include "Notify/DMSNotifyManager.h"
-#include "Selector/DMSDecisionWidget.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
 
@@ -126,7 +125,7 @@ void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence, bool Successed)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Complete Sequence ===="), *Sequence->GetName());
 
-	// ÀÌ·¸°Ô ºĞ±â ¾È°É¾îµµ µÇ´Âµ¥ È¤½Ã ¸ô¶ó¼­ ÀÏ´Ü.
+	// ì´ë ‡ê²Œ ë¶„ê¸° ì•ˆê±¸ì–´ë„ ë˜ëŠ”ë° í˜¹ì‹œ ëª°ë¼ì„œ ì¼ë‹¨.
 	if (CurrentSequence == RootSequence) {
 		CurrentSequence = nullptr;
 		RootSequence = nullptr;

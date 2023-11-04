@@ -73,6 +73,7 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 
 	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(this);
 	NewData->Inherit(iSeq->SequenceDatas);
+	NewData->ParentDataSet = iSeq->SequenceDatas;
 	DataSet = NewData;
 	CurrentState = EDMSEIState::EIS_Pending; 
 

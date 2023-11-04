@@ -15,7 +15,7 @@ UDMSEffectNode_PlayCard::UDMSEffectNode_PlayCard():UDMSEffectNode()
 	bForced=true;
 	bIsChainableEffect=true;
 
-	auto AEffect = CreateDefaultSubobject<UDMSEffect_ActivateEffect>("AEffect");
+	auto AEffect = CreateDefaultSubobject<UDMSEffect_ActivateEffect_Static>("AEffect");
 	AEffect->EffectSetName = TAG_DMS_EffectType_Cost;
 
 	EffectDefinitions.Add(AEffect);

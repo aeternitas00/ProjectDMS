@@ -3,30 +3,13 @@
 #pragma once
 
 #include "Effect/DMSEffectDefinition.h"
-
+#include "Selector/DMSDecisionDefinition.h"
 #include "DMSEffect_ActivateEffect.generated.h"
 
 //
-// Usage : IDMSEffectorInterface ¸¦ ±¸ÇöÇÑ Outer°¡ ÀÚ½ÅÀÌ °¡Áö°í ÀÖ´Â ÀÌÆåÆ®µé Áß ÇÏ³ª È¤Àº ÀúÀåµÈ Æ¯Á¤ÇÑ ÀÌÆåÆ®¸¦ ¹ßµ¿ ½ÃÅ°µµ·Ï ÇÔ.
-// AE·Î ¹ßµ¿µÇ´Â »õ·Î¿î Sequence´Â ÀÌ ÀÌÆåÆ®¸¦ ½ÇÇàÇÏ´Â EIÀÇ Outer°¡ SourceObjectÀÌ°í SourceObjectÀÇ ¿À³Ê°¡ SourcePlayerÀÎ »õ·Î¿î ½ÃÄö½º·Î ÁøÇàµÊ.
+// Usage : IDMSEffectorInterface ë¥¼ êµ¬í˜„í•œ Outerê°€ ìì‹ ì´ ê°€ì§€ê³  ìˆëŠ” ì´í™íŠ¸ë“¤ ì¤‘ í•˜ë‚˜ í˜¹ì€ ì €ì¥ëœ íŠ¹ì •í•œ ì´í™íŠ¸ë¥¼ ë°œë™ ì‹œí‚¤ë„ë¡ í•¨.
+// AEë¡œ ë°œë™ë˜ëŠ” ìƒˆë¡œìš´ SequenceëŠ” ì´ ì´í™íŠ¸ë¥¼ ì‹¤í–‰í•˜ëŠ” EIì˜ Outerê°€ SourceObjectì´ê³  SourceObjectì˜ ì˜¤ë„ˆê°€ SourcePlayerì¸ ìƒˆë¡œìš´ ì‹œí€€ìŠ¤ë¡œ ì§„í–‰ë¨.
 // 
-
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ActivateEffect)
-
-UCLASS()
-class DMSCORE_API UDMSValueSelectorDefinition_Effect : public UDMSValueSelectorDefinition
-{
-	GENERATED_BODY()
-
-public:
-	/**
-	 *	For list based selector.
-	 */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "!UseEffectFromOuter"))
-	TObjectPtr<UDMSEffectSet> EffectSet;
-};
-
-
 UCLASS(NotBlueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect Base"))
 class DMSCORE_API UDMSEffect_ActivateEffect : public UDMSEffectDefinition
 {
@@ -34,6 +17,20 @@ class DMSCORE_API UDMSEffect_ActivateEffect : public UDMSEffectDefinition
 
 public:
 	UDMSEffect_ActivateEffect();
+
+	virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper){return false;}
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
+
+};
+
+
+UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect : Static"))
+class DMSCORE_API UDMSEffect_ActivateEffect_Static : public UDMSEffect_ActivateEffect
+{
+	GENERATED_BODY()
+
+public:
+	UDMSEffect_ActivateEffect_Static();
 
 	// == Sort of Hard coded Searching == //
 	// == Use it when you know exactly what it'll be attached to. == //
@@ -48,25 +45,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
 	uint8 EffectIdx;
 
-	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
-
-	virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper){return false;}
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
-
-};
-
-
-UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect : Static"))
-class DMSCORE_API UDMSEffect_ActivateEffect_Static : public UDMSEffect_ActivateEffect
-{
-	GENERATED_BODY()
-
-public:
-	//UDMSEffect_ActivateEffect_Static();
-
 	// EffectNode that will activate itself when it doesn't use Outer's one.
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	TObjectPtr<UDMSEffectNodeWrapper> StaticEffect;
+
+	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
 
 	virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper);
 
@@ -90,4 +73,25 @@ public:
 	virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper);
 
 
+};
+
+UCLASS()
+class DMSCORE_API UDMSSelectorRequestGenerator_AE : public UDMSSelectorRequestGenerator
+{
+	GENERATED_BODY()
+
+public:
+	// == Use it when you know exactly what it'll be attached to. == //
+	UPROPERTY(EditDefaultsOnly)
+	bool UseEffectFromOuter;
+
+	// Tag of the effect set to reference.
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
+	FGameplayTag EffectSetTag;
+
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
+	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffects;
+
+	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI);
+	TArray<UDMSDataObject*> MakeDataArray(UDMSEffectInstance* TargetEI);
 };

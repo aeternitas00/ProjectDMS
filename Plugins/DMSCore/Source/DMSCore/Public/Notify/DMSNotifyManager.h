@@ -11,7 +11,7 @@
  *
  *	========================================
  *	
- *	NOTE :: ÀÌ°Å »ç½Ç»ó SeqManÀÌ¶û º´ÇÕÇØµµ »ó°üÀÌ ¾øÁö¾Ê³ª?
+ *	NOTE :: ì´ê±° ì‚¬ì‹¤ìƒ SeqManì´ë‘ ë³‘í•©í•´ë„ ìƒê´€ì´ ì—†ì§€ì•Šë‚˜?
  * 
  */
 
@@ -29,11 +29,13 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_ActivatingEffect)
 
 // Not using selector form
 UCLASS()
-class DMSCORE_API UDMSNotifyRespondentSelector : public UDMSConfirmWidgetBase
+class DMSCORE_API UDMSNotifyRespondentSelector : public UDMSSelectorBase
 {
 	GENERATED_BODY()
 
 public:
+	//UPROPERTY(BlueprintReadOnly)
+	UDMSSequence* CurrentSequence;
 	/**
 	 * Objects which 
 	 */
@@ -57,7 +59,7 @@ public:
 	//UDMSDataObjectSet* MakeOutputDatas(UObject* Respondent, UObject* EffectInstance);
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateData(UDMSDataObjectSet* UpdatingData, UObject* Respondent, UObject* EffectInstance);
+	void UpdateData(UObject* Respondent, UObject* EffectInstance);
 
 	/**
 	 * 
@@ -68,7 +70,7 @@ public:
 /**
  *	========================================
  * 
- *	³ëÆ¼ÆÄÀÌ ¸Å´ÏÀú°¡ ³ëÆ¼ÆÄÀÌ ¸®½Ã¹öµé¿¡°Ô [ "SourceObjectClass"°¡ "EffectKeyword"¸¦ (¾î¶»°Ô) "TargetObjectClass"¿¡°Ô "Timing"(ÇÏ±âÀü/ÇÏ´ÂÁß/ÇÑÈÄ) ] 
+ *	ë…¸í‹°íŒŒì´ ë§¤ë‹ˆì €ê°€ ë…¸í‹°íŒŒì´ ë¦¬ì‹œë²„ë“¤ì—ê²Œ [ "SourceObjectClass"ê°€ "EffectKeyword"ë¥¼ (ì–´ë–»ê²Œ) "TargetObjectClass"ì—ê²Œ "Timing"(í•˜ê¸°ì „/í•˜ëŠ”ì¤‘/í•œí›„) ] 
  *
  *	========================================
  */
@@ -114,7 +116,7 @@ protected:
 	TSubclassOf<UDMSNotifyRespondentSelector> ResponsedObjectSelector;
 public:
 
-	//ÀÌ°Å Á» ´õ ÀüÃ¼¼øÈ¸ ¾øÀÌ ÇÏ´Â ¹æ¹ı ÀÖÀ»±î?
+	//ì´ê±° ì¢€ ë” ì „ì²´ìˆœíšŒ ì—†ì´ í•˜ëŠ” ë°©ë²• ìˆì„ê¹Œ?
 	/**
 	 * Broadcast sequence for NotifyObjects.
 	 * @param	NotifyData						Current sequence.
@@ -137,6 +139,13 @@ public:
 	 * @param	ResponsedObjects				Out Responsed object.
 	 */
 	void CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects);
+	
+	/**
+	 * Broadcast sequence for NotifyObjects.
+	 * @param	CurrentSequence					Current sequence.
+	 * @param	ResponsedObjects				Out Responsed object.
+	 */
+	void CreateRespondentSelector_New(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.
@@ -208,7 +217,7 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
 			auto temp = std::move(ForcedEIMap[Sequence]);
 			ForcedEIMap.Remove(Sequence);
-			CreateRespondentSelector(Sequence, temp.NonForcedObjects);
+			CreateRespondentSelector_New(Sequence, temp.NonForcedObjects);
 		});
 
 		ForcedEIMap[NotifyData].IteratingDelegate.BindLambda([this](UDMSSequence* Sequence) {
@@ -237,6 +246,6 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 		ForcedEIMap.Remove(NotifyData);
 
 		// Selectable effects.
-		CreateRespondentSelector(NotifyData, ResponsedObjects);
+		CreateRespondentSelector_New(NotifyData, ResponsedObjects);
 	}
 }

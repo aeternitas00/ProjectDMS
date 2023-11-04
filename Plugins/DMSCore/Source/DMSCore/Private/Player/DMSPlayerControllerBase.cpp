@@ -7,6 +7,7 @@
 #include "GameModes/DMSGameStateBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Selector/DMSConfirmWidgetBase.h"
+#include "Selector/DMSSelectorManager.h"
 
 ADMSPlayerControllerBase::ADMSPlayerControllerBase(const FObjectInitializer& ObjectInitializer)
 	/*: Super(ObjectInitializer)*//*, InteractionMode(EDMSCardInteractionMode::PIM_Play)*/
@@ -15,8 +16,7 @@ ADMSPlayerControllerBase::ADMSPlayerControllerBase(const FObjectInitializer& Obj
 }
 
 
-bool ADMSPlayerControllerBase::SetupWidgetQueue(TArray<FDMSValueSelectionForm> RequestForms, UDMSSequence* CurrentSequence)
+bool ADMSPlayerControllerBase::SetupWidgetQueue(UDMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles )
 {
-	return WidgetQueue->InitializeQueue(RequestForms,this, CurrentSequence);
+	return WidgetQueue->SetupQueue(SourceSequence,Handles);
 }
-

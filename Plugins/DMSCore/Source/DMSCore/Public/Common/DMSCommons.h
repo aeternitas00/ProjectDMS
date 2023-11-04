@@ -62,11 +62,11 @@ enum class EDMSDataType : uint8
 };
 
 /**
- *	std::any ¸¦ BP¿¡ ¿Ã·Á¼­ »ç¿ëÇÏ±â À§ÇÑ ÀÏÁ¾ÀÇ ·¡ÆÛ.
- *	°ÔÀÓ³»¿¡ µ¹¾Æ´Ù´Ï´Â µ¥ÀÌÅÍµéÀÇ Å¸ÀÔ Á¦ÇÑÀ» Á¶±İ ´õ ´À½¼ÇÏ°Ô ÇØº¸°íÀÚ ÇØ¼­ µµÀÔ
- *	Áö±İ »óÅÂ°¡ ÃÖ¼±ÀÌ ¾Æ´Ñ°Å°°±ä ÇÑµ¥ ´Ù¸¥ ¹æ¹ıÀÌ ÀÖÀ»±î¿¡ ´ëÇÑ »ı°¢.=>
- *	Á» ´õ »ç¿ë °¡´ÉÇÑ Å¸ÀÔÀ» Á¦ÇÑÇÏ°í ±×³É unionÀÌ³ª ue5¿¡¼­ Á¦°øÇÏ´Â ºñ½ÁÇÑ°ÍÀ» ¾´´Ù´øÁö 
- *	Æ¯È÷ ½Ã¸®¾ó¶óÀÌÁîºÎºĞÀÇ ÀÌ½´°¡ ÀÖ¾î¼­...
+ *	std::any ë¥¼ BPì— ì˜¬ë ¤ì„œ ì‚¬ìš©í•˜ê¸° ìœ„í•œ ì¼ì¢…ì˜ ë˜í¼.
+ *	ê²Œì„ë‚´ì— ëŒì•„ë‹¤ë‹ˆëŠ” ë°ì´í„°ë“¤ì˜ íƒ€ì… ì œí•œì„ ì¡°ê¸ˆ ë” ëŠìŠ¨í•˜ê²Œ í•´ë³´ê³ ì í•´ì„œ ë„ì…
+ *	ì§€ê¸ˆ ìƒíƒœê°€ ìµœì„ ì´ ì•„ë‹Œê±°ê°™ê¸´ í•œë° ë‹¤ë¥¸ ë°©ë²•ì´ ìˆì„ê¹Œì— ëŒ€í•œ ìƒê°.=>
+ *	ì¢€ ë” ì‚¬ìš© ê°€ëŠ¥í•œ íƒ€ì…ì„ ì œí•œí•˜ê³  ê·¸ëƒ¥ unionì´ë‚˜ ue5ì—ì„œ ì œê³µí•˜ëŠ” ë¹„ìŠ·í•œê²ƒì„ ì“´ë‹¤ë˜ì§€ 
+ *	íŠ¹íˆ ì‹œë¦¬ì–¼ë¼ì´ì¦ˆë¶€ë¶„ì˜ ì´ìŠˆê°€ ìˆì–´ì„œ...
  */
 UCLASS(BlueprintType)
 class DMSCORE_API UDMSDataObject : public UObject
@@ -121,7 +121,7 @@ public:
 	void CopyValue(UDMSDataObject* iObj) {this->AnyValue = iObj->AnyValue;}
 };
 
-//	À§ÀÇ DataObject ¸¦ ¸ğ¾Æ¼­ °ü¸®ÇÏ´Â ¿ÀºêÁ§Æ®
+//	ìœ„ì˜ DataObject ë¥¼ ëª¨ì•„ì„œ ê´€ë¦¬í•˜ëŠ” ì˜¤ë¸Œì íŠ¸
 UCLASS(BlueprintType)
 class DMSCORE_API UDMSDataObjectSet : public UObject
 {
@@ -135,7 +135,8 @@ protected:
 	TMap<FGameplayTag, UDMSDataObject*> DataMap;
 
 public:
-
+	UPROPERTY()
+	UDMSDataObjectSet* ParentDataSet;
 	/**
 	 * Add data with std::any param. Instancing UDMSDataObject automatically.
 	 * @param	Tag							Key.
@@ -143,7 +144,7 @@ public:
 	 * @param	Inheriting					New data's inheriting option.
 	 */
 	FORCEINLINE void SetData(const FGameplayTag& Tag, const std::any& Data, const bool& Inheriting = false) {
-		UDMSDataObject* DataObject = NewObject<UDMSDataObject>();
+		UDMSDataObject* DataObject = NewObject<UDMSDataObject>(this);
 		DataObject->Set(Data);
 		DataObject->SetInheriting(Inheriting);
 		DataMap.Add(Tag, DataObject);
@@ -156,7 +157,7 @@ public:
 	 * @param	Inheriting					New data's inheriting option.
 	 */
 	FORCEINLINE void SetData(const FGameplayTag& Tag, std::any&& Data, const bool& Inheriting = false) {
-		UDMSDataObject* DataObject = NewObject<UDMSDataObject>();
+		UDMSDataObject* DataObject = NewObject<UDMSDataObject>(this);
 		DataObject->Set(std::move(Data));
 		DataObject->SetInheriting(Inheriting);
 		DataMap.Add(Tag, DataObject);

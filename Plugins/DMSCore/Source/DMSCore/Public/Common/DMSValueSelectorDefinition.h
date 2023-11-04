@@ -1,77 +1,77 @@
 #pragma once
 
-#include "DMSCoreIncludes.h"
-//#include "UObject/NoExportTypes.h"
-#include "DMSValueSelectorDefinition.generated.h"
-
-class UDMSConfirmWidgetBase;
-class UDMSTargetGenerator;
-
-UCLASS(BlueprintType, Blueprintable, EditInlineNew, DefaultToInstanced, Abstract)
-class DMSCORE_API UDMSValueSelectorDefinition : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly)
-	bool bIsCandidatesFromData;
-
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsCandidatesFromData", EditConditionHides))
-	FGameplayTag CandidatesKey;
-
-	TSubclassOf<UDMSConfirmWidgetBase> GetWidgetClass();
-};
-
-
-
+//#include "DMSCoreIncludes.h"
+////#include "UObject/NoExportTypes.h"
+//#include "DMSValueSelectorDefinition.generated.h"
 //
-// ÀÌÆåÆ®ÀÇ ¼öÄ¡°¡ µğÆúÆ®°ªÀ» ÁöÁ¤ÇÏ´Â °Í ´ë½Å ·±Å¸ÀÓ¿¡ ¼±ÅÃÀ¸·Î Á¤ÇÒ ¼ö ÀÖ°Ô ±¸¼º ÇÏ°í ½ÍÀ» °æ¿ì ÀÌ ½ºÆ®·°ÃÄ¸¦ »ç¿ëÇÏ¿© ÀÌÆåÆ® Ã³¸® ·ÎÁ÷ ±¸¼º.
+//class UDMSConfirmWidgetBase;
+//class UDMSTargetGenerator;
 //
-USTRUCT(BlueprintType)
-struct FDMSValueSelectionForm
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool ForEachTargets;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FGameplayTag OutDataKey;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced)
-	TObjectPtr<UDMSValueSelectorDefinition> ValueSelector;
-};
-
-
-
-// == Samples == //
-
-
-UCLASS()
-class DMSCORE_API UDMSValueSelectorDefinition_Integer : public UDMSValueSelectorDefinition
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0", EditConditionHides))
-	bool isRanged;
-
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0 && isRanged", EditConditionHides))
-	int32 Min;
-
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0 && isRanged", EditConditionHides))
-	int32 Max;
-
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0 && !isRanged", EditConditionHides))
-	TArray<int32> List;
-};
-
-UCLASS()
-class DMSCORE_API UDMSValueSelectorDefinition_Object : public UDMSValueSelectorDefinition
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0", EditConditionHides))
-	TObjectPtr<UDMSTargetGenerator> CandidatesGenerator;
-};
+//UCLASS(BlueprintType, Blueprintable, EditInlineNew, DefaultToInstanced, Abstract)
+//class DMSCORE_API UDMSValueSelectorDefinition : public UObject
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UPROPERTY(EditDefaultsOnly)
+//	bool bIsCandidatesFromData;
+//
+//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsCandidatesFromData", EditConditionHides))
+//	FGameplayTag CandidatesKey;
+//
+//	TSubclassOf<UDMSConfirmWidgetBase> GetWidgetClass();
+//};
+//
+//
+//
+////
+//// ì´í™íŠ¸ì˜ ìˆ˜ì¹˜ê°€ ë””í´íŠ¸ê°’ì„ ì§€ì •í•˜ëŠ” ê²ƒ ëŒ€ì‹  ëŸ°íƒ€ì„ì— ì„ íƒìœ¼ë¡œ ì •í•  ìˆ˜ ìˆê²Œ êµ¬ì„± í•˜ê³  ì‹¶ì„ ê²½ìš° ì´ ìŠ¤íŠ¸ëŸ­ì³ë¥¼ ì‚¬ìš©í•˜ì—¬ ì´í™íŠ¸ ì²˜ë¦¬ ë¡œì§ êµ¬ì„±.
+////
+//USTRUCT(BlueprintType)
+//struct FDMSValueSelectionForm
+//{
+//	GENERATED_BODY()
+//
+//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+//	bool ForEachTargets;
+//
+//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+//	FGameplayTag OutDataKey;
+//
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced)
+//	TObjectPtr<UDMSValueSelectorDefinition> ValueSelector;
+//};
+//
+//
+//
+//// == Samples == //
+//
+//
+//UCLASS()
+//class DMSCORE_API UDMSValueSelectorDefinition_Integer : public UDMSValueSelectorDefinition
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0", EditConditionHides))
+//	bool isRanged;
+//
+//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0 && isRanged", EditConditionHides))
+//	int32 Min;
+//
+//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0 && isRanged", EditConditionHides))
+//	int32 Max;
+//
+//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0 && !isRanged", EditConditionHides))
+//	TArray<int32> List;
+//};
+//
+//UCLASS()
+//class DMSCORE_API UDMSValueSelectorDefinition_Object : public UDMSValueSelectorDefinition
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0", EditConditionHides))
+//	TObjectPtr<UDMSTargetGenerator> CandidatesGenerator;
+//};

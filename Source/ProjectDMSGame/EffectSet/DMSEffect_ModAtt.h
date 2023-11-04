@@ -18,8 +18,8 @@ class PROJECTDMSGAME_API UDMSEffect_ModAtt: public UDMSEffectDefinition
 	GENERATED_BODY()
 
 public:
-	// ¿⁄º’¿”¿ª «•«ˆ«œ±‚ ¿ß«ÿ ∆ƒª˝ ≈∞øˆµÂµÈ¿∫ + ".~~" «œ¥¬ «¸≈¬? ex) ModifyAttribute.Deal 
-	// ( ¿œ¡æ¿« ∆˜«‘ ∞¸∞Ëø° º”«œ¥¬ ¿Ã∆Â∆ÆµÈ¿« ±∏∫– ¿ß«‘. --> HP∞° ∫Ø»≠«ﬂ¿ª ∂ß > { HP «««ÿ∏¶ ¿‘æ˙¿ª ∂ß , HP »∏∫π¿ª «ﬂ¿ª ∂ß } )
+	// ÏûêÏÜêÏûÑÏùÑ ÌëúÌòÑÌïòÍ∏∞ ÏúÑÌï¥ ÌååÏÉù ÌÇ§ÏõåÎìúÎì§ÏùÄ + ".~~" ÌïòÎäî ÌòïÌÉú? ex) ModifyAttribute.Deal 
+	// ( ÏùºÏ¢ÖÏùò Ìè¨Ìï® Í¥ÄÍ≥ÑÏóê ÏÜçÌïòÎäî Ïù¥ÌéôÌä∏Îì§Ïùò Íµ¨Î∂Ñ ÏúÑÌï®. --> HPÍ∞Ä Î≥ÄÌôîÌñàÏùÑ Îïå > { HP ÌîºÌï¥Î•º ÏûÖÏóàÏùÑ Îïå , HP ÌöåÎ≥µÏùÑ ÌñàÏùÑ Îïå } )
 	UDMSEffect_ModAtt();
 
 	/**
@@ -90,48 +90,47 @@ public:
 	virtual bool GenerateModifier(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue);
 
 };
-
-UCLASS()
-class PROJECTDMSGAME_API UDMSValueSelector_Attribute : public UDMSValueSelectorDefinition
-{
-	GENERATED_BODY()
-
-public:
-	//UDMSValueSelector_Attribute(){};
-
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0", EditConditionHides))
-	bool isRanged;
-
-	/*
-	 *	Modifier's Value will be ignored. ( For attribute's name and operator )
-	 */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
-	FDMSAttributeModifier Modifier;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
-	float MaxValue;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
-	float MinValue;
-
-	/**
-	 *	For list based selector.
-	 */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "!bIsRanged"))
-	TArray<FDMSAttributeModifier> ModifierArray;
-
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UDMSConfirmWidgetBase_AttModifier> WidgetClass;
-};
-
-UCLASS()
-class PROJECTDMSGAME_API UDMSConfirmWidgetBase_AttModifier : public UDMSConfirmWidgetBase
-{
-	GENERATED_BODY()
-
-public:
-	UFUNCTION(BlueprintCallable)
-	void UpdateData(UDMSDataObjectSet* UpdatingData, FDMSAttributeModifier Value) { UpdatingData->SetData(SelectionForm.OutDataKey, Value); }
-
-};
+//
+//UCLASS()
+//class PROJECTDMSGAME_API UDMSValueSelector_Attribute : public UDMSValueSelectorDefinition
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	//UDMSValueSelector_Attribute(){};
+//
+//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0", EditConditionHides))
+//	bool isRanged;
+//
+//	/*
+//	 *	Modifier's Value will be ignored. ( For attribute's name and operator )
+//	 */
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
+//	FDMSAttributeModifier Modifier;
+//
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
+//	float MaxValue;
+//
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
+//	float MinValue;
+//
+//	/**
+//	 *	For list based selector.
+//	 */
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "!bIsRanged"))
+//	TArray<FDMSAttributeModifier> ModifierArray;
+//
+//
+//	UPROPERTY(EditDefaultsOnly)
+//	TSubclassOf<UDMSConfirmWidgetBase_AttModifier> WidgetClass;
+//};
+//
+//UCLASS()
+//class PROJECTDMSGAME_API UDMSConfirmWidgetBase_AttModifier : public UDMSConfirmWidgetBase
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UFUNCTION(BlueprintCallable)
+//	void UpdateData(UDMSDataObjectSet* UpdatingData, FDMSAttributeModifier Value) { UpdatingData->SetData(SelectionForm.OutDataKey, Value); }
+//};

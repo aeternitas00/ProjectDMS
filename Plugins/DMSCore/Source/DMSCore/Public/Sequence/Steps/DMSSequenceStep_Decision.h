@@ -3,14 +3,17 @@
 #pragma once
 
 #include "Sequence/DMSSequenceStep.h"
-#include "Common/DMSValueSelectorDefinition.h"
+#include "Selector/DMSSelectorManager.h"
+#include "Selector/DMSDecisionDefinition.h"
 #include "DMSSequenceStep_Decision.generated.h"
 
 class UDMSTargetGenerator;
 class UDMSDecisionWidget;
 class ADMSPlayerControllerBase;
+class UDMSEffectInstance;
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_Decision)
+
 
 /**
  * Smallest unit of a sequence.
@@ -27,23 +30,14 @@ public:
 	TObjectPtr<UDMSTargetGenerator> DecisionMaker;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
-	TArray<FDMSValueSelectionForm> Decisions;
-
-	/**
-	 * Create decision widget with "DecisionWidgetClasses".
-	 * @param	WidgetOwner
-	 * @return	Crated widgets.
-	 */
-	//TArray<UDMSConfirmWidgetBase*> CreateDecisionWidgets(APlayerController* WidgetOwner);
+	TArray<FDMSDecisionDefinition> DecisionDefinitions;
 
 	virtual void OnBefore_Implementation() override;
 	virtual void OnDuring_Implementation() override;
+	virtual void OnAfter_Implementation() override;
 
 	template<typename FuncSuccessed>
 	void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSuccessed&& Successed);
-
-
-	virtual void OnAfter_Implementation() override;
 };
 
 template<typename FuncSuccessed>

@@ -4,6 +4,8 @@
 
 #include "GameModes/DMSGameModeBase.h"
 
+#include "Sequence/Steps/DMSSequenceStep_Decision.h"
+
 #include "Effect/DMSEffectHandler.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffect_ActivateEffect.h"
@@ -75,8 +77,20 @@ UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTa
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 
 	UDMSEffectNode* Node = NewObject<UDMSEffectNode>(this);
-	UDMSEffect_ActivateEffect* AEffect = NewObject<UDMSEffect_ActivateEffect>(Node);
+	UDMSEffect_ActivateEffect_Static* AEffect = NewObject<UDMSEffect_ActivateEffect_Static>(Node);
+	//auto DecisionStep = Cast<UDMSSequenceStep_Decision>(Node->StepRequirements.FindByPredicate([](UDMSSequenceStep* Step){return Step->IsA<UDMSSequenceStep_Decision>();}));
+	//
+	//FDMSDecisionDefinition NewDecision;
 
+	//auto NewBehavior = NewObject<UDMSSelectorBehaviorDefinition_UpdateData>(DecisionStep);
+	//NewBehavior->OutKey = AEffect->EffectTag;
+	//NewDecision.Behavior = NewBehavior;
+
+	//DecisionStep->DecisionDefinitions.Add(NewDecision);
+
+	//auto NewGenerator = NewObject<UDMSSelectorRequestGenerator_AE>(DecisionStep);
+	//NewGenerator
+	//NewDecision.Generator = NewGenerator;
 	AEffect->EffectIdx = idx;
 	AEffect->UseEffectFromOuter = true;
 	AEffect->EffectSetName = EffectSetName;

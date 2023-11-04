@@ -4,7 +4,7 @@
 #include "GameModes/DMSGameStateBase.h"
 #include "Player/DMSPlayerControllerBase.h"
 #include "Player/DMSPlayerStateBase.h"
-
+#include "Selector/DMSSelectorManager.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Phase/DMSPhaseManager.h"
@@ -17,13 +17,14 @@ ADMSGameStateBase::ADMSGameStateBase(const FObjectInitializer& Initializer) /*: 
 	EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 	EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("EffectHandler"));	
 	NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));
-
+	SelectorManager = CreateDefaultSubobject<UDMSSelectorManager>(TEXT("SelectorManager"));
 	PhaseManagerClass = UDMSPhaseManager::StaticClass();
 	SequenceManagerClass = UDMSSeqManager::StaticClass();
 
 	EIManagerComponent->SetIsReplicated(true);
 	EffectHandler->SetIsReplicated(true);
 	NotifyManager->SetIsReplicated(true);
+	SelectorManager->SetIsReplicated(true);
 }
 
 void ADMSGameStateBase::PreInitializeComponents()

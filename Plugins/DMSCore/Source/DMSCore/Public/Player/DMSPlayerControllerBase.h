@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,8 +19,8 @@
 #include "DMSPlayerControllerBase.generated.h"
 
 class UDMSConfirmWidgetBase;
-
-
+class UDMSWidgetQueue;
+class UDMSSelectorHandle;
 
 /**
  * 	========================================
@@ -47,7 +47,7 @@ public:
 	TObjectPtr<UDMSWidgetQueue> WidgetQueue;
 
 	UFUNCTION(/*Client*/)
-	bool SetupWidgetQueue(TArray<FDMSValueSelectionForm> RequestForms, UDMSSequence* CurrentSequence);
+	bool SetupWidgetQueue(UDMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);
 
 	template<typename FuncFinished, typename FuncCanceled >
 	void RunWidgetQueue(FuncFinished&& iOnQueueFinished, FuncCanceled&& iOnQueueCanceled);

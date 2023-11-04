@@ -9,6 +9,7 @@
 #include "DMSGameStateBase.generated.h"
 
 class UDMSEIManagerComponent;
+class UDMSSelectorManager;
 class ADMSPlayerStateBase;
 class ADMSPlayerControllerBase;
 /**
@@ -35,6 +36,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Replicated)
 	UDMSPhaseManager* PhaseManager;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Replicated)
+	UDMSSelectorManager* SelectorManager;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSSeqManager> SequenceManagerClass;
@@ -53,6 +57,8 @@ public:
 	FORCEINLINE UDMSEffectHandler* GetEffectHandler() { return EffectHandler; }
 	FORCEINLINE UDMSNotifyManager* GetNotifyManager() { return NotifyManager; }
 	FORCEINLINE UDMSPhaseManager* GetPhaseManager() { return PhaseManager; }
+	FORCEINLINE UDMSSelectorManager* GetSelectorManager() { return SelectorManager; }
+
 
 	UFUNCTION(BlueprintCallable)
 	ADMSPlayerControllerBase* GetLeaderPlayerController() { return FindPlayerControllerFromId(LeaderPlayerID); }

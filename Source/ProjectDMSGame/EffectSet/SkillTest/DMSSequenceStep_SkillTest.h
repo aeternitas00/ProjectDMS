@@ -8,7 +8,7 @@
 #include "DMSSequenceStep_SkillTest.generated.h"
 
 class ADMSCardBase;
-
+class UDMSSelectorBase;
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest)
 
 
@@ -65,7 +65,7 @@ public:
 	FDMSSkillTestData SkillTestData;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	TSubclassOf<UDMSConfirmWidgetBase> SkillTestWidgetClass;
+	TSubclassOf<UDMSSelectorBase> SkillTestWidgetClass;
 
 	static const FGameplayTag SkillBonusTag;
 	void SetupTargets(TArray<TObjectPtr<UObject>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);

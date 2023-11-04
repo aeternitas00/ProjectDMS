@@ -32,7 +32,16 @@ void UDMSSequenceStep::OnStepFinished(bool bSuccessed)
 {
 	OnStepFinished_Delegate.Broadcast(bSuccessed);
 	
-	if (bSuccessed && NextStep != nullptr) { OwnerSequence->CurrentStep = NextStep; NextStep->RunStep(); }
+	if ( NextStep != nullptr ) {
+		auto NOuter = NextStep->OwnerSequence;
+		auto tOuter = this->OwnerSequence;
+		if ( NOuter != tOuter )
+				DMS_LOG_SIMPLE(TEXT("==== %s : Step Outer is different %s %s===="),NOuter,tOuter);
+	}
+	if (bSuccessed && NextStep != nullptr)
+	{ 
+		OwnerSequence->CurrentStep = NextStep; NextStep->RunStep(); 
+	}
 	
 	else OwnerSequence->OnStepQueueCompleted(bSuccessed);
 		

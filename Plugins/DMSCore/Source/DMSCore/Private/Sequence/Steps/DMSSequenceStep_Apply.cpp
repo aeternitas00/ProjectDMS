@@ -109,7 +109,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 
 		DMS_LOG_SCREEN(TEXT("==-- Child Sequence Created [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 		// Proceed to run child effect sequence.
-		DMS_LOG_SIMPLE(TEXT("==== %s : OnNotifyReceived -> Advance ===="), *OwnerSequence->GetName());
+		DMS_LOG_SIMPLE(TEXT("==== %s : Child Sequence Created -> Advance ===="), *OwnerSequence->GetName());
 		auto ChildNode = OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
 		// follows parents data. 0
 		auto NewSeq = SeqManager->RequestCreateSequence(OwnerSequence->GetSourceObject(), OwnerSequence->GetSourcePlayer(), ChildNode,

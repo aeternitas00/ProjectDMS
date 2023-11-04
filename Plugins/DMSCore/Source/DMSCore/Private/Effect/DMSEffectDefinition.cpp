@@ -2,7 +2,6 @@
 
 
 #include "Effect/DMSEffectDefinition.h"
-#include "Selector/DMSDecisionWidget.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Sequence/DMSSequence.h"
 #include "GameModes/DMSGameStateBase.h"
@@ -71,23 +70,6 @@ TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode
 	return Storages;
 }
 
-TArray<FDMSValueSelectionForm> UDMSEffectNode::GetSelectionFormsFromEffects()
-{
-	TArray<FDMSValueSelectionForm> rv;
-
-	for (auto ED : EffectDefinitions)
-	{
-		UClass* Class = ED->StaticClass();
-
-		for (TFieldIterator<FStructProperty> PropIt(Class); PropIt; ++PropIt)
-		{
-			FStructProperty* StructProperty = *PropIt;
-			if (StructProperty->Struct == (FDMSValueSelectionForm::StaticStruct()))
-				rv.Add(*StructProperty->ContainerPtrToValuePtr<FDMSValueSelectionForm>(ED));
-		}
-	}
-	return rv;
-}
 
 UDMSEffectNode::UDMSEffectNode() : bForced(false),bIgnoreNotify(false), bIsChainableEffect(true)
 {

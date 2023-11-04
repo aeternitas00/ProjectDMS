@@ -30,6 +30,20 @@ class UDMSConditionCombiner;
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOptionCompleted,UDMSEffectOption*,CompletedOption);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
 
+
+USTRUCT(BlueprintType)
+struct FDMSValueSelectionForm
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	FGameplayTag DataKey;
+
+	UDMSDataObject* Get(UDMSDataObjectSet* DataSet) {
+		if (DataSet == nullptr) return nullptr;
+		return DataSet->ContainData(DataKey) ? DataSet->GetData(DataKey) : Get(DataSet->ParentDataSet);
+	}
+};
 /**
  * 	========================================
  *
@@ -39,9 +53,9 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
  *
  * =========================================
  *
- *	BP¿¡¼­ ±âº»ÀûÀÎ °Íµé ¿ÜÀÇ Ä¿½ºÅÒ ÀÌÆåÆ® ¿øÇü »ı¼º °¡´ÉÇÏ°Ô
- *	Effect°¡ °¡Á®¾ßÇÒ ±âº»ÀûÀÎ °ª µéÀº ÇÁ·ÎÆÛÆ¼·Î, ¼öÄ¡, Å¸°Ùµî À¯Àú Á¶ÀÛ°ú ¿¬°èµÈ ºÎºĞÀº ¼¿·ºÅÍ¸¦ »ç¿ëÇÏ°Ô ÇÔ.
- *	¼¿·ºÅÍ°¡ ¾øÀ» °æ¿ì -> ¼öÄ¡°¡ ¹üÀ§ ±â¹İÀÌ¶ó¸é ·£´ı °ª, Å¸°ÙÀº ½ÃÀüÀÚ°¡ µÇµµ·Ï ±¸Çö
+ *	BPì—ì„œ ê¸°ë³¸ì ì¸ ê²ƒë“¤ ì™¸ì˜ ì»¤ìŠ¤í…€ ì´í™íŠ¸ ì›í˜• ìƒì„± ê°€ëŠ¥í•˜ê²Œ
+ *	Effectê°€ ê°€ì ¸ì•¼í•  ê¸°ë³¸ì ì¸ ê°’ ë“¤ì€ í”„ë¡œí¼í‹°ë¡œ, ìˆ˜ì¹˜, íƒ€ê²Ÿë“± ìœ ì € ì¡°ì‘ê³¼ ì—°ê³„ëœ ë¶€ë¶„ì€ ì…€ë ‰í„°ë¥¼ ì‚¬ìš©í•˜ê²Œ í•¨.
+ *	ì…€ë ‰í„°ê°€ ì—†ì„ ê²½ìš° -> ìˆ˜ì¹˜ê°€ ë²”ìœ„ ê¸°ë°˜ì´ë¼ë©´ ëœë¤ ê°’, íƒ€ê²Ÿì€ ì‹œì „ìê°€ ë˜ë„ë¡ êµ¬í˜„
  *	Ex) BP_EffectTag_DealDamage ?
  */
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, ClassGroup = (Effect))
@@ -75,9 +89,9 @@ public:
 	/*	EffectOptions = CreateDefaultSubobject<UDMSEffectOptionSet>("EffectOptions");*/
 	}
 
-	// ½ÇÇàÇÒ ÇÔ¼öÀÇ Áßº¹À» ÁÙÀÌ±â À§ÇØ CardDefinition - DMSEffect¿¡ ½ÇÇàºÎÀÎ (Work)¸¦ µÎ´Â °ÍÀ¸·Î ÇÏ¿´À½.
-	// ÀÌ°ÍÀº Ä«µå Á¾·ù ÇÏ³ª¿¡ ½ÇÇàºÎ ÇÏ³ª¸¸À» µÎ±â ±îÁö ¾ĞÃàÇÏ´Â °ÍÀ» ÀÇµµ
-	// ¼º°ø ¿©ºÎ ÆÄ¾Ç, Ã¼ÀÎ È®ÀåÀ» À§ÇÑ ÇÚµé ¸®ÅÏ?
+	// ì‹¤í–‰í•  í•¨ìˆ˜ì˜ ì¤‘ë³µì„ ì¤„ì´ê¸° ìœ„í•´ CardDefinition - DMSEffectì— ì‹¤í–‰ë¶€ì¸ (Work)ë¥¼ ë‘ëŠ” ê²ƒìœ¼ë¡œ í•˜ì˜€ìŒ.
+	// ì´ê²ƒì€ ì¹´ë“œ ì¢…ë¥˜ í•˜ë‚˜ì— ì‹¤í–‰ë¶€ í•˜ë‚˜ë§Œì„ ë‘ê¸° ê¹Œì§€ ì••ì¶•í•˜ëŠ” ê²ƒì„ ì˜ë„
+	// ì„±ê³µ ì—¬ë¶€ íŒŒì•…, ì²´ì¸ í™•ì¥ì„ ìœ„í•œ í•¸ë“¤ ë¦¬í„´?
 	
 	void ExecuteEffectOptions(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
 	void ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted);
@@ -145,8 +159,8 @@ public:
 	
 
 	/**
-	 * ÀÌÆåÆ® ³ëµå¿¡ ´ëÇÑ ´ëÇ¥ Å°¿öµå. ºñ¿öµÎ¾îµµ »ó°ü ¾øÀ½. 
-	 * ´ëÇ¥ Å°¿öµå¸¦ ÅëÇÑ ³ëÆ¼ÆÄÀÌ ÇÃ·Î¿ìÀÇ ¼¼ºÎÀûÀÎ Äõ¸®¿É¼ÇÀ» »ç¿ëÇÏ°í ½ÍÀ» °æ¿ì »ç¿ë.
+	 * ì´í™íŠ¸ ë…¸ë“œì— ëŒ€í•œ ëŒ€í‘œ í‚¤ì›Œë“œ. ë¹„ì›Œë‘ì–´ë„ ìƒê´€ ì—†ìŒ. 
+	 * ëŒ€í‘œ í‚¤ì›Œë“œë¥¼ í†µí•œ ë…¸í‹°íŒŒì´ í”Œë¡œìš°ì˜ ì„¸ë¶€ì ì¸ ì¿¼ë¦¬ì˜µì…˜ì„ ì‚¬ìš©í•˜ê³  ì‹¶ì„ ê²½ìš° ì‚¬ìš©.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	FGameplayTag NodeTag;
@@ -252,15 +266,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = Effect)
 	static TArray<FDMSSequenceEIStorage> GenerateApplyTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
-
-	TArray<FDMSValueSelectionForm> GetSelectionFormsFromEffects();
-	/**
-	 * Create paired selector widget from "EffectDefinitions".
-	 * @param	CurrentSequence
-	 * @param	WidgetOwner
-	 * @return	
-	 */
-	//TArray<UDMSEffectElementSelectorWidget*> CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner);
 
 	//=================== Child effect ===================//
 

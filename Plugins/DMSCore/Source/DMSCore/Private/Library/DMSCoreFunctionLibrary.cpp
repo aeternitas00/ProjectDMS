@@ -2,6 +2,7 @@
 
 
 #include "Library/DMSCoreFunctionLibrary.h"
+#include "Selector/DMSSelectorManager.h"
 #include "GameModes/DMSGameModeBase.h"
 #include "GameModes/DMSGameStateBase.h"
 #include "Sequence/DMSSeqManager.h"
@@ -61,4 +62,11 @@ UDMSPhaseManager* UDMSCoreFunctionLibrary::GetDMSPhaseManager()
 	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
 
 	return GS != nullptr ? GS->GetPhaseManager() : nullptr;
+}
+
+UDMSSelectorManager* UDMSCoreFunctionLibrary::GetDMSSelectorManager()
+{
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
+
+	return GS != nullptr ? GS->GetSelectorManager() : nullptr;
 }

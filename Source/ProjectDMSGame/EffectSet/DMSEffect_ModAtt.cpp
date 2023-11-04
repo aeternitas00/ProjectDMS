@@ -7,8 +7,8 @@
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute, "Effect.ModAttribute");
 
-// ÀÚ¼ÕÀÓÀ» Ç¥ÇöÇÏ±â À§ÇØ ÆÄ»ý Å°¿öµåµéÀº + ".~~" ÇÏ´Â ÇüÅÂ? ex) ModifyAttribute.Deal 
-// ( ÀÏÁ¾ÀÇ Æ÷ÇÔ °ü°è¿¡ ¼ÓÇÏ´Â ÀÌÆåÆ®µéÀÇ ±¸ºÐ À§ÇÔ. --> HP°¡ º¯È­ÇßÀ» ¶§ > { HP ÇÇÇØ¸¦ ÀÔ¾úÀ» ¶§ , HP È¸º¹À» ÇßÀ» ¶§ } )
+// ìžì†ìž„ì„ í‘œí˜„í•˜ê¸° ìœ„í•´ íŒŒìƒ í‚¤ì›Œë“œë“¤ì€ + ".~~" í•˜ëŠ” í˜•íƒœ? ex) ModifyAttribute.Deal 
+// ( ì¼ì¢…ì˜ í¬í•¨ ê´€ê³„ì— ì†í•˜ëŠ” ì´íŽ™íŠ¸ë“¤ì˜ êµ¬ë¶„ ìœ„í•¨. --> HPê°€ ë³€í™”í–ˆì„ ë•Œ > { HP í”¼í•´ë¥¼ ìž…ì—ˆì„ ë•Œ , HP íšŒë³µì„ í–ˆì„ ë•Œ } )
 
 UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 { 
@@ -31,7 +31,7 @@ bool UDMSEffect_ModAtt::GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTa
 
 void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
-	// predict¿¡ valid check ¸¦ ´Ù ÇÏ°í°¡´Ï ÀÌ·±°Å ÇÊ¿ä ÇÑ°¡ ´Ù½Ã »ý°¢ÇØº¸±ä ÇØ¾ßÇÒÅÙµ¥...
+	// predictì— valid check ë¥¼ ë‹¤ í•˜ê³ ê°€ë‹ˆ ì´ëŸ°ê±° í•„ìš” í•œê°€ ë‹¤ì‹œ ìƒê°í•´ë³´ê¸´ í•´ì•¼í• í…ë°...
 
 	DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *iEI->GetOuter()->GetName());	
 
@@ -119,7 +119,8 @@ UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
 
 bool UDMSEffect_ModAtt_Variable::GenerateModifier(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue)
 {
-	auto ValueData = EI->DataSet->GetData(SelectorData.OutDataKey);
+	// Get Input Data ( Skip if data doesn't exist. )
+	auto ValueData = SelectorData.Get(EI->DataSet);
 	if (ValueData == nullptr || !ValueData->TypeCheck<FDMSAttributeModifier>()) 
 		return false;
 
