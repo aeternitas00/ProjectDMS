@@ -64,12 +64,16 @@ void UDMSWidgetQueue::ClearQueue()
 void UDMSWidgetQueue::PopupNextWidget()
 {
 	int8 LocalIdx = ++CurrentIndex;
-	if (SelectorHandles.Num() <= LocalIdx) {
-		auto CopiedCompleted = OnSelectorsCompleted;
+	if (SelectorHandles.Num() <= LocalIdx) {		
 		auto CopiedCompleted_Handle = OnSelectorsCompleted_Handle;
+		auto CopiedCompleted = OnSelectorsCompleted;
+
 		ClearQueue();
-		CopiedCompleted.Broadcast(CurrentSequence);
+		// Broadcast Behavior of handles first
 		CopiedCompleted_Handle.Broadcast(CurrentSequence);
+		// Complete the step
+		CopiedCompleted.Broadcast(CurrentSequence);
+
 		return;
 	}
 	SelectorHandles[LocalIdx]->RunSelector();

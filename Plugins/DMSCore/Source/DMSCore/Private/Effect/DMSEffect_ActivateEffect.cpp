@@ -15,7 +15,7 @@ UDMSEffect_ActivateEffect::UDMSEffect_ActivateEffect()
 { 
 	EffectTag = TAG_DMS_Effect_ActivateEffect;
 }
-UDMSEffect_ActivateEffect_Static::UDMSEffect_ActivateEffect_Static() : UDMSEffect_ActivateEffect(),UseEffectFromOuter(false), EffectIdx(0)
+UDMSEffect_ActivateEffect_Static::UDMSEffect_ActivateEffect_Static() : UDMSEffect_ActivateEffect(),UseEffectFromOuter(false)
 { 
 	EffectSetName = TAG_DMS_EffectType_Effect;
 }
@@ -27,24 +27,40 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
 	
-	UDMSEffectNodeWrapper* NodeWrapper = nullptr;
+	TArray<UDMSEffectNodeWrapper*> NodeWrappers;
 	
-	if ( !GetEffectNodeWrapper(iEI,NodeWrapper) || NodeWrapper == nullptr || NodeWrapper->GetEffectNode() == nullptr) {
+	if ( !GetEffectNodeWrappers(iEI,NodeWrappers)) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
 
-	auto Node = NodeWrapper->GetEffectNode();
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
-	auto NewSeq = SeqMan->RequestCreateSequence(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
+
+	TArray<UDMSSequence*> Sequences;
+	for ( int i=0; i<NodeWrappers.Num() ; i++ ) 
+	{
+		auto Node = NodeWrappers[i]->GetEffectNode();
+		auto NewSeq = SeqMan->RequestCreateSequence(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
 	
-	// 차일드 노드 끝날때 박는게 아니고 파라미터로 델리게이트를 넘겨서 패런츠의 ONRESUME을 하는게 나아보임.
-	NewSeq->AddToOnSequenceFinished_Native([=](bool ChildSeqSuccessed) {
-		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
-		OnWorkCompleted.ExecuteIfBound(ChildSeqSuccessed);
-	});
-	SeqMan->RunSequence(NewSeq);
+		if ( i < NodeWrappers.Num()-1){
+			NewSeq->AddToOnSequenceFinished_Native([=, NextIdx = i+1](bool ChildSeqSuccessed) {
+				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN NEXT EFFECT [%d] ===="),*SourceSequence->GetName(),NextIdx);
+				SeqMan->RunSequence(Sequences[NextIdx]);
+			});
+		}
+		else {
+			NewSeq->AddToOnSequenceFinished_Native([=](bool ChildSeqSuccessed) {
+				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
+				OnWorkCompleted.ExecuteIfBound(ChildSeqSuccessed);
+			});
+		}
+
+		Sequences.Add(NewSeq);	
+	}
+	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN FIRST EFFECT ===="),*SourceSequence->GetName());
+
+	SeqMan->RunSequence(Sequences[0]);
 }
 
 UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(UDMSEffectInstance* iEI)
@@ -61,37 +77,80 @@ UDMSEffect_ActivateEffect_Variable::UDMSEffect_ActivateEffect_Variable()
 	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
 }
 
-bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper)
-{ 
-	// UseEffectFromOuter 상황별 분기 포함시켜야함
+//bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper)
+//{ 
+//	UDMSDataObject* rData = SelectorData.Get(iEI->DataSet);
+//
+//	if (rData == nullptr) return false;
+//
+//	// Get Input Data ( Skip if data doesn't exist. )
+//	else {
+//		if (rData->TypeCheck<TArray<UDMSDataObject*>>()) {
+//			// temp
+//			OutWrapper = Cast<UDMSEffectNodeWrapper>(rData->Get<TArray<UDMSDataObject*>>()[0]->Get<UObject*>());
+//			return OutWrapper != nullptr;
+//
+//			TArray<UDMSEffectNodeWrapper*> OutWrapperArr;
+//			for ( auto& WrapperData : rData->Get<TArray<UDMSDataObject*>>())
+//			{
+//				UObject* Wrapper = WrapperData->Get<UObject*>();
+//				if (Wrapper->IsA<UDMSEffectNodeWrapper>()) OutWrapperArr.Add(Cast<UDMSEffectNodeWrapper>(Wrapper));
+//			}
+//			return OutWrapperArr.Num() != 0;
+//		}
+//		else	
+//			return false;
+//	}
+//}
+
+bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
+{ 	
 	UDMSDataObject* rData = SelectorData.Get(iEI->DataSet);
 
 	if (rData == nullptr) return false;
 
 	// Get Input Data ( Skip if data doesn't exist. )
 	else {
-		if (rData->TypeCheck<UDMSEffectNodeWrapper*>())	{
-			OutWrapper = rData->Get<UDMSEffectNodeWrapper*>();
-			return true; 
+		if (rData->TypeCheck<TArray<UDMSDataObject*>>()) {
+			for ( auto& WrapperData : rData->Get<TArray<UDMSDataObject*>>())
+			{
+				UObject* Wrapper = WrapperData->Get<UObject*>();
+				if (Wrapper->IsA<UDMSEffectNodeWrapper>()) OutWrapperArr.Add(Cast<UDMSEffectNodeWrapper>(Wrapper));
+			}
+			return OutWrapperArr.Num() != 0;
 		}
 		else	
 			return false;
-	}
-}
+	} }
 
-bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper) 
+//bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper) 
+//{ 
+//	if (UseEffectFromOuter){
+//		auto Set = GetEffectSetFromOuter(iEI);
+//		if (Set != nullptr && Set->EffectNodes.Num() > EffectIdx)
+//			OutWrapper = Set->EffectNodes[EffectIdx];
+//		else
+//			return false;
+//	}
+//	else
+//		OutWrapper = StaticEffect;
+//
+//	return true; 
+//}
+
+bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
 { 
 	if (UseEffectFromOuter){
 		auto Set = GetEffectSetFromOuter(iEI);
-		if (Set != nullptr && Set->EffectNodes.Num() > EffectIdx)
-			OutWrapper = Set->EffectNodes[EffectIdx];
-		else
-			return false;
+		for(auto& Idx: EffectIdxArr ) {
+			if (Set != nullptr && Set->EffectNodes.Num() > Idx)
+				OutWrapperArr.Add(Set->EffectNodes[Idx]);
+		}
 	}
 	else
-		OutWrapper = StaticEffect;
+		OutWrapperArr = StaticEffectArr;
 
-	return true; 
+	return OutWrapperArr.Num() != 0;
 }
 
 TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI)

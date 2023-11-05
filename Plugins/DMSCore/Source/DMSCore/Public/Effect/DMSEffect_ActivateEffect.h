@@ -19,6 +19,8 @@ public:
 	UDMSEffect_ActivateEffect();
 
 	virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper){return false;}
+	virtual bool GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr){return false;}
+
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
 
 };
@@ -42,17 +44,26 @@ public:
 	FGameplayTag EffectSetName;
 
 	// Index in EffectSet of EffectNode to be activated.
+	//UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
+	//uint8 EffectIdx;
+
+	// Index in EffectSet of EffectNode to be activated.
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
-	uint8 EffectIdx;
+	TArray<uint8> EffectIdxArr;
+
+	// EffectNode that will activate itself when it doesn't use Outer's one.
+	//UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
+	//TObjectPtr<UDMSEffectNodeWrapper> StaticEffect;
+
 
 	// EffectNode that will activate itself when it doesn't use Outer's one.
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
-	TObjectPtr<UDMSEffectNodeWrapper> StaticEffect;
+	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffectArr;
 
 	UDMSEffectSet* GetEffectSetFromOuter(UDMSEffectInstance* iEI);
 
-	virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper);
-
+	//virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper);
+	virtual bool GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr);
 };
 
 
@@ -70,7 +81,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	FDMSValueSelectionForm SelectorData;
 
-	virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper);
+	//virtual bool GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper);
+	virtual bool GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr);
 
 
 };

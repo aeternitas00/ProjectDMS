@@ -91,7 +91,7 @@ UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTa
 	//auto NewGenerator = NewObject<UDMSSelectorRequestGenerator_AE>(DecisionStep);
 	//NewGenerator
 	//NewDecision.Generator = NewGenerator;
-	AEffect->EffectIdx = idx;
+	AEffect->EffectIdxArr = {idx};
 	AEffect->UseEffectFromOuter = true;
 	AEffect->EffectSetName = EffectSetName;
 	// NODE INITIALIZER?

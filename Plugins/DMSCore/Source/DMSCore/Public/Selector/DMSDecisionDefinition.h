@@ -24,7 +24,7 @@
  */
 
  // 셀렉터 아웃풋을 어떻게 처리할 지에 대한 정의
-UCLASS(BlueprintType,Blueprintable,Abstract)
+UCLASS(BlueprintType,Blueprintable, EditInlineNew, Abstract)
 class DMSCORE_API UDMSSelectorBehaviorDefinition : public UObject
 {
 	GENERATED_BODY()
@@ -51,7 +51,7 @@ public:
 
 
 // 셀렉터 리퀘스트를 생성하는 방법에 대한 정의
-UCLASS(Blueprintable, BlueprintType, Abstract)
+UCLASS(Blueprintable, BlueprintType, EditInlineNew, Abstract)
 class DMSCORE_API UDMSSelectorRequestGenerator : public UObject
 {
 	GENERATED_BODY()

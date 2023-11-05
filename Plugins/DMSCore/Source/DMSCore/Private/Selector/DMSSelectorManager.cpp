@@ -25,7 +25,8 @@ TArray<UDMSSelectorHandle*> UDMSSelectorManager::RequestCreateSelectors ( TArray
 {
 	TArray<UDMSSelectorHandle*> rv;
 	for ( auto& Form : Forms )
-		auto NewHandle = RequestCreateSelector(Form);
+		rv.Add(RequestCreateSelector(Form));
+	
 	return rv;
 }
 

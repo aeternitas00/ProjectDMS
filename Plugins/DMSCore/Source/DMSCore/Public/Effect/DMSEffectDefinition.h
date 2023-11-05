@@ -52,11 +52,6 @@ struct FDMSValueSelectionForm
  *	It is designed to be instanced in "EffectNode".
  *
  * =========================================
- *
- *	BP에서 기본적인 것들 외의 커스텀 이펙트 원형 생성 가능하게
- *	Effect가 가져야할 기본적인 값 들은 프로퍼티로, 수치, 타겟등 유저 조작과 연계된 부분은 셀렉터를 사용하게 함.
- *	셀렉터가 없을 경우 -> 수치가 범위 기반이라면 랜덤 값, 타겟은 시전자가 되도록 구현
- *	Ex) BP_EffectTag_DealDamage ?
  */
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, ClassGroup = (Effect))
 class DMSCORE_API UDMSEffectDefinition : public UObject

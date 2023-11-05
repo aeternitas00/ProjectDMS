@@ -2,7 +2,8 @@
 
 
 #include "Selector/DMSDecisionDefinition.h"
-
+#include "Effect/DMSEffectInstance.h"
+#include "Sequence/DMSSequence.h"
 
 
 // 리퀘스트 폼을 제작 
@@ -81,15 +82,18 @@ void UDMSSelectorBehaviorDefinition_UpdateData::SetupFormDelegates(UDMSSequence*
 		{
 			// 이거 순서가 확실히 유지되나?
 			Form.OnCompletedNative.BindLambda([=,EI = EIArr[FormIdx]](TArray<uint8> IndexArr)
+			{
+				DMS_LOG_SIMPLE(TEXT("==== %s : SelectorBehavior : Update Data ===="), *EI->GetName());
+
+				TArray<UDMSDataObject*> SelectedItems;
+				for (auto& i : IndexArr)
 				{
-					TArray<UDMSDataObject*> SelectedItems;
-					for (auto& i : IndexArr)
-					{
-						UDMSDataObject* TargetObject = Form.Candidates[i];
-						SelectedItems.Add(TargetObject);
-					}
-					EI->DataSet->SetData(OutKey, SelectedItems);
-				});
+					UDMSDataObject* TargetObject = Form.Candidates[i];
+					SelectedItems.Add(TargetObject);
+				}
+				EI->DataSet->SetData(OutKey, SelectedItems);
+			});
+			FormIdx++;
 		}
 
 	}
