@@ -16,7 +16,7 @@
 
 /**
  * Base class of All DMS spawnable actors to support custom initialization through assets in our project.
- * ´Ü¼ø ½ºÆ÷³Êºí ÀÌ¶ó±â º¸´Ü Á» ´õ Æ¯Á¤¼ºÀÖ´Â ³×ÀÌ¹ÖÀ» ÇÏ´Â °ÍÀÌ ÁÁÀ» µí.
+ * ë‹¨ìˆœ ìŠ¤í¬ë„ˆë¸” ì´ë¼ê¸° ë³´ë‹¨ ì¢€ ë” íŠ¹ì •ì„±ìˆëŠ” ë„¤ì´ë°ì„ í•˜ëŠ” ê²ƒì´ ì¢‹ì„ ë“¯.
  */
 
 UCLASS(Abstract)
@@ -111,3 +111,4 @@ public:
 
 	// TODO :: Asset Management Helper Funcs
 };
+

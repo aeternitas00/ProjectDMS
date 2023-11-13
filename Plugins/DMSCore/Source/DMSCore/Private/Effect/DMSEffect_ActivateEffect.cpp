@@ -38,25 +38,28 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
 
 	TArray<UDMSSequence*> Sequences;
-	for ( int i=0; i<NodeWrappers.Num() ; i++ ) 
+
+	for ( auto& NodeWrapper : NodeWrappers )
 	{
-		auto Node = NodeWrappers[i]->GetEffectNode();
+		auto Node = NodeWrapper->GetEffectNode();
 		auto NewSeq = SeqMan->RequestCreateSequence(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
-	
-		if ( i < NodeWrappers.Num()-1){
-			NewSeq->AddToOnSequenceFinished_Native([=, NextIdx = i+1](bool ChildSeqSuccessed) {
+		Sequences.Add(NewSeq);
+	}
+
+	for ( int i=0; i<Sequences.Num() ; i++ ) 
+	{
+		if ( i < Sequences.Num()-1){
+			Sequences[i]->AddToOnSequenceFinished_Native([=,NextIdx = i+1, NextSequence = Sequences[i+1]](bool ChildSeqSuccessed) {
 				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN NEXT EFFECT [%d] ===="),*SourceSequence->GetName(),NextIdx);
-				SeqMan->RunSequence(Sequences[NextIdx]);
+				SeqMan->RunSequence(NextSequence);
 			});
 		}
 		else {
-			NewSeq->AddToOnSequenceFinished_Native([=](bool ChildSeqSuccessed) {
+			Sequences[i]->AddToOnSequenceFinished_Native([=](bool ChildSeqSuccessed) {
 				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
 				OnWorkCompleted.ExecuteIfBound(ChildSeqSuccessed);
 			});
 		}
-
-		Sequences.Add(NewSeq);	
 	}
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN FIRST EFFECT ===="),*SourceSequence->GetName());
 

@@ -14,6 +14,8 @@
 #include "Selector/DMSSelectorManager.h"
 #include "DMSDecisionDefinition.generated.h"
 
+class UDMSTargetGenerator;
+
 /**
  *	Definition of "Decision Step": It is a step that a player must go through when trying to activate an effect. 
  *	When a player tries to activate an effect, the necessary information for that effect is collected, and the resulting changes are previewed to the player based on that information. 
@@ -82,7 +84,7 @@ public:
 };
 
 UCLASS()
-class DMSCORE_API  USelectorRequestGenerator_FromEIData : public UDMSSelectorRequestGenerator
+class DMSCORE_API USelectorRequestGenerator_FromEIData : public UDMSSelectorRequestGenerator
 {
 	GENERATED_BODY()
 public:
@@ -92,7 +94,17 @@ public:
 	virtual TArray<UDMSDataObject*> GenerateCandidates ( UDMSSequence* Sequence , UDMSEffectInstance* TargetEI );
 
 };
-// USelectorRequestGenerator_WithTG : public UDMSSelectorRequestGenerator
+UCLASS()
+class DMSCORE_API USelectorRequestGenerator_WithTG : public UDMSSelectorRequestGenerator
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	TObjectPtr<UDMSTargetGenerator> TargetGenerator;
+
+	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence , UDMSEffectInstance* TargetEI);
+
+};
 // USelectorRequestGenerator_[Custom] : public UDMSSelectorRequestGenerator
 
 USTRUCT(BlueprintType)

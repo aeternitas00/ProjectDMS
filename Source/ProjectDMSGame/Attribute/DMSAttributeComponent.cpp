@@ -2,6 +2,7 @@
 
 
 #include "Attribute/DMSAttributeComponent.h"
+#include "Effect/DMSEffectorInterface.h"
 //#include "DMSGame.h"
 
 UDMSAttributeComponent::UDMSAttributeComponent()
@@ -9,54 +10,27 @@ UDMSAttributeComponent::UDMSAttributeComponent()
 
 }
 
+
+bool UDMSAttributeComponent::ContainAttribute(const FGameplayTag& Tag) const
+{
+	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
+	if (Attributes.Contains(Tag)) return true;
+	return ParentAtt == nullptr ? false : ParentAtt->ContainAttribute(Tag);
+}
+
 bool UDMSAttributeComponent::TryModAttribute(const FDMSAttributeModifier& Modifier,float& OutValue,bool Apply)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
-	if (!Attributes.Contains(Modifier.AttributeTag)) return false; // log or what
+	if (!ContainAttribute(Modifier.AttributeTag)) return false; // log or what
 
-	return Attributes[Modifier.AttributeTag]->TryModAttribute(Modifier, OutValue, Apply);
+	return GetAttribute(Modifier.AttributeTag)->TryModAttribute(Modifier, OutValue, Apply);
 }
-
-
-//bool UDMSAttributeComponent::GetAttributeValue(const FName& AttributeName, float& outValue) const
-//{
-//	bool rv = GetAttribute(AttributeName)==nullptr;
-//	outValue = rv ? GetAttribute(AttributeName)->GetValue() : -1.0f;
-//	return rv;
-//}
-//
-//void UDMSAttributeComponent::MakeAttribute(const FName& AttributeName, const float& DefValue)
-//{
-//	if (Attributes.Contains(AttributeName)) return; // log or what\
-//
-//	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
-//	NewAtt->Value = DefValue;
-//
-//	Attributes.Add(AttributeName, NewAtt);
-//}
-//
-//void UDMSAttributeComponent::BindOnModifiedToAttribute(const FName& AttributeName, const FOnAttributeModifiedSignature& iDelegate)
-//{
-//	if (!Attributes.Contains(AttributeName)) return;
-//
-//	Attributes[AttributeName]->BindOnModified(iDelegate);
-//}
-//
-//UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FName& AttributeName) const
-//{
-//	if (!Attributes.Contains(AttributeName)) return nullptr; // log or what\
-//
-//	return Attributes[AttributeName];
-//}
 
 bool UDMSAttributeComponent::GetAttributeValue(const FGameplayTag& AttributeName, float& outValue) const
 {
-	//bool rv = GetAttribute(AttributeName) == nullptr;
-	//outValue = rv ? GetAttribute(AttributeName)->GetValue() : -1.0f;
-	
-	if (!Attributes.Contains(AttributeName)) return false;
+	if (!ContainAttribute(AttributeName)) return false;
 
-	outValue = Attributes[AttributeName]->Value;
+	outValue = GetAttribute(AttributeName)->Value;
 
 	return true;
 }
@@ -71,7 +45,7 @@ TArray<FDMSSerializedAttribute> UDMSAttributeComponent::ToSerialized()
 
 void UDMSAttributeComponent::MakeAttribute(const FGameplayTag& AttributeName, const float& DefValue)
 {
-	if (Attributes.Contains(AttributeName)) return; // log or what\
+	if (ContainAttribute(AttributeName)) return; // log or what\
 
 	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
 	NewAtt->Value = DefValue;
@@ -81,14 +55,15 @@ void UDMSAttributeComponent::MakeAttribute(const FGameplayTag& AttributeName, co
 
 void UDMSAttributeComponent::BindOnModifiedToAttribute(const FGameplayTag& AttributeName, const FOnAttributeModifiedSignature& iDelegate)
 {
-	if (!Attributes.Contains(AttributeName)) return;
+	if (!ContainAttribute(AttributeName)) return;
 
-	Attributes[AttributeName]->BindOnModified(iDelegate);
+	GetAttribute(AttributeName)->BindOnModified(iDelegate);
 }
 
-UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTag& AttributeName)
+UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTag& AttributeName) const
 {
-	if (!Attributes.Contains(AttributeName)) return nullptr; // log or what\
+	if (!ContainAttribute(AttributeName)) return nullptr; // log or what\
 
-	return Attributes[AttributeName];
+	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
+	return Attributes[AttributeName] == nullptr ? ParentAtt->GetAttribute(AttributeName) : Attributes[AttributeName];
 }

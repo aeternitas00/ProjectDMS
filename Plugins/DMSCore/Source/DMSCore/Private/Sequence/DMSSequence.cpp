@@ -41,14 +41,14 @@ AActor* UDMSSequence::GetSourcePlayer() const
 
 bool UDMSSequence::SetSourceObject(UObject* NewSourceObject)
 {
-	bool rv = SourceObject->Implements<UDMSEffectorInterface>();
+	bool rv = NewSourceObject->Implements<UDMSEffectorInterface>();
 	SourceObject = rv ? NewSourceObject : nullptr;
 	return rv;
 }
 
 bool UDMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
 {
-	bool rv = SourceObject->Implements<UDMSEffectorInterface>();
+	bool rv = NewSourcePlayer->Implements<UDMSEffectorInterface>();
 	SourcePlayer= rv ? NewSourcePlayer : nullptr;
 	return false;
 }

@@ -4,7 +4,8 @@
 #include "Selector/DMSDecisionDefinition.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Sequence/DMSSequence.h"
-
+#include "Common/DMSTargetGenerator.h"
+#include "Library/DMSDataObjectHelperLibrary.h"
 
 // 리퀘스트 폼을 제작 
 
@@ -67,6 +68,11 @@ TArray<UDMSDataObject*> USelectorRequestGenerator_FromEIData::GenerateCandidates
 }
 
 
+TArray<UDMSDataObject*> USelectorRequestGenerator_WithTG::GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI)
+{
+	auto Targets = TargetGenerator->GetTargets(Sequence->GetSourceObject(),Sequence);
+	return UDMSDataObjectHelperLibrary::RawDataToDataObjectArr(Targets,Sequence);
+}
 
 
 
@@ -111,3 +117,4 @@ void UDMSSelectorBehaviorDefinition_UpdateData::SetupFormDelegates(UDMSSequence*
 			});
 	}
 }
+

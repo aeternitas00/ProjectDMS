@@ -16,13 +16,14 @@
 #include "ProjectDMS.h"
 #include "Attribute/DMSAttribute.h"
 #include "Attribute/DMSSerializedAttribute.h"
+#include "Common/DMSSpawnableComponent.h"
 #include "Components/ActorComponent.h"
 #include "DMSAttributeComponent.generated.h"
 
 
 //
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTDMSGAME_API UDMSAttributeComponent : public UActorComponent
+class PROJECTDMSGAME_API UDMSAttributeComponent : public UDMSSpawnableComponent
 {
 	GENERATED_BODY()
 
@@ -30,14 +31,20 @@ public:
 	// Sets default values for this component's properties
 	UDMSAttributeComponent();
 
+protected:
 public:	
-
 	/**
 	 * Storing attribute instances
 	 */
 	UPROPERTY()
 	TMap<FGameplayTag, UDMSAttribute*> Attributes; // Resources
 	
+	/**
+	 * Check this component contians tagged attribute.
+	 */
+	UFUNCTION(BlueprintCallable)
+	bool ContainAttribute(const FGameplayTag& Tag) const;
+
 	/**
 	 * Trying modify attribute with param Modifier
 	 * @param	Modifier							In modifier
@@ -68,7 +75,7 @@ public:
 	 * @param	AttributeName						Target attribute's tag
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSAttribute* GetAttribute(const FGameplayTag& AttributeName);
+	UDMSAttribute* GetAttribute(const FGameplayTag& AttributeName) const;
 
 	/**
 	 * Getter of attribute value

@@ -45,7 +45,10 @@ public:
 	float FailureConditionValue; // float? 
 
 	bool GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
-	virtual bool GenerateModifier(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue){return false;}
+	UFUNCTION(BlueprintNativeEvent)
+	bool GenerateModifier(UDMSEffectInstance* EI,UPARAM(ref) FDMSAttributeModifier& OutValue);
+	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue){return false;}
+	
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
 	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) override;
 	// ====== Selectors ====== //
@@ -68,7 +71,7 @@ public:
 	FDMSAttributeModifier Value;
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
-	virtual bool GenerateModifier(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue){OutValue = Value; return true;}
+	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue){OutValue = Value; return true;}
 
 };
 
@@ -87,50 +90,21 @@ public:
 	FDMSValueSelectionForm SelectorData;
 
 	
-	virtual bool GenerateModifier(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue);
-
+	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue);
 };
-//
-//UCLASS()
-//class PROJECTDMSGAME_API UDMSValueSelector_Attribute : public UDMSValueSelectorDefinition
-//{
-//	GENERATED_BODY()
-//
-//public:
-//	//UDMSValueSelector_Attribute(){};
-//
-//	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "CandidatesFlag != 0", EditConditionHides))
-//	bool isRanged;
-//
-//	/*
-//	 *	Modifier's Value will be ignored. ( For attribute's name and operator )
-//	 */
-//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
-//	FDMSAttributeModifier Modifier;
-//
-//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
-//	float MaxValue;
-//
-//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "bIsRanged"))
-//	float MinValue;
-//
-//	/**
-//	 *	For list based selector.
-//	 */
-//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = ModAttribute, meta = (EditCondition = "!bIsRanged"))
-//	TArray<FDMSAttributeModifier> ModifierArray;
-//
-//
-//	UPROPERTY(EditDefaultsOnly)
-//	TSubclassOf<UDMSConfirmWidgetBase_AttModifier> WidgetClass;
-//};
-//
-//UCLASS()
-//class PROJECTDMSGAME_API UDMSConfirmWidgetBase_AttModifier : public UDMSConfirmWidgetBase
-//{
-//	GENERATED_BODY()
-//
-//public:
-//	UFUNCTION(BlueprintCallable)
-//	void UpdateData(UDMSDataObjectSet* UpdatingData, FDMSAttributeModifier Value) { UpdatingData->SetData(SelectionForm.OutDataKey, Value); }
-//};
+
+UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Value Only Variable"))
+class PROJECTDMSGAME_API UDMSEffect_ModAtt_Variable_ValueOnly : public UDMSEffect_ModAtt_Variable
+{
+	GENERATED_BODY()
+
+public:
+	//UDMSEffect_ModAtt_Variable_ValueOnly();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
+	FDMSAttributeModifier DefaultModifier;
+
+	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue);
+};
+
+// 추가적으로 데이터 여러개를 참조해서 모디파이어를 만드는 식의 형태는 사용자가 직접 구현 할 수 있도록...

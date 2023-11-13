@@ -4,13 +4,19 @@
 
 #include "ProjectDMS.h"
 #include "EffectSet/DMSEffect_SkillTest.h"
+#include "Selector/DMSConfirmWidgetBase.h"
+#include "Selector/DMSSelectorManager.h"
 #include "Sequence/DMSSequenceStep.h"
 #include "DMSSequenceStep_SkillTest.generated.h"
 
 class ADMSCardBase;
-class UDMSSelectorBase;
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest)
+class UDMSSelectorHandle;
+class UDMSSelectorRequestGenerator;
 
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest_Committable)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest_Data_TestDiffModifier)
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest_Data_TestResult)
 
 USTRUCT(BlueprintType)
 struct FDMSSkillTestData
@@ -20,11 +26,11 @@ struct FDMSSkillTestData
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FGameplayTag StatName;
 
-	// Get stat from who?
+	// Get stat from who? ( only one )
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
 	TObjectPtr<UDMSTargetGenerator> TesterGenerator;
 
-	// Get stat from who?
+	// Get stat from who? ( only one )
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, meta = (EditCondition = "!bTestToStaticValue", EditConditionHides))
 	TObjectPtr<UDMSTargetGenerator> TestTargetGenerator;
 
@@ -35,7 +41,18 @@ struct FDMSSkillTestData
 	float StaticTargetValue;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	bool CanCommitable;
+	bool CanUseBonusStat;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool IsCommittable;
+
+	// 최종적인 이펙트 적용 대상 마다 같은 테스트를 반복할지 결정.
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool TestByEachApplyTarget;
+
+	// 스킬 결과 값의 반전 ( 실패시 진행하는 효과에 유용 )
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool ReverseTestResult;
 
 	// ENum TestMethod ?
 	// 1. Test with ( Source[StatName] + Static Value )
@@ -43,6 +60,7 @@ struct FDMSSkillTestData
 	// 3. Custom? ( Multiple stat )
 
 };
+
 
 /**
  * Skill test is for one tester : one test target 
@@ -52,57 +70,65 @@ class PROJECTDMSGAME_API UDMSSequenceStep_SkillTest : public UDMSSequenceStep
 {
 	GENERATED_BODY()
 
-protected:
+protected: 
 
-	TArray<TObjectPtr<UObject>> Testers;
-	TArray<TObjectPtr<UObject>> TestTargets;
-	float SourceValue;
-	
-public:
+public: 
 	UDMSSequenceStep_SkillTest();
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FDMSSkillTestData SkillTestData;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	TSubclassOf<UDMSSelectorBase> SkillTestWidgetClass;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
 
 	static const FGameplayTag SkillBonusTag;
-	void SetupTargets(TArray<TObjectPtr<UObject>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
+
+	void SetupTargets(TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
 	virtual void OnStepInitiated() override;
 
 	virtual void OnBefore_Implementation() override;
 	virtual void OnDuring_Implementation() override;
 	virtual void OnAfter_Implementation() override;
 
-	float CalculateSkillTestResult();
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	float CalculateSkillTestResult(AActor* Tester, AActor* TestTarget,float BonusValue);
+	virtual float CalculateSkillTestResult_Implementation(AActor* Tester, AActor* TestTarget,float BonusValue);
+	//...
+	// Branch for failed Skill test?
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void OnSkillTestCompleted();
+	virtual void OnSkillTestCompleted_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnSkillTestFailed();
+	virtual void OnSkillTestFailed_Implementation();
 };
 
-//
-//UCLASS(Blueprintable, Abstract)
-//class UDMSSelector_SkillTest : public UDMSConfirmWidgetBase
-//{
-//	GENERATED_BODY()
-//
-//
-//public:
-//	/**
-//	 *
-//	 */
-//	UPROPERTY(BlueprintReadOnly)
-//	FDMSSkillTestData SkillTestData;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	TArray<TObjectPtr<ADMSCardBase>> CommitableCards;
-//
-//	UPROPERTY(BlueprintReadWrite)
-//	float OutBonusValue;
-//
-//	//virtual void OnPopupSelector_Implementation() override;
-//	//virtual void OnCloseSelector_Implementation() override;
-//
-//	virtual UDMSDataObjectSet* MakeOutputData_Implementation();
-//	//virtual	bool SetupWidget_Implementation();
-//
-//	//friend class UDMSEffect_SkillTest;
-//};
+// 변종 테스트의 경우는 상속 받아서 변경하는 것으로 구현하는게 맞을듯.
+
+
+UCLASS(Blueprintable, Abstract)
+class UDMSSelector_SkillTest : public UDMSSelectorBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UDMSSequenceStep_SkillTest> OwnerStep;
+
+	UPROPERTY(BlueprintReadOnly)
+	int CurrentEIIndex;
+
+	//UPROPERTY(BlueprintReadWrite)
+	//float SkillBonus;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<AActor>> TesterCandidates;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<AActor>> TestTargetCandidates;
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateSkillTestResult(AActor* Tester, AActor* TestTarget = nullptr, float BonusValue = 0.0f);
+};

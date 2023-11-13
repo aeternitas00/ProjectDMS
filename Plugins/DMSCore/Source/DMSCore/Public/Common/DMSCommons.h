@@ -52,14 +52,39 @@ enum class EDMSComparisonOperator : uint8
 	BO_Greater UMETA(DisplayName = ">")
 };
 
-UENUM(BlueprintType)
-enum class EDMSDataType : uint8
+//UENUM(BlueprintType)
+//enum class EDMSDataType : uint8
+//{
+//	DT_Integer UMETA(DisplayName = "Integer"),
+//	DT_Float UMETA(DisplayName = "Float"),
+//	DT_String UMETA(DisplayName = "String"),
+//	DT_NetGUID UMETA(DisplayName = "NetGUID"),
+//};
+
+/**
+*	Attibute Modifier struct. Using in ModAtt Effect. 
+*/
+USTRUCT(BlueprintType)
+struct DMSCORE_API FDMSValueModifier
 {
-	DT_Integer UMETA(DisplayName = "Integer"),
-	DT_Float UMETA(DisplayName = "Float"),
-	DT_String UMETA(DisplayName = "String"),
-	DT_NetGUID UMETA(DisplayName = "NetGUID"),
+	GENERATED_BODY()
+
+public:
+
+	/**
+	* 
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EDMSModifierType ModifierType;
+
+	/**
+	* 
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float Value;
 };
+
+
 
 /**
  *	std::any 를 BP에 올려서 사용하기 위한 일종의 래퍼.
@@ -86,10 +111,18 @@ protected:
 public:
 	UDMSDataObject():Inheriting(false) {}
 
+
+	// For UObject derived classes 
+	//template <
+	//	typename U,
+	//	decltype(ImplicitConv<UObject*>(std::declval<U>()))* = nullptr
+	//> 
+	//void Set(U&& iValue){}
+
 	/**
-	 * Setter of AnyValue.
-	 * std::forward???
-	 */
+	* Setter of AnyValue.
+	* Using std::forward???
+	*/
 	void Set(const std::any& iValue) { AnyValue = iValue;/*emplace*/ }
 	void Set(std::any&& iValue) { AnyValue = std::move(iValue); }
 
@@ -226,3 +259,40 @@ public:
 
 };
 
+UCLASS(Abstract,Blueprintable,BlueprintType,EditInlineNew)
+class DMSCORE_API UDMSValueProcesser : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UDMSValueProcesser(){}
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	void Process(UDMSDataObject* DataObject);
+	virtual void Process_Implementation(UDMSDataObject* DataObject){}
+};
+
+USTRUCT(BlueprintType)
+struct DMSCORE_API FDMSValueSelectionForm
+{
+	GENERATED_BODY()
+
+public:
+	/**
+	 * Key (tag) of the data to be explored in UDMSDataObjectSet.
+	 */
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	FGameplayTag DataKey;
+
+	/** Defines the method of processing the received data for practical use.
+	 * Executed in the order of the array
+	 * ex) 선택한 숫자의 *3 만큼 데미지를 준다 -> Modifier나 float를 받아서 *3 한다음 리턴하는 Processer를 추가.
+	 */
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced)
+	TArray<TObjectPtr<UDMSValueProcesser>> ValueProcessers;
+
+	/**
+	 * Extracts values from the dataset received as an argument in a specified method. ( with DataKey and ValueProcesser )
+	 */
+	UDMSDataObject* Get(UDMSDataObjectSet* DataSet);
+};

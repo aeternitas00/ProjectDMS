@@ -19,8 +19,8 @@
 
 struct FDMSEffectValueDef;
 /**
- * ÇÊ¿äÇÑ Å¸ÀÔÀÌ¸é »ó¼Ó¹Þ¾Æ¼­ Ãß°¡ÇÏ±â?
- * [ BPÈ£È¯À» À§ÇØ¼± ÀÌ·¸°Ô ´õ·¯¿î ¹æ½Ä ¹Û¿¡ ¾ÈµÇ´Â °É±î ]
+ * í•„ìš”í•œ íƒ€ìž…ì´ë©´ ìƒì†ë°›ì•„ì„œ ì¶”ê°€í•˜ê¸°?
+ * [ BPí˜¸í™˜ì„ ìœ„í•´ì„  ì´ë ‡ê²Œ ë”ëŸ¬ìš´ ë°©ì‹ ë°–ì— ì•ˆë˜ëŠ” ê±¸ê¹Œ ]
  */
 UCLASS()
 class DMSCORE_API UDMSDataObjectHelperLibrary : public UBlueprintFunctionLibrary
@@ -88,6 +88,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Data Object", meta = (Displayname = "Set Data uint8"))
 	static void SetData_uint8(UDMSDataObject* iObj, const uint8& inData) { iObj->Set(inData); }
 
+	template<typename T>
+	static TArray<UDMSDataObject*> RawDataToDataObjectArr(TArray<T> RawDataArray, UObject* Outer = (UObject*)GetTransientPackage());
+
+	UFUNCTION(BlueprintCallable)
+	static UDMSDataObject* GetDataFromSelectionForm(FDMSValueSelectionForm SelectionForm,UDMSDataObjectSet* DataSet);
 	//UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	//static float SearchWithEffectValueDefs(UDMSDataObjectSet* iSet, const TArray<FDMSEffectValueDef>& DefArray, float DefaultValue=0.0f);
 };
+
+template<typename T>
+TArray<UDMSDataObject*> UDMSDataObjectHelperLibrary::RawDataToDataObjectArr(TArray<T> RawDataArray, UObject* Outer)
+{
+	TArray<UDMSDataObject*> rv;
+
+	for (auto& RawData : RawDataArray)
+	{
+		auto NewData = NewObject<UDMSDataObject>(Outer);
+		NewData->Set(RawData);
+		rv.Add(NewData);
+	}
+
+	return rv;
+}

@@ -50,13 +50,8 @@ void UDMSEIManagerComponent::AttachEffectInstance(UDMSEffectInstance* EI)
 bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 {
 	bool rv=false;
-	for (auto OwnEI : OwnEffectInstances)
-	{
-		if (OwnEI->OnNotifyReceived(ResponsedObjects, iChainable, Seq, SourceTweak)){ 
-
-			if (OwnEI->EffectNode->bIgnoreNotify){ DMS_LOG_SIMPLE(TEXT("%s : Ignore Notify"), *OwnEI->GetName());}
-			else {rv = true;}
-		}
+	for (auto OwnEI : OwnEffectInstances) {
+		rv = rv || OwnEI->OnNotifyReceived(ResponsedObjects, iChainable, Seq, SourceTweak);
 	}
 	return rv;
 }
@@ -94,6 +89,7 @@ UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTa
 	AEffect->EffectIdxArr = {idx};
 	AEffect->UseEffectFromOuter = true;
 	AEffect->EffectSetName = EffectSetName;
+
 	// NODE INITIALIZER?
 	Node->EffectDefinitions.Add(AEffect);
 
@@ -131,7 +127,6 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 		//Node->TargetGenerator = NewObject<UDMSTargetGenerator_SourceObject>(Node,"TargetGenerator");
 		//AActor* CardOwner = GetOwningPlayer();
 
-		//auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), GetOwner(), Node);
 		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), GetOwner(), Effect);
 		EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
 		OwnEffectInstances.Add(EIs[0]);

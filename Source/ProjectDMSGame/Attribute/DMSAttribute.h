@@ -28,7 +28,7 @@ struct FDMSAttributeModifier
 
 public:
 	/**
-	 * 
+	 * Tag of modifing attribute
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	FGameplayTag AttributeTag;
@@ -37,13 +37,7 @@ public:
 	 * 
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-	EDMSModifierType ModifierType;
-
-	/**
-	 * 
-	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute) // ÅÂ±× ´õ »ı°¢ÇØº¸±â
-	float Value;
+	FDMSValueModifier ValueModifier;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
@@ -66,11 +60,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	FGameplayTag AttributeTag;
 	
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute) // ÅÂ±× ´õ »ı°¢ÇØº¸±â
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute) // íƒœê·¸ ë” ìƒê°í•´ë³´ê¸°
 	float Value;
 
 	/**
-	 * ÀÌ ¾îÆ®¸®ºäÆ®°¡ °íÁ¤ °ªÀ» °®Áö ¾Ê°í ¿ÜºÎÀÇ ´Ù¸¥ °ªÀÌ³ª ÇÔ¼ö¸¦ ÅëÇØ Á¤ÇØÁö´Â ÁöÀÇ ¿©ºÎ.
+	 * ì´ ì–´íŠ¸ë¦¬ë·°íŠ¸ê°€ ê³ ì • ê°’ì„ ê°–ì§€ ì•Šê³  ì™¸ë¶€ì˜ ë‹¤ë¥¸ ê°’ì´ë‚˜ í•¨ìˆ˜ë¥¼ í†µí•´ ì •í•´ì§€ëŠ” ì§€ì˜ ì—¬ë¶€.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	bool bIsDependOnOuter;
@@ -80,13 +74,13 @@ public:
 	DECLARE_DYNAMIC_DELEGATE_RetVal(float, FGetDependentValue);
 
 	/**
-	 * bIsDependOnOuter°¡ ÂüÀÏ ¶§ ½ÇÁ¦·Î ¾î¶»°Ô ±¸ÇÒÁö¿¡ ´ëÇÑ µ¨¸®°ÔÀÌÆ®.( ¿©±â¿¡ ¹ÙÀÎµùÇØ¼­ »ç¿ë )
+	 * bIsDependOnOuterê°€ ì°¸ì¼ ë•Œ ì‹¤ì œë¡œ ì–´ë–»ê²Œ êµ¬í• ì§€ì— ëŒ€í•œ ë¸ë¦¬ê²Œì´íŠ¸.( ì—¬ê¸°ì— ë°”ì¸ë”©í•´ì„œ ì‚¬ìš© )
 	 */
 	UPROPERTY()
 	FGetDependentValue GetDependentValue;
 
 	/**
-	 * ÇØ´ç ¾îÆ®¸®ºäÆ®°¡ º¯È­µÇ¾úÀ» ¶§ È£Ãâ µÉ µ¨¸®°ÔÀÌÆ®.
+	 * í•´ë‹¹ ì–´íŠ¸ë¦¬ë·°íŠ¸ê°€ ë³€í™”ë˜ì—ˆì„ ë•Œ í˜¸ì¶œ ë  ë¸ë¦¬ê²Œì´íŠ¸.
 	 */
 	UPROPERTY()
 	FOnAttributeModified OnAttributeModified;

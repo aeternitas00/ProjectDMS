@@ -31,7 +31,7 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMS
 	}
 	FromTemp = Card->GetOwningContainer();
 
-	// ½ÃÀüÇÑ ÇÃ·¹ÀÌ¾îÀÇ (Name) ÄÁÅ×ÀÌ³Ê / AI°¡ »ç¿ëÇß´Ù´ø°¡ ÇßÀ»¶© Ä«µå°¡ ¿ø·¡ ÀÖ´ø ÄÁÅ×ÀÌ³ÊÀÇ ÁÖÀÎ ±âÁØÀ¸·Î (Name)ÄÁÅ×ÀÌ³Ê Ã£¾Æ¼­
+	// ì‹œì „í•œ í”Œë ˆì´ì–´ì˜ (Name) ì»¨í…Œì´ë„ˆ / AIê°€ ì‚¬ìš©í–ˆë‹¤ë˜ê°€ í–ˆì„ë• ì¹´ë“œê°€ ì›ë˜ ìˆë˜ ì»¨í…Œì´ë„ˆì˜ ì£¼ì¸ ê¸°ì¤€ìœ¼ë¡œ (Name)ì»¨í…Œì´ë„ˆ ì°¾ì•„ì„œ
 	UDMSCardManagerComponent* Manager = Cast<UDMSCardManagerComponent>(iEI->SourcePlayer->GetComponentByClass(UDMSCardManagerComponent::StaticClass()));
 	if (Manager) {
 		Container_Destination = Manager->SearchContainer(NameDestination); 

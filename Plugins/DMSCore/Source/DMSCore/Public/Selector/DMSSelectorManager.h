@@ -7,7 +7,7 @@
 #include "Common/DMSCommons.h"
 #include "DMSSelectorManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectorCompletedDynamic, TArray<uint8>, Datas);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectorCompletedDynamic, TArray<uint8>, SelectedIndex);
 DECLARE_DELEGATE_OneParam(FOnSelectorCompleted, TArray<uint8>);
 
 class UDMSSelectorBase;
@@ -17,6 +17,8 @@ USTRUCT(BlueprintType)
 struct FDMSSelectorRequestForm
 {
 	GENERATED_BODY()
+
+	FDMSSelectorRequestForm():SelectAmount(0){}
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<UDMSDataObject*> Candidates;
@@ -52,6 +54,9 @@ public:
 public:
 	UFUNCTION(BlueprintCallable)
 	void RunSelector();
+
+	UFUNCTION(BlueprintCallable)
+	void HideSelector();
 
 	// For Manual Setup
 	UFUNCTION(BlueprintCallable)

@@ -46,9 +46,7 @@ bool ADMSLocationBase::MoveActorToDMSLocation(ADMSLocationBase* Dest,const TScri
 void ADMSLocationBase::ConnectLocations(ADMSLocationBase* Start, ADMSLocationBase* Dest, const bool& IsOneWay)
 {
 	Start->ConnectingLocations.Add(Dest);
-	if (!IsOneWay)Dest->ConnectingLocations.Add(Start);
-
-	
+	if (!IsOneWay)Dest->ConnectingLocations.Add(Start);	
 }
 
 void ADMSLocationBase::OnInitialized_Implementation()

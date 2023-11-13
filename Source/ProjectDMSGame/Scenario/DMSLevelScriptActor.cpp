@@ -5,8 +5,8 @@
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Player/DMSPlayerState.h"
 #include "Player/DMSPlayerController.h"
-#include "GameModes/DMSGameMode.h"
-#include "GameModes/DMSGameState.h"
+#include "GameModes/DMSGameModeBase.h"
+#include "GameModes/DMSGameStateBase.h"
 #include "Location/DMSLocationBase.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Effect/DMSEffectorInterface.h"
@@ -76,6 +76,14 @@ TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()
 //{
 //	return EIManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
 //}
+
+
+/**
+* Interfaces
+*/
+//virtual UObject* GetObject() override {return this;} // RENAME?
+
+AActor* ADMSLevelScriptActor::GetOwningPlayer() { return UDMSCoreFunctionLibrary::GetDMSGameMode()->GameState; }
 
 UDMSEffectSet* ADMSLevelScriptActor::GetOwningEffectSet(const FGameplayTag& iSetName)
 { 

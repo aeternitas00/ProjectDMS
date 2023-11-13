@@ -100,21 +100,21 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 {
 	bool rv=false;
 
-	if (EffectNode->bIgnoreNotify) {
+	if ( EffectNode->bIgnoreNotify ) {
 		//DMS_LOG_SIMPLE(TEXT("Ignore Notify"));
 		return rv;
 	}
 
-	if (!iChainable && !EffectNode->bForced) return rv;
+	if ( !iChainable && !EffectNode->bForced ) return rv;
 
-	if (CurrentState == EDMSEIState::EIS_Pending) return rv;
+	if ( CurrentState == EDMSEIState::EIS_Pending ) return rv;
 
 	//if (Seq->OriginalEffectNode == EffectNode) {
 	//	DMS_LOG_SIMPLE(TEXT("Recursive Response Occured"));
-
 	//	return rv;
 	//}
-	if (EffectNode->Conditions->CheckCondition(SourceTweak, Seq))
+
+	if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{
 		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
 		outResponsedObjects.Add(SourceTweak, this);
@@ -131,7 +131,7 @@ void UDMSEffectInstance::Serialize(FArchive& Ar)
 
 	if (Ar.IsSaving())
 	{
-		// UDMSEffectNode* ¸â¹ö º¯¼ö¸¦ Á÷·ÄÈ­ÇÏ°í ÀúÀå
+		// UDMSEffectNode* ë©¤ë²„ ë³€ìˆ˜ë¥¼ ì§ë ¬í™”í•˜ê³  ì €ì¥
 		if (EffectNode)
 		{
 			UClass* NodeClass = EffectNode->GetClass();
@@ -146,7 +146,7 @@ void UDMSEffectInstance::Serialize(FArchive& Ar)
 	}
 	else if (Ar.IsLoading())
 	{
-		// UDMSEffectNode* ¸â¹ö º¯¼ö¸¦ ·ÎµåÇÏ°í ¿ªÁ÷·ÄÈ­ÇÏ¿© »õ·Î¿î ÀÎ½ºÅÏ½º¸¦ »ı¼º
+		// UDMSEffectNode* ë©¤ë²„ ë³€ìˆ˜ë¥¼ ë¡œë“œí•˜ê³  ì—­ì§ë ¬í™”í•˜ì—¬ ìƒˆë¡œìš´ ì¸ìŠ¤í„´ìŠ¤ë¥¼ ìƒì„±
 
 		UClass* NodeClass;
 		Ar << NodeClass;
@@ -169,7 +169,7 @@ void UDMSEffectInstance::Serialize(FArchive& Ar)
 
 //FArchive& operator<<(FArchive& Ar, UDMSEffectInstance*& EI)
 //{
-//	// TODO: ¿©±â¿¡ return ¹®À» »ğÀÔÇÕ´Ï´Ù.
+//	// TODO: ì—¬ê¸°ì— return ë¬¸ì„ ì‚½ì…í•©ë‹ˆë‹¤.
 //	EI->Serialize(Ar);
 //	return Ar;
 //}
@@ -205,7 +205,6 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
 		//    Effect Canceling    //
 		// ====================== // 
 		// Have to think about more complicated situations.
-
 
 		// Check CurrentDef which is a part of EI's effect has to be ignored.
 		FGameplayTagQuery Query;

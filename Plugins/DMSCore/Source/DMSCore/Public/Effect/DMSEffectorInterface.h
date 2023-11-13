@@ -30,7 +30,7 @@ class UDMSEffectorInterface : public UInterface
 /**
  * 	========================================
  *
- *	IDMSEffectorInterface : ÀÌÆåÆ® ÀÎ½ºÅÏ½º°¡ ºÎÂøµÉ ¼ö ÀÖ°í ÀÌÆåÆ®¸¦ ¹ßµ¿ ÇÒ ¼ö ÀÖ´Â ¶Ç´Â ÇÒ ¼ö ÀÖ°Ô µ½´Â Å¬·¡½º°¡ ±¸ÇöÇØ¾ß ÇÏ´Â ÀÎÅÍÆäÀÌ½º
+ *	IDMSEffectorInterface : ì´íŽ™íŠ¸ ì¸ìŠ¤í„´ìŠ¤ê°€ ë¶€ì°©ë  ìˆ˜ ìžˆê³  ì´íŽ™íŠ¸ë¥¼ ë°œë™ í•  ìˆ˜ ìžˆëŠ” ë˜ëŠ” í•  ìˆ˜ ìžˆê²Œ ë•ëŠ” í´ëž˜ìŠ¤ê°€ êµ¬í˜„í•´ì•¼ í•˜ëŠ” ì¸í„°íŽ˜ì´ìŠ¤
  *
  *	========================================
  */
@@ -41,8 +41,8 @@ class DMSCORE_API IDMSEffectorInterface
 public:
 
 	/** 
-	 * °³³äÀûÀ¸·Î '½ÇÁ¦ ÀÌÆåÆ®¸¦ °¡Áö´Â °´Ã¼'¸¦ ¹ÝÈ¯ 
-	 * ( ex) EI Manager Comp °°Àº °æ¿ì Outer(Ä«µå, Àû µîµî)¸¦ ¹ÝÈ¯ 
+	 * ê°œë…ì ìœ¼ë¡œ 'ì‹¤ì œ ì´íŽ™íŠ¸ë¥¼ ê°€ì§€ëŠ” ê°ì²´'ë¥¼ ë°˜í™˜ 
+	 * ( ex) EI Manager Comp ê°™ì€ ê²½ìš° Outer(ì¹´ë“œ, ì  ë“±ë“±)ë¥¼ ë°˜í™˜ 
 	 */
 	virtual UObject* GetObject();
 
@@ -51,7 +51,11 @@ public:
 	 */
 	virtual AActor* GetOwningPlayer(); // RENAME?
 	
+	/**
+	 * 
+	 */
 	virtual int32 GetOwnerPlayerID();
+
 	/**
 	 * Get PlayerController if object owned by Player.
 	 */
@@ -63,13 +67,13 @@ public:
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI);
 	
 	/**
-	 * °´Ã¼°¡ ³ëÆ¼ÆÄÀÌ¸¦ ¹Þ¾ÒÀ» ¶§ÀÇ ÀÀ´ä
-	 * ÀÌÆåÆ®ÀÇ ¹ßµ¿ ±â´ÉÀº ÀÏ¹ÝÀûÀ¸·Î ³ëÆ¼ÆÄÀÌ¿Í ¶³¾îÁú ¼ö ¾ø´Â ±¸Á¶±âµµ ÇÏ¿© ÀÌ ÀÎÅÍÆäÀÌ½º¿¡ ³ëÆ¼ ÆÄÀÌ °ü·Ãµµ ÅëÇÕ.
+	 * ê°ì²´ê°€ ë…¸í‹°íŒŒì´ë¥¼ ë°›ì•˜ì„ ë•Œì˜ ì‘ë‹µ
+	 * ì´íŽ™íŠ¸ì˜ ë°œë™ ê¸°ëŠ¥ì€ ì¼ë°˜ì ìœ¼ë¡œ ë…¸í‹°íŒŒì´ì™€ ë–¨ì–´ì§ˆ ìˆ˜ ì—†ëŠ” êµ¬ì¡°ê¸°ë„ í•˜ì—¬ ì´ ì¸í„°íŽ˜ì´ìŠ¤ì— ë…¸í‹° íŒŒì´ ê´€ë ¨ë„ í†µí•©.
 	 */
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak=nullptr);
 	
 	/**
-	 * °´Ã¼°¡ ÀÚÃ¼ÀûÀ¸·Î ¼ÒÀ¯ÇÑ ÀÌÆåÆ® ¼¼Æ®¸¦ ¹ÝÈ¯.
+	 * ê°ì²´ê°€ ìžì²´ì ìœ¼ë¡œ ì†Œìœ í•œ ì´íŽ™íŠ¸ ì„¸íŠ¸ë¥¼ ë°˜í™˜.
 	 */
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName);
 

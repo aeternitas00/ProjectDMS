@@ -31,19 +31,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOptionCompleted,UDMSEffectOption*,Completed
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
 
 
-USTRUCT(BlueprintType)
-struct FDMSValueSelectionForm
-{
-	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
-	FGameplayTag DataKey;
-
-	UDMSDataObject* Get(UDMSDataObjectSet* DataSet) {
-		if (DataSet == nullptr) return nullptr;
-		return DataSet->ContainData(DataKey) ? DataSet->GetData(DataKey) : Get(DataSet->ParentDataSet);
-	}
-};
 /**
  * 	========================================
  *
@@ -177,7 +165,7 @@ public:
 	/**
 	 * Effect's activatable timing.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "!bIgnoreNotify", EditConditionHides))
 	TObjectPtr<UDMSConditionCombiner> Conditions;
 
 	/**
@@ -188,8 +176,8 @@ public:
 	bool bForced;
 
 	/**
-	 * 
-	 * 
+	 * This Effect doesn't receive notifies. 
+	 * It will not be activated except through other 'Activate Effect' effect. 
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIgnoreNotify;

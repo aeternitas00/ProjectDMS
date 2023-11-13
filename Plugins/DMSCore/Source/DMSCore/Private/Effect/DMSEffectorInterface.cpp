@@ -26,6 +26,9 @@ AActor* IDMSEffectorInterface::GetOwningPlayer()
 	auto Spawnable = Cast<ADMSSpawnableBase>(this);
 	auto GS = UDMSCoreFunctionLibrary::GetDMSGameMode()->GetDMSGameState();
 	auto Player = Spawnable == nullptr ? nullptr : GS->FindPlayerFromId(Spawnable->GetOwnerID());
+
+	// ADMSSpawnableBase ì²˜ëŸ¼ ë„· ì˜¤ë„ˆ IDê°€ ìˆì„ ê²½ìš° ê·¸ê²ƒì˜ í”Œë ˆì´ì–´ ë¦¬í„´
+	// ê·¸ì™¸ì˜ ëª¨ë“  ê²½ìš°ì— ê²Œì„ ìŠ¤í…Œì´íŠ¸ ( ê²Œì„ ì‹œìŠ¤í…œ / ì„œë²„ ) ê°€ ì†Œìœ í•œ ê²ƒìœ¼ë¡œ ì·¨ê¸‰.
 	return Player == nullptr ? (AActor*)GS : (AActor*)Player;
 }
 
@@ -56,13 +59,13 @@ bool IDMSEffectorInterface::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffe
 {
 	AActor* thisActor = Cast<AActor>(this);
 
-	// ±âº» ±¸ÇöÇüÀÎ ÄÄÆ÷³ÍÆ® »ç¿ë½ÃÀÇ SourceTweak Àû¿ë.
+	// ê¸°ë³¸ êµ¬í˜„í˜•ì¸ ì»´í¬ë„ŒíŠ¸ ì‚¬ìš©ì‹œì˜ SourceTweak ì ìš©.
 	if (thisActor->IsValidLowLevelFast())
 	{
 		return thisActor->FindComponentByClass<UDMSEIManagerComponent>()->OnNotifyReceived(ResponsedObjects, iChainable, Seq, thisActor);
 	}
 
-	// ÄÄÆ÷³ÍÆ® ¹Ì»ç¿ë½Ã Á÷Á¢ ±¸ÇöÇØ¾ßÇÔ.
+	// ì»´í¬ë„ŒíŠ¸ ë¯¸ì‚¬ìš©ì‹œ ì§ì ‘ êµ¬í˜„í•´ì•¼í•¨.
 	return false;
 }
 

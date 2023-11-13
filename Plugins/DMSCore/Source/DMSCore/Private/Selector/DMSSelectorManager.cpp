@@ -39,6 +39,11 @@ void UDMSSelectorHandle::RunSelector()
 	Widget->PopupSelector();
 }
 
+void UDMSSelectorHandle::HideSelector()
+{
+	Widget->SetVisibility(ESlateVisibility::Collapsed);
+}
+
 void UDMSSelectorHandle::CreateSelectorWidget(APlayerController* WidgetOwner)
 {
 	if (Widget != nullptr || WidgetOwner == nullptr) return; 
@@ -70,7 +75,6 @@ void UDMSSelectorHandle::CompleteHandle(const TArray<uint8>& SelectedIdx)
 			StoredForm.OnCompletedNative.Execute(SelectedIdx);
 		} );
 	}
-
 
 	OnSelectCompleted.Broadcast();
 }

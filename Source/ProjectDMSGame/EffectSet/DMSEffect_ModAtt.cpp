@@ -4,7 +4,6 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "Effect/DMSEffectInstance.h"
 
-
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute, "Effect.ModAttribute");
 
 // 자손임을 표현하기 위해 파생 키워드들은 + ".~~" 하는 형태? ex) ModifyAttribute.Deal 
@@ -19,8 +18,10 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 bool UDMSEffect_ModAtt::GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp)
 {
 	auto Interface = iEI->GetApplyTarget();
+
 	if (Interface == nullptr)
 		return false;
+		
 	AActor* tOuter = Cast<AActor>(Interface->GetObject());
 	if (tOuter == nullptr)
 		return false;
@@ -55,7 +56,6 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	
 	float OutValue = 0.0f;
 	AttComp->TryModAttribute(Value, OutValue);
-
 
 	OnWorkCompleted.ExecuteIfBound(true);
 }
@@ -117,15 +117,32 @@ UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
 	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
 }
 
-bool UDMSEffect_ModAtt_Variable::GenerateModifier(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue)
+bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue)
 {
 	// Get Input Data ( Skip if data doesn't exist. )
-	auto ValueData = SelectorData.Get(EI->DataSet);
+	//UDMSDataObject* ValueData = nullptr;
+	UDMSDataObject* ValueData = SelectorData.Get(EI->DataSet);
+
 	if (ValueData == nullptr || !ValueData->TypeCheck<FDMSAttributeModifier>()) 
 		return false;
 
 	else
 		OutValue = ValueData->Get<FDMSAttributeModifier>();
 	
+	return true;
+}
+
+bool UDMSEffect_ModAtt_Variable_ValueOnly::GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue)
+{
+	//UDMSDataObject* ValueData = nullptr;
+	UDMSDataObject* ValueData = SelectorData.Get(EI->DataSet);
+
+	if (ValueData == nullptr || !ValueData->TypeCheck<float>()) 
+		return false;
+
+	else {
+		OutValue = DefaultModifier;
+		OutValue.ValueModifier.Value = ValueData->Get<float>();
+	}
 	return true;
 }

@@ -84,6 +84,11 @@ bool UDMSDataObjectHelperLibrary::GetData_uint8(UDMSDataObject* iObj, uint8& out
 	return true;
 }
 
+UDMSDataObject* UDMSDataObjectHelperLibrary::GetDataFromSelectionForm(FDMSValueSelectionForm SelectionForm, UDMSDataObjectSet* DataSet)
+{
+	return SelectionForm.Get(DataSet);
+}
+
 //float UDMSDataObjectHelperLibrary::SearchWithEffectValueDefs(UDMSDataObjectSet* iSet, const TArray<FDMSEffectValueDef>& DefArray, float DefaultValue)
 //{
 //	float rv = DefaultValue;

@@ -5,28 +5,28 @@
 
 bool UDMSAttribute::TryModAttribute(const FDMSAttributeModifier& Modifier, float& OutValue, bool Apply)
 {
-	switch (Modifier.ModifierType)
+	switch (Modifier.ValueModifier.ModifierType)
 	{
 		case EDMSModifierType::MT_Add:
-			OutValue = Value + Modifier.Value;
-			if(Apply)	Value += Modifier.Value; 			
+			OutValue = Value + Modifier.ValueModifier.Value;
+			if(Apply)	Value += Modifier.ValueModifier.Value; 			
 			break;
 		case EDMSModifierType::MT_Sub:
-			OutValue = Value - Modifier.Value;
-			if (Apply)	Value -= Modifier.Value;			
+			OutValue = Value - Modifier.ValueModifier.Value;
+			if (Apply)	Value -= Modifier.ValueModifier.Value;			
 			break;
 		case EDMSModifierType::MT_Set:
-			OutValue = Modifier.Value;
-			if (Apply)	Value = Modifier.Value;
+			OutValue = Modifier.ValueModifier.Value;
+			if (Apply)	Value = Modifier.ValueModifier.Value;
 			break;
 		case EDMSModifierType::MT_Mul:
-			OutValue = Value * Modifier.Value;
-			if (Apply)	Value *= Modifier.Value; 			
+			OutValue = Value * Modifier.ValueModifier.Value;
+			if (Apply)	Value *= Modifier.ValueModifier.Value; 			
 			break;
 		case EDMSModifierType::MT_Div:
-			if (Modifier.Value != 0)	{
-				OutValue = Value / Modifier.Value;
-				if (Apply) Value /= Modifier.Value;
+			if (Modifier.ValueModifier.Value != 0)	{
+				OutValue = Value / Modifier.ValueModifier.Value;
+				if (Apply) Value /= Modifier.ValueModifier.Value;
 			}
 			else	return false;
 			break;
