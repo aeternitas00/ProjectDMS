@@ -182,11 +182,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIgnoreNotify;
 
-	///**
-	// * Effect's Cost. It's different with cost of playing card.
-	// */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	//TObjectPtr<UDMSEffectSet> EffectCost;
 
 //=================== Pre-activate ( Decision step ) ===================//
 
@@ -233,6 +228,9 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSTargetGenerator> ApplyTargetGenerator;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "TargetGenerator||ApplyTargetGenerator", EditConditionHides))
+	bool bLazyTargetting;
 
 	/**
 	 * Use this when effect has to set targets with runtime data ( Sequence ).

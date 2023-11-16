@@ -32,6 +32,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
 	TArray<FDMSDecisionDefinition> DecisionDefinitions;
 
+	virtual FGameplayTag GetStepTag_Implementation() const;
+
 	virtual void OnBefore_Implementation() override;
 	virtual void OnDuring_Implementation() override;
 	virtual void OnAfter_Implementation() override;

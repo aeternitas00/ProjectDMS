@@ -80,32 +80,6 @@ UDMSEffect_ActivateEffect_Variable::UDMSEffect_ActivateEffect_Variable()
 	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
 }
 
-//bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper)
-//{ 
-//	UDMSDataObject* rData = SelectorData.Get(iEI->DataSet);
-//
-//	if (rData == nullptr) return false;
-//
-//	// Get Input Data ( Skip if data doesn't exist. )
-//	else {
-//		if (rData->TypeCheck<TArray<UDMSDataObject*>>()) {
-//			// temp
-//			OutWrapper = Cast<UDMSEffectNodeWrapper>(rData->Get<TArray<UDMSDataObject*>>()[0]->Get<UObject*>());
-//			return OutWrapper != nullptr;
-//
-//			TArray<UDMSEffectNodeWrapper*> OutWrapperArr;
-//			for ( auto& WrapperData : rData->Get<TArray<UDMSDataObject*>>())
-//			{
-//				UObject* Wrapper = WrapperData->Get<UObject*>();
-//				if (Wrapper->IsA<UDMSEffectNodeWrapper>()) OutWrapperArr.Add(Cast<UDMSEffectNodeWrapper>(Wrapper));
-//			}
-//			return OutWrapperArr.Num() != 0;
-//		}
-//		else	
-//			return false;
-//	}
-//}
-
 bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
 { 	
 	UDMSDataObject* rData = SelectorData.Get(iEI->DataSet);
@@ -126,20 +100,6 @@ bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(UDMSEffectInstanc
 			return false;
 	} }
 
-//bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrapper(UDMSEffectInstance* iEI, UDMSEffectNodeWrapper*& OutWrapper) 
-//{ 
-//	if (UseEffectFromOuter){
-//		auto Set = GetEffectSetFromOuter(iEI);
-//		if (Set != nullptr && Set->EffectNodes.Num() > EffectIdx)
-//			OutWrapper = Set->EffectNodes[EffectIdx];
-//		else
-//			return false;
-//	}
-//	else
-//		OutWrapper = StaticEffect;
-//
-//	return true; 
-//}
 
 bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
 { 

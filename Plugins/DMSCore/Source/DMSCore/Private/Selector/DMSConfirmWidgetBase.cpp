@@ -92,6 +92,7 @@ void UDMSSelectorBase::PopupSelector()
 	if (IsInViewport()) return;
 
 	AddToViewport();
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	OnPopupSelector();
 }
 

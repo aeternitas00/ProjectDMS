@@ -68,6 +68,8 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 		}
 	}
 	
+	Sequence->SetTargetted(true);
+
 	return rv;
 }
 

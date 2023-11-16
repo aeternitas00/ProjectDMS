@@ -10,7 +10,7 @@
  *	Class for objectifying "Events" that happen in the game.
  *
  *	========================================
- *	objectifying ÀÌ ¸Â´Â Ç¥ÇöÀÎ°¡?
+ *	objectifying ì´ ë§ëŠ” í‘œí˜„ì¸ê°€?
  */
 
 #include "DMSCoreIncludes.h"
@@ -57,8 +57,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succ
 /** 
  * 	========================================
  *
- *	ÃÊ°í : ÀÏ¹İÀûÀ¸·Î °ÔÀÓ¿¡¼­ ÀÏ¾î³ª´Â ÀÏµéÀÌ ¸ğµÎ 'ÀÌÆåÆ®'ÀÇ °á°úÀÌ¸ç ÀÌ ÀÌÆåÆ®°¡ ¾î¶»°Ô ÁøÇà µÇ´ÂÁö¿¡ ´ëÇÑ Á¤º¸¸¦ ¿ÀºêÁ§Æ®È­ ÇÏ´Â ÇüÅÂ·Î ¼³°è.
- *	°ÔÀÓ Áß ¾î¶² »ç°ÇÀÌ ÀÏ¾î³ª¸é °¢ °ÔÀÓ ¿ÀºêÁ§Æ®µéÀÌ ÀÌ ½ÃÄö½º Á¤º¸¸¦ ¹Ş¾Æ¼­ °¢ÀÚ°¡ ÀûÀıÇÑ ¹İÀÀÀ» ÇÒ ¼ö ÀÖ°Ô ¸¸µé±â À§ÇÔ. ( ÄÁµğ¼Ç °´Ã¼°¡ ½ÃÄö½º¸¦ ¹Ş¾Æ¼­ Ã¼Å©ÇÏ´Â ÇüÅÂ )
+ *	ì´ˆê³  : ì¼ë°˜ì ìœ¼ë¡œ ê²Œì„ì—ì„œ ì¼ì–´ë‚˜ëŠ” ì¼ë“¤ì´ ëª¨ë‘ 'ì´í™íŠ¸'ì˜ ê²°ê³¼ì´ë©° ì´ ì´í™íŠ¸ê°€ ì–´ë–»ê²Œ ì§„í–‰ ë˜ëŠ”ì§€ì— ëŒ€í•œ ì •ë³´ë¥¼ ì˜¤ë¸Œì íŠ¸í™” í•˜ëŠ” í˜•íƒœë¡œ ì„¤ê³„.
+ *	ê²Œì„ ì¤‘ ì–´ë–¤ ì‚¬ê±´ì´ ì¼ì–´ë‚˜ë©´ ê° ê²Œì„ ì˜¤ë¸Œì íŠ¸ë“¤ì´ ì´ ì‹œí€€ìŠ¤ ì •ë³´ë¥¼ ë°›ì•„ì„œ ê°ìê°€ ì ì ˆí•œ ë°˜ì‘ì„ í•  ìˆ˜ ìˆê²Œ ë§Œë“¤ê¸° ìœ„í•¨. ( ì»¨ë””ì…˜ ê°ì²´ê°€ ì‹œí€€ìŠ¤ë¥¼ ë°›ì•„ì„œ ì²´í¬í•˜ëŠ” í˜•íƒœ )
  *	 
  *	========================================
  */
@@ -86,6 +86,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourceObject)
 	TObjectPtr<UObject> SourceObject; 
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,BlueprintGetter = IsTargetted)
+	bool bTargeted;
+
 	/**
 	 * Explicit targets of this sequence. Override EffectNode's preset target flag.
 	 */
@@ -110,6 +113,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	EDMSTimingFlag GetCurrentProgress();
+	
+	//UFUNCTION(BlueprintCallable)
+	void SetTargetted(const bool& iTargetted) {bTargeted=iTargetted;}
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool IsTargetted() const {return bTargeted;}
 
 	/**
 	 * Effect that will be applied when the 'sequence is applied'.
@@ -131,8 +140,8 @@ public:
 	TObjectPtr<UDMSDataObjectSet> SequenceDatas;
 
 	/** 
-	 * ¼­·Î Ã¼ÀÎµÇ¾î ½ÃÄö½º Æ®¸® ÁøÇàÁß GC µÇ´Â°ÍÀ» ¸·¾ÆÁÖ´Â ¿ªÇÒÀ» ÇÏ°Ô ÇÏ´Â ¿ëµµ
-	 * ++ »óÀ§ ½ÃÄö½º¿Í ¿¬°üµÈ ÄÁµğ¼Ç, ÀÌÆåÆ® °°Àº °ÍÀ» ±¸Çö ÇÏ±â À§ÇØ
+	 * ì„œë¡œ ì²´ì¸ë˜ì–´ ì‹œí€€ìŠ¤ íŠ¸ë¦¬ ì§„í–‰ì¤‘ GC ë˜ëŠ”ê²ƒì„ ë§‰ì•„ì£¼ëŠ” ì—­í• ì„ í•˜ê²Œ í•˜ëŠ” ìš©ë„
+	 * ++ ìƒìœ„ ì‹œí€€ìŠ¤ì™€ ì—°ê´€ëœ ì»¨ë””ì…˜, ì´í™íŠ¸ ê°™ì€ ê²ƒì„ êµ¬í˜„ í•˜ê¸° ìœ„í•´
 	 */
 	TObjectPtr<UDMSSequence> ParentSequence;
 	TObjectPtr<UDMSSequence> ChildSequence;
@@ -185,7 +194,7 @@ public:
 	 * @param	iTargets					New targets.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets, bool CreateEIs = false);
+	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FDMSSequenceEIStorage>& GetEIStorage();

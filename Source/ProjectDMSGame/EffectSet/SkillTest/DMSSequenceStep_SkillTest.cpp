@@ -15,6 +15,7 @@
 #include "Player/DMSPlayerController.h"
 #include "GameModes/DMSGameStateBase.h"
 #include "Selector/DMSDecisionDefinition.h"
+#include "Attribute/DMSAttribute.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest, "Step.SkillTest");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest_Committable, "Step.SkillTest.Committable");
@@ -25,7 +26,7 @@ const FGameplayTag UDMSSequenceStep_SkillTest::SkillBonusTag = FGameplayTag::Req
 
 UDMSSequenceStep_SkillTest::UDMSSequenceStep_SkillTest()
 {
-	StepTag = TAG_DMS_Step_SkillTest;
+	//StepTag = TAG_DMS_Step_SkillTest;
 	//SkillTestData.TesterGenerator = CreateDefaultSubobject<UDMSTargetGenerator_SourceObject>("TesterGenerator");
 	//SkillTestData.TestTargetGenerator = CreateDefaultSubobject<UDMSTargetGenerator_SequenceTarget>("TestTargetGenerator");
 }
@@ -66,24 +67,33 @@ void UDMSSequenceStep_SkillTest::OnDuring_Implementation()
 
 	// Custom widget initialize
 	SetupTargets(SkillTestWidget->TesterCandidates,SkillTestData.TesterGenerator);
-	if (SkillTestData.bTestToStaticValue)
+	if (!SkillTestData.bTestToStaticValue)
 		SetupTargets(SkillTestWidget->TestTargetCandidates,SkillTestData.TestTargetGenerator);
+	SkillTestWidget->EIIndexMax = 1; SkillTestWidget->CurrentEIIndex = 0; 
+	if ( IsTestByEachApplyTarget() ){	
+		SkillTestWidget->Updaters.Reserve(OwnerSequence->GetAllEIs().Num());
+		SkillTestWidget->UsedBonusValues.Reserve(OwnerSequence->GetAllEIs().Num());
+		SkillTestWidget->EIIndexMax = OwnerSequence->GetAllEIs().Num();
+	}
+	
 	SkillTestWidget->OwnerStep = this;
 
-	Handle->SetupDelegates([this](){
+	Handle->SetupDelegates([this,SkillTestWidget](){
 		// WidgetCompleted
+		SkillTestWidget->CloseSelector();
 		UDMSDataObjectSet* DataSet = OwnerSequence->SequenceDatas;
 		float Result = MAX_FLT;
 		if ( !DataSet->GetValidDataValue<float>(TAG_DMS_Step_SkillTest_Data_TestResult, Result) )
-			ProgressComplete(false);
+			{ProgressComplete(false);return;}
 
 		if (Result>=0.0f)	OnSkillTestCompleted();	
 		else OnSkillTestFailed();
-	},	[this](){
+	},	[this,SkillTestWidget](){
 		// WidgetCanceled
+		SkillTestWidget->CloseSelector();
 		ProgressComplete(false);
 	});
-
+	Handle->SetupSelector();	
 	Handle->RunSelector();	
 }
 
@@ -96,6 +106,12 @@ void UDMSSequenceStep_SkillTest::OnSkillTestFailed_Implementation()
 {
 	// Implements branch for failed skill test.
 	ProgressComplete(false);
+}
+
+inline bool UDMSSequenceStep_SkillTest::IsTestByEachApplyTarget() const { return SkillTestData.TestByEachApplyTarget && OwnerSequence->IsTargetted(); }
+
+inline FGameplayTag UDMSSequenceStep_SkillTest::GetStepTag_Implementation() const {
+	return SkillTestData.IsCommittable ? TAG_DMS_Step_SkillTest_Committable : TAG_DMS_Step_SkillTest; 
 }
 
 void UDMSSequenceStep_SkillTest::OnAfter_Implementation()
@@ -135,26 +151,56 @@ void UDMSSequenceStep_SkillTest::SetupTargets(TArray<TObjectPtr<AActor>>& Arr, T
 	for (auto& TObj : Generator->GetTargets(OwnerSequence->GetSourceObject(), OwnerSequence))
 	{
 		AActor* CastedObj = Cast<AActor>(TObj);
-		if (CastedObj==nullptr || CastedObj->Implements<UDMSEffectorInterface>()
+		if (CastedObj==nullptr || !CastedObj->Implements<UDMSEffectorInterface>()
 			|| CastedObj->GetComponentByClass<UDMSAttributeComponent>() == nullptr)	continue;
 
 		Arr.Add(Cast<AActor>(TObj));
 	}
 }
 
-void UDMSSelector_SkillTest::UpdateSkillTestResult(AActor* Tester, AActor* TestTarget,float BonusValue)
+void UDMSSelector_SkillTest::PushResultUpdater(AActor* Tester, AActor* TestTarget,float BonusValue)
 {
+	if (CurrentEIIndex>=EIIndexMax) return;
+
 	float SkillTestResult=OwnerStep->CalculateSkillTestResult(Tester,TestTarget,BonusValue);
 
 	// 셀렉트 종료시 일괄 처리.
-	if (OwnerStep->SkillTestData.TestByEachApplyTarget){
-		OwnerHandle->OnSelectCompleted.AddLambda([=](){
+	if (OwnerStep->IsTestByEachApplyTarget()){
+		Updaters.Push([=]() __declspec(noinline) {
+			DMS_LOG_SCREEN(TEXT("Update Data"));
 			OwnerStep->OwnerSequence->GetAllEIs()[CurrentEIIndex]->DataSet->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
 		});
 	}
 	else{
-		OwnerHandle->OnSelectCompleted.AddLambda([=](){
+		Updaters.Push( [=]() __declspec(noinline) {
+			DMS_LOG_SCREEN(TEXT("Update Data"));
 			OwnerStep->OwnerSequence->SequenceDatas->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
 		});
 	}
+	UsedBonusValues.Push(BonusValue);
+	CurrentEIIndex++;
+}
+
+void UDMSSelector_SkillTest::PopResultUpdater()
+{
+	if(CurrentEIIndex <= 0) return;
+	Updaters.Pop(false);
+	UsedBonusValues.Pop(false);
+	CurrentEIIndex--;
+}
+
+void UDMSSelector_SkillTest::UpdateSkillTestResult()
+{
+	for(auto& Updater : Updaters)
+		Updater();
+}
+
+float UDMSSelector_SkillTest::GetUsableBonus(AActor* Tester)
+{
+	float rv=0.0f;
+	Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttributeValue(UDMSSequenceStep_SkillTest::SkillBonusTag,rv);
+	for(auto& UsedBonus : UsedBonusValues)
+		rv-=UsedBonus;
+	
+	return rv;
 }

@@ -14,7 +14,7 @@
 
 // Default Initializer
 
-UDMSSequence::UDMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr) {
+UDMSSequence::UDMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr),bTargeted(false) {
 
 	//Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
 	SequenceState = EDMSSequenceState::SS_Default;
@@ -106,7 +106,7 @@ FGameplayTagContainer UDMSSequence::GenerateTagContainer()
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer());
-	rv.AddTagFast(CurrentStep->StepTag);
+	rv.AddTagFast(CurrentStep->GetStepTag());
 	return rv;
 }
 
@@ -116,7 +116,7 @@ void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq)
 	ChildSequence = iSeq;
 }
 
-void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets, bool CreateEIs)
+void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
 {
 	for ( auto& TargetToEI :TargetAndEIs )
 	{ 
@@ -126,11 +126,11 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 
 	for (auto& Target : iTargets) TargetAndEIs.Add(FDMSSequenceEIStorage(Target));
 
-	if (CreateEIs)
-	{
-		auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();	check(EH);
-		EH->CreateEffectInstance(this,OriginalEffectNode);
-	}
+	//if (CreateEIs)
+	//{
+	//	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();	check(EH);
+	//	EH->CreateEffectInstance(this,OriginalEffectNode);
+	//}
 }
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets() const

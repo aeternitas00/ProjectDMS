@@ -14,9 +14,19 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_Apply, "Step.Apply");
 
 UDMSSequenceStep_Apply::UDMSSequenceStep_Apply()
 {
-	StepTag = TAG_DMS_Step_Apply;
+	//StepTag = TAG_DMS_Step_Apply;
 }
 
+void UDMSSequenceStep_Apply::OnStepInitiated()
+{
+	if(!OwnerSequence->IsTargetted()){
+		auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
+		EH->CreateEffectInstance(OwnerSequence, OwnerSequence->OriginalEffectNode);
+	}
+	UDMSSequenceStep::OnStepInitiated();
+}
+
+inline FGameplayTag UDMSSequenceStep_Apply::GetStepTag_Implementation() const {return TAG_DMS_Step_Apply;}
 
 void UDMSSequenceStep_Apply::OnBefore_Implementation()
 {

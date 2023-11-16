@@ -67,12 +67,12 @@ void UDMSSelectorHandle::CompleteHandle(const TArray<uint8>& SelectedIdx)
 {
 	if ( OwnerQueue == nullptr ) {
 		StoredForm.OnCompleted.Broadcast( SelectedIdx );
-		StoredForm.OnCompletedNative.Execute( SelectedIdx );
+		StoredForm.OnCompletedNative.ExecuteIfBound( SelectedIdx );
 	}
 	else {
 		OwnerQueue->OnSelectorsCompleted_Handle.AddLambda ( [=](UDMSSequence* ) {
 			StoredForm.OnCompleted.Broadcast(SelectedIdx);
-			StoredForm.OnCompletedNative.Execute(SelectedIdx);
+			StoredForm.OnCompletedNative.ExecuteIfBound(SelectedIdx);
 		} );
 	}
 

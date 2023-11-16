@@ -40,10 +40,11 @@ TArray<UDMSDataObject*> UDMSSelectorRequestGenerator::GenerateCandidates(UDMSSeq
 	return TArray<UDMSDataObject*>();
 }
 
-TArray<FDMSSelectorRequestForm> FDMSDecisionDefinition::SetupRequestForm ( UDMSSequence* Sequence )
+TArray<FDMSSelectorRequestForm> FDMSDecisionDefinition::SetupRequestForm( UDMSSequence* Sequence )
 {
-	auto Rv = Generator->GenerateRequestForm ( Sequence , SelectForEachEI );
-	Behavior->SetupFormDelegates ( Sequence , Rv , SelectForEachEI );
+	auto temp = SelectForEachEI && Sequence->IsTargetted();
+	auto Rv = Generator->GenerateRequestForm( Sequence , temp );
+	Behavior->SetupFormDelegates( Sequence , Rv , temp );
 	return Rv;
 }
 

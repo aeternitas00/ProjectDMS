@@ -17,9 +17,13 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_Decision, "Step.Decision");
 
 UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
 {
-	StepTag = TAG_DMS_Step_Decision;
+	//StepTag = TAG_DMS_Step_Decision;
 	DecisionMaker = CreateDefaultSubobject<UDMSTargetGenerator_SourcePlayer>("DecisionMaker");
 }
+
+
+
+FGameplayTag UDMSSequenceStep_Decision::GetStepTag_Implementation() const{return TAG_DMS_Step_Decision;}
 
 void UDMSSequenceStep_Decision::OnBefore_Implementation()
 {

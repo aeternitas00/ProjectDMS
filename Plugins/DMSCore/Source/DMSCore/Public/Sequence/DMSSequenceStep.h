@@ -27,8 +27,8 @@ public:
 	/**
 	 * Main tag of step. ( like name )
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FGameplayTag StepTag;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//FGameplayTag StepTag;
 
 	/**
 	 * Reference of next step for Pseudo list,
@@ -55,6 +55,10 @@ public:
 	 */
 	void RunStep();
 	void CloseStep(bool bSuccessed = true);
+
+	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	FGameplayTag GetStepTag() const;
+	virtual FGameplayTag GetStepTag_Implementation() const {return FGameplayTag::EmptyTag;}
 
 	// IMPLEMENTS :: Step Behaviour
 	virtual void OnStepInitiated();

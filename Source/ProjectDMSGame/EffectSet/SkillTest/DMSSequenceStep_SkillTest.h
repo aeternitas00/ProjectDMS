@@ -26,6 +26,9 @@ struct FDMSSkillTestData
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FGameplayTag StatName;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (EditCondition = "!bTestToStaticValue", EditConditionHides))
+	FGameplayTag TargetStatName;
+
 	// Get stat from who? ( only one )
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
 	TObjectPtr<UDMSTargetGenerator> TesterGenerator;
@@ -95,7 +98,6 @@ public:
 	virtual float CalculateSkillTestResult_Implementation(AActor* Tester, AActor* TestTarget,float BonusValue);
 	//...
 	// Branch for failed Skill test?
-	
 	UFUNCTION(BlueprintNativeEvent)
 	void OnSkillTestCompleted();
 	virtual void OnSkillTestCompleted_Implementation();
@@ -103,6 +105,11 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnSkillTestFailed();
 	virtual void OnSkillTestFailed_Implementation();
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool IsTestByEachApplyTarget() const;
+
+	virtual FGameplayTag GetStepTag_Implementation() const;
 };
 
 // 변종 테스트의 경우는 상속 받아서 변경하는 것으로 구현하는게 맞을듯.
@@ -120,8 +127,12 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	int CurrentEIIndex;
 
-	//UPROPERTY(BlueprintReadWrite)
-	//float SkillBonus;
+	UPROPERTY(BlueprintReadOnly)
+	int EIIndexMax;
+
+	TArray<std::function<void()>> Updaters;
+	TArray<float> UsedBonusValues;
+
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<AActor>> TesterCandidates;
@@ -130,5 +141,14 @@ public:
 	TArray<TObjectPtr<AActor>> TestTargetCandidates;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateSkillTestResult(AActor* Tester, AActor* TestTarget = nullptr, float BonusValue = 0.0f);
+	void PushResultUpdater(AActor* Tester, AActor* TestTarget = nullptr, float BonusValue = 0.0f);
+
+	UFUNCTION(BlueprintCallable)
+	void PopResultUpdater();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateSkillTestResult();
+
+	UFUNCTION(BlueprintCallable)
+	float GetUsableBonus(AActor* Tester);
 };
