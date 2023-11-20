@@ -42,7 +42,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	for ( auto& NodeWrapper : NodeWrappers )
 	{
 		auto Node = NodeWrapper->GetEffectNode();
-		auto NewSeq = SeqMan->RequestCreateSequence(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
+		auto NewSeq = SeqMan->RequestCreateSequence(iEI->GetApplyTarget()->GetObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
 		Sequences.Add(NewSeq);
 	}
 

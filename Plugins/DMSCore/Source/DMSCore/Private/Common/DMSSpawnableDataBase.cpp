@@ -15,7 +15,7 @@ void ADMSSpawnableBase::Initialize(const UDMSSpawnableDataBase* inData)
 	OriginalData = inData; 
 
 	ForEachComponent<UDMSSpawnableComponent>(false,[](UDMSSpawnableComponent* Comp){
-		Cast<UDMSSpawnableComponent>(Comp)->UpdateParentComponent();
+		Comp->UpdateParentComponent();
 	});
 
 	OnInitialized();

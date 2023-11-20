@@ -44,7 +44,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
 	float FailureConditionValue; // float? 
 
-	bool GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
+	__declspec(noinline) bool GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
+	
 	UFUNCTION(BlueprintNativeEvent)
 	bool GenerateModifier(UDMSEffectInstance* EI,UPARAM(ref) FDMSAttributeModifier& OutValue);
 	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue){return false;}

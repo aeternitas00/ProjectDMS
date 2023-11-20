@@ -22,7 +22,7 @@ class DMSCORE_API UDMSSpawnableComponent : public UActorComponent
 
 public:	
 	// Sets default values for this component's properties
-	//UDMSActorComponentBase();
+	UDMSSpawnableComponent();
 
 public:	
 

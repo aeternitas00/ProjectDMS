@@ -17,17 +17,17 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 
 bool UDMSEffect_ModAtt::GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp)
 {
-	auto Interface = iEI->GetApplyTarget();
+	UObject* Object = iEI->GetApplyTarget()->GetObject();
 
-	if (Interface == nullptr)
+	if (Object == nullptr)
 		return false;
 		
-	AActor* tOuter = Cast<AActor>(Interface->GetObject());
-	if (tOuter == nullptr)
+	OutTarget = Cast<AActor>(Object);
+	if (OutTarget == nullptr)
 		return false;
 
-	OutComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
-	return true;
+	OutComp = Cast<UDMSAttributeComponent>(OutTarget->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
+	return OutComp!=nullptr;
 }
 
 void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
@@ -63,19 +63,22 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
 {
 	AActor* Outer = nullptr;
-	UDMSAttributeComponent* AttComp;
-
+	UDMSAttributeComponent* AttComp = nullptr;
+	float PredictValue=0.0f;
 	FDMSAttributeModifier Value;
+	bool rv=false;
 	if (!GenerateModifier(iEI, Value)) 	return false;
 
 	if (!GetTargetAttComp(iEI, Outer, AttComp))
 	{
-		if (Outer == nullptr || !bCreateIfNull) return false;
-		AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(), false, FTransform(), false));
-		AttComp->MakeAttribute(Value.AttributeTag);
+		if (Outer != nullptr && bCreateIfNull ) {
+			AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(), false, FTransform(), false));
+			AttComp->MakeAttribute(Value.AttributeTag);
+		}
+		else return false;
 	}
-	float PredictValue=0.0f;
-	bool rv = AttComp->TryModAttribute(Value, PredictValue, false);
+
+	rv = AttComp->TryModAttribute(Value, PredictValue, false);
 
 	if (rv && bExistFailureCondition)
 	{

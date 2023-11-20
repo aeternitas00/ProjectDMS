@@ -5,7 +5,7 @@
 #include "Effect/DMSEffectorInterface.h"
 //#include "DMSGame.h"
 
-UDMSAttributeComponent::UDMSAttributeComponent()
+UDMSAttributeComponent::UDMSAttributeComponent():UDMSSpawnableComponent()
 {
 
 }

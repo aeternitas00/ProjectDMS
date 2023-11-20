@@ -4,6 +4,10 @@
 #include "GameModes/DMSGameStateBase.h"
 #include "Player/DMSPlayerStateBase.h"
 
+UDMSSpawnableComponent::UDMSSpawnableComponent():ParentComponent(nullptr)
+{
+}
+
 void UDMSSpawnableComponent::UpdateParentComponent()
 {
 	ParentComponent = nullptr;
