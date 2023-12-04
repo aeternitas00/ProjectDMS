@@ -17,7 +17,7 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 
 bool UDMSEffect_ModAtt::GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp)
 {
-	UObject* Object = iEI->GetApplyTarget()->GetObject();
+	UObject* Object = iEI->GetApplyTargetInterface()->GetObject();
 
 	if (Object == nullptr)
 		return false;

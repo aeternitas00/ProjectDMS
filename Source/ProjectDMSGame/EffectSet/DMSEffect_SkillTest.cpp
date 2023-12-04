@@ -1,26 +1,26 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EffectSet/DMSEffect_SkillTest.h"
-#include "Effect/DMSEffectInstance.h"
-#include "Attribute/DMSAttributeComponent.h"
-#include "Library/DMSGameFunctionLibrary.h"
-#include "Player/DMSPlayerController.h"
-#include "Sequence/DMSSequence.h"
-#include "Card/DMSCardDefinition.h"
-#include "Card/DMSCardManagerComponent.h"
-#include "Conditions/DMSConditionObject.h"
+//#include "EffectSet/DMSEffect_SkillTest.h"
+//#include "Effect/DMSEffectInstance.h"
+//#include "Attribute/DMSAttributeComponent.h"
+//#include "Library/DMSGameFunctionLibrary.h"
+//#include "Player/DMSPlayerController.h"
+//#include "Sequence/DMSSequence.h"
+//#include "Card/DMSCardDefinition.h"
+//#include "Card/DMSCardManagerComponent.h"
+//#include "Conditions/DMSConditionObject.h"
+//
+//
+//
+//UDMSEffect_SkillTest::UDMSEffect_SkillTest()
+//{
+//	//EffectTag = TAG_DMS_Effect_SkillTest;
+//	//OutDataKey = EffectTag;
+//	//bHasPairedSelector = true;
+//}
 
-
-
-UDMSEffect_SkillTest::UDMSEffect_SkillTest()
-{
-	//EffectTag = TAG_DMS_Effect_SkillTest;
-	//OutDataKey = EffectTag;
-	//bHasPairedSelector = true;
-}
-
-//void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+//void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, FOnExecuteCompleted OnWorkCompleted)
 //{
 //	AActor* SourceActor;
 //	float SourceValue;
@@ -34,7 +34,7 @@ UDMSEffect_SkillTest::UDMSEffect_SkillTest()
 //
 //	iEI->DataSet->GetValidDataValue<float>(SkillBonusName,SkillBonus);
 //
-//	AActor* Target = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
+//	AActor* Target = Cast<AActor>(iEI->GetApplyTargetInterface()->GetObject());
 //
 //	if (Target == nullptr){OnWorkCompleted.ExecuteIfBound(false);return;}
 //
@@ -87,7 +87,7 @@ UDMSEffect_SkillTest::UDMSEffect_SkillTest()
 
 //bool UDMSSelector_SkillTest::SetupWidget_Implementation()
 //{
-//	// LEGACY ( Decision broadcasting ÇÏ´Â Notifymanager »ç¿ëÀ¸·Î ·ÎÁ÷ º¯°æ )
+//	// LEGACY ( Decision broadcasting í•˜ëŠ” Notifymanager ì‚¬ìš©ìœ¼ë¡œ ë¡œì§ ë³€ê²½ )
 //	//auto CM = CurrentSequence->SourcePlayer->FindComponentByClass<UDMSCardManagerComponent>();
 //	//if(CM == nullptr) return false;
 //
@@ -102,7 +102,7 @@ UDMSEffect_SkillTest::UDMSEffect_SkillTest()
 //	//	{
 //	//		if(EffectNode->GetEffectNode()->Conditions->CheckCondition(Card,CurrentSequence))
 //	//			CommitableCards.AddUnique(Card);
-//	//		// Ã¼Å© ÄÁµğ¼ÇÀ» ÇÒ ¶§ '¸Å´º¾ó Ã¼Å·' ¸¸ µû·Î Åë°ú½ÃÅ°´Â°É ¸¸µé¾î¾ßÇÒ±î?
+//	//		// ì²´í¬ ì»¨ë””ì…˜ì„ í•  ë•Œ 'ë§¤ë‰´ì–¼ ì²´í‚¹' ë§Œ ë”°ë¡œ í†µê³¼ì‹œí‚¤ëŠ”ê±¸ ë§Œë“¤ì–´ì•¼í• ê¹Œ?
 //	//	}
 //
 //	//}

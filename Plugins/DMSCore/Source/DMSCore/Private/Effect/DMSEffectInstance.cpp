@@ -41,14 +41,22 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 
 }
 
-IDMSEffectorInterface* UDMSEffectInstance::GetApplyTarget()
+IDMSEffectorInterface* UDMSEffectInstance::GetApplyTargetInterface()
 {
 	auto Outer = Cast<IDMSEffectorInterface>(GetOuter());
 	//if (CurrentState == EDMSEIState::EIS_Preview)
-	//	return Outer==nullptr ? nullptr : Cast<UDMSEffectInstance>(Outer)->GetApplyTarget();
+	//	return Outer==nullptr ? nullptr : Cast<UDMSEffectInstance>(Outer)->GetApplyTargetInterface();
 	//else 	return Outer;
 	return Outer;
 }
+
+UObject* UDMSEffectInstance::GetApplyTarget()
+{
+	auto Target = GetApplyTargetInterface();
+	if (Target==nullptr) return nullptr;
+	return Target->GetObject();
+}
+
 void UDMSEffectInstance::SetToPendingKill()
 {
 	//if (CurrentState == EDMSEIState::EIS_Preview ){ if(GetTypedOuter<UDMSEffectInstance>()->CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill; }

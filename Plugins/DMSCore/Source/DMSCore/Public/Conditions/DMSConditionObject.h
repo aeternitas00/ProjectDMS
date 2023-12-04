@@ -60,7 +60,7 @@ public:
 	virtual const UDMSConditionObjectBase* CheckCondition_(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, bool& outResult) const { outResult = !bIsNot; return nullptr; }
 };
 
-UCLASS(BlueprintType, ClassGroup = (Condition))
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (Condition))
 class DMSCORE_API UDMSConditionObject : public UDMSConditionObjectBase
 {
 	GENERATED_BODY()

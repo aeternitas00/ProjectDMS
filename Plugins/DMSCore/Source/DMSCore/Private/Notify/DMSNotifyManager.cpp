@@ -217,7 +217,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 		UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
 
 		//InstancedWidget->CurrentSequence->OnSequenceFinish();
-		//InstancedWidget->CloseSelector();
+		InstancedWidget->CloseSelector();
 		//...
 		}, [NotifyManager=this , InstancedWidget]() {
 			// [ X Bttn ]
@@ -225,7 +225,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 			// Player choose to not run EI
 			NotifyManager->CallResponseCompleted(InstancedWidget->CurrentSequence);
 			//InstancedWidget->CurrentSequence->OnSequenceFinish();
-			//InstancedWidget->CloseSelector();
+			InstancedWidget->CloseSelector();
 
 		});
 	SelHandle->SetupSelector();

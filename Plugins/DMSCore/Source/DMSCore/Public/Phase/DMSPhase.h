@@ -35,17 +35,54 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly,Instanced)
 	UDMSEffectNode* PhaseNode;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnPhaseStateChanged OnPhaseStarted;
-	FOnPhaseStateChanged_Native OnPhaseStarted_Native;
+	// ========= Synchronous phase flow control ========= //
+
+	//==== START Phase ====//
+	
+	//== ENTRY ==//
+	// Called from outer.
+	UFUNCTION(BlueprintCallable)
+	void StartPhase();
+
+	//== PRESTART ==//
+	UFUNCTION(BlueprintNativeEvent)
+	void OnPreStartPhase();
+	virtual void OnPreStartPhase_Implementation(){End_OnPreStartPhase();};
 
 	UFUNCTION(BlueprintCallable)
-	void PhaseStart();
+	void End_OnPreStartPhase();
+
+	//== ONSTART ==//
+	UFUNCTION(BlueprintNativeEvent)
+	void OnStartPhase();
+	virtual void OnStartPhase_Implementation();
 
 	UPROPERTY(BlueprintAssignable)
-	FOnPhaseStateChanged OnPhaseEnded;
-	FOnPhaseStateChanged_Native OnPhaseEnded_Native;
+	FOnPhaseStateChanged OnStartPhase_Dynamic;
+	FOnPhaseStateChanged_Native OnStartPhase_Native;
+
+	//==== END Phase ====//
+	
+	//== ENTRY ==//
+	// Called from outer.
+	UFUNCTION(BlueprintCallable)
+	void EndPhase();
+
+	//== PREEND ==//
+	UFUNCTION(BlueprintNativeEvent)
+	void OnPreEndPhase();
+	virtual void OnPreEndPhase_Implementation(){End_OnPreEndPhase();};
 
 	UFUNCTION(BlueprintCallable)
-	void PhaseEnd();
+	void End_OnPreEndPhase();
+
+	//== ONEND ==//
+	UFUNCTION(BlueprintNativeEvent)
+	void OnEndPhase();
+	virtual void OnEndPhase_Implementation();
+
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPhaseStateChanged OnEndPhase_Dynamic;
+	FOnPhaseStateChanged_Native OnEndPhase_Native;
 };

@@ -41,7 +41,7 @@ enum class EDMSEIState : uint8
 /**
  * 	========================================
  *
- *	¼­¹ö»çÀÌµå¿¡¼­ Apply Step ·ÎÁ÷ Ã³¸®¸¦ ÇÒ ¶§ »ç¿ë ÇÒ ´Ü¼ø ¿öÄ¿
+ *	ì„œë²„ì‚¬ì´ë“œì—ì„œ Apply Step ë¡œì§ ì²˜ë¦¬ë¥¼ í•  ë•Œ ì‚¬ìš© í•  ë‹¨ìˆœ ì›Œì»¤
  * 
  *	========================================
  *	
@@ -156,7 +156,14 @@ public:
 	 * Get apply target.
 	 * Will be used in ED->Work function.
 	 */
-	IDMSEffectorInterface* GetApplyTarget();
+	IDMSEffectorInterface* GetApplyTargetInterface();
+
+	/**
+	* Get apply target.
+	* Will be used in ED->Work function.
+	*/
+	UFUNCTION(BlueprintCallable)
+	UObject* GetApplyTarget();
 
 	/**
 	 * Setting the state of EffectInstance to pending kill (it will be cleaned up at the end of the sequence tree).
@@ -188,14 +195,11 @@ public:
 
 	// =========== INTERFACE FUNCTION =========== // 
 	// 
-	//virtual UObject* GetObject() override { return this; } 
-	//virtual IDMSEffectorInterface* GetPreviewObject() { return PreviewDummy; }
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }
 	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
 	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;
-	// ±âº»ÀûÀ¸·Î EI´Â '¾î¶² È¿°ú' ±× ÀÚÃ¼¸¦ °´Ã¼È­ ÇÏ±â À§ÇØ ¸¸µç Å¬·¡½ºÀÌ¹Ç·Î ÀÌÆåÆ®¼ÂÀ» ¼ÒÀ¯ÇÑ´Ù´Â °³³äÀº Á¶±İ ÀÌ»óÇÑ µí.
+	// ê¸°ë³¸ì ìœ¼ë¡œ EIëŠ” 'ì–´ë–¤ íš¨ê³¼' ê·¸ ìì²´ë¥¼ ê°ì²´í™” í•˜ê¸° ìœ„í•´ ë§Œë“  í´ë˜ìŠ¤ì´ë¯€ë¡œ ì´í™íŠ¸ì…‹ì„ ì†Œìœ í•œë‹¤ëŠ” ê°œë…ì€ ì¡°ê¸ˆ ì´ìƒí•œ ë“¯.
 	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
-
 	virtual void Serialize(FArchive& Ar) override;
 
 	//friend FArchive& operator<<(FArchive& Ar, UDMSEffectInstance*& EI);

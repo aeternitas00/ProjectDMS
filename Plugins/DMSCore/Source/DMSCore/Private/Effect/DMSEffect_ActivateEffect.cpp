@@ -42,7 +42,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	for ( auto& NodeWrapper : NodeWrappers )
 	{
 		auto Node = NodeWrapper->GetEffectNode();
-		auto NewSeq = SeqMan->RequestCreateSequence(iEI->GetApplyTarget()->GetObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
+		auto NewSeq = SeqMan->RequestCreateSequence(iEI->GetApplyTargetInterface()->GetObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
 		Sequences.Add(NewSeq);
 	}
 
@@ -69,7 +69,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(UDMSEffectInstance* iEI)
 {
 	// Outer Validation
-	auto tOuter = iEI->GetApplyTarget();
+	auto tOuter = iEI->GetApplyTargetInterface();
 	if (tOuter == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName());*/ return nullptr; }
 
 	return tOuter != nullptr ? tOuter->GetOwningEffectSet(EffectSetName) : nullptr;
@@ -144,9 +144,9 @@ TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(UDMS
 TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::MakeDataArray(UDMSEffectInstance* TargetEI)
 {
 	TArray<UDMSDataObject*> rv;
-	auto tOuter = TargetEI->GetApplyTarget();
+	auto tOuter = TargetEI->GetApplyTargetInterface();
 
-	if(tOuter == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName());*/ return rv; }
+	if(tOuter == nullptr || tOuter->GetOwningEffectSet(EffectSetTag) == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName());*/ return rv; }
 
 	for(auto& EN : tOuter->GetOwningEffectSet(EffectSetTag)->EffectNodes)
 	{

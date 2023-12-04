@@ -6,7 +6,7 @@
 
 void UDMSPhaseManager::ProceedToNextPhase(FGameplayTag JumpTarget = FGameplayTag::EmptyTag)
 {
-	CurrentPhase->PhaseEnd();
+	CurrentPhase->EndPhase();
 	if (JumpTarget== FGameplayTag::EmptyTag){
 		CurrentPhase = CurrentPhase->NextPhase;
 	}
@@ -19,7 +19,7 @@ void UDMSPhaseManager::ProceedToNextPhase(FGameplayTag JumpTarget = FGameplayTag
 		} while (Start != It);
 
 	}
-	CurrentPhase->PhaseStart();
+	CurrentPhase->StartPhase();
 }
 
 void UDMSPhaseManager::GeneratePhases()
@@ -37,7 +37,7 @@ void UDMSPhaseManager::GeneratePhases()
 			CurrentPhase = NewObject<UDMSPhase>(this, PhaseClass);
 			RootPhase = CurrentPhase;
 		}
-		CurrentPhase->OnPhaseEnded_Native.AddUObject(this,&UDMSPhaseManager::UpdatePhaseWidget);
+		//CurrentPhase->OnPhaseEnded_Native.AddUObject(this,&UDMSPhaseManager::UpdatePhaseWidget);
 	}
 	CurrentPhase->NextPhase = RootPhase;
 
@@ -49,16 +49,14 @@ void UDMSPhaseManager::GeneratePhases()
 
 }
 
-//void UDMSPhaseManager::SetupPhases_Implementation()
-//{
-//	auto it = CurrentPhase;
-//	if (CurrentPhase==nullptr) return;
-//	do {
-//		it->OnPhaseStarted_Native.AddUObject(this,&UDMSPhaseManager::BroadCastPhaseStarted);
-//		it->OnPhaseEnded_Native.AddUObject(this, &UDMSPhaseManager::BroadCastPhaseEnded);
-//		//for (auto& OPS : OnPhaseStart)it->OnPhaseStarted.Add(OPS);
-//		//for (auto& OPE : OnPhaseEnd)it->OnPhaseEnded.Add(OPE);
-//		it = it->NextPhase;
-//	}
-//	while (it != CurrentPhase);
-//}
+void UDMSPhaseManager::SetupPhases_Implementation()
+{
+	auto it = CurrentPhase;
+	if (CurrentPhase==nullptr) return;
+	do {
+		// Do Something 
+
+		it = it->NextPhase;
+	}
+	while (it != CurrentPhase);
+}

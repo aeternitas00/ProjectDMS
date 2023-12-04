@@ -26,7 +26,7 @@ public:
 	 */
 	void ExecuteOption(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
 
-	//void ExecuteOption(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnOptionCompleted);
+	//void ExecuteOption(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, FOnExecuteCompleted OnOptionCompleted);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnExecuteOption(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);

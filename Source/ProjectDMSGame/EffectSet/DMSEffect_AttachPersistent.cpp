@@ -14,16 +14,15 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_AttachPersistent, "Effect.AttachPersistent
 //{
 //	return FGameplayTagContainer();
 //}
+
 UDMSEffect_AttachPersistent::UDMSEffect_AttachPersistent() {
 	EffectTag = TAG_DMS_Effect_AttachPersistent;
-//	OutDataKey = TAG_DMS_Effect_AttachPersistent;
-//	bHasPairedSelector = true;
 }
 void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	TArray<UDMSEffectInstance*> AddedEIs;
 
-	auto Target = iEI->GetApplyTarget();
+	auto Target = iEI->GetApplyTargetInterface();
 
 	if (Target == nullptr) {
 		OnWorkCompleted.ExecuteIfBound(false);
@@ -47,24 +46,6 @@ void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequen
 	//SourceSequence->AddToOnSequenceFinished_Native([AddedEIs](bool){
 	//	for (auto& EI : AddedEIs)	{EI->ChangeEIState(EDMSEIState::EIS_Persistent);}
 	//});
+
 	OnWorkCompleted.ExecuteIfBound(true);
 }
-
-//void UDMSEffect_AttachPersistent::InitializePairedSelector(UDMSEffectElementSelectorWidget* WidgetInstance)
-//{
-//	auto NewDataObj = NewObject<UDMSDataObject>();
-//	TArray<UObject*> tArr;
-//	for (UObject* i : EIEffects) tArr.Add(i);
-//	NewDataObj->Set(tArr);
-//	WidgetInstance->CandidatesData.Add(NewDataObj);
-//
-//}
-
-//UDMSDataObjectSet* UDMSSelector_AttachPersistent::MakeOutputData_Implementation()
-//{
-//	UDMSDataObjectSet* rv = NewObject<UDMSDataObjectSet>(CurrentSequence);
-//
-//	rv->SetData(SourceEffectDefinition->OutDataKey, SelectedIndex);
-//
-//	return rv;
-//}

@@ -54,11 +54,34 @@ TArray<UObject*> UDMSTargetGenerator_OwnerOfCaller::GetTargets_Implementation(UO
 
 TArray<UObject*> UDMSTargetGenerator_FromData::GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const
 {
-	UObject* TempObject=nullptr;
+	UDMSDataObject* TempData=nullptr;
+	TArray<UDMSDataObject*> TempDataArr;
 	TArray<UObject*> TempArr;
-	if (CurrentSequence->SequenceDatas->GetValidDataValue<UObject*>(DataTag, TempObject))
-		return { TempObject };
-	else if (CurrentSequence->SequenceDatas->GetValidDataValue<TArray<UObject*>>(DataTag, TempArr))
+
+	if (CurrentSequence->SequenceDatas->GetValidDataValue<UDMSDataObject*>(DataTag, TempData))
+	{
+		if (TempData->TypeCheck<UObject*>())
+			return { TempData->Get<UObject*>() };
+		else if (TempData->TypeCheck<TArray<UObject*>>())
+			return TempData->Get<TArray<UObject*>>();
+	}
+	else if (CurrentSequence->SequenceDatas->GetValidDataValue<TArray<UDMSDataObject*>>(DataTag, TempDataArr))
+	{
+		for (auto& tData : TempDataArr)
+		{
+			if (tData->TypeCheck<UObject*>())
+				TempArr.Add(tData->Get<UObject*>());
+		}
 		return TempArr;
+	}
+	else { // temp
+		UObject* TempObject=nullptr;
+	
+
+		if (CurrentSequence->SequenceDatas->GetValidDataValue<UObject*>(DataTag, TempObject))
+			return { TempObject };
+		else if (CurrentSequence->SequenceDatas->GetValidDataValue<TArray<UObject*>>(DataTag, TempArr))
+			return TempArr;
+	}
 	return {};
 }

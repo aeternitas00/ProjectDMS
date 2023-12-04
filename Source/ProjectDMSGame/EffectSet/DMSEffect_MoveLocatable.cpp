@@ -21,7 +21,7 @@ void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence,
 {
 	UObject* DestLocation;
 
-	AActor* ApplyTarget = Cast<AActor>(iEI->GetApplyTarget()->GetObject());
+	AActor* ApplyTarget = Cast<AActor>(iEI->GetApplyTargetInterface()->GetObject());
 
 	if (!ApplyTarget->Implements<UDMSLocatableInterface>() )
 	{

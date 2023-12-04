@@ -48,7 +48,7 @@ public:
 	 * Getter of CurrentPhase.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void InitiatePhaseLoop(){ if (CurrentPhase!=nullptr) CurrentPhase->PhaseStart(); }
+	void InitiatePhaseLoop(){ if (CurrentPhase!=nullptr) CurrentPhase->StartPhase(); }
 
 	/**
 	 * Getter of CurrentPhase.
@@ -57,22 +57,21 @@ public:
 	void ProceedToNextPhase(FGameplayTag JumpTarget);
 
 	/**
-	 * Getter of CurrentPhase.
+	 * Generate Phases.
 	 */
 	UFUNCTION(BlueprintCallable)
 	void GeneratePhases();
 
-	/**
-	 * Getter of CurrentPhase.
-	 */
-	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
-	void UpdatePhaseWidget(UDMSPhase* iPhase);
+	///**
+	// * 
+	// */
+	//UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
+	//void UpdatePhaseWidget(UDMSPhase* iPhase);
 
 	/**
-	 * Getter of CurrentPhase.
+	 * 
 	 */
-	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void SetupPhases();
-
-	//virtual void SetupPhases_Implementation();
+	virtual void SetupPhases_Implementation();
 };

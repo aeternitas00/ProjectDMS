@@ -46,11 +46,12 @@ public:
 	//ADMSGameMode(const FObjectInitializer& ObjectInitializer);
 
 protected:
+	/**
+	 * Default classed used when spawning a DMSSpawnableBase derived class.
+	 * If no class is specified in SpawnableData, it uses this class for spawning.
+	 */
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TMap<FPrimaryAssetType, TSubclassOf<ADMSSpawnableBase>> DefaultSpawningClasses;
-
-	//UPROPERTY(BlueprintReadOnly)
-	//ADMSGameState* DMSGameState;
 
 protected:
 	virtual void BeginPlay() override;
@@ -60,22 +61,20 @@ public:
 	virtual void PreInitializeComponents() override;
 
 	/**
-	 *
-	 */
-	void SpawnCardsFromDeck(class ADMSPlayerController* iPC);
-
-	/**
-	 *
+	 * Spawn card with card data and owner info.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	ADMSCardBase* SpawnCard(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName=TEXT("Deck"));
 	virtual ADMSCardBase* SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName = NAME_None);
 
+	/**
+	 * Setup DMS Game systems.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetupDMSGame();
 	virtual void SetupDMSGame_Implementation();
 
-	// Spawn with "DMS LOCATION"
+	// Spawn DMSSpawnable in param location to Owner player.
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Spawn DMS Game Actor_ID"))
 	ADMSSpawnableBase* SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());
 

@@ -21,7 +21,7 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, UDMS
 	UDMSCardContainerComponent* FromTemp;
 	UDMSCardContainerComponent* Container_Destination=nullptr;
 	//UDMSEIManagerComponent* CardEffector = Cast<UDMSEIManagerComponent>(iEI->GetOuter());
-	ADMSCardBase* Card = Cast<ADMSCardBase>(iEI->GetApplyTarget()->GetObject());
+	ADMSCardBase* Card = Cast<ADMSCardBase>(iEI->GetApplyTarget());
 
 	if (Card==nullptr)
 	{	

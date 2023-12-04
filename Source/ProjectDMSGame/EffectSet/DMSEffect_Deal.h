@@ -6,7 +6,7 @@
 #include "DMSEffect_Deal.generated.h"
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_DealDamage)
-// BP¿¡¼­ ±âº»ÀûÀÎ °Íµé ¿ÜÀÇ Ä¿½ºÅÒ ÀÌÆåÆ® ¿øÇü »ı¼º °¡´ÉÇÏ°Ô
+// BPì—ì„œ ê¸°ë³¸ì ì¸ ê²ƒë“¤ ì™¸ì˜ ì»¤ìŠ¤í…€ ì´í™íŠ¸ ì›í˜• ìƒì„± ê°€ëŠ¥í•˜ê²Œ
 // Ex) BP_EffectInstance_DealDamage ?
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "Deal Effect Base"))
 class UDMSEffect_Deal : public UDMSEffect_ModAtt
@@ -17,5 +17,5 @@ class UDMSEffect_Deal : public UDMSEffect_ModAtt
 public:
 	UDMSEffect_Deal();;
 	
-	//virtual void Work_Implementation(UDMSEffectInstance* iEI,  const FOnExecuteCompleted& OnWorkCompleted) override; // temp
+	//virtual void Work_Implementation(UDMSEffectInstance* iEI,  FOnExecuteCompleted OnWorkCompleted) override; // temp
 };

@@ -60,10 +60,6 @@ void ADMSGameMode::PreInitializeComponents()
 	Super::PreInitializeComponents();
 }
 
-void ADMSGameMode::SpawnCardsFromDeck(class ADMSPlayerController* iPC)
-{
-
-}
 
 ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName)
 {

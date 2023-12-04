@@ -81,13 +81,15 @@ public:
 	
 	virtual void PreInitializeComponents() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 	/**
-	 *
+	 * Register object to Notifying system.
+	 * Use for actors already placed in the level.
 	 */
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
-
+	// Interface implements
 	virtual AActor* GetOwningPlayer() override { return this; }
 	virtual int32 GetID() override { /* temp */return -1; }
 	virtual ADMSPlayerControllerBase* GetWidgetOwner() override { return GetLeaderPlayerController(); }

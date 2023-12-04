@@ -29,6 +29,7 @@ class UDMSConditionCombiner;
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOptionCompleted,UDMSEffectOption*,CompletedOption);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
 
 
 
@@ -83,7 +84,7 @@ public:
 	 * Execution part of the this effect.
 	 * @param	SourceSequence					Target sequence.
 	 * @param	iEi								Source effect instance
-	 * @param	OnWorkCompleted					Delegate excuted when work comple
+	 * @param	OnWorkCompleted					Delegate excuted when work complete
 	 * @return	Return EffectTag with additional tags for further identification in each child class.
 	 */
 	UFUNCTION(BlueprintNativeEvent)
@@ -100,20 +101,9 @@ public:
 	bool Predict(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI); // temp
 	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) { return true; }
 
-	//UFUNCTION(BlueprintNativeEvent)
-	//AActor* GetPlayerFocusTarget(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
-	//virtual AActor* GetPlayerFocusTarget_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI);
-
 	// ====================== //
 	//		For selector
-	// ====================== //
-
-	/**
-	 * Is this effect using selector?
-	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	//bool bIsUsingSelector;
-	
+	// ====================== //	
 
 	//virtual void Serialize(FArchive& Ar) override;
 };
@@ -140,6 +130,7 @@ class DMSCORE_API UDMSEffectNode : public UObject
 public:
 	UDMSEffectNode();
 	
+//=================== Notifying data ===================//
 
 	/**
 	 * 이펙트 노드에 대한 대표 키워드. 비워두어도 상관 없음. 
@@ -160,7 +151,10 @@ public:
 	 */
 	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
 
-//=================== Conditions and timing that check before activate main effect ===================//
+//=================== Main Effect ===================//
+//== TODO :: Migrate to ApplyStep ==//
+
+	//=================== Conditions and timing that check before activate main effect ===================//
 
 	/**
 	 * Effect's activatable timing.
@@ -182,32 +176,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIgnoreNotify;
 
-
-//=================== Pre-activate ( Decision step ) ===================//
-
-	/**
-	 * Classes of decision widget what this effect will use.
-	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	//TArray<TSubclassOf<UDMSDecisionWidget>> DecisionWidgetClasses;
-
-	/**
-	 * Create decision widget with "DecisionWidgetClasses".
-	 * @param	WidgetOwner
-	 * @return	Crated widgets.
-	 */
-	//TArray<UDMSDecisionWidget*> CreateDecisionWidgets(UDMSSequence* OwnerSequence, APlayerController* WidgetOwner);
-
-	/**
-	 * Implements on BP.How to initializing decision widget's candidate or search range. 
-	 * @param	iWidget						Param's order follows "DecisionWidgetClasses" property's one.
-	 */ 
-	//UFUNCTION(BlueprintNativeEvent, Category = Effect)
-	//void InitializeDecisionWidget(const TArray<UDMSDecisionWidget*>& iWidget);
-	//virtual void InitializeDecisionWidget_Implementation(const TArray<UDMSDecisionWidget*>& iWidget) {};
-
-
-//=================== Main effect ===================//
+	//=================== Definitions ===================//
 
 	/**
 	 * Actual effects that activatable in that timing
