@@ -23,12 +23,6 @@ public:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSTimingFlag Progress;
-	
-	/**
-	 * Main tag of step. ( like name )
-	 */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//FGameplayTag StepTag;
 
 	/**
 	 * Reference of next step for Pseudo list,
@@ -51,11 +45,19 @@ public:
 	void InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished);
 
 	/**
-	 * Run this step.
+	 * Run step. will be executed in sequence's step flow control.
 	 */
 	void RunStep();
+
+	/**
+	 * Close step. will be executed in sequence's step flow control.
+	 * @param	bSuccessed				Whether the step was successful or not.
+	 */
 	void CloseStep(bool bSuccessed = true);
 
+	/**
+	 * Get tag of step.
+	 */
 	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
 	FGameplayTag GetStepTag() const;
 	virtual FGameplayTag GetStepTag_Implementation() const {return FGameplayTag::EmptyTag;}

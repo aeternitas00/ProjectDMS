@@ -46,7 +46,6 @@ enum class EDMSEIState : uint8
  *	========================================
  *	
  */
-
 UCLASS()
 class DMSCORE_API UDMSEffectApplyWorker : public UObject
 {

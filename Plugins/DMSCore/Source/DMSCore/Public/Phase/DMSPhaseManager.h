@@ -62,12 +62,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GeneratePhases();
 
-	///**
-	// * 
-	// */
-	//UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
-	//void UpdatePhaseWidget(UDMSPhase* iPhase);
-
 	/**
 	 * 
 	 */

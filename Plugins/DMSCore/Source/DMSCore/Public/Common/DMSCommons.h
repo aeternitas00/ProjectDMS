@@ -52,18 +52,9 @@ enum class EDMSComparisonOperator : uint8
 	BO_Greater UMETA(DisplayName = ">")
 };
 
-//UENUM(BlueprintType)
-//enum class EDMSDataType : uint8
-//{
-//	DT_Integer UMETA(DisplayName = "Integer"),
-//	DT_Float UMETA(DisplayName = "Float"),
-//	DT_String UMETA(DisplayName = "String"),
-//	DT_NetGUID UMETA(DisplayName = "NetGUID"),
-//};
-
 /**
-*	Attibute Modifier struct. Using in ModAtt Effect. 
-*/
+ *	Attibute Modifier struct. Using in ModAtt Effect. 
+ */
 USTRUCT(BlueprintType)
 struct DMSCORE_API FDMSValueModifier
 {

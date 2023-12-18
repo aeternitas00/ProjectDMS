@@ -36,6 +36,9 @@ public:
 	UPROPERTY()
 	TArray<UDMSSelectorHandle*> SelectorHandles;
 
+	/**
+	 * Reference of owner sequence.
+	 */
 	UPROPERTY()
 	UDMSSequence* CurrentSequence;
 
@@ -45,20 +48,42 @@ public:
 	UPROPERTY()
 	int8 CurrentIndex;
 
-	bool SetupQueue(UDMSSequence* SourceSequence,TArray<UDMSSelectorHandle*> Handles);	
+	/**
+	 * Setup selector queue.
+	 * @param	SourceSequence			Owner sequence.
+	 * @param	Handles					Selector handles for instantiating widgets during this initialization process.
+	 */
+	bool SetupQueue(UDMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);	
 	
+	/**
+	 * Setup selector queue.
+	 * @param	iOnQueueFinished			Lambda function to execute when the queue succeeds.
+	 * @param	iOnQueueCanceled			Lambda function to execute when the queue canceled.
+	*/
 	template<typename FuncFinished, typename FuncCanceled >
 	void RunWidgetQueue(FuncFinished&& iOnQueueFinished, FuncCanceled&& iOnQueueCanceled);
 
+	/**
+	 * Popup the next widget when queue is running.
+	 */
 	UFUNCTION()
 	void PopupNextWidget();
 
+	/**
+	 * Reset queue's progress and restart from begin.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void RedoWidgetQueue();
 
+	/**
+	 * Clear queue and destory instanced widgets.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void ClearQueue();
 
+	/**
+	 * Getter of casted outer.
+	 */
 	APlayerController* GetWidgetOwner() { return Cast<APlayerController>(GetOuter()); }
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnWidgetQueuesClosed, UDMSSequence*);
@@ -72,14 +97,6 @@ public:
 	 * Delegate to be called when the Selector Queue was canceled.
 	 */
 	FOnWidgetQueuesClosed OnSelectorsCanceled;
-
-	//=== NEW SELECTOR ===//
-
-
-	//UFUNCTION()
-	//bool InitializeQueue(TArray<FDMSValueSelectionForm> RequestForms, APlayerController* WidgetOwner, UDMSSequence* iSequence);
-
-
 };
 
 template<typename FuncCompleted, typename FuncCanceled >

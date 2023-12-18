@@ -42,8 +42,6 @@ class DMSCORE_API UDMSSeqManager : public UActorComponent // or ActorComponent t
 	GENERATED_BODY()
 
 private:
-	//Test feature
-	//bool bUsingSteps;
 
 protected:
 
@@ -110,13 +108,6 @@ public:
 	UPROPERTY()
 	TObjectPtr<UDMSSequence> CurrentSequence;
 
-	/*
-	 * Default YN widget class will be added as final confirmation with preview to the decision step.
-	 * TEST
-	 */
-	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	//TSubclassOf<UDMSDecisionWidget> DefaultYNWidget;
-
 	/**
 	 * Get depth of sequence in tree.
 	 * @param	iSeq
@@ -140,18 +131,6 @@ public:
 	 */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSequenceTreeCompleted();
-
-
-	// TEST
-
-	//UPROPERTY ( EditDefaultsOnly , BlueprintReadOnly , Category = Decision )
-	//TSubclassOf<UDMSSelectorBase> DecisionMakerSelector;
-
-	/**
-	 * Testing
-	 */
-	//UPROPERTY()
-	//TMap<TObjectPtr<UDMSSequence>, TObjectPtr<UDMSDataObjectSet>> DataObjectMap;
 
 	/**
 	 * Starting with a parameter sequence, traversing the sequence tree to a data set containing a given tag as a key.

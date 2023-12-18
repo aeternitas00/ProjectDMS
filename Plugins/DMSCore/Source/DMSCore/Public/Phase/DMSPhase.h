@@ -26,12 +26,21 @@ class DMSCORE_API UDMSPhase : public UObject
 public:
 	UDMSPhase();
 
+	/**
+	 * Ref of next phase
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	UDMSPhase* NextPhase;
 
+	/**
+	 * Main tag of phase.
+	 */
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	FGameplayTag PhaseTag;
 
+	/**
+	 * Effects to be triggered during the progression of the phase.
+	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly,Instanced)
 	UDMSEffectNode* PhaseNode;
 

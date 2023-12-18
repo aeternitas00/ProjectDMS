@@ -228,12 +228,6 @@ public:
 	 */
 	void OnSequenceFinish(bool Successed);
 
-	///**
-	// * Resets the progress of the widget queue and starts over.
-	// */
-	//UFUNCTION(BlueprintCallable)
-	//void RedoWidgetQueue();
-
 	/**
 	 * Generate tag container for notifying.
 	 */

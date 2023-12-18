@@ -30,8 +30,6 @@ class ADMSGameStateBase;
 /**
  *	========================================
  * 
- *	DMS Game specified GM. Arkham LCG-Like Phase controll, Enemy fightings and Card Upgrade system... 
- *	Save/Load upgrade data... etc.
  * 
  *  ========================================
  */

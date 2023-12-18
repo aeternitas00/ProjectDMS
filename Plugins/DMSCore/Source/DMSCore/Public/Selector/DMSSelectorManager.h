@@ -13,6 +13,9 @@ DECLARE_DELEGATE_OneParam(FOnSelectorCompleted, TArray<uint8>);
 class UDMSSelectorBase;
 class UDMSWidgetQueue;
 
+/**
+ * Data structure used to request selector creation.
+ */
 USTRUCT(BlueprintType)
 struct FDMSSelectorRequestForm
 {
@@ -20,18 +23,29 @@ struct FDMSSelectorRequestForm
 
 	FDMSSelectorRequestForm():SelectAmount(0){}
 
+	/**
+	 * Data objects what wrapped Candidate.
+	 */
 	UPROPERTY(BlueprintReadWrite)
 	TArray<UDMSDataObject*> Candidates;
 
+	/**
+	 * The number of selections the selector to be created will choose.
+	 */
 	UPROPERTY(BlueprintReadWrite)
 	uint8 SelectAmount;
 
+	/**
+	 * Class of widget to be generated
+	 */
 	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<UDMSSelectorBase> SelectorClass;
 
+	/** 
+	 * Delegate to be executed when the generated selector is completed in any way.
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	FOnSelectorCompletedDynamic OnCompleted;
-
 	FOnSelectorCompleted OnCompletedNative;
 };
 
@@ -115,10 +129,20 @@ protected:
 	// Called when the game starts
 	//virtual void BeginPlay() override;
 
-public:	
-	UFUNCTION(BlueprintCallable)
+public:
+	/**
+	 * Create selector handle from param request form
+	 * @param	Form			in Request form.
+	 * @return	Created handle.
+	 */
+	UFUNCTION(BlueprintCallable, Server)
 	UDMSSelectorHandle* RequestCreateSelector(FDMSSelectorRequestForm& Form);
 
+	/**
+	* Create multiple selectors handle from param request form
+	* @param	Form			in Request forms.
+	* @return	Created handles.
+	*/
 	UFUNCTION(BlueprintCallable)
 	TArray<UDMSSelectorHandle*> RequestCreateSelectors(TArray<FDMSSelectorRequestForm>& Form);
 };

@@ -50,14 +50,10 @@ public:
 	TArray<TScriptInterface<IDMSEffectorInterface>> Respondents;
 
 	/**
-	 * Make new set of Notify respondent datas. 
-	 * @param	Respondent				Respondent object.
-	 * @param	EffectInstance			Responsed EffectInstance. (belong to Respondent)
-	 * @return	Created UDMSDataObjectSet. ( Owner of UDMSDataObjectSet is widget's owning player state )
+	 * Helper function that replaces the Respondent in the data of the effect instance with the provided parameter object.
+	 * @param	Respondent			Object to be updated as a respondent
+	 * @param	EffectInstance		Update target.
 	 */
-	//UFUNCTION(BlueprintCallable)
-	//UDMSDataObjectSet* MakeOutputDatas(UObject* Respondent, UObject* EffectInstance);
-
 	UFUNCTION(BlueprintCallable)
 	void UpdateData(UObject* Respondent, UObject* EffectInstance);
 

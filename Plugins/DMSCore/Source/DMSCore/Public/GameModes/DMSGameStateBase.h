@@ -12,8 +12,10 @@ class UDMSEIManagerComponent;
 class UDMSSelectorManager;
 class ADMSPlayerStateBase;
 class ADMSPlayerControllerBase;
+
 /**
- * 
+ *	DMS Game specified GS. Arkham LCG-Like Phase controll, Enemy fightings and Card Upgrade system... 
+ *	Save/Load upgrade data... etc.
  */
 UCLASS()
 class DMSCORE_API ADMSGameStateBase : public AGameStateBase, public IDMSEffectorInterface, public IDMSEffectorOwnableInterface
