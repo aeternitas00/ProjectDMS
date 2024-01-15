@@ -30,7 +30,7 @@ void UDMSSequenceStep_Decision::OnBefore_Implementation()
 	// Behavior
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
 
-	DMS_LOG_SCREEN(TEXT("==-- DecisionStep_BEFORE [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	//DMS_LOG_SCREEN(TEXT("==-- DecisionStep_BEFORE [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 	ProgressComplete();
 }
 
@@ -42,7 +42,7 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
 	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(); check(SelM);
 
-	DMS_LOG_SCREEN(TEXT("==-- DecisionStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	//DMS_LOG_SCREEN(TEXT("==-- DecisionStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 	
 	ADMSPlayerControllerBase* WidgetOwner = nullptr;
 
@@ -113,6 +113,6 @@ void UDMSSequenceStep_Decision::OnAfter_Implementation()
 {
 	// Behavior
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
-	DMS_LOG_SCREEN(TEXT("==-- DecisionStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	//DMS_LOG_SCREEN(TEXT("==-- DecisionStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 	ProgressComplete();
 }

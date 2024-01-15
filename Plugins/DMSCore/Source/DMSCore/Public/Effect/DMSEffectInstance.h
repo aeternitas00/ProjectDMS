@@ -70,7 +70,7 @@ public:
 	void SetupWorker(UDMSSequence* iSequence, UDMSEffectInstance* iEI, const FOnApplyCompleted& iOnApplyCompleted);
 	
 	UFUNCTION()
-	void ApplyNextEffectDef(bool PrevSuccessed);
+	void ApplyNextEffectDef(bool PrevSucceeded);
 
 	UFUNCTION()
 	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);

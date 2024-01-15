@@ -26,7 +26,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UObject* SourceObject,
 	AActor* SourcePlayer, 
 	UDMSEffectNode* EffectNode, 
-	TArray<TScriptInterface<IDMSEffectorInterface>> Targets,
+	const TArray<TScriptInterface<IDMSEffectorInterface>>&  Targets,
 	UDMSDataObjectSet* Datas, 
 	UDMSSequence* ParentSequence
 )
@@ -68,7 +68,19 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	return Sequence;
 }
 
-void UDMSSeqManager::RemoveSequence(UDMSSequence* Sequence)
+void UDMSSeqManager::RequestAppendNewSequence_Implementation(
+	UObject* SourceObject, 
+	AActor* SourcePlayer,
+	UDMSEffectNode* EffectNode, 
+	const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
+	UDMSSequence* ParentSequence,
+	UDMSDataObjectSet* Datas 
+)
+{
+	RequestCreateSequence(SourceObject,SourcePlayer,EffectNode,Targets,Datas,ParentSequence);
+}
+
+void UDMSSeqManager::RemoveSequence_Implementation(UDMSSequence* Sequence)
 {
 	if (Sequence==RootSequence) {
 		RootSequence = Sequence->ChildSequence!=nullptr ? Sequence->ChildSequence : nullptr ;
@@ -84,7 +96,7 @@ void UDMSSeqManager::RemoveSequence(UDMSSequence* Sequence)
 	}
 }
 
-void UDMSSeqManager::RunSequence(UDMSSequence* iSeq)
+void UDMSSeqManager::RunSequence_Implementation(UDMSSequence* iSeq)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
 
@@ -119,10 +131,11 @@ void UDMSSeqManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(UDMSSeqManager, TypeWidgetMap);	
+	DOREPLIFETIME(UDMSSeqManager, RootSequence);	
+	DOREPLIFETIME(UDMSSeqManager, CurrentSequence);	
 }
 
-void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence, bool Successed)
+void UDMSSeqManager::CompleteSequence_Implementation(UDMSSequence* Sequence, bool Succeeded)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Complete Sequence ===="), *Sequence->GetName());
 
@@ -134,9 +147,10 @@ void UDMSSeqManager::CompleteSequence(UDMSSequence* Sequence, bool Successed)
 	else
 		CurrentSequence = Sequence->ParentSequence;
 
-	Sequence->OnSequenceFinish(Successed);
+	Sequence->OnSequenceFinish(Succeeded);
 
 }
+
 
 
 void UDMSSeqManager::CleanupSequenceTree()

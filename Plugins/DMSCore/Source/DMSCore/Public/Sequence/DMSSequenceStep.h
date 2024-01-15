@@ -51,9 +51,9 @@ public:
 
 	/**
 	 * Close step. will be executed in sequence's step flow control.
-	 * @param	bSuccessed				Whether the step was successful or not.
+	 * @param	bSucceeded				Whether the step was successful or not.
 	 */
-	void CloseStep(bool bSuccessed = true);
+	void CloseStep(bool bSucceeded = true);
 
 	/**
 	 * Get tag of step.
@@ -64,7 +64,7 @@ public:
 
 	// IMPLEMENTS :: Step Behaviour
 	virtual void OnStepInitiated();
-	virtual void OnStepFinished(bool bSuccessed = true);
+	virtual void OnStepFinished(bool bSucceeded = true);
 
 	virtual void Progress_Before();
 	virtual void Progress_During();
@@ -89,7 +89,7 @@ public:
 	FOnStepInitiated OnStepInitiated_Delegate;
 	FOnStepFinished OnStepFinished_Delegate;
 	
-	void ProgressComplete(bool bSuccessed = true);
+	void ProgressComplete(bool bSucceeded = true);
 
 	friend class UDMSSequence;
 };

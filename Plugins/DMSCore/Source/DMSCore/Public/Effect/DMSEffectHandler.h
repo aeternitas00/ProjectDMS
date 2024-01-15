@@ -64,8 +64,8 @@ protected:
 	 * Work with OnResolveCompletedMap.
 	 * @param	Sequence					Resolving sequence.
 	 */
-	void ApplyNextEffectInstance(UDMSSequence* SourceSequence, bool PrevSuccessed);
-	//void ApplyNextEffectInstance_Preview(UDMSSequence* SourceSequence, bool PrevSuccessed);
+	void ApplyNextEffectInstance(UDMSSequence* SourceSequence, bool PrevSucceeded);
+	//void ApplyNextEffectInstance_Preview(UDMSSequence* SourceSequence, bool PrevSucceeded);
 	/**
 	 * 
 	 * @param	Sequence					Resolving sequence.

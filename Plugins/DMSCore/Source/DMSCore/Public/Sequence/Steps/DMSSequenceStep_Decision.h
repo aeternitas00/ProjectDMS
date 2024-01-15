@@ -48,15 +48,15 @@ public:
 	virtual void OnDuring_Implementation() override;
 	virtual void OnAfter_Implementation() override;
 
-	template<typename FuncSuccessed>
-	void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSuccessed&& Successed);
+	template<typename FuncSucceeded>
+	void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
 };
 
-template<typename FuncSuccessed>
-void UDMSSequenceStep_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSuccessed&& Successed)
+template<typename FuncSucceeded>
+void UDMSSequenceStep_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
 {
 	WidgetOwner->RunWidgetQueue(		
-		Successed,
+		Succeeded,
 		[=](UDMSSequence* pSequence) {
 			// Decision canceled
 			DMS_LOG_SIMPLE(TEXT("Decision canceled"));

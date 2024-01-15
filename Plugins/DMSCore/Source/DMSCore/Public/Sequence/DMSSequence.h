@@ -44,14 +44,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceInitiatedDynamic);
 DECLARE_DELEGATE_OneParam(FOnSequenceFinished_Signature, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSequenceFinished, bool);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Successed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Successed);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Succeeded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succeeded);
 
 //DECLARE_DELEGATE_OneParam(FOnStepFinished_Signature, bool);
 //DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
 //
-//DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStepFinishedDynamic_Signature, bool, Successed);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStepFinishedDynamic, bool, Successed);
+//DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStepFinishedDynamic_Signature, bool, Succeeded);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStepFinishedDynamic, bool, Succeeded);
 
 
 /** 
@@ -143,7 +143,9 @@ public:
 	 * 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도
 	 * ++ 상위 시퀀스와 연관된 컨디션, 이펙트 같은 것을 구현 하기 위해
 	 */
+	UPROPERTY()
 	TObjectPtr<UDMSSequence> ParentSequence;
+	UPROPERTY()
 	TObjectPtr<UDMSSequence> ChildSequence;
 
 	/**
@@ -197,25 +199,13 @@ public:
 	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets);
 
 	UFUNCTION(BlueprintCallable)
+	bool IsSequenceActive();
+
+	UFUNCTION(BlueprintCallable)
 	TArray<FDMSSequenceEIStorage>& GetEIStorage();
 
 	UFUNCTION(BlueprintCallable)
 	TArray<UDMSEffectInstance*> GetAllEIs();
-
-	///**
-	// * Setup owning widget queue with param widgets.
-	// * @param	iWidgets					Widgets going to used in widget queue.
-	// * @return	ture if setup was successful.
-	// */
-	//bool SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets);
-
-	///**
-	// * Run owning widget queue.
-	// * @param	iOnSelectorFinished			Lambda parameter to be executed when the widget queue is successfully completed.
-	// * @param	iOnSelectorCanceled			Lambda parameter to be executed when the widget queue is canceled.
-	// */
-	//template<typename FuncFinished, typename FuncCanceled >
-	//void RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled);
 
 	/**
 	 * Executed when sequence is initiated.
@@ -224,9 +214,9 @@ public:
 
 	/**
 	 * Executed when sequence is finished.
-	 * @param	Successed				Whether the sequence was successful or not.
+	 * @param	Succeeded				Whether the sequence was successful or not.
 	 */
-	void OnSequenceFinish(bool Successed);
+	void OnSequenceFinish(bool Succeeded);
 
 	/**
 	 * Generate tag container for notifying.
@@ -276,9 +266,9 @@ public:
 
 	/**
 	 * Executed when step queue completed.
-	 * @param	Successed				Whether the step queue was successful or not..
+	 * @param	Succeeded				Whether the step queue was successful or not..
 	 */
-	void OnStepQueueCompleted(bool Successed);
+	void OnStepQueueCompleted(bool Succeeded);
 
 protected:	
 	/**

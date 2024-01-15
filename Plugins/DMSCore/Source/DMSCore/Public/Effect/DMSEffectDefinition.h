@@ -28,8 +28,8 @@ class UDMSSequence;
 class UDMSConditionCombiner;
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOptionCompleted,UDMSEffectOption*,CompletedOption);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExecuteCompleted, bool, Successed);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Succeeded);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExecuteCompleted, bool, Succeeded);
 
 
 

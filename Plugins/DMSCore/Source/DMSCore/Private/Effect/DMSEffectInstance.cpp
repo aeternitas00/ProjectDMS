@@ -192,9 +192,9 @@ void UDMSEffectApplyWorker::SetupWorker(UDMSSequence* iSequence, UDMSEffectInsta
 	IteratingDelegate.BindDynamic(this, &UDMSEffectApplyWorker::ApplyNextEffectDef);
 }
 
-void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
+void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 {
-	if (!PrevSuccessed)
+	if (!PrevSucceeded)
 	{
 		// DISCUSSION :: Stopping immediately when failed is FINE?
 		OwnerInstance->SetToPendingKill();
@@ -238,7 +238,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSuccessed)
 
 		else {
 
-			// Ignored effect is considered to successed.
+			// Ignored effect is considered to Succeeded.
 			ApplyNextEffectDef(true);
 		}
 	}

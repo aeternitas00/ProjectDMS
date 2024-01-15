@@ -129,6 +129,11 @@ void ADMSGameMode::SetupDMSGame_Implementation()
 
 	// ...
 }
+//
+//bool ADMSGameMode::CheckAllPlayerLoaded() const
+//{
+//	return GetWorldSettings()->bAllClientsLoaded;
+//}
 
 ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID, ADMSLocationBase* DefaultLocation, const FTransform& inRelativeTransform)
 {

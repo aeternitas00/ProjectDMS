@@ -74,6 +74,9 @@ public:
 	void SetupDMSGame();
 	virtual void SetupDMSGame_Implementation();
 
+	//UFUNCTION(BlueprintCallable,BlueprintPure)
+	//bool CheckAllPlayerLoaded() const;
+
 	// Spawn DMSSpawnable in param location to Owner player.
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Spawn DMS Game Actor_ID"))
 	ADMSSpawnableBase* SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID = -1, ADMSLocationBase* DefaultLocation = nullptr, const FTransform& inRelativeTransform = FTransform());

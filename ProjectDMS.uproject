@@ -48,6 +48,10 @@
 		{
 			"Name": "DMSCore",
 			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
 		}
 	]
 }

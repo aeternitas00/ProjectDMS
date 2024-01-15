@@ -135,7 +135,7 @@ public:
 	 * @param	Form			in Request form.
 	 * @return	Created handle.
 	 */
-	UFUNCTION(BlueprintCallable, Server)
+	UFUNCTION(BlueprintCallable/*, Server*/)
 	UDMSSelectorHandle* RequestCreateSelector(FDMSSelectorRequestForm& Form);
 
 	/**

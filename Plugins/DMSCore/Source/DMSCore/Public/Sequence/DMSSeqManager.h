@@ -28,6 +28,34 @@ class UDMSDecisionWidget;
 
 DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 
+//USTRUCT(BlueprintType)
+//struct DMSCORE_API FDMSSequenceSpawnParameters
+//{
+//	GENERATED_BODY()
+//
+//	FDMSSequenceSpawnParameters():SourceObject(nullptr),SourcePlayer(nullptr),EffectNode(nullptr),Targets({}),ParentSequence(nullptr),Datas(nullptr){}
+//	
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	UObject* SourceObject;
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	AActor* SourcePlayer;
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	UDMSEffectNode* EffectNode;
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	UDMSSequence* ParentSequence;
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	UDMSDataObjectSet* Datas;
+//
+//	FSimpleMulticastEventSignature OnSequenceInitiated_Native;
+//	FOnSequenceFinished OnSequenceFinished_Native;
+//
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	FOnSequenceInitiatedDynamic OnSequenceInitiated;
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	FOnSequenceFinishedDynamic OnSequenceFinished;
+//};
 
 /**
  *	========================================
@@ -58,17 +86,37 @@ public:
 	 * @param	ParentSequence				Explicit parent sequence. Default is Current sequence of SequenceManager.
 	 * @return	Created sequence : nullptr if request was failed.
 	 */
-	UFUNCTION(BlueprintCallable/*, Server*/)
+	UFUNCTION(BlueprintCallable/*, Server, Reliable*/)
 	UDMSSequence* RequestCreateSequence(
 		UObject* SourceObject, 
 		AActor* SourcePlayer,
 		UDMSEffectNode* EffectNode, 
-		TArray<TScriptInterface<IDMSEffectorInterface>> Targets,
+		const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
 		UDMSDataObjectSet* Datas = nullptr, 
 		UDMSSequence* ParentSequence = nullptr
 	);	
 
-	UFUNCTION(BlueprintCallable)
+	// 멀티플레이 테스트용 임시 함수
+	/**
+	* Create a Sequence object.
+	* @param	SourceObject				The object that triggers the sequence.
+	* @param	SourcePlayer				Explicit controller of the SourceObject.
+	* @param	EffectNode					Effect that will be applied when the 'sequence is applied'.
+	* @param	Targets						Explicit targets of this sequence. Override EffectNode's preset target flag.
+	* @param	Datas						Additional data for applying effect.
+	* @param	ParentSequence				Explicit parent sequence. Default is Current sequence of SequenceManager.
+	*/
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void RequestAppendNewSequence(
+		UObject* SourceObject, 
+		AActor* SourcePlayer,
+		UDMSEffectNode* EffectNode, 
+		const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
+		UDMSSequence* ParentSequence ,
+		UDMSDataObjectSet* Datas= nullptr
+	);	
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void RemoveSequence(UDMSSequence* Sequence);
 
 	/**
@@ -76,14 +124,15 @@ public:
 	 * @param	iSeq			Running sequence.
 	 * @param	WithPreview		Run sequence with previewing.  
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void RunSequence(UDMSSequence* iSeq);
 
 	/**
 	 * Complete param sequence. sort of cleanup.
 	 * @param	Sequence
 	 */
-	void CompleteSequence(UDMSSequence* Sequence, bool Successed = true);
+	UFUNCTION(Server, Reliable)
+	void CompleteSequence(UDMSSequence* Sequence, bool Succeeded = true);
 
 protected:
 
@@ -98,14 +147,14 @@ public:
 	/*
 	 * Root of sequence tree. the first created sequence becomes root sequence.
 	 */
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UDMSSequence> RootSequence;
 
 	/*
 	 * Current running sequence.
 	 * Sequences created while another sequence is in progress will be set as child of that.
 	 */
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UDMSSequence> CurrentSequence;
 
 	/**

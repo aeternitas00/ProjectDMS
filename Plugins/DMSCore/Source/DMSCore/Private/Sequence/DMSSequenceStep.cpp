@@ -17,9 +17,9 @@ void UDMSSequenceStep::RunStep()
 	OnStepInitiated();
 }
 
-void UDMSSequenceStep::CloseStep(bool bSuccessed)
+void UDMSSequenceStep::CloseStep(bool bSucceeded)
 {
-	OnStepFinished(bSuccessed);
+	OnStepFinished(bSucceeded);
 }
 
 void UDMSSequenceStep::OnStepInitiated()
@@ -28,22 +28,26 @@ void UDMSSequenceStep::OnStepInitiated()
 	Progress_Before();
 }
 
-void UDMSSequenceStep::OnStepFinished(bool bSuccessed)
+void UDMSSequenceStep::OnStepFinished(bool bSucceeded)
 {
-	OnStepFinished_Delegate.Broadcast(bSuccessed);
+	OnStepFinished_Delegate.Broadcast(bSucceeded);
 	
+	// DEBUG
 	if ( NextStep != nullptr ) {
 		auto NOuter = NextStep->OwnerSequence;
 		auto tOuter = this->OwnerSequence;
 		if ( NOuter != tOuter )
 				DMS_LOG_SIMPLE(TEXT("==== %s : Step Outer is different %s %s===="),NOuter,tOuter);
 	}
-	if (bSuccessed && NextStep != nullptr)
-	{ 
+
+	if (bSucceeded && NextStep != nullptr)	{ 
 		OwnerSequence->CurrentStep = NextStep; NextStep->RunStep(); 
 	}
 	
-	else OwnerSequence->OnStepQueueCompleted(bSuccessed);
+	else {
+		OwnerSequence->CurrentStep = nullptr;
+		OwnerSequence->OnStepQueueCompleted(bSucceeded);
+	}
 		
 }
 
@@ -98,12 +102,18 @@ void UDMSSequenceStep::OnAfter_Implementation()
 	ProgressComplete();
 }
 
-void UDMSSequenceStep::ProgressComplete(bool bSuccessed)
+void UDMSSequenceStep::ProgressComplete(bool bSucceeded)
 {
 	//auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
 	//
+	//DEBUG
+	if (OwnerSequence == nullptr)
+	{
+		DMS_LOG_SIMPLE(TEXT("==== %s : SequenceStep has no owner ===="), *GetName());
+		return;
+	}
 
-	if (!bSuccessed || (OwnerSequence->SequenceState == EDMSSequenceState::SS_Canceled)){
+	if (!bSucceeded || (OwnerSequence->SequenceState == EDMSSequenceState::SS_Canceled)){
 		DMS_LOG_SIMPLE(TEXT("==== %s : [%s] Failed ===="), *OwnerSequence->GetName(), *GetName());
 		CloseStep(false); return;
 	}

@@ -31,7 +31,7 @@ void UDMSPhase::OnStartPhase_Implementation()
 
 	auto NewSeq = SM->RequestCreateSequence(GS,GS,PhaseNode,{});
 
-	NewSeq->AddToOnSequenceFinished_Native([this](bool Successed){
+	NewSeq->AddToOnSequenceFinished_Native([this](bool Succeeded){
 		OnStartPhase_Dynamic.Broadcast(this);
 		OnStartPhase_Native.Broadcast(this);
 	});

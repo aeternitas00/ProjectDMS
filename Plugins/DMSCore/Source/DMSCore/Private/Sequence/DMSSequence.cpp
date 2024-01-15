@@ -112,6 +112,10 @@ FGameplayTagContainer UDMSSequence::GenerateTagContainer()
 
 void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq) 
 {
+	if ( ChildSequence != nullptr && ChildSequence->IsSequenceActive() )
+	{
+		DMS_LOG_DETAIL(Warning,TEXT("==== Attempted to attach a child to sequence that already has children.  ===="))
+	}
 	iSeq->ParentSequence = this;
 	ChildSequence = iSeq;
 }
@@ -131,6 +135,11 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 	//	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();	check(EH);
 	//	EH->CreateEffectInstance(this,OriginalEffectNode);
 	//}
+}
+
+bool UDMSSequence::IsSequenceActive()
+{
+	return CurrentStep != nullptr;
 }
 
 TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets() const
@@ -163,23 +172,23 @@ void UDMSSequence::OnSequenceInitiate()
 	OnSequenceInitiated_Dynamic.Broadcast();
 }
 
-void UDMSSequence::OnSequenceFinish(bool Successed)
+void UDMSSequence::OnSequenceFinish(bool Succeeded)
 {
 	auto temp = std::move(OnSequenceFinished);
 	auto temp_Dynamic = std::move(OnSequenceFinishedDynamic);
 	OnSequenceFinished = FOnSequenceFinished();
 	OnSequenceFinishedDynamic = FOnSequenceFinishedDynamic();
-	temp.Broadcast(Successed);
-	temp_Dynamic.Broadcast(Successed);
+	temp.Broadcast(Succeeded);
+	temp_Dynamic.Broadcast(Succeeded);
 	// Cleanup 
 	
 }
 
-void UDMSSequence::OnStepQueueCompleted(bool Successed)
+void UDMSSequence::OnStepQueueCompleted(bool Succeeded)
 {
 	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
 
-	SeqManager->CompleteSequence(this, Successed); 
+	SeqManager->CompleteSequence(this, Succeeded); 
 }
 
 //bool UDMSSequence::SetupWidgetQueue(TArray<UDMSConfirmWidgetBase*> iWidgets)

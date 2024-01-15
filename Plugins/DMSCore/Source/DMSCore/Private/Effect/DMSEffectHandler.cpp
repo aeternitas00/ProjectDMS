@@ -74,9 +74,9 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 }
 
 
-void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence, bool PrevSuccessed)
+void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence, bool PrevSucceeded)
 {
-	if (!PrevSuccessed)
+	if (!PrevSucceeded)
 	{
 		// DISCUSSION :: Stopping immediately when failed is FINE?
 		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound(false);

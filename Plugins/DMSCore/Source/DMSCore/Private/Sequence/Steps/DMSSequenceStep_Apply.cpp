@@ -38,10 +38,10 @@ void UDMSSequenceStep_Apply::OnBefore_Implementation()
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : Apply Sequence [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 
-	DMS_LOG_SCREEN(TEXT("==-- ApplyStep Starts by %s : [%s]"), *OwnerSequence->GetSourceObject()->GetName(),
-		*OwnerSequence->OriginalEffectNode->GenerateTagContainer().ToString());
+	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep Starts by %s : [%s]"), *OwnerSequence->GetSourceObject()->GetName(),
+	//	*OwnerSequence->OriginalEffectNode->GenerateTagContainer().ToString());
 
-	DMS_LOG_SCREEN(TEXT("==-- ApplyStep_BEFORE [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_BEFORE [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 
 	ProgressComplete();
 
@@ -60,15 +60,15 @@ void UDMSSequenceStep_Apply::Progress_During()
 	// Proceed to 'During Timing'
 	//BeforeSequence->Progress = EDMSTimingFlag::T_During;
 
-	DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 
 	// Resolve First
 	DMS_LOG_SIMPLE(TEXT("==== %s : RESOLVE START ===="), *OwnerSequence->GetName());
 
-	EffectHandler->Resolve(OwnerSequence, [=](bool ResolveSuccessed) {
+	EffectHandler->Resolve(OwnerSequence, [=](bool ResolveSucceeded) {
 		// ==== ON RESOLVE COMPLETED ====
-		if (ResolveSuccessed) {
-			DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING : Successed [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+		if (ResolveSucceeded) {
+			//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING : Succeeded [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 			// 'During Timing' broadcast starts.
@@ -81,7 +81,7 @@ void UDMSSequenceStep_Apply::Progress_During()
 
 		}
 		else {
-			DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING : Failed [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+			//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING : Failed [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE FAILED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 			ProgressComplete(false);
@@ -108,7 +108,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler();			check(EffectHandler);
 	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
 
-	DMS_LOG_SCREEN(TEXT("==-- ApplyStep_AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 
 	// ==== ON AFTER TIMING RESPONSE ENDED ====
 	DMS_LOG_SIMPLE(TEXT("==== %s : ON AFTER TIMING RESPONSE ENDED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
@@ -117,7 +117,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 	if (OwnerSequence->OriginalEffectNode->ChildEffect != nullptr && OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode() != nullptr &&
 		OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(OwnerSequence->GetSourceObject(), OwnerSequence)) {
 
-		DMS_LOG_SCREEN(TEXT("==-- Child Sequence Created [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+		//DMS_LOG_SCREEN(TEXT("==-- Child Sequence Created [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 		// Proceed to run child effect sequence.
 		DMS_LOG_SIMPLE(TEXT("==== %s : Child Sequence Created -> Advance ===="), *OwnerSequence->GetName());
 		auto ChildNode = OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
@@ -127,7 +127,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 
 		// Set delegates when child effect sequence completed.
 		NewSeq->AddToOnSequenceFinished_Native(
-			[=, ParentSequence = OwnerSequence](bool Successed) __declspec(noinline) {
+			[=, ParentSequence = OwnerSequence](bool Succeeded) __declspec(noinline) {
 			// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
 
@@ -142,7 +142,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 	}
 
 	else {//Complete this step.
-		DMS_LOG_SCREEN(TEXT("==-- ApplyStep_AFTER : No Child .. \"END\" [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+		//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_AFTER : No Child .. \"END\" [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 		ProgressComplete();
 	}
 }
