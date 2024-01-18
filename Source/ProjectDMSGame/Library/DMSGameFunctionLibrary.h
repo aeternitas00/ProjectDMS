@@ -36,6 +36,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
 	static bool GetAttributeFromActor(AActor* iActor, const FGameplayTag& Name, float& outValue);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static bool CheckCardIsCommitable(ADMSCardBase* iCard);
+	//UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
+	//static bool CheckCardIsCommitable(ADMSCardBase* iCard);
 };

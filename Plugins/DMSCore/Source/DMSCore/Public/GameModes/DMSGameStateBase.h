@@ -8,6 +8,10 @@
 #include "Effect/DMSEffectorOwnableInterface.h"
 #include "DMSGameStateBase.generated.h"
 
+class UDMSEffectHandler;
+class UDMSSeqManager;
+class UDMSNotifyManager;
+class UDMSPhaseManager;
 class UDMSEIManagerComponent;
 class UDMSSelectorManager;
 class ADMSPlayerStateBase;
