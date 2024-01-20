@@ -7,6 +7,7 @@
 #include "Conditions/DMSObjectCompareCondition.h"
 #include "EffectSet/DMSEffectNode_PlayCard.h"
 #include "EffectSet/DMSEffect_MoveCard.h"
+#include "Common/DMSGameTags.h"
 
 //UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_EffectKeyword_Play_Card, "EffectKeyword.Play.Card");
 

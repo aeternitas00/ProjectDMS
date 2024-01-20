@@ -17,7 +17,7 @@
 
 UDMSSeqManager::UDMSSeqManager() : /*bUsingSteps(false),*/ RootSequence(nullptr), CurrentSequence(nullptr)
 {
-	
+
 }
 
 

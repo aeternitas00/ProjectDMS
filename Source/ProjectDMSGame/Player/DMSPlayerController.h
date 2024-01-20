@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -103,16 +103,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ADMSCameraPawn* GetCameraPawn();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
 	void CreateHUDWidgets();
-
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
 	void SetupHUDWidgets();	
 
-	UFUNCTION(BlueprintNativeEvent)
-	void OnLoadSaveGame(UDMSSaveGame* LoadedItem);
-	virtual void OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem);
+	UFUNCTION(BlueprintCallable, Server,Reliable)
+	void Server_OnSetupComplete();
 
-	UFUNCTION(/*Client*/)
-	void LoadClientSaveGame(const FString& SlotName, const int32 UserIndex);
+
 };

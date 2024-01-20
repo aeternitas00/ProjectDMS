@@ -2,6 +2,7 @@
 
 
 #include "DMSGameMode.h"
+#include "System/DMSSession.h"
 #include "Player/DMSPlayerState.h"
 #include "GameModes/DMSGameState.h"
 
@@ -37,11 +38,7 @@ ADMSGameMode::ADMSGameMode() : ADMSGameModeBase()
 void ADMSGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	bool rv = GetDMSGameState()->IsValidLowLevelFast();
-	if (rv && GetDMSGameState()->PlayerArray.Num() != 0)
-	{
-		GetDMSGameState()->SetLeaderPlayer(GetDMSGameState()->PlayerArray[0]->GetPlayerId());
-	}
+
 	//DMSGameState=GetGameState<ADMSGameState>();
 }
 
@@ -59,6 +56,11 @@ void ADMSGameMode::PreInitializeComponents()
 	//}
 	Super::PreInitializeComponents();
 }
+
+//void ADMSGameMode::RegisterPlayer_BP(APlayerController* PC)
+//{
+//	GameSession->RegisterPlayer(PC,PC->PlayerState->GetUniqueId(),false);
+//}
 
 
 ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName)
@@ -87,6 +89,13 @@ void ADMSGameMode::SetupDMSGame_Implementation()
 {
 	ADMSGameState* GS = Cast<ADMSGameState>(GetDMSGameState());
 	check(GS);
+	
+	NumReadyPlayer=0;
+
+	if (GS->PlayerArray.Num() != 0)
+	{
+		GS->SetLeaderPlayer(GetDMSGameState()->PlayerArray[0]->GetPlayerId());
+	}
 
 	// Setup game system thingys.
 	GS->RegisterNotifyObject(GS);
@@ -96,44 +105,45 @@ void ADMSGameMode::SetupDMSGame_Implementation()
 	if (CurrentLSA != nullptr)
 		CurrentLSA->InitializeDMSGame();
 
-	auto StartingLocation = CurrentLSA->GetStartingLocations()[0];
-
 	// Setup Player thingys.
-	for (auto PC : GS->GetDMSPlayerControllers()) {
-
-		auto PS = PC->GetPlayerState<ADMSPlayerState>();
-		if (PS==nullptr) continue;
-		auto PlayerID = PS->GetPlayerId();
-
-		PC->CreateHUDWidgets();
+	for (auto PS :  GS->GetDMSPlayers()) {
 		PS->SetupDefaults();
-		PC->SetupHUDWidgets();
-		
-		// TODO :: USE RPC WITH SYNC
-		PC->LoadClientSaveGame("TestSlot",0);
-
-		// IF SERVER RECEIVED DATA [ MIGRATE TO OTHER FUNCTION FOR SYNC ]
-
-		// Spawn character
-		auto CharacterAsset_Soft = UKismetSystemLibrary::GetSoftObjectReferenceFromPrimaryAssetId(PS->PlayerCharacterData.AssetID);
-		auto CharacterAsset = Cast<UDMSCharacterDefinition>(UKismetSystemLibrary::LoadAsset_Blocking(CharacterAsset_Soft));
-		PS->CharacterRef = SpawnDMSGameActor<ADMSCharacterBase>(CharacterAsset, PlayerID,StartingLocation,FTransform(FVector(- 10, 0, 0)));
-
-		// Spawn cards
-
-		for (auto CardData : PS->OriginalCardDatas)
-			SpawnCard(CardData, PlayerID,TEXT("Deck"));
-		
-		PS->SearchContainer(TEXT("Deck"))->ShuffleTopNCards();
+		PS->LoadSaveGame("TestSlot",0);
 	}
 
 	// ...
 }
-//
-//bool ADMSGameMode::CheckAllPlayerLoaded() const
-//{
-//	return GetWorldSettings()->bAllClientsLoaded;
-//}
+
+void ADMSGameMode::PlayerReady()
+{	
+	ADMSGameState* GS = Cast<ADMSGameState>(GetDMSGameState());
+	check(GS);
+
+	auto CurrentLSA = Cast<ADMSLevelScriptActor>(GetWorld()->GetLevelScriptActor());
+	auto StartingLocation = CurrentLSA->GetStartingLocations()[0];
+
+	if ( GS->PlayerArray.Num() == ++NumReadyPlayer)
+	{
+		for (auto PS : GS->GetDMSPlayers()) {
+
+			auto PlayerID = PS->GetPlayerId();
+			auto CharacterAsset_Soft = UKismetSystemLibrary::GetSoftObjectReferenceFromPrimaryAssetId(PS->PlayerCharacterData.AssetID);
+			auto CharacterAsset = Cast<UDMSCharacterDefinition>(UKismetSystemLibrary::LoadAsset_Blocking(CharacterAsset_Soft));
+			if (CharacterAsset)
+				PS->CharacterRef = SpawnDMSGameActor<ADMSCharacterBase>(CharacterAsset, PlayerID,StartingLocation,FTransform(FVector(- 10, 0, 0)));
+
+			// Spawn cards
+
+			for (auto CardData : PS->OriginalCardDatas)
+				SpawnCard(CardData, PlayerID,TEXT("Deck"));
+
+			if (PS->SearchContainer(TEXT("Deck")))
+				PS->SearchContainer(TEXT("Deck"))->ShuffleTopNCards();
+		}
+
+		OnAllPlayerReady();
+	}
+}
 
 ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor_ID(const UDMSSpawnableDataBase* ActorData, int32 OwnerID, ADMSLocationBase* DefaultLocation, const FTransform& inRelativeTransform)
 {

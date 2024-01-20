@@ -53,12 +53,18 @@ protected:
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TMap<FPrimaryAssetType, TSubclassOf<ADMSSpawnableBase>> DefaultSpawningClasses;
 
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	int NumReadyPlayer;
+
 protected:
 	virtual void BeginPlay() override;
 
 public:
 
 	virtual void PreInitializeComponents() override;
+
+	//UFUNCTION(BlueprintCallable)
+	//void RegisterPlayer_BP(APlayerController* PC);
 
 	/**
 	 * Spawn card with card data and owner info.
@@ -74,8 +80,11 @@ public:
 	void SetupDMSGame();
 	virtual void SetupDMSGame_Implementation();
 
-	//UFUNCTION(BlueprintCallable,BlueprintPure)
-	//bool CheckAllPlayerLoaded() const;
+	UFUNCTION(BlueprintCallable)
+	void PlayerReady();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAllPlayerReady();
 
 	// Spawn DMSSpawnable in param location to Owner player.
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Spawn DMS Game Actor_ID"))

@@ -3,6 +3,8 @@
 
 #include "Player/DMSPlayerState.h"
 
+#include "Net/OnlineEngineInterface.h"
+
 #include "System/DMSSaveGame.h"
 
 #include "Effect/DMSEffectDefinition.h"
@@ -16,11 +18,16 @@
 
 #include "Library/DMSGameFunctionLibrary.h"
 
+#include "Common/DMSGameTags.h"
+
 ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPlayerStateBase(Initializer)
 {
 	CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
 	//EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
+
+	CardManagerComponent->SetIsReplicated(true);
+	AttributeComponent->SetIsReplicated(true);
 
 	DefaultStats.Add(TAG_DMS_Attribute_Resource, 10);
 	DefaultStats.Add(TAG_DMS_Attribute_ActionPoint, 10);
@@ -67,20 +74,56 @@ void ADMSPlayerState::SetupDefaults()
 {
 	SetupCardContainers();
 	SetupAttributes();
-
-	// Load Player datas
-	// -> 
-	// Spawn Players Character
-
-	//PreviewDummy = DuplicateObject(this,this,FName(GetName()+TEXT("_Preview")));
-	// Referencer initalize
-	//PreviewDummy->CharacterRef = Cast<ADMSCharacterBase>(CharacterRef->GetPreviewObject());
 }
+
+void ADMSPlayerState::OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem)
+{
+	DMS_LOG_SIMPLE(TEXT("%s : OnLoadSaveGame"),*this->GetName());
+
+	LoadDatasFromSave(LoadedItem);
+}
+
+void ADMSPlayerState::LoadSaveGame(const FString& SlotName, const int32 UserIndex)
+{
+	auto DMSSaveGame=Cast<UDMSSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
+
+	OnLoadSaveGame(DMSSaveGame);
+}
+
 
 UDMSCardContainerComponent* ADMSPlayerState::SearchContainer(const FName& ContainerName)
 {
 	return CardManagerComponent ? CardManagerComponent->SearchContainer(ContainerName) : nullptr;
 }
+
+//void ADMSPlayerState::RegisterPlayerWithSession(bool bWasFromInvite)
+//{
+//	if(GetNetMode() != NM_Standalone)
+//	{
+//		if(GetUniqueId().IsValid())
+//		{
+//			// Register the player as part of the session
+//			if(UOnlineEngineInterface::Get()->DoesSessionExist(GetWorld(), SessionName))
+//			{
+//				UOnlineEngineInterface::Get()->RegisterPlayer(GetWorld(), SessionName, GetUniqueId(), bWasFromInvite);
+//			}
+//		}
+//	}
+//}
+//
+//void ADMSPlayerState::UnregisterPlayerWithSession()
+//{
+//	if (GetNetMode() == NM_Client && GetUniqueId().IsValid())
+//	{
+//		if (SessionName != NAME_None)
+//		{
+//			if (UOnlineEngineInterface::Get()->DoesSessionExist(GetWorld(), SessionName))
+//			{
+//				UOnlineEngineInterface::Get()->UnregisterPlayer(GetWorld(), SessionName, GetUniqueId());
+//			}
+//		}
+//	}
+//}
 
 
 void ADMSPlayerState::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
@@ -101,5 +144,13 @@ int ADMSPlayerState::GetDistanceWith_Implementation(const TScriptInterface<IDMSL
 bool ADMSPlayerState::LocatingTo_Implementation(ADMSLocationBase* TargetLocation)
 {
 	return IDMSLocatableInterface::Execute_LocatingTo(CharacterRef, TargetLocation);
+}
+
+void ADMSPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADMSPlayerState, CardManagerComponent);	
+	DOREPLIFETIME(ADMSPlayerState, AttributeComponent);	
 }
 

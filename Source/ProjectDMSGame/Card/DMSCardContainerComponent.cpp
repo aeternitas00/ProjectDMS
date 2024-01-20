@@ -5,6 +5,11 @@
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Misc/DateTime.h"
 
+UDMSCardContainerComponent::UDMSCardContainerComponent()
+{
+
+}
+
 // Called when the game starts
 void UDMSCardContainerComponent::BeginPlay()
 {

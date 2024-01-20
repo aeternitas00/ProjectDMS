@@ -26,6 +26,8 @@ void UDMSPhase::End_OnPreStartPhase()
 
 void UDMSPhase::OnStartPhase_Implementation()
 {
+	if ( !GIsServer ) 
+		{DMS_LOG_C(Warning);return;}
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
 	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(); check(GS);
 

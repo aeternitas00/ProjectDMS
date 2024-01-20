@@ -31,13 +31,13 @@ void ADMSGameStateBase::PreInitializeComponents()
 {
 	if (PhaseManagerClass->IsValidLowLevelFast()) {
 		PhaseManager = NewObject<UDMSPhaseManager>(this, PhaseManagerClass, TEXT("PhaseManager"));
-		PhaseManager->RegisterComponent();
 		PhaseManager->SetIsReplicated(true);
+		PhaseManager->RegisterComponent();
 	}
 	if (SequenceManagerClass->IsValidLowLevelFast()) {
 		SequenceManager = NewObject<UDMSSeqManager>(this, SequenceManagerClass, TEXT("SequenceManager"));
-		SequenceManager->RegisterComponent();
 		SequenceManager->SetIsReplicated(true);
+		SequenceManager->RegisterComponent();
 	}
 
 	Super::PreInitializeComponents();

@@ -12,6 +12,7 @@
 class ADMSCardBase;
 class UDMSSelectorHandle;
 class UDMSSelectorRequestGenerator;
+class UDMSTargetGenerator;
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_SkillTest_Committable)

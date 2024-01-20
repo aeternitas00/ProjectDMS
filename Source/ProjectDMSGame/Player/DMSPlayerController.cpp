@@ -37,6 +37,11 @@ void ADMSPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	EnableInput(this);	
+
+	//CreateHUDWidgets(); 
+	//SetupHUDWidgets();
+
+	//Server_OnSetupComplete();
 }
 
 
@@ -53,21 +58,7 @@ ADMSCameraPawn* ADMSPlayerController::GetCameraPawn()
 	return GetPawn<ADMSCameraPawn>();
 }
 
-void ADMSPlayerController::OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem)
-{
-	auto PS = GetPlayerState<ADMSPlayerState>();
-	check(PS);
 
-	PS->LoadDatasFromSave(LoadedItem);
-
-}
-
-void ADMSPlayerController::LoadClientSaveGame(const FString& SlotName, const int32 UserIndex)
-{
-	auto DMSSaveGame=Cast<UDMSSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex));
-
-	OnLoadSaveGame(DMSSaveGame);
-}
 
 void ADMSPlayerController::InstigateObject(UObject* Object)
 {
@@ -77,7 +68,7 @@ void ADMSPlayerController::InstigateObject(UObject* Object)
 	// 
 	// Highlight or Outline
 	//
-	// ¿ÀºêÁ§Æ® Å¸ÀÔ º° Á¤º¸ Ç¥½Ã UI ¶ç¿ì±â.
+	// ì˜¤ë¸Œì íŠ¸ íƒ€ìž… ë³„ ì •ë³´ í‘œì‹œ UI ë„ìš°ê¸°.
 }
 
 void ADMSPlayerController::SelectObject(UObject* Object)
@@ -87,3 +78,10 @@ void ADMSPlayerController::SelectObject(UObject* Object)
 	OnSelectedObject(tFormer);
 }
 
+
+void ADMSPlayerController::Server_OnSetupComplete_Implementation()
+{
+	ADMSGameMode* GameMode = GetWorld()->GetAuthGameMode<ADMSGameMode>();
+
+	GameMode->PlayerReady();
+}

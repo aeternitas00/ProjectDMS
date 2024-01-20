@@ -31,14 +31,14 @@ public class ProjectDMSGame : ModuleRules
             "DMSCore",
 			"OnlineSubsystem", 
 			"OnlineSubsystemNull", 
-			"OnlineSubsystemSteam", 
+			//"OnlineSubsystemSteam", 
 			"OnlineSubsystemUtils"
 			
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "Steamworks" });
 
-		AddEngineThirdPartyPrivateStaticDependencies(Target, "Steamworks");
+		//AddEngineThirdPartyPrivateStaticDependencies(Target, "Steamworks");
 		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
 	}
 }

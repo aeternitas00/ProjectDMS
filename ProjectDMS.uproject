@@ -42,7 +42,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "OnlineSubsystemSteam",
+			"Name": "OnlineSubsystemNull",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesNull",
 			"Enabled": true
 		}
 	]

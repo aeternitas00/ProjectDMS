@@ -11,7 +11,7 @@ UDMSCardManagerComponent::UDMSCardManagerComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-	
+
 	Containers.Add(NAME_None, CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("NoneContainer")));
 
 	// Now supported ( had to use OnComponentCreated before )
@@ -78,6 +78,7 @@ void UDMSCardManagerComponent::ConstructContainer(const FName& ContainerName, TS
 	
 	Containers.Add(ContainerName, NewContainer);
 	NewContainer->ContainerName = ContainerName;
+	NewContainer->SetIsReplicated(true);
 	NewContainer->RegisterComponent();
 }
 

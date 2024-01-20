@@ -25,12 +25,12 @@
  * USTRUCT(BlueprintType)
 	struct FProjectDMSCardContainer : public FFastArraySerializer ??
 
-	LyraÀÇ Equipment´Â AppliedEquipmentEntry ±¸Á¶Ã¼¿¡ EquipmentInstance¿Í TSubclassOf<ULyraEquipmentDefinition> ¸¦ Â¦ Áö¾î³õ°í, 
-	EquipmentList¿¡ ÀÌ¸¦ ÀúÀåÇÑµÚ, EquipmentManagerComponent°¡ EquipmentList¸¦ °®´Â ÇüÅÂ·Î °ü¸®ÇÔ.
+	Lyraì˜ EquipmentëŠ” AppliedEquipmentEntry êµ¬ì¡°ì²´ì— EquipmentInstanceì™€ TSubclassOf<ULyraEquipmentDefinition> ë¥¼ ì§ ì§€ì–´ë†“ê³ , 
+	EquipmentListì— ì´ë¥¼ ì €ì¥í•œë’¤, EquipmentManagerComponentê°€ EquipmentListë¥¼ ê°–ëŠ” í˜•íƒœë¡œ ê´€ë¦¬í•¨.
 
-	Itemµµ ºñ½ÁÇÏÁö¸¸ »ìÂ¦ ´Ù¸¥±¸Á¶.. 
+	Itemë„ ë¹„ìŠ·í•˜ì§€ë§Œ ì‚´ì§ ë‹¤ë¥¸êµ¬ì¡°.. 
 
-	ºñ½ÁÇÑ ¸Æ¶ôÀÇ Ä«µå ÄÁÅ×ÀÌ³Ê¿¡ ´ëÇØ ¾î¶»°Ô ±¸¼ºÇÒÁö ´Ù½Ã »ı°¢ÇØºÁ¾ß ÇÒµí.
+	ë¹„ìŠ·í•œ ë§¥ë½ì˜ ì¹´ë“œ ì»¨í…Œì´ë„ˆì— ëŒ€í•´ ì–´ë–»ê²Œ êµ¬ì„±í• ì§€ ë‹¤ì‹œ ìƒê°í•´ë´ì•¼ í• ë“¯.
 
 
  */
@@ -52,8 +52,8 @@ public:
 /**
  * 	========================================
  *
- *	°¢°¢ÀÇ Ä«µå ´õ¹Ì¸¦ ³ªÅ¸³»´Â ÄÄÆ÷³ÍÆ®. ÀÌ Ä«µå ´õ¹ÌµéÀ» DMSCardManagerComponent°¡ ¿©·¯°³ º¸À¯Çá¿© °ü¸®ÇÏ°Ô µÊ.
- *	±âº»ÀûÀÎ ÇüÅÂÀÇ Ä«µå ÀÔÃâ·Â, ÀÔÃâ·Â½Ã¿¡ ´ëÇÑ ¹İÀÀ µîÀ» °¡Áö¸ç Ä«µå ´õ¹Ì°¡ Æ¯¼öÇÑ ºñÇØºñ¾î¸¦ °¡Á®¾ß ÇÒ °æ¿ì »ó¼Ó ¹ŞÀº Ä¿½ºÅÒ Ä«µå ÄÁÅ×ÀÌ³Ê¸¦ ±¸ÇöÇÏ¿© »ç¿ëÇÏ¸é µÊ.
+ *	ê°ê°ì˜ ì¹´ë“œ ë”ë¯¸ë¥¼ ë‚˜íƒ€ë‚´ëŠ” ì»´í¬ë„ŒíŠ¸. ì´ ì¹´ë“œ ë”ë¯¸ë“¤ì„ DMSCardManagerComponentê°€ ì—¬ëŸ¬ê°œ ë³´ìœ í–ì—¬ ê´€ë¦¬í•˜ê²Œ ë¨.
+ *	ê¸°ë³¸ì ì¸ í˜•íƒœì˜ ì¹´ë“œ ì…ì¶œë ¥, ì…ì¶œë ¥ì‹œì— ëŒ€í•œ ë°˜ì‘ ë“±ì„ ê°€ì§€ë©° ì¹´ë“œ ë”ë¯¸ê°€ íŠ¹ìˆ˜í•œ ë¹„í•´ë¹„ì–´ë¥¼ ê°€ì ¸ì•¼ í•  ê²½ìš° ìƒì† ë°›ì€ ì»¤ìŠ¤í…€ ì¹´ë“œ ì»¨í…Œì´ë„ˆë¥¼ êµ¬í˜„í•˜ì—¬ ì‚¬ìš©í•˜ë©´ ë¨.
  * 
  *	========================================
  */
@@ -63,7 +63,7 @@ class PROJECTDMSGAME_API UDMSCardContainerComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-
+	UDMSCardContainerComponent();
 	/**
 	 * Name of container 
 	 * NOTE :: TO TAG?

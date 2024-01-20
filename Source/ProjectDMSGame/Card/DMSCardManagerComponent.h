@@ -25,7 +25,7 @@ class ADMSCardBase;
  *	
  *	DMS Card Manager Component : Management playing cards, card containers, and etc...
  *	Expected to being attached to PC or PS.
- *	=> ÇÃ·¹ÀÌ¾î ´ÜÀ§ÀÇ Ä«µå °ü¸®ºÎºĞÀ» ´ã´ç ÇÒ °ÍÀÓ ( ÇÊµå µî )
+ *	=> í”Œë ˆì´ì–´ ë‹¨ìœ„ì˜ ì¹´ë“œ ê´€ë¦¬ë¶€ë¶„ì„ ë‹´ë‹¹ í•  ê²ƒì„ ( í•„ë“œ ë“± )
  *	 
  *	========================================
  */
@@ -39,12 +39,12 @@ public:
 
 protected:
 	// Set replicated in constructor
-	// Á÷Á¢ »ı¼ºÇÒ ÀÌÀ¯´Â º°·Î ¾ø°í ¿ÜºÎ¿¡¼­ »ı¼ºÇÏ°Ô µÉ °Í. ( DMS PCÀÇ ¿¹ ) 
+	// ì§ì ‘ ìƒì„±í•  ì´ìœ ëŠ” ë³„ë¡œ ì—†ê³  ì™¸ë¶€ì—ì„œ ìƒì„±í•˜ê²Œ ë  ê²ƒ. ( DMS PCì˜ ì˜ˆ ) 
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FName, TObjectPtr<UDMSCardContainerComponent>> Containers;
 
 public:
-	// Post Init ÀÌÈÄ »ı¼ºµÈ Ä«µå ÄÁÅ×ÀÌ³Êµé¿¡ ´ëÇØ ·¹ÇÃ¸®ÄÉÀÌ¼Ç ½ÇÇà.
+	// Post Init ì´í›„ ìƒì„±ëœ ì¹´ë“œ ì»¨í…Œì´ë„ˆë“¤ì— ëŒ€í•´ ë ˆí”Œë¦¬ì¼€ì´ì…˜ ì‹¤í–‰.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	UFUNCTION(BlueprintCallable)
@@ -61,4 +61,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSCardBase*> GetAllCards();
+
 };

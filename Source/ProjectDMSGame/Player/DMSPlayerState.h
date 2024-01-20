@@ -52,7 +52,7 @@ protected:
 	 * Card manager component.
 	 * Manage player's card containers like deck, hand, discard pile...
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TObjectPtr<UDMSCardManagerComponent> CardManagerComponent;
 
 	/**
@@ -72,7 +72,7 @@ protected:
 	 * Attribute component.
 	 * Manage mana, resource, etc... of player.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 
 	/**
@@ -114,8 +114,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Level;
 
-	// ÀÎ°ÔÀÓ Áß¿¡¼­ À§ÀÇ ºĞ·ùÁß ºñ°ø°³ Á¤º¸´Â ´Ù¸¥ ÇÃ·¹ÀÌ¾î°¡ ¾Ë ¼ö ¾ø´Â°Ô ±âº». 
-	// ÇØ´ç Á¤º¸¸¦ °ø°³ÇÒ ¼ö ÀÖ´Â È¿°ú°¡ ÀÖÀ» ¶§ °¡°øÀ» ÇØ¼­ µû·Î ÀÌ°÷¿¡ ÀúÀåÇÏ´Â ÇüÅÂ·Î.
+	// ì¸ê²Œì„ ì¤‘ì—ì„œ ìœ„ì˜ ë¶„ë¥˜ì¤‘ ë¹„ê³µê°œ ì •ë³´ëŠ” ë‹¤ë¥¸ í”Œë ˆì´ì–´ê°€ ì•Œ ìˆ˜ ì—†ëŠ”ê²Œ ê¸°ë³¸. 
+	// í•´ë‹¹ ì •ë³´ë¥¼ ê³µê°œí•  ìˆ˜ ìˆëŠ” íš¨ê³¼ê°€ ìˆì„ ë•Œ ê°€ê³µì„ í•´ì„œ ë”°ë¡œ ì´ê³³ì— ì €ì¥í•˜ëŠ” í˜•íƒœë¡œ.
 
 	/**
 	 * Load player deck from save game.
@@ -154,6 +154,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnLoadSaveGame(UDMSSaveGame* LoadedItem);
+	virtual void OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem);
+
+	UFUNCTION()
+	void LoadSaveGame(const FString& SlotName, const int32 UserIndex);
+
 	// ============================= //
 	//		INTERFACE FUNCTIONS
 	// ============================= //
@@ -165,4 +172,5 @@ public:
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
 	virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);
 	virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);
+
 };

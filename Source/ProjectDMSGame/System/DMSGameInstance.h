@@ -34,31 +34,31 @@ public:
 	UDMSGameInstance();
 
 	virtual void Init() override;
-	virtual void Shutdown() override;
+	//virtual void Shutdown() override;
 
 protected:
 	//FOnlineSession* CurrentSession;
 	IOnlineSessionPtr SessionInterface;
-	TSharedPtr<FOnlineSessionSearch> SessionSearch;
-	FOnlineSessionSettings DefaultSessionSettings;
+	//TSharedPtr<FOnlineSessionSearch> SessionSearch;
+	//FOnlineSessionSettings DefaultSessionSettings;
 
-	virtual void OnCreateSessionComplete(FName SessionName, bool Succeeded);
-	virtual void OnFindSessionsComplete(bool Succeeded);
-	FDelegateHandle OnFindDelegateHandle; 
-	virtual void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	//virtual void OnCreateSessionComplete(FName SessionName, bool Succeeded);
+	//virtual void OnFindSessionsComplete(bool Succeeded);
+	//virtual void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 public:
+
 	UFUNCTION(BlueprintCallable)
 	void ServerTravel(FString Level);
 
-	UFUNCTION(BlueprintCallable)
-	void CreateDMSSession(FName SessionName);
+	//UFUNCTION(BlueprintCallable)
+	//void CreateDMSSession(FName SessionName);
 
-	UFUNCTION(BlueprintCallable)
-	void JoinDMSSession(FName SessionName);
+	//UFUNCTION(BlueprintCallable)
+	//void JoinDMSSession(FName SessionName);
 
-	UFUNCTION(BlueprintCallable)
-	void QuitDMSSession(FName SessionName);
+	//UFUNCTION(BlueprintCallable)
+	//void QuitDMSSession(FName SessionName);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int32 GetSessionPlayerNum() const;
