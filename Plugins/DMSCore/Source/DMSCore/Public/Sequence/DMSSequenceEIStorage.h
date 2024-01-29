@@ -16,7 +16,7 @@
 #include "DMSSequenceEIStorage.generated.h"
 
 class IDMSEffectorInterface;
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 
 /**
  * Each sequence can have multiple possibilities when it comes to targets. 
@@ -49,5 +49,5 @@ struct FDMSSequenceEIStorage
 	 * Ref or created effect instances;
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<TObjectPtr<UDMSEffectInstance>> EIs;
+	TArray<TObjectPtr<ADMSActiveEffect>> EIs;
 };

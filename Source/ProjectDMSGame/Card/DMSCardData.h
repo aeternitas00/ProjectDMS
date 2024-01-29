@@ -16,7 +16,7 @@
 #include "DMSCardData.generated.h"
 
 class UDMSCardDefinition;
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 class ADMSCardBase;
 
 /**
@@ -44,7 +44,7 @@ public:
 	 * Saved persistent effects.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	TArray<TObjectPtr<UDMSEffectInstance>> AttachedEffect;
+	TArray<TObjectPtr<ADMSActiveEffect>> AttachedEffect;
 
 	/**
 	 * Caching spawned card actor for saving.

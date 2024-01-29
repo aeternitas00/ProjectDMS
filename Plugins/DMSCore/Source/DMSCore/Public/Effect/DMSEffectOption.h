@@ -8,7 +8,7 @@
 #include "DMSEffectOption.generated.h"
 
 class UDMSSequence;
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 
 /**
  * Object class for executing actions that do not affect the overall flow before the execution of the effect, 
@@ -34,13 +34,13 @@ public:
 	/*
 	 * @param	OnOptionCompleted	()->void lambda param 
 	 */
-	void ExecuteOption(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	void ExecuteOption(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
 
-	//void ExecuteOption(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, FOnExecuteCompleted OnOptionCompleted);
+	//void ExecuteOption(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, FOnExecuteCompleted OnOptionCompleted);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void OnExecuteOption(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
-	virtual void OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI , const FOnOptionCompleted& OnOptionCompleted);
+	void OnExecuteOption(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	virtual void OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI , const FOnOptionCompleted& OnOptionCompleted);
 
 };
 

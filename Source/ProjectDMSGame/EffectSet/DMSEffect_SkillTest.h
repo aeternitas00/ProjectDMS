@@ -22,7 +22,7 @@
 //
 //
 //
-//	//virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, FOnExecuteCompleted OnWorkCompleted) override;
+//	//virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, FOnExecuteCompleted OnWorkCompleted) override;
 //
 //	//virtual TSubclassOf<UDMSEffectElementSelectorWidget> GetPairedSelector_Implementation() { return EffectSelectorWidget.Get(); }
 //

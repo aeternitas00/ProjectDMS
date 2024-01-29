@@ -19,23 +19,24 @@
 #include "Library/DMSGameFunctionLibrary.h"
 
 #include "Common/DMSGameTags.h"
+#include "DMSPlayerState.h"
 
 ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPlayerStateBase(Initializer)
 {
 	CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-	//EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
 
 	CardManagerComponent->SetIsReplicated(true);
 	AttributeComponent->SetIsReplicated(true);
 
-	DefaultStats.Add(TAG_DMS_Attribute_Resource, 10);
-	DefaultStats.Add(TAG_DMS_Attribute_ActionPoint, 10);
-	DefaultStats.Add(TAG_DMS_Attribute_HP, 10);
-	DefaultStats.Add(TAG_DMS_Attribute_STR, 5);
-	DefaultStats.Add(TAG_DMS_Attribute_INT, 5);
-	DefaultStats.Add(TAG_DMS_Attribute_DEX, 5);
-	DefaultStats.Add(TAG_DMS_Attribute_SavedSkillBonus, 0);
+
+	//DefaultStats.Add(TAG_DMS_Attribute_Resource, 10);
+	//DefaultStats.Add(TAG_DMS_Attribute_ActionPoint, 10);
+	//DefaultStats.Add(TAG_DMS_Attribute_HP, 10);
+	//DefaultStats.Add(TAG_DMS_Attribute_STR, 5);
+	//DefaultStats.Add(TAG_DMS_Attribute_INT, 5);
+	//DefaultStats.Add(TAG_DMS_Attribute_DEX, 5);
+	//DefaultStats.Add(TAG_DMS_Attribute_SavedSkillBonus, 0);
 }
 
 void ADMSPlayerState::SetupCardContainers()
@@ -47,11 +48,10 @@ void ADMSPlayerState::SetupCardContainers()
 
 void ADMSPlayerState::SetupAttributes()
 {
-	for (auto Stat : DefaultStats) {
-		AttributeComponent->MakeAttribute(Stat.Key, Stat.Value);
+	for (auto Stat : DefaultAttributes) {
+		AttributeComponent->DuplicateAttribute(Stat);
 	}
 }
-
 
 void ADMSPlayerState::LoadDatasFromSave(UDMSSaveGame* SaveGame)
 {

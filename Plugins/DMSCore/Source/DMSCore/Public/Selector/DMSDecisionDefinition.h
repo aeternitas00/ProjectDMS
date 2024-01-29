@@ -15,7 +15,7 @@
 #include "DMSDecisionDefinition.generated.h"
 
 class UDMSTargetGenerator;
-
+class ADMSActiveEffect;
 
  // 셀렉터 아웃풋을 어떻게 처리할 지에 대한 정의
 UCLASS(BlueprintType,Blueprintable, EditInlineNew, Abstract)
@@ -60,7 +60,7 @@ public:
 	// 리퀘스트 폼을 제작 
 	TArray<FDMSSelectorRequestForm> GenerateRequestForm(UDMSSequence* Sequence,bool SelectForEachEI);
 	// 리퀘스트 폼에 들어갈 캔디데이트를 생성하는 함수 ( 사실상 이것을 위해 존재하는 클래스라고 보면 됨. )
-	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI);
+	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI);
 };
 
 UCLASS()
@@ -71,7 +71,7 @@ public:
 	UPROPERTY( BlueprintReadWrite , EditDefaultsOnly )
 	FGameplayTag DataTag;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates ( UDMSSequence* Sequence , UDMSEffectInstance* TargetEI );
+	virtual TArray<UDMSDataObject*> GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI );
 
 };
 
@@ -83,7 +83,7 @@ public:
 	UPROPERTY( BlueprintReadWrite , EditDefaultsOnly )
 	FGameplayTag DataTag;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates ( UDMSSequence* Sequence , UDMSEffectInstance* TargetEI );
+	virtual TArray<UDMSDataObject*> GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI );
 
 };
 UCLASS()
@@ -94,7 +94,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
 	TObjectPtr<UDMSTargetGenerator> TargetGenerator;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence , UDMSEffectInstance* TargetEI);
+	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence , ADMSActiveEffect* TargetEI);
 
 };
 // USelectorRequestGenerator_[Custom] : public UDMSSelectorRequestGenerator

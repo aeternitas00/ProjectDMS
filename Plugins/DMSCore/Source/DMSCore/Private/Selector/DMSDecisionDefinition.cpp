@@ -14,7 +14,7 @@ TArray<FDMSSelectorRequestForm> UDMSSelectorRequestGenerator::GenerateRequestFor
 	TArray<FDMSSelectorRequestForm> Rv;
 
 	if (SelectForEachEI) {
-		TArray<UDMSEffectInstance*> EIArr = Sequence->GetAllEIs();
+		TArray<ADMSActiveEffect*> EIArr = Sequence->GetAllEIs();
 		for (auto& TargetEI : EIArr)
 		{
 			FDMSSelectorRequestForm NewForm;
@@ -35,7 +35,7 @@ TArray<FDMSSelectorRequestForm> UDMSSelectorRequestGenerator::GenerateRequestFor
 }
 
 
-TArray<UDMSDataObject*> UDMSSelectorRequestGenerator::GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI)
+TArray<UDMSDataObject*> UDMSSelectorRequestGenerator::GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI)
 {
 	return TArray<UDMSDataObject*>();
 }
@@ -54,14 +54,14 @@ TArray<FDMSSelectorRequestForm> FDMSDecisionDefinition::SetupRequestForm( UDMSSe
 
 
 
-TArray<UDMSDataObject*> USelectorRequestGenerator_FromSequenceData::GenerateCandidates ( UDMSSequence* Sequence , UDMSEffectInstance* TargetEI )
+TArray<UDMSDataObject*> USelectorRequestGenerator_FromSequenceData::GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI )
 {
 	TArray<UDMSDataObject*> rv;
 	Sequence->SequenceDatas->GetValidDataValue<TArray<UDMSDataObject*>>(DataTag,rv);
 	return rv;
 }
 
-TArray<UDMSDataObject*> USelectorRequestGenerator_FromEIData::GenerateCandidates ( UDMSSequence* Sequence , UDMSEffectInstance* TargetEI )
+TArray<UDMSDataObject*> USelectorRequestGenerator_FromEIData::GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI )
 {
 	TArray<UDMSDataObject*> rv;
 	TargetEI->DataSet->GetValidDataValue<TArray<UDMSDataObject*>>(DataTag,rv);
@@ -69,7 +69,7 @@ TArray<UDMSDataObject*> USelectorRequestGenerator_FromEIData::GenerateCandidates
 }
 
 
-TArray<UDMSDataObject*> USelectorRequestGenerator_WithTG::GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI)
+TArray<UDMSDataObject*> USelectorRequestGenerator_WithTG::GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI)
 {
 	auto Targets = TargetGenerator->GetTargets(Sequence->GetSourceObject(),Sequence);
 	return UDMSDataObjectHelperLibrary::RawDataToDataObjectArr(Targets,Sequence);
@@ -84,7 +84,7 @@ void UDMSSelectorBehaviorDefinition_UpdateData::SetupFormDelegates(UDMSSequence*
 	if (SelectForEachEI) // FormArr.Num() == EIArr.Num()
 	{
 		int FormIdx = 0;	
-		TArray<UDMSEffectInstance*> EIArr = Sequence->GetAllEIs();
+		TArray<ADMSActiveEffect*> EIArr = Sequence->GetAllEIs();
 		for (auto& Form : FormArr)
 		{
 			// 이거 순서가 확실히 유지되나?

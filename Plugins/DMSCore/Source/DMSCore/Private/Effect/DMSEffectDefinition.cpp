@@ -7,12 +7,13 @@
 #include "GameModes/DMSGameStateBase.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectOption.h"
+#include "Attribute/DMSAttribute.h"
 #include "Sequence/Steps/DMSSequenceStep_Decision.h"
 #include "Sequence/Steps/DMSSequenceStep_Apply.h"
 #include "Conditions/DMSConditionObject.h"
 
 
-void UDMSEffectDefinition::ExecuteEffectOptions(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted)
+void UDMSEffectDefinition::ExecuteEffectOptions(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
 	if (EffectOptions.Num()== 0 ) {OnOptionCompleted.Execute(nullptr);return;}
 	for (auto& EO : EffectOptions)
@@ -21,7 +22,7 @@ void UDMSEffectDefinition::ExecuteEffectOptions(UDMSSequence* SourceSequence, UD
 	}
 }
 
-void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
+void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
 {
 	//EffectOption->ExecuteOption(SourceSequence, iEI, [=]() {
 	//	Work(SourceSequence, iEI, OnExecuteCompleted);

@@ -10,7 +10,7 @@
 class UDMSTargetGenerator;
 class UDMSDecisionWidget;
 class ADMSPlayerControllerBase;
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_Decision)
 

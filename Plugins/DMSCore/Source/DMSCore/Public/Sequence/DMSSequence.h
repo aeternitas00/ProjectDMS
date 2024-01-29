@@ -23,7 +23,7 @@
 
 
 class UDMSSequenceStep;
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 class UDMSDataObjectSet;
 class UDMSEffectorInterface;
 class UDMSEffectNode;
@@ -84,7 +84,7 @@ protected:
 	 * The object that triggers the sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourceObject)
-	TObjectPtr<UObject> SourceObject; 
+	TObjectPtr<AActor> SourceObject; 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,BlueprintGetter = IsTargetted)
 	bool bTargeted;
@@ -152,7 +152,7 @@ public:
 	 * Simple getter of SourceObject
 	 */
 	UFUNCTION(BlueprintCallable)
-	UObject* GetSourceObject() const;
+	AActor* GetSourceObject() const;
 
 	/**
 	 * Simple getter of SourcePlayer
@@ -165,7 +165,7 @@ public:
 	 * @return	True if NewSourceObject implements IDMSEffectorInterface.
 	 */
 	UFUNCTION(BlueprintCallable)
-	bool SetSourceObject(UObject* NewSourceObject);
+	bool SetSourceObject(AActor* NewSourceObject);
 
 	/**
 	 * Simple setter of SourcePlayer
@@ -205,7 +205,7 @@ public:
 	TArray<FDMSSequenceEIStorage>& GetEIStorage();
 
 	UFUNCTION(BlueprintCallable)
-	TArray<UDMSEffectInstance*> GetAllEIs();
+	TArray<ADMSActiveEffect*> GetAllEIs();
 
 	/**
 	 * Executed when sequence is initiated.

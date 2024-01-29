@@ -15,7 +15,7 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
 	
 }
 
-bool UDMSEffect_ModAtt::GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp)
+bool UDMSEffect_ModAtt::GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp)
 {
 	UObject* Object = iEI->GetApplyTargetInterface()->GetObject();
 
@@ -30,7 +30,7 @@ bool UDMSEffect_ModAtt::GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTa
 	return OutComp!=nullptr;
 }
 
-void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	// predict에 valid check 를 다 하고가니 이런거 필요 한가 다시 생각해보긴 해야할텐데...
 
@@ -39,7 +39,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	AActor* Outer=nullptr;
 	UDMSAttributeComponent* AttComp=nullptr;
 
-	FDMSAttributeModifier Value;
+	UDMSAttributeModifier* Value;
 	if (!GenerateModifier(iEI, Value)) {
 		OnWorkCompleted.ExecuteIfBound(false); return;
 	}
@@ -60,12 +60,11 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, UDMSEf
 	OnWorkCompleted.ExecuteIfBound(true);
 }
 
-bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI)
+bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI)
 {
 	AActor* Outer = nullptr;
 	UDMSAttributeComponent* AttComp = nullptr;
 	float PredictValue=0.0f;
-	FDMSAttributeModifier Value;
 	bool rv=false;
 	if (!GenerateModifier(iEI, Value)) 	return false;
 
@@ -110,7 +109,7 @@ FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
 FGameplayTagContainer UDMSEffect_ModAtt_Static::GetEffectTags_Implementation()
 { 
 	FGameplayTagContainer Rv(EffectTag);
-	Rv.AddTag(Value.AttributeTag);
+	Rv.AppendTags(Value->AttributeValue->AttributeTag);
 	return Rv;
 }
 
@@ -120,14 +119,14 @@ UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
 	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
 }
 
-bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue)
+UDMSAttributeModifier* UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI)
 {
 	// Get Input Data ( Skip if data doesn't exist. )
 	//UDMSDataObject* ValueData = nullptr;
 	UDMSDataObject* ValueData = SelectorData.Get(EI->DataSet);
 
 	if (ValueData == nullptr || !ValueData->TypeCheck<FDMSAttributeModifier>()) 
-		return false;
+		return nullptr;
 
 	else
 		OutValue = ValueData->Get<FDMSAttributeModifier>();
@@ -135,13 +134,13 @@ bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(UDMSEffectInsta
 	return true;
 }
 
-bool UDMSEffect_ModAtt_Variable_ValueOnly::GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue)
+UDMSAttributeModifier* UDMSEffect_ModAtt_Variable_ValueOnly::GenerateModifier_Implementation(ADMSActiveEffect* EI)
 {
 	//UDMSDataObject* ValueData = nullptr;
 	UDMSDataObject* ValueData = SelectorData.Get(EI->DataSet);
 
 	if (ValueData == nullptr || !ValueData->TypeCheck<float>()) 
-		return false;
+		return nullptr;
 
 	else {
 		OutValue = DefaultModifier;

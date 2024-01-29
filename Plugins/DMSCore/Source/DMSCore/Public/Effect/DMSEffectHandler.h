@@ -18,7 +18,7 @@
 #include "Common/DMSCommonDelegates.h"
 #include "DMSEffectHandler.generated.h"
 
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 class UDMSSequence;
 class UDMSEffectNode;
 class UDMSDataObjectSet;
@@ -39,9 +39,9 @@ protected:
 	 * Used in GC and somewhere else.
 	 */
 	UPROPERTY()
-	TArray<UDMSEffectInstance*> EIList;
+	TArray<ADMSActiveEffect*> EIList;
 
-	DECLARE_DELEGATE_RetVal_OneParam(UDMSEffectInstance*, FEIGetter, UDMSSequence*);
+	DECLARE_DELEGATE_RetVal_OneParam(ADMSActiveEffect*, FEIGetter, UDMSSequence*);
 	/**
 	 * Structure for implementing chained delegates to ensure synchronization in the Resolve step.
 	 */
@@ -50,7 +50,7 @@ protected:
 		uint8 Count=0;
 		FResolveIteratingDelegate IteratingDelegate;
 		FEIGetter Getter;
-		TArray<UDMSEffectInstance*> ApplyingEIs;
+		TArray<ADMSActiveEffect*> ApplyingEIs;
 		bool bIsPreview;
 	};
 
@@ -88,7 +88,7 @@ public:
 	 * @param	iSet
 	 * @return	Created effect instances.
 	 */
-	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UObject* SourceObject, AActor* SourcePlayer, UObject* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
+	TArray<ADMSActiveEffect*>/*EIHandle?*/ CreateEffectInstance(AActor* SourceObject, AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
 	
 	/**
 	 * Creating method for general purpose.
@@ -96,7 +96,7 @@ public:
 	 * @param	EffectNode
 	 * @return	Created effect instances.
 	 */
-	TArray<UDMSEffectInstance*>/*EIHandle?*/ CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode);
+	TArray<ADMSActiveEffect*>/*EIHandle?*/ CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode);
 
 	/**
 	 * Resolve param sequence and executed paramed lambda function when resolve completed.

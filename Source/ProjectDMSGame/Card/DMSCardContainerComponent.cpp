@@ -7,7 +7,7 @@
 
 UDMSCardContainerComponent::UDMSCardContainerComponent()
 {
-
+	SetIsReplicatedByDefault(true);
 }
 
 // Called when the game starts

@@ -27,12 +27,5 @@ protected:
 	
 public:	
 
-	/**
-	 * AttachEffectInstance for blueprint
-	 * @param	EI								Attaching new ei.
-	 */
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Attach Effect Instance"))
-	void AttachEffectInstance_BP(UDMSEffectInstance* EI) { AttachEffectInstance(EI); }
-
 	virtual void OnInitialized_Implementation() override;
 };

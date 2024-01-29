@@ -18,9 +18,9 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_AttachPersistent, "Effect.AttachPersistent
 UDMSEffect_AttachPersistent::UDMSEffect_AttachPersistent() {
 	EffectTag = TAG_DMS_Effect_AttachPersistent;
 }
-void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
-	TArray<UDMSEffectInstance*> AddedEIs;
+	TArray<ADMSActiveEffect*> AddedEIs;
 
 	auto Target = iEI->GetApplyTargetInterface();
 

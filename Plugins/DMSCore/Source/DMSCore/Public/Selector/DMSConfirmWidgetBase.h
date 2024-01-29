@@ -19,7 +19,7 @@
 #include "DMSConfirmWidgetBase.generated.h"
 
 class UDMSEffectDefinition;
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 
 //==========================================//
 class UDMSSelectorHandle;

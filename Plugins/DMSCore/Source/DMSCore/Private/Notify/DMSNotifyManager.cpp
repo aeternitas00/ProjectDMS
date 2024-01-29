@@ -28,7 +28,7 @@ bool UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterf
 	return true;
 }
 
-void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects)
+void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects)
 {
 	//auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(); check(SelM);
 	//FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->GetCurrentProgress());
@@ -63,7 +63,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 	//	// [ OK Bttn ]
 	//	UDMSDataObjectSet* Data = InstancedWidget->CurrentSequence->SequenceDatas;
 	//	TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
-	//	UDMSEffectInstance* EffectInstance = Cast<UDMSEffectInstance>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
+	//	ADMSActiveEffect* EffectInstance = Cast<ADMSActiveEffect>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
 	//	
 	//	if (EffectInstance == nullptr)
 	//	{
@@ -87,7 +87,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 	//		// NOTE :: What can we do with the Result of previous response? ( PreviousResult )
 
-	//		TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> LocalNRO;
+	//		TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> LocalNRO;
 
 	//		if (ResumingSequence->SequenceState == EDMSSequenceState::SS_Canceled) {
 	//			DMS_LOG_SIMPLE(TEXT("Resumed sequence was canceled"));
@@ -128,7 +128,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 	//InstancedWidget->PopupSelector();
 }
 
-void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequence , TMultiMap<TScriptInterface<IDMSEffectorInterface> , UDMSEffectInstance*>& ResponsedObjects)
+void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequence , TMultiMap<TScriptInterface<IDMSEffectorInterface> , ADMSActiveEffect*>& ResponsedObjects)
 {
 	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(); check(SelM);
 	FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->GetCurrentProgress());
@@ -170,7 +170,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 		// [ OK Bttn ]
 		UDMSDataObjectSet* Data = InstancedWidget->CurrentSequence->SequenceDatas;
 		TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
-		UDMSEffectInstance* EffectInstance = Cast<UDMSEffectInstance>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
+		ADMSActiveEffect* EffectInstance = Cast<ADMSActiveEffect>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
 		
 		if (EffectInstance == nullptr)
 		{
@@ -194,7 +194,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 
 			// NOTE :: What can we do with the Result of previous response? ( PreviousResult )
 
-			TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> LocalNRO;
+			TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> LocalNRO;
 
 			if (ResumingSequence->SequenceState == EDMSSequenceState::SS_Canceled) {
 				DMS_LOG_SIMPLE(TEXT("Resumed sequence was canceled"));
@@ -240,10 +240,10 @@ void UDMSNotifyManager::CallResponseCompleted(UDMSSequence* CurrentSequence)
 		return;
 	}
 	DMS_LOG_SIMPLE(TEXT("==== %s : Calling to OnResponseCompleted ===="), *CurrentSequence->GetName());
-	auto temp = std::move(OnResponseCompleted[CurrentSequence]);
+	
+	FOnResponseCompleted temp = OnResponseCompleted[CurrentSequence];
 	OnResponseCompleted.Remove(CurrentSequence);
 	temp.ExecuteIfBound();
-	temp.Unbind();
 }
 
 //
@@ -263,7 +263,7 @@ void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* Effe
 	UpdatingData->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
 }
 
-void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<UDMSEffectInstance*>& outArray)
+void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray)
 {
 	ResponsedObjects.MultiFind(iObject, outArray,true);
 	//(*ForcedObjects.Find(iObject))->CreateSequenceFromNode(iObject.GetObject(), CurrentSequence);

@@ -20,7 +20,7 @@
 //	//bHasPairedSelector = true;
 //}
 
-//void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, FOnExecuteCompleted OnWorkCompleted)
+//void UDMSEffect_SkillTest::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, FOnExecuteCompleted OnWorkCompleted)
 //{
 //	AActor* SourceActor;
 //	float SourceValue;

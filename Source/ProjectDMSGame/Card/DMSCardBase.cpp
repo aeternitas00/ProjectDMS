@@ -6,6 +6,7 @@
 #include "Card/DMSCardContainerComponent.h"
 #include "Location/DMSLocationBase.h"
 #include "GameModes/DMSGameMode.h"
+#include "Attribute/DMSAttributeComponent.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Effect/DMSEffectHandler.h"
 #include "Effect/DMSEIManagerComponent.h"
@@ -20,6 +21,9 @@ ADMSCardBase::ADMSCardBase(const FObjectInitializer& ObjectInitializer) : ADMSEf
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
+	AttributeComponent->SetIsReplicated(true);
 
 	bReplicates=true;
 	SetReplicateMovement(true);
@@ -88,6 +92,9 @@ void ADMSCardBase::OnInitialized_Implementation()
 
 	for(auto& Key : Keys)
 		EIManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
+
+	for(auto& Attribute : CardDefinition->DefaultAttributes)
+		AttributeComponent->MakeAttribute(Attribute.AttributeTag, Attribute.Value);
 }
 
 //void ADMSCardBase::PostInitialize_Implementation()

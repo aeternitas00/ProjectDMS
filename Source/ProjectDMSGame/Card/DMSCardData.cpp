@@ -34,7 +34,7 @@ FArchive& operator<<(FArchive& Ar, FDMSCardData& Data)
 		Ar << EINum;
 	
 		for (int i=0;i<EINum;i++){
-			UDMSEffectInstance* EI = NewObject<UDMSEffectInstance>();
+			ADMSActiveEffect* EI = NewObject<ADMSActiveEffect>();
 			EI->Serialize(Ar);
 	
 			Data.AttachedEffect.Add(EI);

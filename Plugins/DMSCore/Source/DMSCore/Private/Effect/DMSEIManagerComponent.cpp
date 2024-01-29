@@ -16,7 +16,7 @@ UDMSEIManagerComponent::UDMSEIManagerComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -32,22 +32,15 @@ void UDMSEIManagerComponent::BeginPlay()
 }
 
 
-// Called every frame
-void UDMSEIManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UDMSEIManagerComponent::AttachEffectInstance(ADMSActiveEffect* EI)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	//FString Str = (GetOwner()->GetName() + FString(TEXT("%n"), AttachedEffects.Num()));
 
-	// ...
+	OwnEffectInstances.Add(EI);
+	//EI->Rename(nullptr, this);
 }
 
-void UDMSEIManagerComponent::AttachEffectInstance(UDMSEffectInstance* EI)
-{
-	//FString Str = (GetOwner()->GetName() + FString(TEXT("%n"), EffectInstances.Num()));
-	EffectInstances.Add(EI);
-	EI->Rename(nullptr, this);
-}
-
-bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 {
 	bool rv=false;
 	for (auto OwnEI : OwnEffectInstances) {
@@ -56,51 +49,28 @@ bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEff
 	return rv;
 }
 
-UDMSEffectSet* UDMSEIManagerComponent::GetOwningEffectSet(const FGameplayTag& iSetName)
-{
-	auto Owner = Cast<IDMSEffectorInterface>(GetOwner());
-	return Owner!=nullptr ? Owner->GetOwningEffectSet(iSetName) : nullptr;
-}
 
-AActor* UDMSEIManagerComponent::GetOwningPlayer() 
-{ 
-	return GetOwner()->Implements<UDMSEffectorInterface>() ? Cast<IDMSEffectorInterface>(GetOwner())->GetOwningPlayer() : GetOwner();
-}
-
-UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTag& EffectSetName, const uint8& idx)
-{
-	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
-
-	UDMSEffectNode* Node = NewObject<UDMSEffectNode>(this);
-	UDMSEffect_ActivateEffect_Static* AEffect = NewObject<UDMSEffect_ActivateEffect_Static>(Node);
-	//auto DecisionStep = Cast<UDMSSequenceStep_Decision>(Node->StepRequirements.FindByPredicate([](UDMSSequenceStep* Step){return Step->IsA<UDMSSequenceStep_Decision>();}));
-	//
-	//FDMSDecisionDefinition NewDecision;
-
-	//auto NewBehavior = NewObject<UDMSSelectorBehaviorDefinition_UpdateData>(DecisionStep);
-	//NewBehavior->OutKey = AEffect->EffectTag;
-	//NewDecision.Behavior = NewBehavior;
-
-	//DecisionStep->DecisionDefinitions.Add(NewDecision);
-
-	//auto NewGenerator = NewObject<UDMSSelectorRequestGenerator_AE>(DecisionStep);
-	//NewGenerator
-	//NewDecision.Generator = NewGenerator;
-	AEffect->EffectIdxArr = {idx};
-	AEffect->UseEffectFromOuter = true;
-	AEffect->EffectSetName = EffectSetName;
-
-	// NODE INITIALIZER?
-	Node->EffectDefinitions.Add(AEffect);
-
-	return Node;
-};
+//UDMSEffectNode* UDMSEIManagerComponent::ActivatorNodeGenerator(const FGameplayTag& EffectSetName, const uint8& idx)
+//{
+//	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+//
+//	UDMSEffectNode* Node = NewObject<UDMSEffectNode>(this);
+//	UDMSEffect_ActivateEffect_Static* AEffect = NewObject<UDMSEffect_ActivateEffect_Static>(Node);
+//
+//	AEffect->EffectIdxArr = {idx};
+//	AEffect->UseEffectFromOuter = true;
+//	AEffect->EffectSetName = EffectSetName;
+//
+//	// NODE INITIALIZER?
+//	Node->EffectDefinitions.Add(AEffect);
+//
+//	return Node;
+//};
 
 
 
 void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGameplayTag& SetName )
 {
-
 	DMS_LOG_SIMPLE(TEXT("%s : Setup own effects [%s]"), *GetOwner()->GetName(), *SetName.ToString());
 	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
 	auto EffectNodes = EffectSet->EffectNodes;
@@ -116,19 +86,8 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 		if (Effect->Conditions == nullptr)
 			{DMS_LOG_SIMPLE(TEXT("NO CONDITION"));continue;}
 
-		//UDMSEffectNode* Node = ActivatorNodeGenerator(SetName, idx++);
-		//Node->Rename(nullptr, this);
-		//Node->Conditions = DuplicateObject(Effect->Conditions, Node);
-		//if (Node->Conditions == nullptr)
-		//	DMS_LOG_SIMPLE(TEXT("CONDITION DUPLICATION FAILED"));
-		//Node->bIsChainableEffect = false;
-		//Node->bForced = Effect->bForced;
-		//Node->bIgnoreNotify = Effect->bIgnoreNotify;
-		//Node->TargetGenerator = NewObject<UDMSTargetGenerator_SourceObject>(Node,"TargetGenerator");
-		//AActor* CardOwner = GetOwningPlayer();
-
-		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwningPlayer(), GetOwner(), Effect);
-		EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
+		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwnerAsInterface()->GetOwningPlayer(), GetOwner(), Effect);
+		//EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
 		OwnEffectInstances.Add(EIs[0]);
 	}
 }

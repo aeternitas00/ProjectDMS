@@ -46,8 +46,7 @@ public:
 	ADMSPlayerState(const FObjectInitializer& Initializer);
 
 protected:
-	//UPROPERTY()
-	//TObjectPtr<ADMSPlayerState> PreviewDummy;
+
 	/**
 	 * Card manager component.
 	 * Manage player's card containers like deck, hand, discard pile...
@@ -61,13 +60,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TMap<FName, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
-	///**
-	// * Effect manager component.
-	// * Manage effects that targeting players or triggered.
-	// */
-	//UPROPERTY(BlueprintReadOnly)
-	//TObjectPtr<UDMSEIManagerComponent> EIManagerComponent;
-
 	/**
 	 * Attribute component.
 	 * Manage mana, resource, etc... of player.
@@ -79,7 +71,7 @@ protected:
 	 * Player's default attribute key, value pairs.
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<FGameplayTag, float> DefaultStats;
+	TArray<TObjectPtr<UDMSAttribute>> DefaultAttributes;
 
 	/**
 	 * Player's default basic actions.

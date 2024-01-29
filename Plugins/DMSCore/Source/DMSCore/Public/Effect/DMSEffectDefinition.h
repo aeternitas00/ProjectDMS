@@ -20,6 +20,7 @@
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
 
+class UDMSAttribute;
 class UDMSEffectOption;
 class UDMSSequenceStep;
 class UDMSDecisionWidget;
@@ -77,8 +78,8 @@ public:
 	// 이것은 카드 종류 하나에 실행부 하나만을 두기 까지 압축하는 것을 의도
 	// 성공 여부 파악, 체인 확장을 위한 핸들 리턴?
 	
-	void ExecuteEffectOptions(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted);
-	void ExecuteEffectDefinition(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnExecuteCompleted);
+	void ExecuteEffectOptions(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	void ExecuteEffectDefinition(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnExecuteCompleted);
 
 	/**
 	 * Execution part of the this effect.
@@ -88,8 +89,8 @@ public:
 	 * @return	Return EffectTag with additional tags for further identification in each child class.
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	void Work(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted); // temp
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(true); }
+	void Work(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted); // temp
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(true); }
 
 	/**
 	 * Predict whether work will succeed or fail
@@ -98,8 +99,8 @@ public:
 	 * @return	
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	bool Predict(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI); // temp
-	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) { return true; }
+	bool Predict(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI); // temp
+	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI) { return true; }
 
 	// ====================== //
 	//		For selector
@@ -162,6 +163,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "!bIgnoreNotify", EditConditionHides))
 	TObjectPtr<UDMSConditionCombiner> Conditions;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced,Category = Effect)
+	TArray<TObjectPtr<UDMSAttribute>> EffectAttributes;
 	/**
 	 * Has a choice about triggering the effect ? 
 	 * true : Forced trigger when meet the conditions. / false : Can choose Y / N of trigger.
@@ -175,6 +178,19 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIgnoreNotify;
+
+	/**
+	* This Effect doesn't receive notifies. 
+	* It will not be activated except through other 'Activate Effect' effect. 
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	bool bIsPersistent;
+
+	/**
+	* Effect's terminate condition.
+	*/ 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "bIsPersistent", EditConditionHides))
+	TObjectPtr<UDMSConditionCombiner> TerminateConditions;
 
 	//=================== Definitions ===================//
 

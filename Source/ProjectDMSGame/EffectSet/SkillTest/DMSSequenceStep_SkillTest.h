@@ -25,10 +25,10 @@ struct FDMSSkillTestData
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	FGameplayTag StatName;
+	FGameplayTagContainer StatName;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (EditCondition = "!bTestToStaticValue", EditConditionHides))
-	FGameplayTag TargetStatName;
+	FGameplayTagContainer TargetStatName;
 
 	// Get stat from who? ( only one )
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)

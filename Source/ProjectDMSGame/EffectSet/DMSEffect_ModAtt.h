@@ -28,30 +28,24 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
 	bool bCreateIfNull;
 
+	// Attribute Modifier generating rules
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Exist failure condition"))
-	bool bExistFailureCondition;
-
-	/**
-	 * Checking operator.
-	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
-	EDMSComparisonOperator FailureConditionOperator;
 
 	/**
-	 * Operating value.
+	 * Attribute tags to be referenced in the Active Effect (will be used in modifiers)
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
-	float FailureConditionValue; // float? 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
+	FGameplayTagContainer ModValueTags;
 
-	__declspec(noinline) bool GetTargetAttComp(UDMSEffectInstance* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
+
+	__declspec(noinline) bool GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
 	
 	UFUNCTION(BlueprintNativeEvent)
-	bool GenerateModifier(UDMSEffectInstance* EI,UPARAM(ref) FDMSAttributeModifier& OutValue);
-	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue){return false;}
+	UDMSAttributeModifier* GenerateModifier(ADMSActiveEffect* EI);
+	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI){return nullptr;}
 	
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
-	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI) override;
+	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
+	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI) override;
 	// ====== Selectors ====== //
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
@@ -69,10 +63,10 @@ public:
 	 *	Effect's modifying value.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
-	FDMSAttributeModifier Value;
+	TObjectPtr<UDMSAttributeModifier> Value;
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
-	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue){OutValue = Value; return true;}
+	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI){ return Value;}
 
 };
 
@@ -91,7 +85,7 @@ public:
 	FDMSValueSelectionForm SelectorData;
 
 	
-	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue);
+	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI);
 };
 
 UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Value Only Variable"))
@@ -103,9 +97,9 @@ public:
 	//UDMSEffect_ModAtt_Variable_ValueOnly();
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
-	FDMSAttributeModifier DefaultModifier;
+	TObjectPtr<UDMSAttributeModifier> DefaultModifier;
 
-	virtual bool GenerateModifier_Implementation(UDMSEffectInstance* EI, FDMSAttributeModifier& OutValue);
+	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI);
 };
 
 // 추가적으로 데이터 여러개를 참조해서 모디파이어를 만드는 식의 형태는 사용자가 직접 구현 할 수 있도록...

@@ -19,13 +19,17 @@
 //#include "Card/DMSCardBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
-UDMSEffectInstance::UDMSEffectInstance() :CurrentState(EDMSEIState::EIS_Default) 
+ADMSActiveEffect::ADMSActiveEffect() :CurrentState(EDMSEIState::EIS_Default) 
 { 
-	//IteratingDelegate.BindDynamic(this, &UDMSEffectInstance::ApplyNextEffectDefinition); 
+	bReplicates = true;
+	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>("AttributeComponent");
+	//AttributeComponent->SetReplicated(true);
+
+	//IteratingDelegate.BindDynamic(this, &ADMSActiveEffect::ApplyNextEffectDefinition); 
 }
 
 
-void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
+void ADMSActiveEffect::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
 
@@ -41,40 +45,40 @@ void UDMSEffectInstance::Apply(UDMSSequence* SourceSequence, const FResolveItera
 
 }
 
-IDMSEffectorInterface* UDMSEffectInstance::GetApplyTargetInterface()
+IDMSEffectorInterface* ADMSActiveEffect::GetApplyTargetInterface()
 {
-	auto Outer = Cast<IDMSEffectorInterface>(GetOuter());
+	auto Outer = Cast<IDMSEffectorInterface>(GetOwner());
 	//if (CurrentState == EDMSEIState::EIS_Preview)
-	//	return Outer==nullptr ? nullptr : Cast<UDMSEffectInstance>(Outer)->GetApplyTargetInterface();
+	//	return Outer==nullptr ? nullptr : Cast<ADMSActiveEffect>(Outer)->GetApplyTargetInterface();
 	//else 	return Outer;
 	return Outer;
 }
 
-UObject* UDMSEffectInstance::GetApplyTarget()
+AActor* ADMSActiveEffect::GetApplyTarget()
 {
 	auto Target = GetApplyTargetInterface();
 	if (Target==nullptr) return nullptr;
 	return Target->GetObject();
 }
 
-void UDMSEffectInstance::SetToPendingKill()
+void ADMSActiveEffect::OnApplyComplete()
 {
-	//if (CurrentState == EDMSEIState::EIS_Preview ){ if(GetTypedOuter<UDMSEffectInstance>()->CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill; }
+	//if (CurrentState == EDMSEIState::EIS_Preview ){ if(GetTypedOuter<ADMSActiveEffect>()->CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill; }
 	//else if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
 
 	if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
 }
 
-void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
+void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
 { 
 	EffectNode = iNode; 
-	CurrentState = EDMSEIState::EIS_Pending; 
+	CurrentState = iNode->bIsPersistent ? EDMSEIState::EIS_Persistent : EDMSEIState::EIS_PendingApply; 
 	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); 
 	
 	//SetupPreviewDummy();
 }
 
-void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
+void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 { 
 	EffectNode = iNode; SourcePlayer=iSeq->GetSourcePlayer(); 
 	SourceObject = iSeq->GetSourceObject(); 
@@ -83,12 +87,11 @@ void UDMSEffectInstance::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 	NewData->Inherit(iSeq->SequenceDatas);
 	NewData->ParentDataSet = iSeq->SequenceDatas;
 	DataSet = NewData;
-	CurrentState = EDMSEIState::EIS_Pending; 
-
+	CurrentState = iNode->bIsPersistent ? EDMSEIState::EIS_Persistent : EDMSEIState::EIS_PendingApply; 
 }
 
 
-UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 
+UDMSSequence* ADMSActiveEffect::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 
 {
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if (SM == nullptr) return nullptr;
@@ -97,30 +100,36 @@ UDMSSequence* UDMSEffectInstance::CreateSequenceFromNode(UObject* SourceTweak, U
 	return SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, Target, DataSet, ChainingSequence);
 }
 
-void UDMSEffectInstance::AttachEffectInstance(UDMSEffectInstance* EI)
-{
-	SubEI.Add(EI);
-	EI->Rename(nullptr,this);
-}
+//void ADMSActiveEffect::AttachEffectInstance(ADMSActiveEffect* EI)
+//{
+//	SubEI.Add(EI);
+//	EI->Rename(nullptr,this);
+//
+//	// DO we really need to do this things?
+//	//AddReplicatedSubObject(EI);
+//}
 
-bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& outResponsedObjects, 
+bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
 	bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 {
 	bool rv=false;
-
-	if ( EffectNode->bIgnoreNotify ) {
-		//DMS_LOG_SIMPLE(TEXT("Ignore Notify"));
-		return rv;
-	}
-
-	if ( !iChainable && !EffectNode->bForced ) return rv;
-
-	if ( CurrentState == EDMSEIState::EIS_Pending ) return rv;
 
 	//if (Seq->OriginalEffectNode == EffectNode) {
 	//	DMS_LOG_SIMPLE(TEXT("Recursive Response Occured"));
 	//	return rv;
 	//}
+
+	if ( EffectNode->bIgnoreNotify ) return rv;
+
+	if ( !iChainable && !EffectNode->bForced ) return rv;
+
+	if ( CurrentState != EDMSEIState::EIS_Default && CurrentState != EDMSEIState::EIS_Persistent ) return rv;
+
+	if ( EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
+	{
+		CurrentState = EDMSEIState::EIS_PendingKill;
+		rv=false;	
+	}
 
 	if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{
@@ -132,9 +141,20 @@ bool UDMSEffectInstance::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffecto
 	return rv;
 }
 
-void UDMSEffectInstance::Serialize(FArchive& Ar)
+void ADMSActiveEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	//DMS_LOG_SCREEN(TEXT("UDMSEffectInstance Serialized"));
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADMSActiveEffect, CurrentState);
+	DOREPLIFETIME(ADMSActiveEffect, EffectManagerComponent);
+	DOREPLIFETIME(ADMSActiveEffect, AttributeComponent);
+
+}
+
+
+void ADMSActiveEffect::Serialize(FArchive& Ar)
+{
+	//DMS_LOG_SCREEN(TEXT("ADMSActiveEffect Serialized"));
 	Super::Serialize(Ar);
 
 	if (Ar.IsSaving())
@@ -168,21 +188,21 @@ void UDMSEffectInstance::Serialize(FArchive& Ar)
 }
 
 
-//UDMSEffectSet* UDMSEffectInstance::GetOwningEffectSet()
+//UDMSEffectSet* ADMSActiveEffect::GetOwningEffectSet()
 //{
 //	//
 //
 //	return nullptr;
 //}
 
-//FArchive& operator<<(FArchive& Ar, UDMSEffectInstance*& EI)
+//FArchive& operator<<(FArchive& Ar, ADMSActiveEffect*& EI)
 //{
 //	// TODO: 여기에 return 문을 삽입합니다.
 //	EI->Serialize(Ar);
 //	return Ar;
 //}
 
-void UDMSEffectApplyWorker::SetupWorker(UDMSSequence* iSequence, UDMSEffectInstance* iEI, const FOnApplyCompleted& iOnApplyCompleted)
+void UDMSEffectApplyWorker::SetupWorker(UDMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted)
 {
 	SourceSequence = iSequence;
 	OwnerInstance = iEI;
@@ -197,13 +217,13 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 	if (!PrevSucceeded)
 	{
 		// DISCUSSION :: Stopping immediately when failed is FINE?
-		OwnerInstance->SetToPendingKill();
+		OwnerInstance->OnApplyComplete();
 		CompletedDelegate.ExecuteIfBound(SourceSequence, false);
 		return;
 	}
 
 	if (CurrentEDIndex == ApplyingEffect->EffectDefinitions.Num()) {
-		OwnerInstance->SetToPendingKill();
+		OwnerInstance->OnApplyComplete();
 		CompletedDelegate.ExecuteIfBound(SourceSequence, true);
 	}
 	else {

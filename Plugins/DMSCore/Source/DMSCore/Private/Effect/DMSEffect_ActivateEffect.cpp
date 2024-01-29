@@ -20,7 +20,7 @@ UDMSEffect_ActivateEffect_Static::UDMSEffect_ActivateEffect_Static() : UDMSEffec
 	EffectSetName = TAG_DMS_EffectType_Effect;
 }
 
-void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iEI->GetName(), *EffectTag.ToString());
 
@@ -66,7 +66,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	SeqMan->RunSequence(Sequences[0]);
 }
 
-UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(UDMSEffectInstance* iEI)
+UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(ADMSActiveEffect* iEI)
 {
 	// Outer Validation
 	auto tOuter = iEI->GetApplyTargetInterface();
@@ -80,7 +80,7 @@ UDMSEffect_ActivateEffect_Variable::UDMSEffect_ActivateEffect_Variable()
 	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
 }
 
-bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
+bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(ADMSActiveEffect* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
 { 	
 	UDMSDataObject* rData = SelectorData.Get(iEI->DataSet);
 
@@ -101,7 +101,7 @@ bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(UDMSEffectInstanc
 	} }
 
 
-bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(UDMSEffectInstance* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
+bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(ADMSActiveEffect* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
 { 
 	if (UseEffectFromOuter){
 		auto Set = GetEffectSetFromOuter(iEI);
@@ -116,7 +116,7 @@ bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(UDMSEffectInstance*
 	return OutWrapperArr.Num() != 0;
 }
 
-TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(UDMSSequence* Sequence, UDMSEffectInstance* TargetEI)
+TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI)
 {	
 	// 프로퍼티로 스태틱중에서 고르기 or EI Outer에서 고르기 의 분기 나누기.
 
@@ -141,7 +141,7 @@ TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(UDMS
 	return rv;
 }
 
-TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::MakeDataArray(UDMSEffectInstance* TargetEI)
+TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::MakeDataArray(ADMSActiveEffect* TargetEI)
 {
 	TArray<UDMSDataObject*> rv;
 	auto tOuter = TargetEI->GetApplyTargetInterface();

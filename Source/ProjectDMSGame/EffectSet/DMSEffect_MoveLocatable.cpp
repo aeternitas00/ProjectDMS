@@ -17,7 +17,7 @@ UDMSEffect_MoveLocatable::UDMSEffect_MoveLocatable()
 	EffectTag = TAG_DMS_Effect_MoveLocatable;
 }
 
-void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence, UDMSEffectInstance* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	UObject* DestLocation;
 

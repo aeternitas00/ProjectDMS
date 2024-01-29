@@ -4,7 +4,7 @@
 
 #include "ProjectDMS.h"
 #include "Common/DMSSpawnableDataBase.h"
-#include "Attribute/DMSSerializedAttribute.h"
+#include "Attribute/DMSAttribute.h"
 #include "DMSCharacterDefinition.generated.h"
 
 class UDMSEffectSet;
@@ -41,7 +41,7 @@ public:
 	 * Default attributes of character.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Character)
-	TArray<FDMSSerializedAttribute>	DefaultAttributes;
+	TArray<TObjectPtr<UDMSAttribute>>	DefaultAttributes;
 
 	// Sprites for character...
 	// FBrush arr?

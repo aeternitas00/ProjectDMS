@@ -24,6 +24,8 @@
 #include "Location/DMSLocationData.h"
 #include "Location/DMSLocationBase.h"
 
+#include "Effect/DMSEIManagerComponent.h"
+
 #include "GameFramework/GameStateBase.h"
 #include "Common/DMSSpawnableDataBase.h"
 
@@ -70,7 +72,7 @@ ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardDat
 
 	for (auto EI : CardData.AttachedEffect)
 	{
-		SpawnedCard->AttachEffectInstance(EI);
+		SpawnedCard->GetEffectorManagerComponent()->AttachEffectInstance(EI);
 	}
 	auto CM = GetGameState<ADMSGameState>()->FindPlayerFromId(OwnerID)->FindComponentByClass<UDMSCardManagerComponent>();
 	if (CM != nullptr)

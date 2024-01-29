@@ -127,7 +127,7 @@ float UDMSSequenceStep_SkillTest::CalculateSkillTestResult_Implementation(AActor
 {
 	float SkillTestResult=0.0f;
 	float SourceValue=0.0f;
-	UDMSGameFunctionLibrary::GetAttributeFromActor(Tester,SkillTestData.StatName,SourceValue);
+	UDMSGameFunctionLibrary::GetAttributeFromActor(Tester,SkillTestData.StatName);
 
 	// if Target don't have that att => Target Value is 0.0f 
 	if (SkillTestData.bTestToStaticValue) {
@@ -135,7 +135,7 @@ float UDMSSequenceStep_SkillTest::CalculateSkillTestResult_Implementation(AActor
 	}
 	else {
 		float TargetValue = 0.0f;
-		UDMSGameFunctionLibrary::GetAttributeFromActor(TestTarget, SkillTestData.StatName, TargetValue);
+		UDMSGameFunctionLibrary::GetAttributeFromActor(TestTarget, SkillTestData.StatName);
 		SkillTestResult = SourceValue + BonusValue - TargetValue;
 	}
 
@@ -197,8 +197,8 @@ void UDMSSelector_SkillTest::UpdateSkillTestResult()
 
 float UDMSSelector_SkillTest::GetUsableBonus(AActor* Tester)
 {
-	float rv=0.0f;
-	Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttributeValue(UDMSSequenceStep_SkillTest::SkillBonusTag,rv);
+	auto Attribute = Cast<UDMSNumericAttribute>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(FGameplayTagContainer(UDMSSequenceStep_SkillTest::SkillBonusTag)));
+	float rv= Attribute ? Attribute->Value : 0.0f;
 	for(auto& UsedBonus : UsedBonusValues)
 		rv-=UsedBonus;
 	

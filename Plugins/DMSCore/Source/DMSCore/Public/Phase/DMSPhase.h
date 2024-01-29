@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseStateChanged, UDMSPhase*, Cu
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPhaseStateChanged_Native, UDMSPhase*);
 
 /**
- * 
+ * TODO :: Make this AInfo based
  */
 UCLASS(Abstract, BlueprintType,Blueprintable,ClassGroup = (Phase))
 class DMSCORE_API UDMSPhase : public UObject

@@ -17,5 +17,5 @@ class UDMSEffect_Deal : public UDMSEffect_ModAtt
 public:
 	UDMSEffect_Deal();;
 	
-	//virtual void Work_Implementation(UDMSEffectInstance* iEI,  FOnExecuteCompleted OnWorkCompleted) override; // temp
+	//virtual void Work_Implementation(ADMSActiveEffect* iEI,  FOnExecuteCompleted OnWorkCompleted) override; // temp
 };

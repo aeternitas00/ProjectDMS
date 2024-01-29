@@ -12,6 +12,8 @@ ADMSCharacterBase::ADMSCharacterBase(const FObjectInitializer& ObjectInitializer
 	PrimaryActorTick.bCanEverTick = true;
 
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
+
+	AttributeComponent->SetIsReplicated(true);
 }
 
 UDMSEffectSet* ADMSCharacterBase::GetOwningEffectSet(const FGameplayTag& iSetName)
@@ -30,8 +32,9 @@ void ADMSCharacterBase::OnInitialized_Implementation()
 	SetupAttributes(CharacterDefinition->DefaultAttributes);
 }
 
-void ADMSCharacterBase::SetupAttributes(const TArray<FDMSSerializedAttribute>& Attributes)
+void ADMSCharacterBase::SetupAttributes(const TArray<UDMSAttribute*>& Attributes)
 {
-	for (auto& Attribute : Attributes)
-		AttributeComponent->MakeAttribute(Attribute.AttributeTag, Attribute.Value);
+	for (auto& Attribute : Attributes){
+		AttributeComponent->DuplicateAttribute(Attribute);
+	}
 }

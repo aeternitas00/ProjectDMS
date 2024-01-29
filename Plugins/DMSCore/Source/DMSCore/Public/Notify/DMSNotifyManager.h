@@ -40,7 +40,7 @@ public:
 	 * Objects which 
 	 */
 	//UPROPERTY()
-	TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> ResponsedObjects;
+	TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> ResponsedObjects;
 
 	/**
 	 * Copy of ResponsedObjects's Key array.
@@ -61,7 +61,7 @@ public:
 	 * 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<UDMSEffectInstance*>& outArray);
+	void GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray);
 };
 /**
  *	========================================
@@ -95,8 +95,9 @@ protected:
 	struct FForcedEICounter {
 		FOnForcedSequenceCompleted Delegate;
 		uint8 Count = 0;
-		TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> NonForcedObjects;
-		TArray<TPair<UObject*, UDMSEffectInstance*>> ForcedObjects;
+		// EI's Owner : EI 
+		TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> NonForcedObjects;
+		TArray<TPair<UObject*, ADMSActiveEffect*>> ForcedObjects;
 		FForcedEIIteratingDelegate IteratingDelegate;
 	};
 
@@ -134,14 +135,14 @@ public:
 	 * @param	CurrentSequence					Current sequence.
 	 * @param	ResponsedObjects				Out Responsed object.
 	 */
-	void CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects);
+	void CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects);
 	
 	/**
 	 * Broadcast sequence for NotifyObjects.
 	 * @param	CurrentSequence					Current sequence.
 	 * @param	ResponsedObjects				Out Responsed object.
 	 */
-	void CreateRespondentSelector_New(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects);
+	void CreateRespondentSelector_New(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.
@@ -172,7 +173,7 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 		return;
 	}
 
-	TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*> ResponsedObjects;
+	TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> ResponsedObjects;
 
 	// Collect responsed objects 
 	for (auto& Object : NotifyObjects)
@@ -188,12 +189,12 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 	TArray<TScriptInterface<IDMSEffectorInterface>> Keys;
 	ResponsedObjects.GetKeys(Keys);
 	for (auto& ResponsedObject : Keys) {
-		TArray<UDMSEffectInstance*> EffectInstances;
+		TArray<ADMSActiveEffect*> EffectInstances;
 		ResponsedObjects.MultiFind(ResponsedObject, EffectInstances, true);
 
 		for (auto EI : EffectInstances) {
 			if (EI->EffectNode->bForced) {
-				TPair<UObject*, UDMSEffectInstance*> NewValue;
+				TPair<UObject*, ADMSActiveEffect*> NewValue;
 				NewValue.Key = ResponsedObject.GetObject(); NewValue.Value = EI;
 				ForcedEIMap[NotifyData].ForcedObjects.Add(std::move(NewValue));
 				ResponsedObjects.Remove(ResponsedObject, EI);
@@ -225,7 +226,8 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 			else {
 				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
 
-				auto NewSeq = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Value->CreateSequenceFromNode(ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count].Key, Sequence);
+				auto& CurrentForcedPair = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count];
+				auto NewSeq = CurrentForcedPair.Value->CreateSequenceFromNode(CurrentForcedPair.Key, Sequence);
 				NewSeq->AddToOnSequenceFinished_Native([this, Sequence](bool) {ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence); });
 				ForcedEIMap[Sequence].Count++;
 				UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);

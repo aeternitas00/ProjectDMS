@@ -15,11 +15,12 @@
 #include "ProjectDMS.h"
 #include "Common/DMSSpawnableDataBase.h"
 #include "Common/DMSCommons.h"
+#include "Attribute/DMSAttribute.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "DMSCardDefinition.generated.h"
 
 
-
+class UDMSAttribute;
 class UDMSEffect_Cost;
 class UDMSEffectNode_TypeBehavior;
 
@@ -40,7 +41,7 @@ class PROJECTDMSGAME_API UDMSCardDefinition : public UDMSSpawnableDataBase
 public:
 
 	// ----------------------------------------------------------------------------------------- //
-	// ±âº»ÀûÀÎ Ä«µå ±¸¼º ¿ä¼ÒµéÀº ÀÎ°ÔÀÓ³»¿¡¼­ º¯°æ °¡´É¼º¿¡ ´ëÇØ »ı°¢ÇØºÁ¾ßÇÔ.
+	// ê¸°ë³¸ì ì¸ ì¹´ë“œ êµ¬ì„± ìš”ì†Œë“¤ì€ ì¸ê²Œì„ë‚´ì—ì„œ ë³€ê²½ ê°€ëŠ¥ì„±ì— ëŒ€í•´ ìƒê°í•´ë´ì•¼í•¨.
 	
 	/**
 	 * Display name of card.
@@ -77,6 +78,9 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText DisplayAPCost;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = CardEffect)
+	TArray<TObjectPtr<UDMSAttribute>> DefaultAttributes;
 
 	/**
 	 * Effect sets of Card.

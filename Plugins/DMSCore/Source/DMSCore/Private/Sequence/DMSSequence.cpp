@@ -29,7 +29,7 @@ EDMSTimingFlag UDMSSequence::GetCurrentProgress()
 	return CurrentStep->Progress;
 }
 
-UObject* UDMSSequence::GetSourceObject() const
+AActor* UDMSSequence::GetSourceObject() const
 {
 	return SourceObject;
 }
@@ -39,7 +39,7 @@ AActor* UDMSSequence::GetSourcePlayer() const
 	return SourcePlayer;
 }
 
-bool UDMSSequence::SetSourceObject(UObject* NewSourceObject)
+bool UDMSSequence::SetSourceObject(AActor* NewSourceObject)
 {
 	bool rv = NewSourceObject->Implements<UDMSEffectorInterface>();
 	SourceObject = rv ? NewSourceObject : nullptr;
@@ -124,7 +124,7 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 {
 	for ( auto& TargetToEI :TargetAndEIs )
 	{ 
-		for (auto& EI : TargetToEI. EIs) EI->SetToPendingKill();
+		for (auto& EI : TargetToEI. EIs) EI->OnApplyComplete();
 	}
 	TargetAndEIs.Reset();
 
@@ -154,9 +154,9 @@ TArray<FDMSSequenceEIStorage>& UDMSSequence::GetEIStorage()
 	return TargetAndEIs;
 }
 
-TArray<UDMSEffectInstance*> UDMSSequence::GetAllEIs()
+TArray<ADMSActiveEffect*> UDMSSequence::GetAllEIs()
 {
-	TArray<UDMSEffectInstance*> rv;
+	TArray<ADMSActiveEffect*> rv;
 
 	for (auto& Storage : TargetAndEIs)
 		rv.Append(Storage.EIs);
@@ -174,14 +174,18 @@ void UDMSSequence::OnSequenceInitiate()
 
 void UDMSSequence::OnSequenceFinish(bool Succeeded)
 {
-	auto temp = std::move(OnSequenceFinished);
-	auto temp_Dynamic = std::move(OnSequenceFinishedDynamic);
-	OnSequenceFinished = FOnSequenceFinished();
-	OnSequenceFinishedDynamic = FOnSequenceFinishedDynamic();
-	temp.Broadcast(Succeeded);
-	temp_Dynamic.Broadcast(Succeeded);
+	//auto temp = OnSequenceFinished;
+	//auto temp_Dynamic = OnSequenceFinishedDynamic;
+	//OnSequenceFinished.Clear();
+	//OnSequenceFinishedDynamic.Clear();
+	//temp.Broadcast(Succeeded);
+	//temp_Dynamic.Broadcast(Succeeded);
 	// Cleanup 
+	OnSequenceFinished.Broadcast(Succeeded);
+	OnSequenceFinishedDynamic.Broadcast(Succeeded);
 	
+	OnSequenceFinished.Clear();
+	OnSequenceFinishedDynamic.Clear();
 }
 
 void UDMSSequence::OnStepQueueCompleted(bool Succeeded)

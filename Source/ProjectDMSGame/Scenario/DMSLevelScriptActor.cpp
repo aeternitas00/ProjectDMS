@@ -67,12 +67,12 @@ TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()
 }
 
 //
-//void ADMSLevelScriptActor::AttachEffectInstance(UDMSEffectInstance* EI)
+//void ADMSLevelScriptActor::AttachEffectInstance(ADMSActiveEffect* EI)
 //{
 //	EIManagerComponent->AttachEffectInstance(EI);
 //}
 //
-//bool ADMSLevelScriptActor::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+//bool ADMSLevelScriptActor::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 //{
 //	return EIManagerComponent->OnNotifyReceived(ResponsedObjects, iChainable, Seq, this);
 //}

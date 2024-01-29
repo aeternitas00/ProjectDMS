@@ -8,7 +8,7 @@
 #include "Components/ActorComponent.h"
 #include "DMSCardComponent.generated.h"
 
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 class UDMSCardDefinition;
 
 // ======================================

@@ -10,7 +10,7 @@ UDMSEffect_Deal::UDMSEffect_Deal()
 	//Value.ModifierType = EDMSModifierType::MT_Sub;
 }
 
-//void UDMSEffect_Deal::Work_Implementation(UDMSEffectInstance* iEI,  const FOnWorkCompletedDynamic& OnWorkCompleted)
+//void UDMSEffect_Deal::Work_Implementation(ADMSActiveEffect* iEI,  const FOnWorkCompletedDynamic& OnWorkCompleted)
 //{
 //	//REQUIREMENT CHECK
 //

@@ -22,11 +22,10 @@ class UDMSSequence;
 UENUM(BlueprintType)
 enum class EDMSModifierType : uint8
 {
-	MT_Add UMETA(DisplayName = "Add"),
-	MT_Sub UMETA(DisplayName = "Substract"),
-	MT_Set UMETA(DisplayName = "Set (Override)"),
-	MT_Div UMETA(DisplayName = "Divide"),
-	MT_Mul UMETA(DisplayName = "Multiply"),
+	MT_Additive UMETA(DisplayName = "Additive"),
+	MT_Multiplicative UMETA(DisplayName = "Multiplicative"),
+	MT_Override UMETA(DisplayName = "Set (Override)"),
+	MT_MAX
 };
 
 UENUM(/*BlueprintType*/)
@@ -55,25 +54,25 @@ enum class EDMSComparisonOperator : uint8
 /**
  *	Attibute Modifier struct. Using in ModAtt Effect. 
  */
-USTRUCT(BlueprintType)
-struct DMSCORE_API FDMSValueModifier
-{
-	GENERATED_BODY()
-
-public:
-
-	/**
-	* 
-	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	EDMSModifierType ModifierType;
-
-	/**
-	* 
-	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Value;
-};
+//USTRUCT(BlueprintType)
+//struct DMSCORE_API FDMSValueModifier
+//{
+//	GENERATED_BODY()
+//
+//public:
+//
+//	/**
+//	* 
+//	*/
+//	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+//	EDMSModifierType ModifierType;
+//
+//	/**
+//	* 
+//	*/
+//	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+//	float Value;
+//};
 
 
 

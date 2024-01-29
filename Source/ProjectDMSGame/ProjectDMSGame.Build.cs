@@ -31,6 +31,8 @@ public class ProjectDMSGame : ModuleRules
             "DMSCore",
 			"OnlineSubsystem", 
 			"OnlineSubsystemNull", 
+			"GameplayAbilities",
+			"GameplayTasks",
 			//"OnlineSubsystemSteam", 
 			"OnlineSubsystemUtils"
 			

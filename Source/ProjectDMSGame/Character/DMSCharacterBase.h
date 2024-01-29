@@ -51,7 +51,7 @@ public:
 	 *
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SetupAttributes(const TArray<FDMSSerializedAttribute>& Attributes);
+	void SetupAttributes(const TArray<UDMSAttribute*>& Attributes);
 
 
 };

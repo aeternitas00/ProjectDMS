@@ -16,10 +16,11 @@
 #include "UObject/Interface.h"
 #include "DMSEffectorInterface.generated.h"
 
-class UDMSEffectInstance;
+class ADMSActiveEffect;
 class UDMSSequence;
 class UDMSEffectSet;
 class ADMSPlayerControllerBase;
+class UDMSEIManagerComponent;
 
 UINTERFACE(MinimalAPI, BlueprintType)
 class UDMSEffectorInterface : public UInterface
@@ -40,11 +41,15 @@ class DMSCORE_API IDMSEffectorInterface
 
 public:
 
+	/**
+	*
+	*/
+	virtual UDMSEIManagerComponent* GetEffectorManagerComponent();
+
 	/** 
-	 * 개념적으로 '실제 이펙트를 가지는 객체'를 반환 
-	 * ( ex) EI Manager Comp 같은 경우 Outer(카드, 적 등등)를 반환 
+	 * 
 	 */
-	virtual UObject* GetObject();
+	virtual AActor* GetObject();
 
 	/**
 	 * Get owner of this object ( Usally PlayerState or GameState if it controlled by game.
@@ -61,16 +66,19 @@ public:
 	 */
 	virtual ADMSPlayerControllerBase* GetOwningPlayerController(); // RENAME?
 
+
+
 	/**
 	 * Attach effect instance to apply effects.
+	 * DEPRECATED :: Not work with replicate. might be better using someother context to create ei it self.
 	 */
-	virtual void AttachEffectInstance(UDMSEffectInstance* EI);
+	//virtual void AttachEffectInstance(ADMSActiveEffect* EI);
 	
 	/**
 	 * 객체가 노티파이를 받았을 때의 응답
 	 * 이펙트의 발동 기능은 일반적으로 노티파이와 떨어질 수 없는 구조기도 하여 이 인터페이스에 노티 파이 관련도 통합.
 	 */
-	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak=nullptr);
+	//virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak=nullptr);
 	
 	/**
 	 * 객체가 자체적으로 소유한 이펙트 세트를 반환.

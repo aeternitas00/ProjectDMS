@@ -14,16 +14,22 @@
 #include "GameModes/DMSGameStateBase.h"
 #include "Sequence/DMSSequence.h"
 
+#include "Effect/DMSEIManagerComponent.h"
+
 #include "GameFramework/PlayerController.h"
 
 #include "Library/DMSCoreFunctionLibrary.h"
 
 
 // Owned effect creating helper
-TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* SourceObject,AActor* SourcePlayer, UObject* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
+TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateEffectInstance(AActor* SourceObject,AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
 {
-	TArray<UDMSEffectInstance*> rv;
-	UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(Target);
+	TArray<ADMSActiveEffect*> rv;
+	FActorSpawnParameters Param;
+	Param.Owner=Target;
+
+	ADMSActiveEffect* EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect>(Param);
+	EffectInstance->AttachToActor(Target,FAttachmentTransformRules::SnapToTargetIncludingScale);
 	EffectInstance->SourceObject = SourceObject;
 	EffectInstance->SourcePlayer = SourcePlayer;	
 	EffectInstance->Initialize(EffectNode, iSet);
@@ -35,7 +41,7 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UObject* Sou
 }
 
 
-TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode)
+TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode)
 {
 	// No Selected Target ( Passed or No selector for this effect node )
 	// If PARAM_TARGET is exist, it will override preset generating.
@@ -52,15 +58,21 @@ TArray<UDMSEffectInstance*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence
 		DMS_LOG_SIMPLE(TEXT("%s : ApplyTargets is emtpy "), *EffectNode->GetName());
 	}
 
-	TArray<UDMSEffectInstance*> rv;
+	TArray<ADMSActiveEffect*> rv;
 	for (auto& ApplyStorage : Storages)
 	{
 		for (auto& Target : ApplyStorage.ApplyTargets)
 		{
-			UDMSEffectInstance* EffectInstance = NewObject<UDMSEffectInstance>(Target->GetObject());
-			EffectInstance->Initialize(EffectNode, Sequence);
+			auto Comp = Target->GetEffectorManagerComponent();
+			if (!Comp) continue;
 
-			Target->AttachEffectInstance(EffectInstance);
+			FActorSpawnParameters Param;
+			Param.Owner=Target->GetObject();
+			ADMSActiveEffect* EffectInstance =  GetWorld()->SpawnActor<ADMSActiveEffect>(Param);
+			EffectInstance->AttachToActor(Target->GetObject(),FAttachmentTransformRules::SnapToTargetIncludingScale);
+			EffectInstance->Initialize(EffectNode, Sequence);
+			
+			Comp->AttachEffectInstance(EffectInstance);
 
 			EIList.Add(EffectInstance);
 			ApplyStorage.EIs.Add(EffectInstance);
@@ -91,7 +103,9 @@ void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence, bo
 
 void UDMSEffectHandler::CleanupNonPersistent()
 {
-	EIList.RemoveAllSwap([](UDMSEffectInstance* EI) {
-		return EI->GetCurrentState() == EDMSEIState::EIS_PendingKill;
+	EIList.RemoveAllSwap([](ADMSActiveEffect* EI) {
+		bool rv = EI->GetCurrentState() == EDMSEIState::EIS_PendingKill;
+		if (rv) EI->Destroy();
+		return rv;
 	});
 }

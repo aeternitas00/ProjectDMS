@@ -13,11 +13,12 @@
  */
 
 #include "ProjectDMS.h"
-#include "Attribute/DMSSerializedAttribute.h"
+#include "Attribute/DMSAttribute.h"
 #include "DMSPlayerCharacterData.generated.h"
 
+class UDMSAttribute;
 /**
- * SaveGame / Loading sequence ¿¡¼­ ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ¸¦ ÀĞ°í ¾µ ¶§ »ç¿ë ÇÒ ±¸Á¶Ã¼.
+ * SaveGame / Loading sequence ì—ì„œ í”Œë ˆì´ì–´ ë°ì´í„°ë¥¼ ì½ê³  ì“¸ ë•Œ ì‚¬ìš© í•  êµ¬ì¡°ì²´.
  */
 USTRUCT(BlueprintType)
 struct FDMSPlayerCharacterData 
@@ -35,7 +36,7 @@ public:
 	 * Saved Attribute datas.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	TArray<FDMSSerializedAttribute> Attributes;
+	TArray<TObjectPtr<UDMSAttribute>> Attributes;
 	//...
 
 	friend FArchive& operator<<(FArchive& Ar, FDMSPlayerCharacterData& CharacterData);

@@ -10,25 +10,18 @@
 
 
 
-bool UDMSGameFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FGameplayTag& Name, float& outValue)
+UDMSAttribute* UDMSGameFunctionLibrary::GetAttributeFromActor(AActor* iActor, const FGameplayTagContainer& AttributeTag)
 {
-	if (iActor == nullptr) goto INVSOURCE;
+	if (iActor == nullptr) 	return nullptr;
 
 	//UActorComponent* Comp;
 	//
 	//Comp = iActor->GetComponentByClass(UDMSAttributeComponent::StaticClass());
 
 	UDMSAttributeComponent* AttComp = iActor->GetComponentByClass<UDMSAttributeComponent>();
-	if (AttComp == nullptr) goto INVSOURCE;
+	if (AttComp == nullptr) 	return nullptr;
 
-	float SourceValue;
-	if (!AttComp->GetAttributeValue(Name, SourceValue)) {
-	INVSOURCE:
-		outValue = 0.0f; return false;
-	}
-
-	outValue = SourceValue;
-	return true;
+	AttComp->GetAttribute(AttributeTag);
 }
 
 //bool UDMSGameFunctionLibrary::CheckCardIsCommitable(ADMSCardBase* iCard)

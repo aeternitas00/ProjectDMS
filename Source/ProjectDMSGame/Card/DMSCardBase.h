@@ -19,6 +19,7 @@
 
 class UDMSCardDefinition;
 class UDMSCardContainerComponent;
+class UDMSAttributeComponent;
 
 /**
  * 	========================================
@@ -43,6 +44,12 @@ protected:
 protected:
 
 	/**
+	* Attribute component.
+	* Manage mana, resource, etc... of character.
+	*/
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
+	/**
 	 * Card's data.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -64,7 +71,6 @@ public:
 
 	UDMSCardContainerComponent* GetOwningContainer() {return OwningContainer;}
 	void SetOwningContainer(UDMSCardContainerComponent* Container) { OwningContainer = Container;}
-
 
 
 	// == Virtual functions == //

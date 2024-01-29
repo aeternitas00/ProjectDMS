@@ -16,9 +16,9 @@
 
 
 
-UObject* IDMSEffectorInterface::GetObject() 
+AActor* IDMSEffectorInterface::GetObject() 
 { 
-	return Cast<UObject>(this);
+	return Cast<AActor>(this);
 }
 
 AActor* IDMSEffectorInterface::GetOwningPlayer() 
@@ -48,26 +48,34 @@ ADMSPlayerControllerBase* IDMSEffectorInterface::GetOwningPlayerController()
 	return Owner->GetWidgetOwner();
 }
 
-void IDMSEffectorInterface::AttachEffectInstance(UDMSEffectInstance* EI)
+UDMSEIManagerComponent* IDMSEffectorInterface::GetEffectorManagerComponent()
 {
 	AActor* thisActor = Cast<AActor>(this);
 	if(thisActor->IsValidLowLevelFast())
-		thisActor->FindComponentByClass<UDMSEIManagerComponent>()->AttachEffectInstance(EI);
+		return thisActor->FindComponentByClass<UDMSEIManagerComponent>();
+	return nullptr;
 }
 
-bool IDMSEffectorInterface::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
-{
-	AActor* thisActor = Cast<AActor>(this);
+//void IDMSEffectorInterface::AttachEffectInstance(ADMSActiveEffect* EI)
+//{
+//	AActor* thisActor = Cast<AActor>(this);
+//	if(thisActor->IsValidLowLevelFast())
+//		thisActor->FindComponentByClass<UDMSEIManagerComponent>()->AttachEffectInstance(EI);
+//}
 
-	// 기본 구현형인 컴포넌트 사용시의 SourceTweak 적용.
-	if (thisActor->IsValidLowLevelFast())
-	{
-		return thisActor->FindComponentByClass<UDMSEIManagerComponent>()->OnNotifyReceived(ResponsedObjects, iChainable, Seq, thisActor);
-	}
-
-	// 컴포넌트 미사용시 직접 구현해야함.
-	return false;
-}
+//bool IDMSEffectorInterface::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+//{
+//	AActor* thisActor = Cast<AActor>(this);
+//
+//	 //기본 구현형인 컴포넌트 사용시의 SourceTweak 적용.
+//	if (thisActor->IsValidLowLevelFast())
+//	{
+//		return thisActor->FindComponentByClass<UDMSEIManagerComponent>()->OnNotifyReceived(ResponsedObjects, iChainable, Seq, thisActor);
+//	}
+//
+//	 //컴포넌트 미사용시 직접 구현해야함.
+//	return false;
+//}
 
 UDMSEffectSet* IDMSEffectorInterface::GetOwningEffectSet(const FGameplayTag& iSetName)
 { 

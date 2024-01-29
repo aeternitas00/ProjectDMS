@@ -22,6 +22,7 @@
 
 class ADMSPlayerController;
 class UDMSEffectNode;
+class UDMSEIManagerComponent;
 
 /**
  *	State flag of Effect instance.
@@ -31,7 +32,7 @@ UENUM()
 enum class EDMSEIState : uint8
 {
 	EIS_Default UMETA(DisplayName = "Default"),
-	EIS_Pending UMETA(DisplayName = "Pending to apply"), // Prevent self notifing 
+	EIS_PendingApply UMETA(DisplayName = "Pending to apply"), // Prevent self notifing 
 	EIS_Persistent UMETA(DisplayName = "Persistent"),
 	EIS_PendingKill UMETA(DisplayName = "Pending to kill"),
 	//EIS_Preview UMETA(DisplayName = "Preview Dummy"),
@@ -52,7 +53,7 @@ class DMSCORE_API UDMSEffectApplyWorker : public UObject
 	GENERATED_BODY()
 
 private:
-	TObjectPtr<UDMSEffectInstance> OwnerInstance;
+	TObjectPtr<ADMSActiveEffect> OwnerInstance;
 	TObjectPtr<UDMSSequence> SourceSequence;
 
 	TObjectPtr<UDMSEffectNode> ApplyingEffect;
@@ -67,7 +68,7 @@ public:
 	FOnApplyCompleted CompletedDelegate;
 	
 public:
-	void SetupWorker(UDMSSequence* iSequence, UDMSEffectInstance* iEI, const FOnApplyCompleted& iOnApplyCompleted);
+	void SetupWorker(UDMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
 	
 	UFUNCTION()
 	void ApplyNextEffectDef(bool PrevSucceeded);
@@ -89,26 +90,35 @@ public:
  */
 
 UCLASS(BlueprintType)
-class DMSCORE_API UDMSEffectInstance : public UObject/*UActorComponent*/, public IDMSEffectorInterface
+class DMSCORE_API ADMSActiveEffect : /*public ADMSSpawnableBase*/public AInfo, public IDMSEffectorInterface
 {
 	GENERATED_BODY()
 	
 public:
-	UDMSEffectInstance();
+	ADMSActiveEffect();
 		
 protected:
 
 	/** 
 	 * State flag of Effect instance.For preview or persistant things.
+	 * [replicates for clients' ui]
 	 */
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	EDMSEIState CurrentState;
 
 	/**
-	 * Effects that affect to effect. (modifying values)
+	 * Managing attributes for active effect
+	 * [replicates for clients' ui]
 	 */
-	UPROPERTY()
-	TArray<TObjectPtr<UDMSEffectInstance>> SubEI;
+	UPROPERTY(Replicated)
+	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
+
+	/**
+	* Managing attributes for active effect
+	* [replicates for clients' ui]
+	*/
+	UPROPERTY(Replicated)
+	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 
 	// Hard ref for workers
 	TArray<TObjectPtr<UDMSEffectApplyWorker>> ApplyWorkers;
@@ -128,8 +138,10 @@ public:
 	/**
 	 * Sources of effect
 	 */
+	UPROPERTY()
 	TObjectPtr<AActor> SourcePlayer;
-	TObjectPtr<UObject> SourceObject;
+	UPROPERTY()
+	TObjectPtr<AActor> SourceObject;
 
 	/**
 	 * Effect node that effect instance will run.
@@ -162,12 +174,12 @@ public:
 	* Will be used in ED->Work function.
 	*/
 	UFUNCTION(BlueprintCallable)
-	UObject* GetApplyTarget();
+	AActor* GetApplyTarget();
 
 	/**
-	 * Setting the state of EffectInstance to pending kill (it will be cleaned up at the end of the sequence tree).
+	 * On effect apply complete
 	 */
-	void SetToPendingKill();
+	void OnApplyComplete();
 
 	/** 
 	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
@@ -195,12 +207,13 @@ public:
 	// =========== INTERFACE FUNCTION =========== // 
 	// 
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }
-	virtual void AttachEffectInstance(UDMSEffectInstance* EI) override;
-	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, UDMSEffectInstance*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak) override;
+	//virtual void AttachEffectInstance(ADMSActiveEffect* EI) override;
+	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak);
 	// 기본적으로 EI는 '어떤 효과' 그 자체를 객체화 하기 위해 만든 클래스이므로 이펙트셋을 소유한다는 개념은 조금 이상한 듯.
 	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
 	virtual void Serialize(FArchive& Ar) override;
 
-	//friend FArchive& operator<<(FArchive& Ar, UDMSEffectInstance*& EI);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//friend FArchive& operator<<(FArchive& Ar, ADMSActiveEffect*& EI);
 };
 

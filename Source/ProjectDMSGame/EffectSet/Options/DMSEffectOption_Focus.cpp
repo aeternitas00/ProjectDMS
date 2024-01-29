@@ -13,7 +13,7 @@ UDMSEffectOption_Focus::UDMSEffectOption_Focus()
 	FocusTarget = CreateDefaultSubobject<UDMSTargetGenerator_Caller>("FocusTarget");
 }
 
-void UDMSEffectOption_Focus::OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, UDMSEffectInstance* iEI, const FOnOptionCompleted& OnOptionCompleted)
+void UDMSEffectOption_Focus::OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("FOCUS"));
 	AActor* Target = Cast<AActor>(FocusTarget->GetTargets(iEI->GetOuter(), iSourceSeq)[0]);
