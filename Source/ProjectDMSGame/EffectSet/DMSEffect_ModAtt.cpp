@@ -39,8 +39,8 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSAc
 	AActor* Outer=nullptr;
 	UDMSAttributeComponent* AttComp=nullptr;
 
-	UDMSAttributeModifier* Value;
-	if (!GenerateModifier(iEI, Value)) {
+	FDMSAttributeModifier Modifier;
+	if (!GenerateModifier(iEI, Modifier)) {
 		OnWorkCompleted.ExecuteIfBound(false); return;
 	}
 
@@ -52,10 +52,11 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSAc
 		AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(),false,FTransform(),false));
 	}
 	
-	if (bCreateIfNull)	AttComp->MakeAttribute(Value.AttributeTag);
+	if (bCreateIfNull)	AttComp->MakeAttribute(Modifier.ModifierOp->AttributeTag,Modifier.Value->GetClass());
 	
 	float OutValue = 0.0f;
-	AttComp->TryModAttribute(Value, OutValue);
+	
+	AttComp->GetAttribute(Modifier.ModifierOp->AttributeTag)->ApplyModifier(Modifier);
 
 	OnWorkCompleted.ExecuteIfBound(true);
 }
@@ -64,38 +65,22 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADM
 {
 	AActor* Outer = nullptr;
 	UDMSAttributeComponent* AttComp = nullptr;
+	FDMSAttributeModifier Modifier;
 	float PredictValue=0.0f;
 	bool rv=false;
-	if (!GenerateModifier(iEI, Value)) 	return false;
+	if (!GenerateModifier(iEI, Modifier))	return false;
 
 	if (!GetTargetAttComp(iEI, Outer, AttComp))
 	{
 		if (Outer != nullptr && bCreateIfNull ) {
 			AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(), false, FTransform(), false));
-			AttComp->MakeAttribute(Value.AttributeTag);
+			AttComp->MakeAttribute(Modifier.ModifierOp->AttributeTag,Modifier.Value->GetClass());
 		}
 		else return false;
 	}
+	
+	rv = Modifier.ModifierOp->Predict(AttComp->GetAttribute(Modifier.ModifierOp->AttributeTag));
 
-	rv = AttComp->TryModAttribute(Value, PredictValue, false);
-
-	if (rv && bExistFailureCondition)
-	{
-		switch (FailureConditionOperator)
-		{
-		case EDMSComparisonOperator::BO_Equal:
-			rv = !(rv && PredictValue == FailureConditionValue); break;
-		case EDMSComparisonOperator::BO_Greater:
-			rv = !(rv && PredictValue > FailureConditionValue); break;
-		case EDMSComparisonOperator::BO_Less:
-			rv = rv && !(PredictValue < FailureConditionValue); break;
-		case EDMSComparisonOperator::BO_GreaterEqual:
-			rv = rv && !(PredictValue >= FailureConditionValue); break;
-		case EDMSComparisonOperator::BO_LessEqual:
-			rv = rv && !(PredictValue <= FailureConditionValue); break;
-		default: break;
-		}
-	}
 	return rv;
 }
 
@@ -109,42 +94,47 @@ FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
 FGameplayTagContainer UDMSEffect_ModAtt_Static::GetEffectTags_Implementation()
 { 
 	FGameplayTagContainer Rv(EffectTag);
-	Rv.AppendTags(Value->AttributeValue->AttributeTag);
+	Rv.AppendTags(StaticModifier.ModifierOp->AttributeTag);
 	return Rv;
 }
 
 
 UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
 {
-	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
+	//DataPicker.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
 }
 
-UDMSAttributeModifier* UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI)
+bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier)
 {
 	// Get Input Data ( Skip if data doesn't exist. )
 	//UDMSDataObject* ValueData = nullptr;
-	UDMSDataObject* ValueData = SelectorData.Get(EI->DataSet);
+	UDMSDataObject* ValueData = DataPicker.Get(EI->DataSet);
 
 	if (ValueData == nullptr || !ValueData->TypeCheck<FDMSAttributeModifier>()) 
-		return nullptr;
+		return false;
 
 	else
-		OutValue = ValueData->Get<FDMSAttributeModifier>();
+		OutModifier = ValueData->Get<FDMSAttributeModifier>();
 	
 	return true;
 }
 
-UDMSAttributeModifier* UDMSEffect_ModAtt_Variable_ValueOnly::GenerateModifier_Implementation(ADMSActiveEffect* EI)
+bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier)
 {
 	//UDMSDataObject* ValueData = nullptr;
-	UDMSDataObject* ValueData = SelectorData.Get(EI->DataSet);
+	UDMSAttributeComponent* AEAttComp = EI->GetComponentByClass<UDMSAttributeComponent>();
 
-	if (ValueData == nullptr || !ValueData->TypeCheck<float>()) 
-		return nullptr;
+	if(!AEAttComp) return false;
 
-	else {
-		OutValue = DefaultModifier;
-		OutValue.ValueModifier.Value = ValueData->Get<float>();
-	}
+	auto AEAtt = AEAttComp->GetAttribute(ActiveEffectValueTags);
+
+	if (AEAtt == nullptr) return false;
+
+	auto ModifierValue = Cast<UDMSAttributeValue_Numeric>(AEAtt->AttributeValue);
+
+	if (!ModifierValue) return false;
+	
+	OutModifier.ModifierOp = ModifierOp;
+	OutModifier.Value = ModifierValue;
 	return true;
 }

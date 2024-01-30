@@ -48,7 +48,7 @@ protected:
 public:	
 	IDMSEffectorInterface* GetOwnerAsInterface() { return Cast<IDMSEffectorInterface>(GetOwner());}
 	void AttachEffectInstance(ADMSActiveEffect* EI);
-	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak) ;
+	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, AActor* SourceTweak = nullptr);
 
 	// concepts????
 	void SetupOwnEffect(UDMSEffectSet* EffectSet,const FGameplayTag& SetName);

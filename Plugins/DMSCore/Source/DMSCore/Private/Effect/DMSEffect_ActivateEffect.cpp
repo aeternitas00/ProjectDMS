@@ -77,7 +77,7 @@ UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(ADMSActiv
 
 UDMSEffect_ActivateEffect_Variable::UDMSEffect_ActivateEffect_Variable()
 {
-	//SelectorData.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
+	//DataPicker.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
 }
 
 bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(ADMSActiveEffect* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)

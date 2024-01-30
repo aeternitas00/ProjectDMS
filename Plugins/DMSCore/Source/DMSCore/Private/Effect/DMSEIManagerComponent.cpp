@@ -40,11 +40,11 @@ void UDMSEIManagerComponent::AttachEffectInstance(ADMSActiveEffect* EI)
 	//EI->Rename(nullptr, this);
 }
 
-bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
 {
 	bool rv=false;
 	for (auto OwnEI : OwnEffectInstances) {
-		rv = rv || OwnEI->OnNotifyReceived(ResponsedObjects, iChainable, Seq, SourceTweak);
+		rv = rv || OwnEI->OnNotifyReceived(ResponsedObjects, iChainable, Seq, SourceTweak==nullptr ? GetOwner() : SourceTweak);
 	}
 	return rv;
 }

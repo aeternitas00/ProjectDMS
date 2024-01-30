@@ -21,7 +21,7 @@ UDMSAttribute* UDMSGameFunctionLibrary::GetAttributeFromActor(AActor* iActor, co
 	UDMSAttributeComponent* AttComp = iActor->GetComponentByClass<UDMSAttributeComponent>();
 	if (AttComp == nullptr) 	return nullptr;
 
-	AttComp->GetAttribute(AttributeTag);
+	return AttComp->GetAttribute(AttributeTag);
 }
 
 //bool UDMSGameFunctionLibrary::CheckCardIsCommitable(ADMSCardBase* iCard)

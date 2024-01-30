@@ -197,8 +197,9 @@ void UDMSSelector_SkillTest::UpdateSkillTestResult()
 
 float UDMSSelector_SkillTest::GetUsableBonus(AActor* Tester)
 {
-	auto Attribute = Cast<UDMSNumericAttribute>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(FGameplayTagContainer(UDMSSequenceStep_SkillTest::SkillBonusTag)));
-	float rv= Attribute ? Attribute->Value : 0.0f;
+	
+	auto Attribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(FGameplayTagContainer(UDMSSequenceStep_SkillTest::SkillBonusTag)));
+	float rv= Attribute ? Attribute->GetValue() : 0.0f;
 	for(auto& UsedBonus : UsedBonusValues)
 		rv-=UsedBonus;
 	

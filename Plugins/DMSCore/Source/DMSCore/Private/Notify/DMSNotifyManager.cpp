@@ -2,6 +2,7 @@
 
 
 #include "Notify/DMSNotifyManager.h"
+#include "Effect/DMSEIManagerComponent.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "GameModes/DMSGameStateBase.h"
@@ -186,7 +187,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 		TArray<TScriptInterface<IDMSEffectorInterface>> NewRespondents;
 		InstancedWidget->ResponsedObjects.GetKeys(NewRespondents);
 
-		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->CurrentSequence);
+		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent->GetObject(), InstancedWidget->CurrentSequence);
 		
 		NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->CurrentSequence , NotifyManager](bool PreviousResult){
 			
@@ -205,8 +206,10 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 			// Check again. ( Apply changed env )
 			for (auto Object : NewRespondents)
 			{
+				if(Object->GetEffectorManagerComponent())
+					Object->GetEffectorManagerComponent()->OnNotifyReceived(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
 				// 이거 말고 그냥 체크만 하는 함수로 재구성 하던가 포스드 일 때 강제실행을 여기서 노티파이 매니저가 하도록 해서 순차적으로 실행하게 해야함 ( 기다려주면서 ) 해야함.
-				Object->OnNotifyReceived(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
+				//Object->OnNotifyReceived(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
 			}
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : RESUME RESPONSE ===="), *ResumingSequence->GetName());

@@ -25,7 +25,7 @@ public:
 	 * Checking attribute's tag.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Condition)
-	FGameplayTag AttributeTag;
+	FGameplayTagContainer AttributeTag;
 
 	/**
 	 * Checking operator.

@@ -15,7 +15,7 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 
 	if (AttComp == nullptr) { return bNullIsTrue; }
 
-	UDMSAttribute_Numeric* Att = AttComp->GetAttribute(AttributeTag);
+	UDMSAttributeValue_Numeric* Att = Cast<UDMSAttributeValue_Numeric>(AttComp->GetAttribute(AttributeTag));
 
 	if (Att == nullptr) { return bNullIsTrue; }
 

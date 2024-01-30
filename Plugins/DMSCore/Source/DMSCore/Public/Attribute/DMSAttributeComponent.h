@@ -44,17 +44,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	bool ContainAttribute(const FGameplayTagContainer& Tag) const;
-
+	bool ContainAttributeByQuery(const FGameplayTagQuery & Query) const;
 	/**
 	 * Trying modify attribute with param Modifier
 	 * @param	Modifier							In modifier
 	 * @return	true if modifying was successful
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool PredictModifier(UDMSAttributeModifier* Modifier) const;
+	bool PredictModifier(const FDMSAttributeModifier& Modifier) const;
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplyModifier(UDMSAttributeModifier* Modifier);
+	void ApplyModifier(const FDMSAttributeModifier& Modifier);
 
 	/**
 	 * Make named attribute if component doesn't contain param name.
@@ -86,7 +86,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	UDMSAttribute* GetAttribute(const FGameplayTagContainer& AttributeName) const;
-
+	TArray<UDMSAttribute*> GetAttributesByQuery(const FGameplayTagQuery & TargetQuery) const;
 	/**
 	 * Getter of attribute value
 	 * @param	AttributeName						Target attribute's tag

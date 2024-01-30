@@ -5,10 +5,8 @@
 #include "Effect/DMSEffectDefinition.h"
 #include "Attribute/DMSAttributeComponent.h"
 #include "Common/DMSValueSelectorDefinition.h"
-#include "Selector/DMSConfirmWidgetBase.h"
 #include "DMSEffect_ModAtt.generated.h"
 
-class UDMSConfirmWidgetBase;
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute)
 
@@ -30,19 +28,11 @@ public:
 
 	// Attribute Modifier generating rules
 
-
-	/**
-	 * Attribute tags to be referenced in the Active Effect (will be used in modifiers)
-	 */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
-	FGameplayTagContainer ModValueTags;
-
-
-	__declspec(noinline) bool GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
+	bool GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
 	
 	UFUNCTION(BlueprintNativeEvent)
-	UDMSAttributeModifier* GenerateModifier(ADMSActiveEffect* EI);
-	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI){return nullptr;}
+	bool GenerateModifier(ADMSActiveEffect* EI, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier){return false;}
 	
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
 	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI) override;
@@ -63,14 +53,15 @@ public:
 	 *	Effect's modifying value.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
-	TObjectPtr<UDMSAttributeModifier> Value;
+	FDMSAttributeModifier StaticModifier;
+
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
-	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI){ return Value;}
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return true;}
 
 };
 
-UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Variable"))
+UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : From AE Data"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_Variable : public UDMSEffect_ModAtt
 {
 	GENERATED_BODY()
@@ -82,24 +73,34 @@ public:
 	 * Effect's modifying value selector.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
-	FDMSValueSelectionForm SelectorData;
+	FDMSValueSelectionForm DataPicker;
 
-	
-	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier);
 };
 
-UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Value Only Variable"))
-class PROJECTDMSGAME_API UDMSEffect_ModAtt_Variable_ValueOnly : public UDMSEffect_ModAtt_Variable
+UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : From Attribute"))
+class PROJECTDMSGAME_API UDMSEffect_ModAtt_FromAttribute : public UDMSEffect_ModAtt
 {
 	GENERATED_BODY()
 
 public:
-	//UDMSEffect_ModAtt_Variable_ValueOnly();
+	//UDMSEffect_ModAtt_FromAttribute();
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
-	TObjectPtr<UDMSAttributeModifier> DefaultModifier;
+	/**
+	* Modifier attribute tags to be referenced in the Active Effect.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Effect)
+	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
 
-	virtual UDMSAttributeModifier* GenerateModifier_Implementation(ADMSActiveEffect* EI);
+	/**
+	* Modifier attribute tags to be referenced in the Active Effect.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	FGameplayTagContainer ActiveEffectValueTags;
+
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier);
 };
+
+
 
 // 추가적으로 데이터 여러개를 참조해서 모디파이어를 만드는 식의 형태는 사용자가 직접 구현 할 수 있도록...

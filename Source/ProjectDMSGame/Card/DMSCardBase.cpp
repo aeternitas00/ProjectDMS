@@ -94,7 +94,7 @@ void ADMSCardBase::OnInitialized_Implementation()
 		EIManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
 
 	for(auto& Attribute : CardDefinition->DefaultAttributes)
-		AttributeComponent->MakeAttribute(Attribute.AttributeTag, Attribute.Value);
+		AttributeComponent->DuplicateAttribute(Attribute);
 }
 
 //void ADMSCardBase::PostInitialize_Implementation()

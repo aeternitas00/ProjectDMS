@@ -201,14 +201,13 @@ public:
 	 * @param	ChainingSequence				Parent sequence of creating sequence.
 	 * @return	Created sequence.
 	 */
-	UDMSSequence* CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence);
+	UDMSSequence* CreateSequenceFromNode(AActor* SourceTweak, UDMSSequence* ChainingSequence);
 
 
 	// =========== INTERFACE FUNCTION =========== // 
 	// 
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }
-	//virtual void AttachEffectInstance(ADMSActiveEffect* EI) override;
-	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, UObject* SourceTweak);
+	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak);
 	// 기본적으로 EI는 '어떤 효과' 그 자체를 객체화 하기 위해 만든 클래스이므로 이펙트셋을 소유한다는 개념은 조금 이상한 듯.
 	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
 	virtual void Serialize(FArchive& Ar) override;

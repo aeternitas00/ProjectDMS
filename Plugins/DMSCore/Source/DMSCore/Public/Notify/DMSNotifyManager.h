@@ -97,7 +97,7 @@ protected:
 		uint8 Count = 0;
 		// EI's Owner : EI 
 		TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> NonForcedObjects;
-		TArray<TPair<UObject*, ADMSActiveEffect*>> ForcedObjects;
+		TArray<TPair<AActor*, ADMSActiveEffect*>> ForcedObjects;
 		FForcedEIIteratingDelegate IteratingDelegate;
 	};
 
@@ -178,8 +178,9 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 	// Collect responsed objects 
 	for (auto& Object : NotifyObjects)
 	{
+		if (Object->GetEffectorManagerComponent())
 		//DMS_LOG_SIMPLE(TEXT("%s"), (Object==nullptr) ? TEXT("Object is NULLPTR") : *(Object->GetObject()->GetName()));
-		Object->OnNotifyReceived(ResponsedObjects, NotifyData->IsChainableSequence(), NotifyData);
+			Object->GetEffectorManagerComponent()->OnNotifyReceived(ResponsedObjects, NotifyData->IsChainableSequence(), NotifyData);
 	}
 
 	OnResponseCompleted.Add(NotifyData);	ForcedEIMap.Add(NotifyData);
@@ -194,8 +195,8 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 
 		for (auto EI : EffectInstances) {
 			if (EI->EffectNode->bForced) {
-				TPair<UObject*, ADMSActiveEffect*> NewValue;
-				NewValue.Key = ResponsedObject.GetObject(); NewValue.Value = EI;
+				TPair<AActor*, ADMSActiveEffect*> NewValue;
+				NewValue.Key = ResponsedObject->GetObject(); NewValue.Value = EI;
 				ForcedEIMap[NotifyData].ForcedObjects.Add(std::move(NewValue));
 				ResponsedObjects.Remove(ResponsedObject, EI);
 			}

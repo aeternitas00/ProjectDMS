@@ -88,7 +88,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable/*, Server, Reliable*/)
 	UDMSSequence* RequestCreateSequence(
-		UObject* SourceObject, 
+		AActor* SourceObject, 
 		AActor* SourcePlayer,
 		UDMSEffectNode* EffectNode, 
 		const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
@@ -108,7 +108,7 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void RequestAppendNewSequence(
-		UObject* SourceObject, 
+		AActor* SourceObject, 
 		AActor* SourcePlayer,
 		UDMSEffectNode* EffectNode, 
 		const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,

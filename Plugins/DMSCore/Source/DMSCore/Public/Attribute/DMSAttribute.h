@@ -39,7 +39,27 @@
 //	TObjectPtr<UDMSAttributeModifier> ModifierDefinition;
 //};
 
+class UDMSAttributeModifierOp;
+class UDMSAttributeValue;
 
+USTRUCT(BlueprintType)
+struct FDMSAttributeModifier
+{
+	GENERATED_BODY()
+
+public:
+	/**
+	* 
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
+
+	/**
+	* 
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	TObjectPtr<UDMSAttributeValue> Value;
+};
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
@@ -52,13 +72,13 @@ class DMSCORE_API UDMSAttributeValue : public UObject
 	GENERATED_BODY()
 
 public:
-
 	UFUNCTION(BlueprintNativeEvent, Category = Attribute)
-	void ExecuteOp(UDMSAttributeModifier* Modifier);
-	virtual void ExecuteOp_Implementation(UDMSAttributeModifier* Modifier);
+	void ExecuteOp(const FDMSAttributeModifier& Modifier);
+	virtual void ExecuteOp_Implementation(const FDMSAttributeModifier& Modifier) {}
 
 	virtual bool IsSupportedForNetworking() const override {return true;}
 };
+
 
 /**
  *	Class of attribute base.
@@ -70,8 +90,8 @@ class DMSCORE_API UDMSAttribute : public UObject
 
 public:
 	/**
-	* 
-	*/
+	 * 
+	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Attribute)
 	FGameplayTagContainer AttributeTag;
 
@@ -80,12 +100,15 @@ public:
 	 */
 	UPROPERTY()
 	FOnAttributeModified OnAttributeModified;
-
+	
+	/**
+	 * 
+	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = Attribute)
 	TObjectPtr<UDMSAttributeValue> AttributeValue;
 
 public:
-	UDMSAttributeBase();
+	UDMSAttribute();
 
 	/**
 	* Bind to OnAttributeModified
@@ -95,56 +118,40 @@ public:
 
 	// Implements Ops
 	UFUNCTION(BlueprintCallable, Category = Attribute)
-	void ApplyModifier(UDMSAttributeModifier* Modifier);
+	void ApplyModifier(const FDMSAttributeModifier& Modifier);
 
 	virtual bool IsSupportedForNetworking() const override {return true;}
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
-
 /**
-*	Attibute Modifier struct. Using in ModAtt Effect. 
-*/
+ *	Attibute Modifier object. Using in ModAtt Effect. 
+ */
 UCLASS(BlueprintType,Blueprintable,DefaultToInstanced,Abstract)
-class DMSCORE_API UDMSAttributeModifier : public UObject
+class DMSCORE_API UDMSAttributeModifierOp : public UObject
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	/**
-	* 
-	*/
+	 * 
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	EDMSModifierType AttributeModifierType;
 
 	/**
-	* 
-	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-	FGameplayTagQuery TargetQuery;
-
-	/**
 	 * 
 	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
-	TObjectPtr<UDMSAttributeValue> AttributeValue;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	FGameplayTagContainer AttributeTag;
+
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = Attribute)
 	bool Predict(UDMSAttribute* Target) const;
-	virtual bool Predict_Implementation(UDMSAttribute* Target) const {return false; /*Target->GetClass()==AttributeValue->GetClass();*/}
+	virtual bool Predict_Implementation(UDMSAttribute* Target) const {return false;}
 };
 
-
-
-
-
-
-
-
-
-
-
-
+// == Default implementation == //
 
 /*
  *	Class of single numeric attribute.
@@ -167,7 +174,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void SetValue(float i) { Value=i; }
 
-	virtual void ExecuteOp_Implementation(UDMSAttributeModifier* Modifier);
+	virtual void ExecuteOp_Implementation(const FDMSAttributeModifier& Modifier);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
@@ -177,11 +184,11 @@ public:
 *	Attibute Modifier struct. Using in ModAtt Effect. 
 */
 UCLASS(BlueprintType,Blueprintable,DefaultToInstanced)
-class DMSCORE_API UDMSAttributeModifier_Numeric : public UObject
+class DMSCORE_API UDMSAttributeModifierOp_Numeric : public UDMSAttributeModifierOp
 {
 	GENERATED_BODY()
 
-protected:	
+public:	
 	/**
 	* It has failure condition.
 	*/
@@ -200,6 +207,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
 	float FailureConditionValue; // float? 
 
+
 public:
-	virtual bool Predict_Implementation(UDMSAttribute* Target) const;
+	virtual bool Predict_Implementation(UDMSAttribute* Target) const override;
 };

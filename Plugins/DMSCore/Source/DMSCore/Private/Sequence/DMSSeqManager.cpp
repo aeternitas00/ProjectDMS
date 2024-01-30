@@ -23,7 +23,7 @@ UDMSSeqManager::UDMSSeqManager() : /*bUsingSteps(false),*/ RootSequence(nullptr)
 
 
 UDMSSequence* UDMSSeqManager::RequestCreateSequence(
-	UObject* SourceObject,
+	AActor* SourceObject,
 	AActor* SourcePlayer, 
 	UDMSEffectNode* EffectNode, 
 	const TArray<TScriptInterface<IDMSEffectorInterface>>&  Targets,
@@ -69,7 +69,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 }
 
 void UDMSSeqManager::RequestAppendNewSequence_Implementation(
-	UObject* SourceObject, 
+	AActor* SourceObject, 
 	AActor* SourcePlayer,
 	UDMSEffectNode* EffectNode, 
 	const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,

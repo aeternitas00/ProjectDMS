@@ -91,7 +91,7 @@ void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 }
 
 
-UDMSSequence* ADMSActiveEffect::CreateSequenceFromNode(UObject* SourceTweak, UDMSSequence* ChainingSequence) 
+UDMSSequence* ADMSActiveEffect::CreateSequenceFromNode(AActor* SourceTweak, UDMSSequence* ChainingSequence) 
 {
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if (SM == nullptr) return nullptr;
@@ -110,35 +110,33 @@ UDMSSequence* ADMSActiveEffect::CreateSequenceFromNode(UObject* SourceTweak, UDM
 //}
 
 bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
-	bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+	bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
 {
-	bool rv=false;
 
 	//if (Seq->OriginalEffectNode == EffectNode) {
 	//	DMS_LOG_SIMPLE(TEXT("Recursive Response Occured"));
 	//	return rv;
 	//}
 
-	if ( EffectNode->bIgnoreNotify ) return rv;
+	if ( EffectNode->bIgnoreNotify ) return false;
 
-	if ( !iChainable && !EffectNode->bForced ) return rv;
+	if ( !iChainable && !EffectNode->bForced ) return false;
 
-	if ( CurrentState != EDMSEIState::EIS_Default && CurrentState != EDMSEIState::EIS_Persistent ) return rv;
+	if ( CurrentState != EDMSEIState::EIS_Default && CurrentState != EDMSEIState::EIS_Persistent ) return false;
 
 	if ( EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
 	{
 		CurrentState = EDMSEIState::EIS_PendingKill;
-		rv=false;	
+		return false;	
 	}
 
 	if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{
 		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
 		outResponsedObjects.Add(SourceTweak, this);
-		rv=true;	
-	}
-	else rv=false;
-	return rv;
+		return true;	
+	}	
+	return false;
 }
 
 void ADMSActiveEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

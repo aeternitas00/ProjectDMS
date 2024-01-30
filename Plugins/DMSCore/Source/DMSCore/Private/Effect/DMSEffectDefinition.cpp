@@ -27,6 +27,7 @@ void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence,
 	//EffectOption->ExecuteOption(SourceSequence, iEI, [=]() {
 	//	Work(SourceSequence, iEI, OnExecuteCompleted);
 	//});
+
 	Work(SourceSequence, iEI, OnExecuteCompleted);
 }
 
