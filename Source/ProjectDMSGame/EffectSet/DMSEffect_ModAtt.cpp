@@ -65,6 +65,7 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADM
 {
 	AActor* Outer = nullptr;
 	UDMSAttributeComponent* AttComp = nullptr;
+	UDMSAttribute* Att = nullptr;
 	FDMSAttributeModifier Modifier;
 	float PredictValue=0.0f;
 	bool rv=false;
@@ -72,14 +73,18 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADM
 
 	if (!GetTargetAttComp(iEI, Outer, AttComp))
 	{
-		if (Outer != nullptr && bCreateIfNull ) {
+		if (Outer != nullptr && bCreateIfNull ) 
 			AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(), false, FTransform(), false));
-			AttComp->MakeAttribute(Modifier.ModifierOp->AttributeTag,Modifier.Value->GetClass());
-		}
+
 		else return false;
 	}
-	
-	rv = Modifier.ModifierOp->Predict(AttComp->GetAttribute(Modifier.ModifierOp->AttributeTag));
+	Att = AttComp->GetAttribute(Modifier.ModifierOp->AttributeTag);
+	if (Att == nullptr) {
+		if (bCreateIfNull) Att = AttComp->MakeAttribute(Modifier.ModifierOp->AttributeTag,Modifier.Value->GetClass()); 
+		else return false;
+	}
+
+	rv = Modifier.ModifierOp->Predict(Att);
 
 	return rv;
 }
@@ -122,6 +127,8 @@ bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffec
 bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier)
 {
 	//UDMSDataObject* ValueData = nullptr;
+	if (!ModifierOp) return false;
+
 	UDMSAttributeComponent* AEAttComp = EI->GetComponentByClass<UDMSAttributeComponent>();
 
 	if(!AEAttComp) return false;
@@ -133,6 +140,7 @@ bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActive
 	auto ModifierValue = Cast<UDMSAttributeValue_Numeric>(AEAtt->AttributeValue);
 
 	if (!ModifierValue) return false;
+	
 	
 	OutModifier.ModifierOp = ModifierOp;
 	OutModifier.Value = ModifierValue;

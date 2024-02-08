@@ -128,7 +128,14 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 	}
 	TargetAndEIs.Reset();
 
-	for (auto& Target : iTargets) TargetAndEIs.Add(FDMSSequenceEIStorage(Target));
+	for (auto& Target : iTargets) 
+	{
+		if ( Target.GetInterface() == nullptr ) {
+			DMS_LOG_SIMPLE(TEXT("Sequence::SetTarget _ iTarget Is Not Effector [Name : %s]"),*Target.GetObject()->GetName());
+			continue;
+		}
+		TargetAndEIs.Add(FDMSSequenceEIStorage(Target));
+	}
 
 	//if (CreateEIs)
 	//{

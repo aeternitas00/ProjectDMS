@@ -4,7 +4,7 @@
 #include "Attribute/DMSAttribute.h"
 
 
-UDMSAttribute::UDMSAttribute()
+UDMSAttribute::UDMSAttribute():AttributeValue(nullptr)
 {
 }
 
@@ -14,7 +14,7 @@ void UDMSAttribute::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// .. 
+	DOREPLIFETIME(UDMSAttribute,AttributeValue);
 }
 
 
@@ -36,6 +36,20 @@ void UDMSAttribute::ApplyModifier(const FDMSAttributeModifier& Modifier)
 	AttributeValue->ExecuteOp(Modifier);
 	// Make this multicast
 	OnAttributeModified.Broadcast(this);
+}
+
+void UDMSAttribute::GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass)
+{
+	if(AttributeValue!=nullptr) return;
+	
+	AttributeValue = NewObject<UDMSAttributeValue>(this,ValueClass);
+}
+
+void UDMSAttribute::DuplicateValue(UDMSAttributeValue* Value)
+{	
+	if(AttributeValue!=nullptr) return;
+	
+	AttributeValue = DuplicateObject<UDMSAttributeValue>(Value, this);
 }
 
 void UDMSAttributeValue_Numeric::ExecuteOp_Implementation(const FDMSAttributeModifier& Modifier)
@@ -70,6 +84,8 @@ void UDMSAttributeValue_Numeric::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 
 bool UDMSAttributeModifierOp_Numeric::Predict_Implementation(UDMSAttribute* Target) const
 {
+	if (Target==nullptr) return false; 
+
 	UDMSAttributeValue_Numeric* Value = Cast<UDMSAttributeValue_Numeric>(Target->AttributeValue);
 
 	if (!Value) return false;

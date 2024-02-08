@@ -7,6 +7,7 @@
 
 UDMSAttributeComponent::UDMSAttributeComponent():UDMSSpawnableComponent()
 {
+	PrimaryComponentTick.bCanEverTick = false;
 	bReplicateUsingRegisteredSubObjectList = true;
 }
 
@@ -69,21 +70,36 @@ void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UDMSAttributeComponent, Attributes);
 }
 
-UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer& AttributeName,const TSubclassOf<UDMSAttribute>& AttributeClass)
+UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer& AttributeName,const TSubclassOf<UDMSAttributeValue>& AttributeValueClass)
 {
 	if (ContainAttribute(AttributeName)) return nullptr; // log or what\
 
-	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this,AttributeClass);
+	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
 	NewAtt->AttributeTag = AttributeName;
+	NewAtt->GenerateValue(AttributeValueClass);
 	AddReplicatedSubObject(NewAtt);
 	Attributes.Add(NewAtt);
 
 	return NewAtt;
 }
 
+UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue)
+{
+	if (ContainAttribute(AttributeName)) return nullptr; 
+
+	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
+	NewAtt->AttributeTag = AttributeName;
+	NewAtt->DuplicateValue(AttributeValue);
+	AddReplicatedSubObject(NewAtt);
+	Attributes.Add(NewAtt);
+
+	return NewAtt;
+
+}
+
 UDMSAttribute* UDMSAttributeComponent::DuplicateAttribute(UDMSAttribute* Attribute)
 {
-	if (ContainAttribute(Attribute->AttributeTag)) return nullptr; // log or what\
+	if (!Attribute || ContainAttribute(Attribute->AttributeTag)) return nullptr; // log or what\
 
 	UDMSAttribute* NewAtt = DuplicateObject(Attribute,this);
 	NewAtt->AttributeTag = Attribute->AttributeTag;

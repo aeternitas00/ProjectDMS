@@ -57,7 +57,7 @@ public:
 
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return true;}
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return StaticModifier.Value!=nullptr && StaticModifier.ModifierOp!=nullptr;}
 
 };
 

@@ -62,7 +62,10 @@ public:
 	 * @param	DefValue							Default value of creating attribute
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSAttribute* MakeAttribute(const FGameplayTagContainer& AttributeName, const TSubclassOf<UDMSAttribute>& AttributeClass);
+	UDMSAttribute* MakeAttribute(const FGameplayTagContainer& AttributeName, const TSubclassOf<UDMSAttributeValue>& AttributeValueClass);
+
+	UFUNCTION(BlueprintCallable)
+	UDMSAttribute* GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue);
 
 	/**
 	* Make named attribute if component doesn't contain param name.

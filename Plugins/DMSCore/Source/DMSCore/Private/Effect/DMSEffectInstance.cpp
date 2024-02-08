@@ -12,6 +12,7 @@
 
 #include "GameModes/DMSGameStateBase.h"
 #include "GameModes/DMSGameModeBase.h"
+#include "Attribute/DMSAttributeComponent.h"
 
 #include "Effect/DMSEffect_CancelEffect.h"
 #include "Effect/DMSEffectOption.h"
@@ -23,7 +24,7 @@ ADMSActiveEffect::ADMSActiveEffect() :CurrentState(EDMSEIState::EIS_Default)
 { 
 	bReplicates = true;
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>("AttributeComponent");
-	//AttributeComponent->SetReplicated(true);
+	AttributeComponent->SetIsReplicated(true);
 
 	//IteratingDelegate.BindDynamic(this, &ADMSActiveEffect::ApplyNextEffectDefinition); 
 }
@@ -96,7 +97,7 @@ UDMSSequence* ADMSActiveEffect::CreateSequenceFromNode(AActor* SourceTweak, UDMS
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if (SM == nullptr) return nullptr;
 	TArray<TScriptInterface<IDMSEffectorInterface>> Target;
-	Target.Add(GetOuter());
+	Target.Add(GetOwner());
 	return SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, Target, DataSet, ChainingSequence);
 }
 
@@ -112,7 +113,6 @@ UDMSSequence* ADMSActiveEffect::CreateSequenceFromNode(AActor* SourceTweak, UDMS
 bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
 	bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
 {
-
 	//if (Seq->OriginalEffectNode == EffectNode) {
 	//	DMS_LOG_SIMPLE(TEXT("Recursive Response Occured"));
 	//	return rv;
@@ -124,7 +124,7 @@ bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorI
 
 	if ( CurrentState != EDMSEIState::EIS_Default && CurrentState != EDMSEIState::EIS_Persistent ) return false;
 
-	if ( EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
+	if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
 	{
 		CurrentState = EDMSEIState::EIS_PendingKill;
 		return false;	

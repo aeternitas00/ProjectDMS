@@ -70,8 +70,8 @@ protected:
 	/**
 	 * Player's default attribute key, value pairs.
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TArray<TObjectPtr<UDMSAttribute>> DefaultAttributes;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced)
+	TMap<FGameplayTag,TObjectPtr<UDMSAttributeValue>> DefaultAttributes;
 
 	/**
 	 * Player's default basic actions.

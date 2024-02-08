@@ -51,13 +51,13 @@ public:
 	/**
 	* 
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
 	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
 
 	/**
 	* 
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
 	TObjectPtr<UDMSAttributeValue> Value;
 };
 
@@ -66,7 +66,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAttributeModifiedSignature, UDMSAttribute*, Attribute);
 
 
-UCLASS(BlueprintType,Blueprintable,DefaultToInstanced,Abstract)
+UCLASS(BlueprintType,Blueprintable,EditInlineNew,Abstract)
 class DMSCORE_API UDMSAttributeValue : public UObject
 {
 	GENERATED_BODY()
@@ -83,7 +83,7 @@ public:
 /**
  *	Class of attribute base.
  */
-UCLASS(BlueprintType,NotBlueprintable,DefaultToInstanced)
+UCLASS(BlueprintType,Blueprintable)
 class DMSCORE_API UDMSAttribute : public UObject
 {
 	GENERATED_BODY()
@@ -104,7 +104,7 @@ public:
 	/**
 	 * 
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = Attribute)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Replicated, Category = Attribute)
 	TObjectPtr<UDMSAttributeValue> AttributeValue;
 
 public:
@@ -120,6 +120,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void ApplyModifier(const FDMSAttributeModifier& Modifier);
 
+	void GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass);
+	void DuplicateValue(UDMSAttributeValue* Value);
+
 	virtual bool IsSupportedForNetworking() const override {return true;}
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
@@ -127,7 +130,7 @@ public:
 /**
  *	Attibute Modifier object. Using in ModAtt Effect. 
  */
-UCLASS(BlueprintType,Blueprintable,DefaultToInstanced,Abstract)
+UCLASS(BlueprintType,Blueprintable,EditInlineNew,Abstract)
 class DMSCORE_API UDMSAttributeModifierOp : public UObject
 {
 	GENERATED_BODY()
@@ -183,7 +186,7 @@ public:
 /**
 *	Attibute Modifier struct. Using in ModAtt Effect. 
 */
-UCLASS(BlueprintType,Blueprintable,DefaultToInstanced)
+UCLASS()
 class DMSCORE_API UDMSAttributeModifierOp_Numeric : public UDMSAttributeModifierOp
 {
 	GENERATED_BODY()

@@ -50,7 +50,6 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 	
 	// 디시전을 여러명이서 순차 진행하는 케이스가 있을까? 
 
-
 	TArray<ADMSPlayerControllerBase*> CastedDecisionMakers;
 
 	for (auto DM : DecisionMakers)
@@ -98,10 +97,10 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequence->GetName());
 
 		// Prevent self notifing 
-		for (auto EI : pSequence->GetAllEIs())
-		{
-			EI->ChangeEIState(EDMSEIState::EIS_Default);
-		}
+		//for (auto EI : pSequence->GetAllEIs())
+		//{
+		//	EI->ChangeEIState(EDMSEIState::EIS_Default);
+		//}
 
 		ProgressComplete();
 
