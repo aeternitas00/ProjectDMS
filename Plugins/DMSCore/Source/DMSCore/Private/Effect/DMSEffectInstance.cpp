@@ -23,7 +23,7 @@
 ADMSActiveEffect::ADMSActiveEffect() :CurrentState(EDMSEIState::EIS_Default) 
 { 
 	bReplicates = true;
-	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>("AttributeComponent");
+	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>("AttributesComponent");
 	AttributeComponent->SetIsReplicated(true);
 
 	//IteratingDelegate.BindDynamic(this, &ADMSActiveEffect::ApplyNextEffectDefinition); 
@@ -73,6 +73,9 @@ void ADMSActiveEffect::OnApplyComplete()
 void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
 { 
 	EffectNode = iNode; 
+	for (auto& Attribute : EffectNode->EffectAttributes)
+		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag,Attribute.DefaultValue);
+	
 	CurrentState = iNode->bIsPersistent ? EDMSEIState::EIS_Persistent : EDMSEIState::EIS_PendingApply; 
 	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); 
 	
@@ -81,14 +84,19 @@ void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet
 
 void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
 { 
-	EffectNode = iNode; SourcePlayer=iSeq->GetSourcePlayer(); 
-	SourceObject = iSeq->GetSourceObject(); 
+	EffectNode = iNode; 
+	for (auto& Attribute : EffectNode->EffectAttributes)
+		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag,Attribute.DefaultValue);
+
+	SourcePlayer=iSeq->GetSourcePlayer(); SourceObject = iSeq->GetSourceObject(); 
 
 	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(this);
 	NewData->Inherit(iSeq->SequenceDatas);
 	NewData->ParentDataSet = iSeq->SequenceDatas;
 	DataSet = NewData;
 	CurrentState = iNode->bIsPersistent ? EDMSEIState::EIS_Persistent : EDMSEIState::EIS_PendingApply; 
+
+
 }
 
 
@@ -122,7 +130,7 @@ bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorI
 
 	if ( !iChainable && !EffectNode->bForced ) return false;
 
-	if ( CurrentState != EDMSEIState::EIS_Default && CurrentState != EDMSEIState::EIS_Persistent ) return false;
+	if ( /*CurrentState != EDMSEIState::EIS_PendingApply &&*/ CurrentState != EDMSEIState::EIS_Persistent ) return false;
 
 	if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
 	{

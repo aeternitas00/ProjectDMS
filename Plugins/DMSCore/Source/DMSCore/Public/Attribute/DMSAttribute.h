@@ -17,28 +17,6 @@
 #include "Attribute/DMSSerializedAttribute.h"
 #include "DMSAttribute.generated.h"
 
-///**
-// *	Attibute Modifier struct. Using in ModAtt Effect. 
-// */
-//USTRUCT(BlueprintType)
-//struct FDMSAttributeModifier
-//{
-//	GENERATED_BODY()
-//
-//public:
-//	/**
-//	 * Tag of modifing attribute
-//	 */
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-//	FGameplayTagQuery TargetQuery;
-//
-//	/**
-//	 * 
-//	 */
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-//	TObjectPtr<UDMSAttributeModifier> ModifierDefinition;
-//};
-
 class UDMSAttributeModifierOp;
 class UDMSAttributeValue;
 
@@ -61,6 +39,24 @@ public:
 	TObjectPtr<UDMSAttributeValue> Value;
 };
 
+USTRUCT(BlueprintType)
+struct FDMSAttributeDefinition
+{
+	GENERATED_BODY()
+
+public:
+	/**
+	* 
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	FGameplayTagContainer DefaultTag;
+
+	/**
+	* 
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
+	TObjectPtr<UDMSAttributeValue> DefaultValue;
+};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAttributeModifiedSignature, UDMSAttribute*, Attribute);
@@ -83,7 +79,7 @@ public:
 /**
  *	Class of attribute base.
  */
-UCLASS(BlueprintType,Blueprintable)
+UCLASS(BlueprintType, Blueprintable, EditInlineNew)
 class DMSCORE_API UDMSAttribute : public UObject
 {
 	GENERATED_BODY()
@@ -145,8 +141,8 @@ public:
 	/**
 	 * 
 	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-	FGameplayTagContainer AttributeTag;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	//FGameplayTagContainer AttributeTag;
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = Attribute)

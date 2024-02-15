@@ -70,17 +70,17 @@ public:
 	/**
 	 * Displaying mana cost of card. (not actual cost. cosmetic)
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	FText DisplayManaCost;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
+	//FText DisplayManaCost;
 	
 	/**
 	 * Displaying action point cost of card. (not actual cost. cosmetic)
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	FText DisplayAPCost;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
+	//FText DisplayAPCost;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = CardEffect)
-	TArray<TObjectPtr<UDMSAttribute>> DefaultAttributes;
+	TArray<FDMSAttributeDefinition> DefaultAttributes;
 
 	/**
 	 * Effect sets of Card.

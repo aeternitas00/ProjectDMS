@@ -32,10 +32,10 @@ UENUM()
 enum class EDMSEIState : uint8
 {
 	EIS_Default UMETA(DisplayName = "Default"),
-	EIS_PendingApply UMETA(DisplayName = "Pending to apply"), // Prevent self notifing 
+	EIS_PendingApply UMETA(DisplayName = "Pending to apply"), 
 	EIS_Persistent UMETA(DisplayName = "Persistent"),
 	EIS_PendingKill UMETA(DisplayName = "Pending to kill"),
-	//EIS_Preview UMETA(DisplayName = "Preview Dummy"),
+	EIS_MAX UMETA(DisplayName = "Max"),
 	//...
 };
 

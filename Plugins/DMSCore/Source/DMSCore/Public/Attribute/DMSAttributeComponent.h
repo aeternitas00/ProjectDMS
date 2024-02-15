@@ -37,7 +37,7 @@ public:
 	 * Storing attribute instances
 	 */
 	UPROPERTY(BlueprintReadOnly, Replicated)
-	TArray<UDMSAttribute*> Attributes; // Resources
+	TArray<TObjectPtr<UDMSAttribute>> Attributes; // Resources
 	
 	/**
 	 * Check this component contians tagged attribute.
@@ -51,10 +51,10 @@ public:
 	 * @return	true if modifying was successful
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool PredictModifier(const FDMSAttributeModifier& Modifier) const;
+	bool PredictModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) const;
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplyModifier(const FDMSAttributeModifier& Modifier);
+	void ApplyModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier);
 
 	/**
 	 * Make named attribute if component doesn't contain param name.

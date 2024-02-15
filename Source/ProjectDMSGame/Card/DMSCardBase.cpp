@@ -22,7 +22,7 @@ ADMSCardBase::ADMSCardBase(const FObjectInitializer& ObjectInitializer) : ADMSEf
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
+	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributesComponent"));
 	AttributeComponent->SetIsReplicated(true);
 
 	bReplicates=true;
@@ -94,7 +94,7 @@ void ADMSCardBase::OnInitialized_Implementation()
 		EIManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
 
 	for(auto& Attribute : CardDefinition->DefaultAttributes)
-		AttributeComponent->DuplicateAttribute(Attribute);
+		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue);
 }
 
 //void ADMSCardBase::PostInitialize_Implementation()

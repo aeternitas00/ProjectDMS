@@ -41,7 +41,7 @@ public:
 	 * Default attributes of character.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Character)
-	TArray<TObjectPtr<UDMSAttribute>>	DefaultAttributes;
+	TArray<FDMSAttributeDefinition>	DefaultAttributes;
 
 	// Sprites for character...
 	// FBrush arr?

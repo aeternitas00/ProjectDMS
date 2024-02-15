@@ -28,7 +28,7 @@ protected:
 	 * Manage mana, resource, etc... of character.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
+	TObjectPtr<UDMSAttributeComponent> AttributesComponent;
 
 	/**
 	 * Reference of current location.
@@ -51,7 +51,7 @@ public:
 	 *
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SetupAttributes(const TArray<UDMSAttribute*>& Attributes);
+	void SetupAttributes(const TArray<FDMSAttributeDefinition>& Attributes);
 
 
 };

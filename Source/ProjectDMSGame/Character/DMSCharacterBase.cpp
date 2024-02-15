@@ -11,9 +11,9 @@ ADMSCharacterBase::ADMSCharacterBase(const FObjectInitializer& ObjectInitializer
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributeComponent"));
+	AttributesComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributesComponent"));
 
-	AttributeComponent->SetIsReplicated(true);
+	AttributesComponent->SetIsReplicated(true);
 }
 
 UDMSEffectSet* ADMSCharacterBase::GetOwningEffectSet(const FGameplayTag& iSetName)
@@ -32,9 +32,9 @@ void ADMSCharacterBase::OnInitialized_Implementation()
 	SetupAttributes(CharacterDefinition->DefaultAttributes);
 }
 
-void ADMSCharacterBase::SetupAttributes(const TArray<UDMSAttribute*>& Attributes)
+void ADMSCharacterBase::SetupAttributes(const TArray<FDMSAttributeDefinition>& Attributes)
 {
 	for (auto& Attribute : Attributes){
-		AttributeComponent->DuplicateAttribute(Attribute);
+		AttributesComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue);
 	}
 }

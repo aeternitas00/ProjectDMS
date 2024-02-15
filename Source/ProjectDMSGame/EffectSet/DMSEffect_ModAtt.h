@@ -26,6 +26,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
 	bool bCreateIfNull;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	FGameplayTagContainer TargetAttributeTags;
+
 	// Attribute Modifier generating rules
 
 	bool GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
@@ -55,8 +58,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
 	FDMSAttributeModifier StaticModifier;
 
-
-	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
+	//virtual FGameplayTagContainer GetEffectTags_Implementation() override;
 	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return StaticModifier.Value!=nullptr && StaticModifier.ModifierOp!=nullptr;}
 
 };
@@ -78,7 +80,20 @@ public:
 	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier);
 };
 
-UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : From Attribute"))
+UCLASS()
+class PROJECTDMSGAME_API UDMSAttributeValueProcesser : public UDMSDataProcesser
+{
+	GENERATED_BODY()
+
+public:
+	//UDMSAttributeValueProcesser(){}
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Effect)
+	FDMSAttributeModifier ProcessorModifier;
+
+	virtual void Process_Implementation(UObject* iObject);
+};
+
+UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Value From Attribute"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_FromAttribute : public UDMSEffect_ModAtt
 {
 	GENERATED_BODY()
@@ -98,9 +113,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
 	FGameplayTagContainer ActiveEffectValueTags;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = Effect)
+	TArray<TObjectPtr<UDMSAttributeValueProcesser>> ValueProcessers;
+
 	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier);
 };
-
 
 
 // 추가적으로 데이터 여러개를 참조해서 모디파이어를 만드는 식의 형태는 사용자가 직접 구현 할 수 있도록...

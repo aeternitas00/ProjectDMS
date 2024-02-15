@@ -24,7 +24,7 @@
 ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPlayerStateBase(Initializer)
 {
 	CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-	//AttributeComponent=nullptr;
+	//AttributesComponent=nullptr;
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributesComponent"));
 
 	CardManagerComponent->SetIsReplicated(true);
@@ -50,7 +50,7 @@ void ADMSPlayerState::SetupCardContainers()
 void ADMSPlayerState::SetupAttributes()
 {
 	for (auto Stat : DefaultAttributes) {
-		AttributeComponent->GenerateAndSetAttribute(FGameplayTagContainer(Stat.Key),Stat.Value);
+		AttributeComponent->GenerateAndSetAttribute(Stat.DefaultTag,Stat.DefaultValue);
 	}
 }
 

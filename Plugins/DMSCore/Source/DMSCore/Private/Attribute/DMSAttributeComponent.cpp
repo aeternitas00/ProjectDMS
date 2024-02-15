@@ -29,21 +29,21 @@ bool UDMSAttributeComponent::ContainAttributeByQuery(const FGameplayTagQuery& Qu
 	return ParentAtt == nullptr ? false : ParentAtt->ContainAttributeByQuery(Query);
 }
 
-bool UDMSAttributeComponent::PredictModifier(const FDMSAttributeModifier& Modifier) const
+bool UDMSAttributeComponent::PredictModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) const
 {
 	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
-	if (!ContainAttribute(Modifier.ModifierOp->AttributeTag)) return false; // log or what
+	if (!ContainAttribute(AttributeTag)) return false; // log or what
 
-	return Modifier.ModifierOp->Predict(GetAttribute(Modifier.ModifierOp->AttributeTag));
+	return Modifier.ModifierOp->Predict(GetAttribute(AttributeTag));
 }
 
 
-void UDMSAttributeComponent::ApplyModifier(const FDMSAttributeModifier& Modifier) 
+void UDMSAttributeComponent::ApplyModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) 
 {
 	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
-	if (!PredictModifier(Modifier)) return; // log or what
+	if (!PredictModifier(AttributeTag, Modifier)) return; // log or what
 
-	GetAttribute(Modifier.ModifierOp->AttributeTag)->ApplyModifier(Modifier);
+	GetAttribute(AttributeTag)->ApplyModifier(Modifier);
 }
 
 //bool UDMSAttributeComponent::GetAttributeValue(const FGameplayTag& AttributeName, float& outValue) const

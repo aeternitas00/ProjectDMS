@@ -15,6 +15,7 @@
 #include "DMSCoreIncludes.h"
 #include "UObject/NoExportTypes.h"
 #include "Sequence/DMSSeqManager.h"
+#include "Attribute/DMSAttribute.h"
 #include "Common/DMSCommonDelegates.h"
 #include "Common/DMSTargetGenerator.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
@@ -163,8 +164,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "!bIgnoreNotify", EditConditionHides))
 	TObjectPtr<UDMSConditionCombiner> Conditions;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced,Category = Effect)
-	TArray<TObjectPtr<UDMSAttribute>> EffectAttributes;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	TArray<FDMSAttributeDefinition> EffectAttributes;
 	/**
 	 * Has a choice about triggering the effect ? 
 	 * true : Forced trigger when meet the conditions. / false : Can choose Y / N of trigger.

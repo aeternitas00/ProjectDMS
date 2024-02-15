@@ -34,7 +34,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSAc
 {
 	// predict에 valid check 를 다 하고가니 이런거 필요 한가 다시 생각해보긴 해야할텐데...
 
-	DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *iEI->GetOuter()->GetName());	
+	//DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *iEI->GetOuter()->GetName());	
 
 	AActor* Outer=nullptr;
 	UDMSAttributeComponent* AttComp=nullptr;
@@ -52,11 +52,11 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSAc
 		AttComp = Cast<UDMSAttributeComponent>(Outer->AddComponentByClass(UDMSAttributeComponent::StaticClass(),false,FTransform(),false));
 	}
 	
-	if (bCreateIfNull)	AttComp->MakeAttribute(Modifier.ModifierOp->AttributeTag,Modifier.Value->GetClass());
+	if (bCreateIfNull)	AttComp->MakeAttribute(TargetAttributeTags,Modifier.Value->GetClass());
 	
 	float OutValue = 0.0f;
 	
-	AttComp->GetAttribute(Modifier.ModifierOp->AttributeTag)->ApplyModifier(Modifier);
+	AttComp->GetAttribute(TargetAttributeTags)->ApplyModifier(Modifier);
 
 	OnWorkCompleted.ExecuteIfBound(true);
 }
@@ -78,9 +78,9 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADM
 
 		else return false;
 	}
-	Att = AttComp->GetAttribute(Modifier.ModifierOp->AttributeTag);
+	Att = AttComp->GetAttribute(TargetAttributeTags);
 	if (Att == nullptr) {
-		if (bCreateIfNull) Att = AttComp->MakeAttribute(Modifier.ModifierOp->AttributeTag,Modifier.Value->GetClass()); 
+		if (bCreateIfNull) Att = AttComp->MakeAttribute(TargetAttributeTags,Modifier.Value->GetClass()); 
 		else return false;
 	}
 
@@ -92,14 +92,7 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADM
 FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
 { 
 	FGameplayTagContainer Rv(EffectTag);
-//	Rv.AddTag(GenerateModifier().AttributeTag);
-	return Rv;
-}
-
-FGameplayTagContainer UDMSEffect_ModAtt_Static::GetEffectTags_Implementation()
-{ 
-	FGameplayTagContainer Rv(EffectTag);
-	Rv.AppendTags(StaticModifier.ModifierOp->AttributeTag);
+	Rv.AppendTags(TargetAttributeTags);
 	return Rv;
 }
 
@@ -137,12 +130,28 @@ bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActive
 
 	if (AEAtt == nullptr) return false;
 
+	// 이거 값 바꿔야하므로 사본구해오기 정도로 해야함.
 	auto ModifierValue = Cast<UDMSAttributeValue_Numeric>(AEAtt->AttributeValue);
 
 	if (!ModifierValue) return false;
+	
+	ModifierValue = DuplicateObject<UDMSAttributeValue_Numeric>(ModifierValue,EI);
+
+	for (auto& Prc : ValueProcessers)
+		Prc->Process(ModifierValue);
 	
 	
 	OutModifier.ModifierOp = ModifierOp;
 	OutModifier.Value = ModifierValue;
 	return true;
+}
+
+void UDMSAttributeValueProcesser::Process_Implementation(UObject* iObject)
+{
+	if (iObject==nullptr || !iObject->IsA<UDMSAttributeValue>()) return;
+
+	auto AttValue = Cast<UDMSAttributeValue>(iObject);
+
+	AttValue->ExecuteOp(ProcessorModifier);
+	
 }

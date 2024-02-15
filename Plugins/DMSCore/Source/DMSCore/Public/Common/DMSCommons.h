@@ -250,16 +250,16 @@ public:
 };
 
 UCLASS(Abstract,Blueprintable,BlueprintType,EditInlineNew)
-class DMSCORE_API UDMSValueProcesser : public UObject
+class DMSCORE_API UDMSDataProcesser : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UDMSValueProcesser(){}
+	UDMSDataProcesser(){}
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-	void Process(UDMSDataObject* DataObject);
-	virtual void Process_Implementation(UDMSDataObject* DataObject){}
+	void Process(UObject* iObject);
+	virtual void Process_Implementation(UObject* iObject){}
 };
 
 USTRUCT(BlueprintType)
@@ -279,7 +279,7 @@ public:
 	 * ex) 선택한 숫자의 *3 만큼 데미지를 준다 -> Modifier나 float를 받아서 *3 한다음 리턴하는 Processer를 추가.
 	 */
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced)
-	TArray<TObjectPtr<UDMSValueProcesser>> ValueProcessers;
+	TArray<TObjectPtr<UDMSDataProcesser>> ValueProcessers;
 
 	/**
 	 * Extracts values from the dataset received as an argument in a specified method. ( with DataKey and ValueProcesser )
