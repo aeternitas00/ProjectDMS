@@ -93,9 +93,8 @@ protected:
 	 * Structure for implementing chained delegates to ensure synchronization in the Notify step.
 	 */
 	struct FForcedEICounter {
-		FOnForcedSequenceCompleted Delegate;
+		FOnForcedSequenceCompleted ClosingDelegate;
 		uint8 Count = 0;
-		// EI's Owner : EI 
 		TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> NonForcedObjects;
 		TArray<TPair<AActor*, ADMSActiveEffect*>> ForcedObjects;
 		FForcedEIIteratingDelegate IteratingDelegate;
@@ -211,28 +210,31 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 
 		ForcedEIMap[NotifyData].NonForcedObjects = ResponsedObjects;
 
-		ForcedEIMap[NotifyData].Delegate.BindLambda([this](UDMSSequence* Sequence) {
-			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
-			auto temp = std::move(ForcedEIMap[Sequence]);
-			ForcedEIMap.Remove(Sequence);
-			CreateRespondentSelector_New(Sequence, temp.NonForcedObjects);
-		});
-
 		ForcedEIMap[NotifyData].IteratingDelegate.BindLambda([this](UDMSSequence* Sequence) {
 
 			if (ForcedEIMap[Sequence].Count == ForcedEIMap[Sequence].ForcedObjects.Num()) {
 				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
-				ForcedEIMap[Sequence].Delegate.ExecuteIfBound(Sequence);
+				ForcedEIMap[Sequence].ClosingDelegate.ExecuteIfBound(Sequence);
 			}
 			else {
 				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
 
+				// Create Applying AE from Responsed Pesistent AE.
 				auto& CurrentForcedPair = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count];
-				auto NewSeq = CurrentForcedPair.Value->CreateSequenceFromNode(CurrentForcedPair.Key, Sequence);
+				auto NewSeq = CurrentForcedPair.Value->CreateApplyingSequence(CurrentForcedPair.Key, Sequence);
 				NewSeq->AddToOnSequenceFinished_Native([this, Sequence](bool) {ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence); });
 				ForcedEIMap[Sequence].Count++;
 				UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
 			}
+		});
+
+		ForcedEIMap[NotifyData].ClosingDelegate.BindLambda([this](UDMSSequence* Sequence) {
+			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
+			// Cleanup Forced queue.
+			auto temp = std::move(ForcedEIMap[Sequence]);
+			ForcedEIMap.Remove(Sequence);
+			// Continue to user selectable effects.
+			CreateRespondentSelector_New(Sequence, temp.NonForcedObjects);
 		});
 
 		ForcedEIMap[NotifyData].IteratingDelegate.ExecuteIfBound(NotifyData);

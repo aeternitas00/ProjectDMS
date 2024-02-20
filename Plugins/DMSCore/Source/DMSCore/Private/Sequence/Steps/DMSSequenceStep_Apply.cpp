@@ -21,7 +21,7 @@ void UDMSSequenceStep_Apply::OnStepInitiated()
 {
 	if(!OwnerSequence->IsTargetted()){
 		auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
-		EH->CreateEffectInstance(OwnerSequence, OwnerSequence->OriginalEffectNode);
+		EH->CreateApplyingActiveEffect(OwnerSequence, OwnerSequence->OriginalEffectNode);
 	}
 	UDMSSequenceStep::OnStepInitiated();
 }

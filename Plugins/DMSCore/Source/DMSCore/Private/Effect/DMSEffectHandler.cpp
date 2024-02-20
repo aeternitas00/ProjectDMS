@@ -22,9 +22,8 @@
 
 
 // Owned effect creating helper
-TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateEffectInstance(AActor* SourceObject,AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
+ADMSActiveEffect* UDMSEffectHandler::CreatePersistentActiveEffect(AActor* SourceObject,AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
 {
-	TArray<ADMSActiveEffect*> rv;
 	FActorSpawnParameters Param;
 	Param.Owner=Target;
 
@@ -32,16 +31,16 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateEffectInstance(AActor* Source
 	EffectInstance->AttachToActor(Target,FAttachmentTransformRules::SnapToTargetIncludingScale);
 	EffectInstance->SourceObject = SourceObject;
 	EffectInstance->SourcePlayer = SourcePlayer;	
-	EffectInstance->Initialize(EffectNode, iSet);
+	EffectInstance->Initialize(EffectNode,EDMSAEState::AES_Persistent);
+	EffectInstance->SetupDatas(iSet);
 
 	EIList.Add(EffectInstance);
 
-	rv.Add(EffectInstance);
-	return rv;
+	return EffectInstance;
 }
 
 
-TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode)
+TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(UDMSSequence* Sequence, UDMSEffectNode* EffectNode)
 {
 	// No Selected Target ( Passed or No selector for this effect node )
 	// If PARAM_TARGET is exist, it will override preset generating.
@@ -58,6 +57,7 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence* 
 		DMS_LOG_SIMPLE(TEXT("%s : ApplyTargets is emtpy "), *EffectNode->GetName());
 	}
 
+	// Attach temporal AE to target. 
 	TArray<ADMSActiveEffect*> rv;
 	for (auto& ApplyStorage : Storages)
 	{
@@ -66,12 +66,18 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateEffectInstance(UDMSSequence* 
 			auto Comp = Target->GetEffectorManagerComponent();
 			if (!Comp) continue;
 
-			FActorSpawnParameters Param;
-			Param.Owner=Target->GetObject();
-			ADMSActiveEffect* EffectInstance =  GetWorld()->SpawnActor<ADMSActiveEffect>(Param);
+			FActorSpawnParameters Param;	Param.Owner=Target->GetObject();
+			ADMSActiveEffect* EffectInstance;
+
+			// Change this part.
+			//if (EffectNode->bIsPersistent)	EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect_Persistent>(Param);
+			//else							EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect_Applying>(Param);
+
+			EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect>(Param);
 			EffectInstance->AttachToActor(Target->GetObject(),FAttachmentTransformRules::SnapToTargetIncludingScale);
-			EffectInstance->Initialize(EffectNode, Sequence);
-			
+			EffectInstance->Initialize(EffectNode,EDMSAEState::AES_NotifyClosed);
+			EffectInstance->InheritSequenceDatas(Sequence);
+
 			Comp->AttachEffectInstance(EffectInstance);
 
 			EIList.Add(EffectInstance);
@@ -104,7 +110,7 @@ void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence, bo
 void UDMSEffectHandler::CleanupNonPersistent()
 {
 	EIList.RemoveAllSwap([](ADMSActiveEffect* EI) {
-		bool rv = EI->GetCurrentState() == EDMSEIState::EIS_PendingKill;
+		bool rv = (EI->GetCurrentState() & EDMSAEState::AES_Persistent) != EDMSAEState::AES_Persistent;
 		if (rv) EI->Destroy();
 		return rv;
 	});

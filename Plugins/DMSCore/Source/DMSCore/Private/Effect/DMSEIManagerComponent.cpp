@@ -73,12 +73,12 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 {
 	DMS_LOG_SIMPLE(TEXT("%s : Setup own effects [%s]"), *GetOwner()->GetName(), *SetName.ToString());
 	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
-	auto EffectNodes = EffectSet->EffectNodes;
+
 	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
 	if (!EH) { DMS_LOG_DETAIL(Error, TEXT("No Effect Handler")); 	return; }
 
+	auto EffectNodes = EffectSet->EffectNodes;
 
-	uint8 idx = 0;
 	for (auto& EffectWrapper : EffectNodes)
 	{
 		auto Effect = EffectWrapper->GetEffectNode();
@@ -86,8 +86,8 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 		if (Effect->Conditions == nullptr)
 			{DMS_LOG_SIMPLE(TEXT("NO CONDITION"));continue;}
 
-		auto EIs = EH->CreateEffectInstance(GetOwner(), GetOwnerAsInterface()->GetOwningPlayer(), GetOwner(), Effect);
-		//EIs[0]->ChangeEIState(EDMSEIState::EIS_Persistent);
-		OwnEffectInstances.Add(EIs[0]);
+		auto AE = EH->CreatePersistentActiveEffect(GetOwner(), GetOwnerAsInterface()->GetOwningPlayer(), GetOwner(), Effect);
+
+		OwnEffectInstances.Add(AE);
 	}
 }

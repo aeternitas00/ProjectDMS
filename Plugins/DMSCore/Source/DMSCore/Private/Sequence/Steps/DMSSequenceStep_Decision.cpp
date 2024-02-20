@@ -99,7 +99,7 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 		// Prevent self notifing 
 		//for (auto EI : pSequence->GetAllEIs())
 		//{
-		//	EI->ChangeEIState(EDMSEIState::EIS_Default);
+		//	EI->ToggleEIState(EDMSAEState::AES_None);
 		//}
 
 		ProgressComplete();

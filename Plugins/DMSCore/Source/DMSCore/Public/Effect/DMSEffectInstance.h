@@ -28,16 +28,18 @@ class UDMSEIManagerComponent;
  *	State flag of Effect instance.
  *	TODO :: make some flags and workflow for persistent effect
  */
-UENUM()
-enum class EDMSEIState : uint8
+UENUM(BlueprintType, Meta = (Bitflags,UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EDMSAEState : uint8
 {
-	EIS_Default UMETA(DisplayName = "Default"),
-	EIS_PendingApply UMETA(DisplayName = "Pending to apply"), 
-	EIS_Persistent UMETA(DisplayName = "Persistent"),
-	EIS_PendingKill UMETA(DisplayName = "Pending to kill"),
-	EIS_MAX UMETA(DisplayName = "Max"),
+	AES_None			= 0x00			UMETA(Hidden),
+	AES_NotifyClosed	= 0x01			UMETA(DisplayName = "Don't receive notify"), 
+	AES_Persistent		= 0x01 << 1		UMETA(DisplayName = "Persistent"),
+	//EIS_PendingKill		= 0x01 << 2		UMETA(DisplayName = "Pending to kill"),
+	AES_MAX				= MAX_uint8		UMETA(Hidden),
 	//...
 };
+
+ENUM_CLASS_FLAGS(EDMSAEState)
 
 /**
  * 	========================================
@@ -104,7 +106,7 @@ protected:
 	 * [replicates for clients' ui]
 	 */
 	UPROPERTY(Replicated)
-	EDMSEIState CurrentState;
+	EDMSAEState CurrentState;
 
 	/**
 	 * Managing attributes for active effect
@@ -123,17 +125,19 @@ protected:
 	// Hard ref for workers
 	TArray<TObjectPtr<UDMSEffectApplyWorker>> ApplyWorkers;
 
+	FSimpleMulticastDelegate OnApplyComplete_Native;
+
 public:
 
 	/**
 	 * Getter of CurrentState
 	 */
-	FORCEINLINE EDMSEIState GetCurrentState() { return CurrentState; }
+	FORCEINLINE EDMSAEState GetCurrentState() { return CurrentState; }
 
 	/**
 	 * Setter of CurrentState
 	 */
-	FORCEINLINE void ChangeEIState(const EDMSEIState& NewState) { CurrentState = NewState; }
+	FORCEINLINE void ToggleEIState(const EDMSAEState& NewState) { CurrentState ^= NewState; }
 
 	/**
 	 * Sources of effect
@@ -179,21 +183,23 @@ public:
 	/**
 	 * On effect apply complete
 	 */
-	void OnApplyComplete();
+	virtual void OnApplyComplete();
 
+	//void OnSequenceComplete();
+
+	virtual void Initialize(UDMSEffectNode* iNode,const EDMSAEState& InitialState);
 	/** 
 	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
-	 * @param	iNode
 	 * @param	iSet.
 	 */
-	void Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet = nullptr);
+	void SetupDatas(UDMSDataObjectSet* iSet=nullptr);
 	
 	/**
 	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
 	 * @param	iNode
 	 * @param	iSeq.
 	 */
-	void Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq);
+	void InheritSequenceDatas(UDMSSequence* iSeq);
 
 	/**
 	 * Create new sequence from owning datas. ( node, datas .... )
@@ -201,18 +207,48 @@ public:
 	 * @param	ChainingSequence				Parent sequence of creating sequence.
 	 * @return	Created sequence.
 	 */
-	UDMSSequence* CreateSequenceFromNode(AActor* SourceTweak, UDMSSequence* ChainingSequence);
+	UDMSSequence* CreateApplyingSequence(AActor* SourceTweak, UDMSSequence* ChainingSequence);
 
+	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak);
+
+	template<typename FuncFinished>
+	void AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFinished);
 
 	// =========== INTERFACE FUNCTION =========== // 
-	// 
+	
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }
-	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak);
-	// 기본적으로 EI는 '어떤 효과' 그 자체를 객체화 하기 위해 만든 클래스이므로 이펙트셋을 소유한다는 개념은 조금 이상한 듯.
-	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
+	
 	virtual void Serialize(FArchive& Ar) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	//friend FArchive& operator<<(FArchive& Ar, ADMSActiveEffect*& EI);
 };
 
+template<typename FuncFinished>
+void ADMSActiveEffect::AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFinished)
+{
+	OnApplyComplete_Native.AddLambda(iOnSequenceFinished);
+}
+
+//UCLASS(BlueprintType)
+//class DMSCORE_API ADMSActiveEffect_Persistent : public ADMSActiveEffect
+//{
+//	GENERATED_BODY()
+//
+//public:
+//
+//	virtual void Initialize(UDMSEffectNode* iNode) override;
+//	virtual void OnApplyComplete() override;
+//};
+//
+//
+//UCLASS(BlueprintType)
+//class DMSCORE_API ADMSActiveEffect_Applying : public ADMSActiveEffect
+//{
+//	GENERATED_BODY()
+//
+//public:
+//
+//	// Temporal AE does not receive notify.
+//	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak){return false;};
+//	virtual void OnApplyComplete() override;
+//};

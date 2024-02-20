@@ -88,7 +88,7 @@ public:
 	 * @param	iSet
 	 * @return	Created effect instances.
 	 */
-	TArray<ADMSActiveEffect*>/*EIHandle?*/ CreateEffectInstance(AActor* SourceObject, AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
+	ADMSActiveEffect* CreatePersistentActiveEffect(AActor* SourceObject, AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
 	
 	/**
 	 * Creating method for general purpose.
@@ -96,7 +96,7 @@ public:
 	 * @param	EffectNode
 	 * @return	Created effect instances.
 	 */
-	TArray<ADMSActiveEffect*>/*EIHandle?*/ CreateEffectInstance(UDMSSequence* Sequence, UDMSEffectNode* EffectNode);
+	TArray<ADMSActiveEffect*> CreateApplyingActiveEffect(UDMSSequence* Sequence, UDMSEffectNode* EffectNode);
 
 	/**
 	 * Resolve param sequence and executed paramed lambda function when resolve completed.

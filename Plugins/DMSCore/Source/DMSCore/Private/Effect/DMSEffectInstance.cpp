@@ -20,13 +20,11 @@
 //#include "Card/DMSCardBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
-ADMSActiveEffect::ADMSActiveEffect() :CurrentState(EDMSEIState::EIS_Default) 
+ADMSActiveEffect::ADMSActiveEffect() :CurrentState(EDMSAEState::AES_None),DataSet(nullptr)
 { 
 	bReplicates = true;
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>("AttributesComponent");
 	AttributeComponent->SetIsReplicated(true);
-
-	//IteratingDelegate.BindDynamic(this, &ADMSActiveEffect::ApplyNextEffectDefinition); 
 }
 
 
@@ -49,9 +47,7 @@ void ADMSActiveEffect::Apply(UDMSSequence* SourceSequence, const FResolveIterati
 IDMSEffectorInterface* ADMSActiveEffect::GetApplyTargetInterface()
 {
 	auto Outer = Cast<IDMSEffectorInterface>(GetOwner());
-	//if (CurrentState == EDMSEIState::EIS_Preview)
-	//	return Outer==nullptr ? nullptr : Cast<ADMSActiveEffect>(Outer)->GetApplyTargetInterface();
-	//else 	return Outer;
+
 	return Outer;
 }
 
@@ -64,80 +60,86 @@ AActor* ADMSActiveEffect::GetApplyTarget()
 
 void ADMSActiveEffect::OnApplyComplete()
 {
-	//if (CurrentState == EDMSEIState::EIS_Preview ){ if(GetTypedOuter<ADMSActiveEffect>()->CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill; }
-	//else if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
-
-	if (CurrentState != EDMSEIState::EIS_Persistent) CurrentState = EDMSEIState::EIS_PendingKill;
+	OnApplyComplete_Native.Broadcast();
+	OnApplyComplete_Native.Clear();
 }
 
-void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSDataObjectSet* iSet) 
-{ 
+void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode,const EDMSAEState& InitialState)
+{
 	EffectNode = iNode; 
 	for (auto& Attribute : EffectNode->EffectAttributes)
 		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag,Attribute.DefaultValue);
-	
-	CurrentState = iNode->bIsPersistent ? EDMSEIState::EIS_Persistent : EDMSEIState::EIS_PendingApply; 
-	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(); 
-	
-	//SetupPreviewDummy();
+	CurrentState = InitialState;
 }
 
-void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode, UDMSSequence* iSeq)
-{ 
-	EffectNode = iNode; 
-	for (auto& Attribute : EffectNode->EffectAttributes)
-		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag,Attribute.DefaultValue);
+//void ADMSActiveEffect_Applying::OnApplyComplete()
+//{
+//	Super::OnApplyComplete();
+//}
+//
+//void ADMSActiveEffect_Persistent::Initialize(UDMSEffectNode* iNode)
+//{
+//	Super::Initialize(iNode);
+//	CurrentState |= EDMSAEState::AES_Persistent;
+//}
+//
+//void ADMSActiveEffect_Persistent::OnApplyComplete()
+//{
+//	CurrentState &= ~EDMSAEState::AES_NotifyClosed;
+//
+//	Super::OnApplyComplete();
+//}
 
+void ADMSActiveEffect::SetupDatas(UDMSDataObjectSet* iSet) 
+{ 
+	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(this); 
+}
+
+void ADMSActiveEffect::InheritSequenceDatas(UDMSSequence* iSeq)
+{ 
 	SourcePlayer=iSeq->GetSourcePlayer(); SourceObject = iSeq->GetSourceObject(); 
 
-	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(this);
-	NewData->Inherit(iSeq->SequenceDatas);
-	NewData->ParentDataSet = iSeq->SequenceDatas;
-	DataSet = NewData;
-	CurrentState = iNode->bIsPersistent ? EDMSEIState::EIS_Persistent : EDMSEIState::EIS_PendingApply; 
+	if (DataSet==nullptr) DataSet = NewObject<UDMSDataObjectSet>(this);
 
-
+	DataSet->Inherit(iSeq->SequenceDatas);
+	DataSet->ParentDataSet = iSeq->SequenceDatas;
 }
 
 
-UDMSSequence* ADMSActiveEffect::CreateSequenceFromNode(AActor* SourceTweak, UDMSSequence* ChainingSequence) 
+UDMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, UDMSSequence* ChainingSequence) 
 {
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
 	if (SM == nullptr) return nullptr;
 	TArray<TScriptInterface<IDMSEffectorInterface>> Target;
 	Target.Add(GetOwner());
-	return SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, Target, DataSet, ChainingSequence);
-}
+	auto OutSeq = SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, Target, DataSet, ChainingSequence);
 
-//void ADMSActiveEffect::AttachEffectInstance(ADMSActiveEffect* EI)
-//{
-//	SubEI.Add(EI);
-//	EI->Rename(nullptr,this);
-//
-//	// DO we really need to do this things?
-//	//AddReplicatedSubObject(EI);
-//}
+	// 자기 자신의 효과의 노티파잉에 반응하여 무한루프 하는 것을 방지.
+	OutSeq->AddToOnSequenceInitiated_Native([this](){CurrentState |= EDMSAEState::AES_NotifyClosed;});
+	OutSeq->AddToOnSequenceFinished_Native([this](bool){CurrentState &= ~EDMSAEState::AES_NotifyClosed;});
+
+	return OutSeq;
+}
 
 bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
 	bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
 {
-	//if (Seq->OriginalEffectNode == EffectNode) {
-	//	DMS_LOG_SIMPLE(TEXT("Recursive Response Occured"));
-	//	return rv;
-	//}
+	// 1. Ignore condition check
+	if ( EffectNode->bIgnoreNotify || (CurrentState & EDMSAEState::AES_Persistent) != EDMSAEState::AES_Persistent ) return false;
 
-	if ( EffectNode->bIgnoreNotify ) return false;
-
+	// 2. If the user cannot decide whether to chain and the effect is not a forced trigger, then pass.
 	if ( !iChainable && !EffectNode->bForced ) return false;
 
-	if ( /*CurrentState != EDMSEIState::EIS_PendingApply &&*/ CurrentState != EDMSEIState::EIS_Persistent ) return false;
+	// 3. Check whether the state is explicitly closed to notifying.
+	if ( (CurrentState & EDMSAEState::AES_NotifyClosed) == EDMSAEState::AES_NotifyClosed)  return false;
 
+	// NOTIFIED
+
+	// Terminate condition check
 	if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
-	{
-		CurrentState = EDMSEIState::EIS_PendingKill;
-		return false;	
-	}
+		CurrentState &= ~EDMSAEState::AES_Persistent;
 
+	// Activate condition check
 	if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{
 		//DMS_LOG_SCREEN(TEXT("%s -> %s : Notify Checked"), GetTypedOuter<AActor>() != nullptr ? *GetTypedOuter<AActor>()->GetName() : TEXT("NullOuter"), *GetName());
@@ -193,21 +195,6 @@ void ADMSActiveEffect::Serialize(FArchive& Ar)
 
 }
 
-
-//UDMSEffectSet* ADMSActiveEffect::GetOwningEffectSet()
-//{
-//	//
-//
-//	return nullptr;
-//}
-
-//FArchive& operator<<(FArchive& Ar, ADMSActiveEffect*& EI)
-//{
-//	// TODO: 여기에 return 문을 삽입합니다.
-//	EI->Serialize(Ar);
-//	return Ar;
-//}
-
 void UDMSEffectApplyWorker::SetupWorker(UDMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted)
 {
 	SourceSequence = iSequence;
@@ -229,6 +216,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 	}
 
 	if (CurrentEDIndex == ApplyingEffect->EffectDefinitions.Num()) {
+		// 여기서 AEState를 원상복구 할시 During notify부터 부착된 이펙트들이 다시 노티파이 콜을 받을 수 있는 상태가 되므로 조정이 필요함.
 		OwnerInstance->OnApplyComplete();
 		CompletedDelegate.ExecuteIfBound(SourceSequence, true);
 	}

@@ -181,13 +181,6 @@ public:
 	bool bIgnoreNotify;
 
 	/**
-	* This Effect doesn't receive notifies. 
-	* It will not be activated except through other 'Activate Effect' effect. 
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	bool bIsPersistent;
-
-	/**
 	* Effect's terminate condition.
 	*/ 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "bIsPersistent", EditConditionHides))

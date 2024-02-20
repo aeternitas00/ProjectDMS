@@ -31,7 +31,7 @@ void UDMSCardComponent::BeginPlay()
 	//UDMSEffectNode* TypeNodeCDO = GetCardDefinition()!=nullptr ? Cast<UDMSEffectNode>( GetCardDefinition()->DefaultCardType.GetDefaultObject()) : nullptr;
 
 	//if(TypeNodeCDO!=nullptr){
-	//	GetDMSEffectHandler()->CreateEffectInstance(GetOwner(), TypeNodeCDO);
+	//	GetDMSEffectHandler()->CreateApplyingActiveEffect(GetOwner(), TypeNodeCDO);
 	//}
 }
 

@@ -106,7 +106,7 @@ void UDMSSeqManager::RunSequence_Implementation(UDMSSequence* iSeq)
 	CurrentSequence->OnSequenceInitiate();
 
 	if(!iSeq->OriginalEffectNode->bLazyTargetting)
-		EH->CreateEffectInstance(iSeq, iSeq->OriginalEffectNode);
+		EH->CreateApplyingActiveEffect(iSeq, iSeq->OriginalEffectNode);
 	CurrentSequence->RunStepQueue();
 }
 

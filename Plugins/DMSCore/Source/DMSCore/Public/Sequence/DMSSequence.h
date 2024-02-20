@@ -227,7 +227,7 @@ public:
 	//		Delegates and binders.
 	// ================================ //
 protected:
-	FSimpleMulticastEventSignature OnSequenceInitiated;
+	FSimpleMulticastDelegate OnSequenceInitiated;
 	FOnSequenceFinished OnSequenceFinished;
 
 	FOnSequenceInitiatedDynamic OnSequenceInitiated_Dynamic;
@@ -293,7 +293,7 @@ protected:
 template<typename FuncInitiated>
 void UDMSSequence::AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated)
 {
-	OnSequenceFinished.AddLambda(iOnSequenceInitiated);
+	OnSequenceInitiated.AddLambda(iOnSequenceInitiated);
 }
 
 template<typename FuncFinished>

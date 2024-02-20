@@ -80,7 +80,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 	//	TArray<TScriptInterface<IDMSEffectorInterface>> NewRespondents;
 	//	InstancedWidget->ResponsedObjects.GetKeys(NewRespondents);
 
-	//	UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent.GetObject(), InstancedWidget->CurrentSequence);
+	//	UDMSSequence* NewSeq = EffectInstance->CreateApplyingSequence(Respondent.GetObject(), InstancedWidget->CurrentSequence);
 	//	
 	//	NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->CurrentSequence , NotifyManager](bool PreviousResult){
 	//		
@@ -187,7 +187,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 		TArray<TScriptInterface<IDMSEffectorInterface>> NewRespondents;
 		InstancedWidget->ResponsedObjects.GetKeys(NewRespondents);
 
-		UDMSSequence* NewSeq = EffectInstance->CreateSequenceFromNode(Respondent->GetObject(), InstancedWidget->CurrentSequence);
+		UDMSSequence* NewSeq = EffectInstance->CreateApplyingSequence(Respondent->GetObject(), InstancedWidget->CurrentSequence);
 		
 		NewSeq->AddToOnSequenceFinished_Native([NewRespondents, ResumingSequence= InstancedWidget->CurrentSequence , NotifyManager](bool PreviousResult){
 			
@@ -208,8 +208,6 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 			{
 				if(Object->GetEffectorManagerComponent())
 					Object->GetEffectorManagerComponent()->OnNotifyReceived(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
-				// 이거 말고 그냥 체크만 하는 함수로 재구성 하던가 포스드 일 때 강제실행을 여기서 노티파이 매니저가 하도록 해서 순차적으로 실행하게 해야함 ( 기다려주면서 ) 해야함.
-				//Object->OnNotifyReceived(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
 			}
 
 			DMS_LOG_SIMPLE(TEXT("==== %s : RESUME RESPONSE ===="), *ResumingSequence->GetName());
@@ -269,6 +267,6 @@ void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* Effe
 void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray)
 {
 	ResponsedObjects.MultiFind(iObject, outArray,true);
-	//(*ForcedObjects.Find(iObject))->CreateSequenceFromNode(iObject.GetObject(), CurrentSequence);
+	//(*ForcedObjects.Find(iObject))->CreateApplyingSequence(iObject.GetObject(), CurrentSequence);
 	//return;
 }

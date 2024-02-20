@@ -124,7 +124,7 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 {
 	for ( auto& TargetToEI :TargetAndEIs )
 	{ 
-		for (auto& EI : TargetToEI. EIs) EI->OnApplyComplete();
+		for (auto& EI : TargetToEI.EIs) EI->OnApplyComplete();
 	}
 	TargetAndEIs.Reset();
 
@@ -140,7 +140,7 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 	//if (CreateEIs)
 	//{
 	//	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();	check(EH);
-	//	EH->CreateEffectInstance(this,OriginalEffectNode);
+	//	EH->CreateApplyingActiveEffect(this,OriginalEffectNode);
 	//}
 }
 
@@ -176,7 +176,10 @@ TArray<ADMSActiveEffect*> UDMSSequence::GetAllEIs()
 void UDMSSequence::OnSequenceInitiate()
 {
 	OnSequenceInitiated.Broadcast();
-	OnSequenceInitiated_Dynamic.Broadcast();
+	OnSequenceInitiated_Dynamic.Broadcast();	
+	
+	OnSequenceInitiated.Clear();
+	OnSequenceInitiated_Dynamic.Clear();
 }
 
 void UDMSSequence::OnSequenceFinish(bool Succeeded)

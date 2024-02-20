@@ -52,11 +52,6 @@ public:
 	TArray<uint8> EffectIdxArr;
 
 	// EffectNode that will activate itself when it doesn't use Outer's one.
-	//UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
-	//TObjectPtr<UDMSEffectNodeWrapper> StaticEffect;
-
-
-	// EffectNode that will activate itself when it doesn't use Outer's one.
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffectArr;
 
@@ -67,7 +62,7 @@ public:
 };
 
 
-UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect : Variable"))
+UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect : Using Selector"))
 class DMSCORE_API UDMSEffect_ActivateEffect_Variable : public UDMSEffect_ActivateEffect
 {
 	GENERATED_BODY()
