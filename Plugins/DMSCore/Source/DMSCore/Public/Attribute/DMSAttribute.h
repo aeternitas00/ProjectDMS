@@ -69,8 +69,8 @@ class DMSCORE_API UDMSAttributeValue : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = Attribute)
-	void ExecuteOp(const FDMSAttributeModifier& Modifier);
-	virtual void ExecuteOp_Implementation(const FDMSAttributeModifier& Modifier) {}
+	void ExecuteModifier(const FDMSAttributeModifier& Modifier);
+	virtual void ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier);
 
 	virtual bool IsSupportedForNetworking() const override {return true;}
 };
@@ -144,10 +144,13 @@ public:
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	//FGameplayTagContainer AttributeTag;
 
+	UFUNCTION(BlueprintNativeEvent)
+	void ExecuteOp(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue);
+	virtual void ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue){}
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = Attribute)
-	bool Predict(UDMSAttribute* Target) const;
-	virtual bool Predict_Implementation(UDMSAttribute* Target) const {return false;}
+	UFUNCTION(BlueprintNativeEvent, Category = Attribute)
+	bool Predict(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue);
+	virtual bool Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue) {return false;}
 };
 
 // == Default implementation == //
@@ -173,14 +176,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void SetValue(float i) { Value=i; }
 
-	virtual void ExecuteOp_Implementation(const FDMSAttributeModifier& Modifier);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
 
 
 /**
-*	Attibute Modifier struct. Using in ModAtt Effect. 
+*	
 */
 UCLASS()
 class DMSCORE_API UDMSAttributeModifierOp_Numeric : public UDMSAttributeModifierOp
@@ -208,5 +210,6 @@ public:
 
 
 public:
-	virtual bool Predict_Implementation(UDMSAttribute* Target) const override;
+	virtual void ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue) override;
+	virtual bool Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue) override;
 };

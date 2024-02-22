@@ -34,8 +34,8 @@ public:
 	bool GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
 	
 	UFUNCTION(BlueprintNativeEvent)
-	bool GenerateModifier(ADMSActiveEffect* EI, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier){return false;}
+	bool GenerateModifier(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
 	
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
 	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI) override;
@@ -59,7 +59,7 @@ public:
 	FDMSAttributeModifier StaticModifier;
 
 	//virtual FGameplayTagContainer GetEffectTags_Implementation() override;
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return StaticModifier.Value!=nullptr && StaticModifier.ModifierOp!=nullptr;}
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return StaticModifier.Value!=nullptr && StaticModifier.ModifierOp!=nullptr;}
 
 };
 
@@ -77,7 +77,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	FDMSValueSelectionForm DataPicker;
 
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
 };
 
 UCLASS()
@@ -93,30 +93,47 @@ public:
 	virtual void Process_Implementation(UObject* iObject);
 };
 
+
+
+
+
+
+UENUM(BlueprintType)
+enum class EDMSAttributeSourceFlag : uint8
+{
+	AE UMETA(DisplayName = "From current active effect"),
+	SourcePlayer UMETA(DisplayName = "From source player of sequence"),
+	SourceObject UMETA(DisplayName = "From source object of sequence"),
+};
+
+
 UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Value From Attribute"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_FromAttribute : public UDMSEffect_ModAtt
 {
 	GENERATED_BODY()
 
 public:
-	//UDMSEffect_ModAtt_FromAttribute();
+	UDMSEffect_ModAtt_FromAttribute():Super(),ValueAttributeSource(EDMSAttributeSourceFlag::AE){}
 
 	/**
-	* Modifier attribute tags to be referenced in the Active Effect.
+	* 
 	*/
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
 
 	/**
-	* Modifier attribute tags to be referenced in the Active Effect.
-	*/
+	 * Modifier attribute tags to be referenced in the source actor.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
-	FGameplayTagContainer ActiveEffectValueTags;
+	FGameplayTagContainer ValueAttributeTags;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	EDMSAttributeSourceFlag ValueAttributeSource;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = Effect)
 	TArray<TObjectPtr<UDMSAttributeValueProcesser>> ValueProcessers;
 
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
 };
 
 

@@ -31,9 +31,9 @@ void UDMSAttribute::BindOnModified(const FOnAttributeModifiedSignature& iDelegat
 
 void UDMSAttribute::ApplyModifier(const FDMSAttributeModifier& Modifier)
 {
-	if(!Modifier.ModifierOp->Predict(this)) return;
+	if(!Modifier.ModifierOp->Predict(this,Modifier.Value)) return;
 
-	AttributeValue->ExecuteOp(Modifier);
+	AttributeValue->ExecuteModifier(Modifier);
 	// Make this multicast
 	OnAttributeModified.Broadcast(this);
 }
@@ -52,29 +52,6 @@ void UDMSAttribute::DuplicateValue(UDMSAttributeValue* Value)
 	AttributeValue = DuplicateObject<UDMSAttributeValue>(Value, this);
 }
 
-void UDMSAttributeValue_Numeric::ExecuteOp_Implementation(const FDMSAttributeModifier& Modifier)
-{
-	auto CastedMod = Cast<UDMSAttributeModifierOp_Numeric>(Modifier.ModifierOp);
-	auto ModifierValue = Cast<UDMSAttributeValue_Numeric>(Modifier.Value);
-	if (!CastedMod || !ModifierValue) return;
-	switch(Modifier.ModifierOp->AttributeModifierType)
-	{
-		case EDMSModifierType::MT_Additive:
-			Value += ModifierValue->Value;
-			break;
-		case EDMSModifierType::MT_Override:
-			Value = ModifierValue->Value;
-			break;
-		case EDMSModifierType::MT_Multiplicative:
-			Value *= ModifierValue->Value;
-			break;
-		default:
-			break;
-	}
-
-
-}
-
 void UDMSAttributeValue_Numeric::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -82,34 +59,65 @@ void UDMSAttributeValue_Numeric::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(UDMSAttributeValue_Numeric, Value);
 }
 
-bool UDMSAttributeModifierOp_Numeric::Predict_Implementation(UDMSAttribute* Target) const
+void UDMSAttributeModifierOp_Numeric::ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue)
 {
-	if (Target==nullptr) return false; 
+	auto CastedValue = Cast<UDMSAttributeValue_Numeric>(AttValue);
+	auto CastedRightValue = Cast<UDMSAttributeValue_Numeric>(ModifierValue);
+	if(!CastedValue || !CastedRightValue) return;
 
-	UDMSAttributeValue_Numeric* Value = Cast<UDMSAttributeValue_Numeric>(Target->AttributeValue);
+	switch(AttributeModifierType)
+	{
+		case EDMSModifierType::MT_Additive:
+			CastedValue->SetValue(CastedValue->GetValue() + CastedRightValue->GetValue());
+			break;
+		case EDMSModifierType::MT_Override:
+			CastedValue->SetValue(CastedRightValue->GetValue());
+			break;
+		case EDMSModifierType::MT_Multiplicative:
+			CastedValue->SetValue(CastedValue->GetValue() * CastedRightValue->GetValue());
+			break;
+		default:
+			break;
+	}
+}
 
-	if (!Value) return false;
+bool UDMSAttributeModifierOp_Numeric::Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue)
+{
+	if (!Target) return false;
 
-	float PredictValue = Value->GetValue();
+	auto CastedValue = Cast<UDMSAttributeValue_Numeric>(Target->AttributeValue);
+	auto CastedRightValue = Cast<UDMSAttributeValue_Numeric>(ModifierValue);
+
+	if(!CastedValue || !CastedRightValue) return false;
+
+	bool rv = true;
 
 	if (bExistFailureCondition)
 	{
+		UDMSAttributeValue_Numeric* TempValue = DuplicateObject<UDMSAttributeValue_Numeric>(CastedValue,Target);
+
+		ExecuteOp(TempValue,ModifierValue);
+
+		float PredictValue = TempValue->GetValue();
+	
 		switch (FailureConditionOperator)
 		{
 			case EDMSComparisonOperator::BO_Equal:
-				return PredictValue == FailureConditionValue; break;
+				rv = PredictValue == FailureConditionValue; break;
 			case EDMSComparisonOperator::BO_Greater:
-				return PredictValue > FailureConditionValue; break;
+				rv =  PredictValue > FailureConditionValue; break;
 			case EDMSComparisonOperator::BO_Less:
-				return PredictValue < FailureConditionValue; break;
+				rv =  PredictValue < FailureConditionValue; break;
 			case EDMSComparisonOperator::BO_GreaterEqual:
-				return PredictValue >= FailureConditionValue; break;
+				rv =  PredictValue >= FailureConditionValue; break;
 			case EDMSComparisonOperator::BO_LessEqual:
-				return PredictValue <= FailureConditionValue; break;
+				rv =  PredictValue <= FailureConditionValue; break;
 			default: break;
 		}
+		TempValue->MarkAsGarbage();
 	}
-	return true;
+
+	return rv;
 }
 
 
@@ -122,3 +130,5 @@ bool UDMSAttributeModifierOp_Numeric::Predict_Implementation(UDMSAttribute* Targ
 //	//if (Ar.IsSaving()) {}
 //	//else if (Ar.IsLoading()) {}
 //}
+
+void UDMSAttributeValue::ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier) { Modifier.ModifierOp->ExecuteOp(this, Modifier.Value); }

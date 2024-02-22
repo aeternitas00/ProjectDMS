@@ -111,7 +111,7 @@ void UDMSEffectHandler::CleanupNonPersistent()
 {
 	EIList.RemoveAllSwap([](ADMSActiveEffect* EI) {
 		bool rv = (EI->GetCurrentState() & EDMSAEState::AES_Persistent) != EDMSAEState::AES_Persistent;
-		if (rv) EI->Destroy();
+		if (rv){ EI->DetachFromOwner(); EI->Destroy(); }
 		return rv;
 	});
 }

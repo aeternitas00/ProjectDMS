@@ -44,11 +44,11 @@ enum class EDMSTimingFlag : uint8
 UENUM(/*BlueprintType*/)
 enum class EDMSComparisonOperator : uint8
 {
-	BO_Less UMETA(DisplayName = "<"),
-	BO_LessEqual UMETA(DisplayName = "<="),
-	BO_Equal UMETA(DisplayName = "=="),
-	BO_GreaterEqual UMETA(DisplayName = ">="),
-	BO_Greater UMETA(DisplayName = ">")
+	BO_Less UMETA(DisplayName = "Less than condition value"),
+	BO_LessEqual UMETA(DisplayName = "Less than or equal to condition value"),
+	BO_Equal UMETA(DisplayName = "Equal to condition value"),
+	BO_GreaterEqual UMETA(DisplayName = "Greater than or equal to condition value"),
+	BO_Greater UMETA(DisplayName = "Greater than condition value")
 };
 
 /**

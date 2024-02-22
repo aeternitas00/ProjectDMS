@@ -47,7 +47,10 @@ protected:
 	//virtual UDMSEffectNode* ActivatorNodeGenerator(const FGameplayTag& EffectSetName, const uint8& idx);
 public:	
 	IDMSEffectorInterface* GetOwnerAsInterface() { return Cast<IDMSEffectorInterface>(GetOwner());}
+
 	void AttachEffectInstance(ADMSActiveEffect* EI);
+	void DetachActiveEffect(ADMSActiveEffect* EI);
+
 	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, AActor* SourceTweak = nullptr);
 
 	// concepts????

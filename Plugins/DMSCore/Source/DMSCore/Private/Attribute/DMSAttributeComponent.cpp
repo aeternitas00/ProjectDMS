@@ -34,7 +34,7 @@ bool UDMSAttributeComponent::PredictModifier(const FGameplayTagContainer& Attrib
 	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
 	if (!ContainAttribute(AttributeTag)) return false; // log or what
 
-	return Modifier.ModifierOp->Predict(GetAttribute(AttributeTag));
+	return Modifier.ModifierOp->Predict(GetAttribute(AttributeTag),Modifier.Value);
 }
 
 

@@ -214,6 +214,10 @@ public:
 	template<typename FuncFinished>
 	void AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFinished);
 
+	void DetachFromOwner();
+
+	void CleanupWorker(UDMSEffectApplyWorker* Worker);
+
 	// =========== INTERFACE FUNCTION =========== // 
 	
 	virtual AActor* GetOwningPlayer() { return SourcePlayer; }

@@ -11,27 +11,29 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 		//DMS_LOG_SCREEN(TEXT("%s : Outer (%s) is not actor"), *GetName(), *Target->GetName());
 		return bNullIsTrue;
 	}
-	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
 
+	UDMSAttributeComponent* AttComp = Cast<UDMSAttributeComponent>(tOuter->GetComponentByClass(UDMSAttributeComponent::StaticClass()));
 	if (AttComp == nullptr) { return bNullIsTrue; }
 
-	UDMSAttributeValue_Numeric* Att = Cast<UDMSAttributeValue_Numeric>(AttComp->GetAttribute(AttributeTag));
-
+	UDMSAttribute* Att = AttComp->GetAttribute(AttributeTag);
 	if (Att == nullptr) { return bNullIsTrue; }
+
+	UDMSAttributeValue_Numeric* AttVal = Cast<UDMSAttributeValue_Numeric>(Att->AttributeValue);
+	if (AttVal == nullptr) { return bNullIsTrue; }
 
 	bool rv;
 	switch (Operator)
 	{
 		case EDMSComparisonOperator::BO_Equal:
-			rv = Att->GetValue() == Value; break;			
+			rv = AttVal->GetValue() == Value; break;			
 		case EDMSComparisonOperator::BO_Greater:
-			rv = Att->GetValue() > Value; break;
+			rv = AttVal->GetValue() > Value; break;
 		case EDMSComparisonOperator::BO_Less:
-			rv = Att->GetValue() < Value; break;
+			rv = AttVal->GetValue() < Value; break;
 		case EDMSComparisonOperator::BO_GreaterEqual:
-			rv = Att->GetValue() >= Value; break;
+			rv = AttVal->GetValue() >= Value; break;
 		case EDMSComparisonOperator::BO_LessEqual:
-			rv = Att->GetValue() <= Value; break;
+			rv = AttVal->GetValue() <= Value; break;
 		default: return bNullIsTrue;
 	}
 

@@ -3,6 +3,7 @@
 #include "EffectSet/DMSEffect_ModAtt.h"
 #include "Attribute/DMSAttributeComponent.h"
 #include "Effect/DMSEffectInstance.h"
+#include "Sequence/DMSSequence.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute, "Effect.ModAttribute");
 
@@ -40,7 +41,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSAc
 	UDMSAttributeComponent* AttComp=nullptr;
 
 	FDMSAttributeModifier Modifier;
-	if (!GenerateModifier(iEI, Modifier)) {
+	if (!GenerateModifier(iEI, SourceSequence, Modifier)) {
 		OnWorkCompleted.ExecuteIfBound(false); return;
 	}
 
@@ -67,9 +68,9 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADM
 	UDMSAttributeComponent* AttComp = nullptr;
 	UDMSAttribute* Att = nullptr;
 	FDMSAttributeModifier Modifier;
-	float PredictValue=0.0f;
+
 	bool rv=false;
-	if (!GenerateModifier(iEI, Modifier))	return false;
+	if (!GenerateModifier(iEI, SourceSequence, Modifier))	return false;
 
 	if (!GetTargetAttComp(iEI, Outer, AttComp))
 	{
@@ -84,7 +85,7 @@ bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADM
 		else return false;
 	}
 
-	rv = Modifier.ModifierOp->Predict(Att);
+	rv = Modifier.ModifierOp->Predict(Att,Modifier.Value);
 
 	return rv;
 }
@@ -102,7 +103,7 @@ UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
 	//DataPicker.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
 }
 
-bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier)
+bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
 {
 	// Get Input Data ( Skip if data doesn't exist. )
 	//UDMSDataObject* ValueData = nullptr;
@@ -117,21 +118,30 @@ bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffec
 	return true;
 }
 
-bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI,FDMSAttributeModifier& OutModifier)
+bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
 {
 	//UDMSDataObject* ValueData = nullptr;
 	if (!ModifierOp) return false;
 
-	UDMSAttributeComponent* AEAttComp = EI->GetComponentByClass<UDMSAttributeComponent>();
+	UDMSAttributeComponent* AttComp=nullptr;
+	
+	switch (ValueAttributeSource) {
+		case EDMSAttributeSourceFlag::AE: 
+			AttComp= EI->GetComponentByClass<UDMSAttributeComponent>(); break;
+		case EDMSAttributeSourceFlag::SourcePlayer: 
+			AttComp= SourceSequence->GetSourcePlayer()->GetComponentByClass<UDMSAttributeComponent>(); break;
+		case EDMSAttributeSourceFlag::SourceObject: 
+			AttComp= SourceSequence->GetSourceObject()->GetComponentByClass<UDMSAttributeComponent>(); break;
+		default: break;
+	}
+	if(!AttComp) return false;
 
-	if(!AEAttComp) return false;
+	auto Att = AttComp->GetAttribute(ValueAttributeTags);
 
-	auto AEAtt = AEAttComp->GetAttribute(ActiveEffectValueTags);
-
-	if (AEAtt == nullptr) return false;
+	if (Att == nullptr) return false;
 
 	// 이거 값 바꿔야하므로 사본구해오기 정도로 해야함.
-	auto ModifierValue = Cast<UDMSAttributeValue_Numeric>(AEAtt->AttributeValue);
+	auto ModifierValue = Cast<UDMSAttributeValue_Numeric>(Att->AttributeValue);
 
 	if (!ModifierValue) return false;
 	
@@ -152,6 +162,6 @@ void UDMSAttributeValueProcesser::Process_Implementation(UObject* iObject)
 
 	auto AttValue = Cast<UDMSAttributeValue>(iObject);
 
-	AttValue->ExecuteOp(ProcessorModifier);
+	AttValue->ExecuteModifier(ProcessorModifier);
 	
 }

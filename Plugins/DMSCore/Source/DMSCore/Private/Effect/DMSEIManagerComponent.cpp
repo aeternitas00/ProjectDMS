@@ -40,6 +40,11 @@ void UDMSEIManagerComponent::AttachEffectInstance(ADMSActiveEffect* EI)
 	//EI->Rename(nullptr, this);
 }
 
+void UDMSEIManagerComponent::DetachActiveEffect(ADMSActiveEffect* EI)
+{
+	OwnEffectInstances.Remove(EI);
+}
+
 bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
 {
 	bool rv=false;

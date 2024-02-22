@@ -3,6 +3,7 @@
 
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectHandler.h"
+#include "Effect/DMSEIManagerComponent.h"
 //#include "Effect/DMSEffectDefinition.h"
 
 #include "Sequence/DMSSeqManager.h"
@@ -35,6 +36,15 @@ void ADMSActiveEffect::Apply(UDMSSequence* SourceSequence, const FResolveIterati
 	if (EffectNode->EffectDefinitions.Num() == 0) {
 		OnApplyCompleted.ExecuteIfBound(SourceSequence,true);
 		return;
+	}
+
+	// If any of the Effects is predicted to fail, the sequence is handled as a failure.
+	for (auto CurrentDef : EffectNode->EffectDefinitions)
+	{
+		if (!CurrentDef->Predict(SourceSequence, this)){
+			OnApplyCompleted.ExecuteIfBound(SourceSequence,false);
+			return;
+		}
 	}
 
 	UDMSEffectApplyWorker* NewWorker = NewObject<UDMSEffectApplyWorker>(this);
@@ -136,9 +146,9 @@ bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorI
 	// NOTIFIED
 
 	// Terminate condition check
-	if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
+	if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) ){
 		CurrentState &= ~EDMSAEState::AES_Persistent;
-
+	}
 	// Activate condition check
 	if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{
@@ -147,6 +157,20 @@ bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorI
 		return true;	
 	}	
 	return false;
+}
+
+void ADMSActiveEffect::DetachFromOwner()
+{
+	auto Comp = GetOwner()->GetComponentByClass<UDMSEIManagerComponent>();
+	if(Comp==nullptr){/* Impossible case */return;}
+
+	Comp->DetachActiveEffect(this);
+}
+
+void ADMSActiveEffect::CleanupWorker(UDMSEffectApplyWorker* Worker)
+{
+	ApplyWorkers.Remove(Worker);
+	Worker->MarkAsGarbage();
 }
 
 void ADMSActiveEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -211,6 +235,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 	{
 		// DISCUSSION :: Stopping immediately when failed is FINE?
 		OwnerInstance->OnApplyComplete();
+		OwnerInstance->CleanupWorker(this);
 		CompletedDelegate.ExecuteIfBound(SourceSequence, false);
 		return;
 	}
@@ -218,6 +243,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 	if (CurrentEDIndex == ApplyingEffect->EffectDefinitions.Num()) {
 		// 여기서 AEState를 원상복구 할시 During notify부터 부착된 이펙트들이 다시 노티파이 콜을 받을 수 있는 상태가 되므로 조정이 필요함.
 		OwnerInstance->OnApplyComplete();
+		OwnerInstance->CleanupWorker(this);
 		CompletedDelegate.ExecuteIfBound(SourceSequence, true);
 	}
 	else {
@@ -236,18 +262,11 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 
 		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->GetEffectTags()))) {
 			
-			// Predict first
-			if (CurrentDef->Predict(SourceSequence, OwnerInstance)){
-
-				ExecutedOptionNum = 0;
-				EffectOptionCompleted.Unbind();
-				EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
-				CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
-				
-			}
-		// Going back if it'll be failed ( DISCUSSION :: OPTIONAL FAIL BACK? )
-			else
-				ApplyNextEffectDef(false);
+			// Predict check moved to before than setupworkers
+			ExecutedOptionNum = 0;
+			EffectOptionCompleted.Unbind();
+			EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
+			CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
 		}
 
 		else {
