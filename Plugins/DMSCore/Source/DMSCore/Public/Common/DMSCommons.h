@@ -249,6 +249,9 @@ public:
 
 };
 
+/**
+ *	Class for defining preprocessing steps before the actual logic is used when using data from multiple definitions.
+ */
 UCLASS(Abstract,Blueprintable,BlueprintType,EditInlineNew)
 class DMSCORE_API UDMSDataProcesser : public UObject
 {
@@ -257,11 +260,17 @@ class DMSCORE_API UDMSDataProcesser : public UObject
 public:
 	UDMSDataProcesser(){}
 
+	/**
+	 *	Implement how processer works.
+	 */
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void Process(UObject* iObject);
 	virtual void Process_Implementation(UObject* iObject){}
 };
 
+/**
+ *	Structure for organizing and defining a series of steps to get necessary data from AE datasets and preprocess it.
+ */
 USTRUCT(BlueprintType)
 struct DMSCORE_API FDMSValueSelectionForm
 {

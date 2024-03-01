@@ -93,6 +93,6 @@ public:
 	virtual AActor* GetOwningPlayer() override; // RENAME?
 	//virtual IDMSEffectorInterface* GetPreviewObject() {return PreviewDummy;}
 	//virtual void AttachEffectInstance(ADMSActiveEffect* EI) override;
-	//virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak = nullptr) override;
+	//virtual bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak = nullptr) override;
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
 };

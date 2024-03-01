@@ -123,7 +123,7 @@ UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTagContainer&
 
 	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
 	auto Pred = [AttributeTag](UDMSAttribute* Item){ return Item->AttributeTag == AttributeTag;};
-	UDMSAttribute* ThisFound = Attributes[Attributes.IndexOfByPredicate(Pred)];
+	UDMSAttribute* ThisFound = Attributes.IndexOfByPredicate(Pred) >= 0 ? Attributes[Attributes.IndexOfByPredicate(Pred)] : nullptr;
 	if ( ThisFound == nullptr ) return ParentAtt==nullptr ? ParentAtt->GetAttribute(AttributeTag) : nullptr;
 	return ThisFound;
 }

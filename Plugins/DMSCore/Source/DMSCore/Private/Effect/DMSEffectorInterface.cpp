@@ -63,14 +63,14 @@ UDMSEIManagerComponent* IDMSEffectorInterface::GetEffectorManagerComponent()
 //		thisActor->FindComponentByClass<UDMSEIManagerComponent>()->AttachEffectInstance(EI);
 //}
 
-//bool IDMSEffectorInterface::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
+//bool IDMSEffectorInterface::ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
 //{
 //	AActor* thisActor = Cast<AActor>(this);
 //
 //	 //기본 구현형인 컴포넌트 사용시의 SourceTweak 적용.
 //	if (thisActor->IsValidLowLevelFast())
 //	{
-//		return thisActor->FindComponentByClass<UDMSEIManagerComponent>()->OnNotifyReceived(ResponsedObjects, iChainable, Seq, thisActor);
+//		return thisActor->FindComponentByClass<UDMSEIManagerComponent>()->ReceiveNotify(ResponsedObjects, iChainable, Seq, thisActor);
 //	}
 //
 //	 //컴포넌트 미사용시 직접 구현해야함.

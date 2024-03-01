@@ -131,7 +131,7 @@ UDMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, UDMS
 	return OutSeq;
 }
 
-bool ADMSActiveEffect::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
+bool ADMSActiveEffect::ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
 	bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
 {
 	// 1. Ignore condition check

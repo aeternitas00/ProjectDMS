@@ -25,11 +25,11 @@ void ADMSCharacterBase::OnInitialized_Implementation()
 {
 	CharacterDefinition = Cast<UDMSCharacterDefinition>(OriginalData);
 
-	Super::OnInitialized_Implementation();
-
 	check(CharacterDefinition != nullptr);
 
 	SetupAttributes(CharacterDefinition->DefaultAttributes);
+
+	Super::OnInitialized_Implementation();
 }
 
 void ADMSCharacterBase::SetupAttributes(const TArray<FDMSAttributeDefinition>& Attributes)

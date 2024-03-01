@@ -82,9 +82,9 @@ public:
 /**
  * 	========================================
  *
- *	EffectInstance : Class for objectification of 'effect'. Supports effect lifetime management, notify response, etc.
+ *	Active effect : Class for objectification of 'effect'. Supports effect lifetime management, notify response, etc.
  *
- *	EI Will be attached to each target and it'll be each EI's Outer.
+ *	AE Will be attached to each target and it'll be each AE's Owner.
  *	One EI per One Affected Object.
  *
  *	========================================
@@ -102,7 +102,7 @@ public:
 protected:
 
 	/** 
-	 * State flag of Effect instance.For preview or persistant things.
+	 * State flag of Active Effect.For preview or persistant things.
 	 * [replicates for clients' ui]
 	 */
 	UPROPERTY(Replicated)
@@ -209,11 +209,22 @@ public:
 	 */
 	UDMSSequence* CreateApplyingSequence(AActor* SourceTweak, UDMSSequence* ChainingSequence);
 
-	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak);
+	/**
+	 * Handle notifing data
+	 * @param	iChainable						
+	 * @param	Seq								
+	 * @param	SourceTweak						
+	 * @out		ResponsedObjects			
+	 * @return	true if Response success.
+	 */
+	bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak);
 
 	template<typename FuncFinished>
 	void AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFinished);
 
+	/**
+	 *	Safe detaching from its owner.
+	 */
 	void DetachFromOwner();
 
 	void CleanupWorker(UDMSEffectApplyWorker* Worker);
@@ -253,6 +264,6 @@ void ADMSActiveEffect::AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFin
 //public:
 //
 //	// Temporal AE does not receive notify.
-//	virtual bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak){return false;};
+//	virtual bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak){return false;};
 //	virtual void OnApplyComplete() override;
 //};

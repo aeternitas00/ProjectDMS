@@ -19,8 +19,9 @@ class DMSCORE_API UDMSSequenceStep_Apply : public UDMSSequenceStep
 public:
 	UDMSSequenceStep_Apply();
 
-	virtual void OnStepInitiated() override;
+	// Implementations
 
+	virtual void OnStepInitiated() override;
 	virtual void Progress_During() override;
 
 	virtual FGameplayTag GetStepTag_Implementation() const;

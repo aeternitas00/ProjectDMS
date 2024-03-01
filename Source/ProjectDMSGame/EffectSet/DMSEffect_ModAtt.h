@@ -10,6 +10,10 @@
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute)
 
+/**
+ *	Base for effects that change value of attributes.
+ *	Implementing the GenerateModifier function allows implementing 'how to adjust attributes' in various ways."
+ */
 UCLASS(NotBlueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect Base"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt: public UDMSEffectDefinition
 {
@@ -26,24 +30,38 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Create If Null"))
 	bool bCreateIfNull;
 
+	/**
+	 *	Tags of modifing target attribute.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
 	FGameplayTagContainer TargetAttributeTags;
 
+
 	// Attribute Modifier generating rules
 
+	/**
+	 *	Get outer and outer's attribute component with current active effect.
+	 */
 	bool GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp);
 	
+	/**
+	 * Generate an attribute modifier to be applied by this effect.
+	 */
 	UFUNCTION(BlueprintNativeEvent)
 	bool GenerateModifier(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
 	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
 	
+	// vf implements
+
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
 	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI) override;
-	// ====== Selectors ====== //
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
 };
 
+/**
+ *  Generate modifier with static value. ( it will never change )
+ */
 UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Static"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_Static : public UDMSEffect_ModAtt
 {
@@ -58,11 +76,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
 	FDMSAttributeModifier StaticModifier;
 
-	//virtual FGameplayTagContainer GetEffectTags_Implementation() override;
 	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return StaticModifier.Value!=nullptr && StaticModifier.ModifierOp!=nullptr;}
 
 };
 
+/**
+*  Generate modifier with active effect data. ( usally using with decision step and selector )
+*/
 UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : From AE Data"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_Variable : public UDMSEffect_ModAtt
 {
@@ -80,6 +100,9 @@ public:
 	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
 };
 
+/**
+ * Processor targeting attribute values.
+ */
 UCLASS()
 class PROJECTDMSGAME_API UDMSAttributeValueProcesser : public UDMSDataProcesser
 {
@@ -93,31 +116,33 @@ public:
 	virtual void Process_Implementation(UObject* iObject);
 };
 
-
-
-
-
-
+/**
+ *	Flag for source actor of modifier value using in ModAtt_FromAttribute
+ */
 UENUM(BlueprintType)
 enum class EDMSAttributeSourceFlag : uint8
 {
 	AE UMETA(DisplayName = "From current active effect"),
 	SourcePlayer UMETA(DisplayName = "From source player of sequence"),
 	SourceObject UMETA(DisplayName = "From source object of sequence"),
+	TG UMETA(DisplayName = "From first result of target generator"),
 };
 
 
+/** 
+ * Creating modifiers with some other attribute as value ( most common method )
+ */
 UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Value From Attribute"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_FromAttribute : public UDMSEffect_ModAtt
 {
 	GENERATED_BODY()
 
 public:
-	UDMSEffect_ModAtt_FromAttribute():Super(),ValueAttributeSource(EDMSAttributeSourceFlag::AE){}
+	UDMSEffect_ModAtt_FromAttribute():UDMSEffect_ModAtt(),ValueAttributeSource(EDMSAttributeSourceFlag::AE){}
 
 	/**
-	* 
-	*/
+	 * ModifierOp to be used on generating modifier.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
 
@@ -127,6 +152,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
 	FGameplayTagContainer ValueAttributeTags;
 
+	/**
+	 *	Flag of modifier value's source actor 
+	 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
 	EDMSAttributeSourceFlag ValueAttributeSource;
 

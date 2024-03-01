@@ -134,7 +134,7 @@ bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActive
 			AttComp= SourceSequence->GetSourceObject()->GetComponentByClass<UDMSAttributeComponent>(); break;
 		default: break;
 	}
-	if(!AttComp) return false;
+	if(AttComp == nullptr) return false;
 
 	auto Att = AttComp->GetAttribute(ValueAttributeTags);
 
