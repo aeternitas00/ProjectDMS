@@ -23,7 +23,7 @@ bool UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterf
 {
 	// Validation
 	if(Object.GetObject() == nullptr || !Object.GetObject()->Implements<UDMSEffectorInterface>() ) {DMS_LOG_SIMPLE(TEXT("NotifyManager : Register invalid item")); return false; }
-	if(NotifyObjects.Find(Object)!=INDEX_NONE) { DMS_LOG_SIMPLE(TEXT("NotifyManager : Register duplicate0 item")); return false;}
+	if(NotifyObjects.Find(Object)!=INDEX_NONE) { DMS_LOG_SIMPLE(TEXT("NotifyManager : Register duplicate item")); return false;}
 	
 	NotifyObjects.Add(Object);
 	return true;
@@ -131,7 +131,9 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequence , TMultiMap<TScriptInterface<IDMSEffectorInterface> , ADMSActiveEffect*>& ResponsedObjects)
 {
-	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(); check(SelM);
+	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
+	//auto SelM = GS->GetSelectorManager();
+	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(this); check(SelM);
 	FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->GetCurrentProgress());
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : Create Respondent Selector  ===="), *CurrentSequence->GetName(), *TimingStr);
 
@@ -145,7 +147,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : %d Respondent(s) ===="), *CurrentSequence->GetName(), *TimingStr, ResponsedObjects.Num());
 
 	// TODO :: 각 오너에게 뿌리는 방식으로 변경 해야함. && 리더 플레이어를 구해오는 방식을 게임 모드에 종속적이지 않게 따로 빼야할 듯.
-	ADMSPlayerControllerBase* LeaderPC = UDMSCoreFunctionLibrary::GetDMSGameState()->GetLeaderPlayerController();
+	ADMSPlayerControllerBase* LeaderPC = UDMSCoreFunctionLibrary::GetDMSGameState(this)->GetLeaderPlayerController();
 
 
 	FDMSSelectorRequestForm NewForm;		
@@ -215,7 +217,7 @@ void UDMSNotifyManager::CreateRespondentSelector_New(UDMSSequence* CurrentSequen
 			NotifyManager->CreateRespondentSelector_New(ResumingSequence, LocalNRO);
 		});		
 
-		UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
+		UDMSCoreFunctionLibrary::GetDMSSequenceManager(NotifyManager)->RunSequence(NewSeq);
 
 		//InstancedWidget->CurrentSequence->OnSequenceFinish();
 		InstancedWidget->CloseSelector();
@@ -246,16 +248,6 @@ void UDMSNotifyManager::CallResponseCompleted(UDMSSequence* CurrentSequence)
 	OnResponseCompleted.Remove(CurrentSequence);
 	temp.ExecuteIfBound();
 }
-
-//
-//UDMSDataObjectSet* UDMSNotifyRespondentSelector::MakeOutputDatas(UObject* Respondent, UObject* EffectInstance)
-//{
-//	//UDMSDataObjectSet* NewSet = NewObject<UDMSDataObjectSet>(GetOwningPlayer());
-//	NewSet->SetData(TAG_DMS_System_Notify_Respondent, Respondent);
-//	NewSet->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
-//	return NewSet;
-//}
-
 
 void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* EffectInstance)
 {

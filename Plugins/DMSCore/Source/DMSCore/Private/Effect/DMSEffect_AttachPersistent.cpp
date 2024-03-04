@@ -26,7 +26,7 @@ void UDMSEffect_AttachPersistent::Work_Implementation(UDMSSequence* SourceSequen
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
-	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);
 	check(EH);
 
 	for (auto Node : AttachingEffects){

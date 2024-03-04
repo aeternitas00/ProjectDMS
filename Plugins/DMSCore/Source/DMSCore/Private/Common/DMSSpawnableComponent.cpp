@@ -12,7 +12,7 @@ void UDMSSpawnableComponent::UpdateParentComponent()
 {
 	ParentComponent = nullptr;
 	if (GetOwner()->IsA<ADMSSpawnableBase>()){
-		auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
+		auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(this);
 		AActor* PlayerActor = GS->FindPlayerFromId(Cast<ADMSSpawnableBase>(GetOwner())->GetOwnerID());
 		AActor* NetOwnerActor = PlayerActor==nullptr ? GS : PlayerActor;
 

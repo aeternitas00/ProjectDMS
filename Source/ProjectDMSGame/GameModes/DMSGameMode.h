@@ -54,7 +54,7 @@ protected:
 	TMap<FPrimaryAssetType, TSubclassOf<ADMSSpawnableBase>> DefaultSpawningClasses;
 
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
-	int NumReadyPlayer;
+	int NumReadyPlayer = 0;
 
 protected:
 	virtual void BeginPlay() override;

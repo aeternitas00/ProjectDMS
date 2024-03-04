@@ -31,38 +31,20 @@
 
 ADMSGameMode::ADMSGameMode() : ADMSGameModeBase()
 {
-	//EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("CardEffectHandler"));
-	//NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));
-	//PhaseManagerClass= UDMSPhaseManager::StaticClass();
-	//SequenceManagerClass = UDMSSeqManager::StaticClass();
+
 }
 
 void ADMSGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//DMSGameState=GetGameState<ADMSGameState>();
 }
 
-//ADMSGameState* ADMSGameMode::GetDMSGameState() { return GetGameState<ADMSGameState>(); }
 
 void ADMSGameMode::PreInitializeComponents()
 {
-	//if(PhaseManagerClass->IsValidLowLevelFast()){
-	//	PhaseManager = NewObject<UDMSPhaseManager>(this, PhaseManagerClass,TEXT("PhaseManager"));
-	//	PhaseManager->RegisterComponent();
-	//}
-	//if (SequenceManagerClass->IsValidLowLevelFast()) {
-	//	SequenceManager = NewObject<UDMSSeqManager>(this, SequenceManagerClass, TEXT("SequenceManager"));
-	//	SequenceManager->RegisterComponent();
-	//}
 	Super::PreInitializeComponents();
 }
-
-//void ADMSGameMode::RegisterPlayer_BP(APlayerController* PC)
-//{
-//	GameSession->RegisterPlayer(PC,PC->PlayerState->GetUniqueId(),false);
-//}
 
 
 ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName)
@@ -82,17 +64,14 @@ ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardDat
 	return SpawnedCard;
 }
 
-//void ADMSGameMode::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object)
-//{
-//	NotifyManager->RegisterNotifyObject(Object);
-//}
+
 
 void ADMSGameMode::SetupDMSGame_Implementation()
 {
 	ADMSGameState* GS = Cast<ADMSGameState>(GetDMSGameState());
 	check(GS);
 	
-	NumReadyPlayer=0;
+	//NumReadyPlayer=0;
 
 	if (GS->PlayerArray.Num() != 0)
 	{
@@ -107,12 +86,6 @@ void ADMSGameMode::SetupDMSGame_Implementation()
 	if (CurrentLSA != nullptr)
 		CurrentLSA->InitializeDMSGame();
 
-	// Setup Player thingys.
-	for (auto PS :  GS->GetDMSPlayers()) {
-		PS->SetupDefaults();
-		PS->LoadSaveGame("TestSlot",0);
-	}
-
 	// ...
 }
 
@@ -124,7 +97,8 @@ void ADMSGameMode::PlayerReady()
 	auto CurrentLSA = Cast<ADMSLevelScriptActor>(GetWorld()->GetLevelScriptActor());
 	auto StartingLocation = CurrentLSA->GetStartingLocations()[0];
 
-	if ( GS->PlayerArray.Num() == ++NumReadyPlayer)
+	NumReadyPlayer++;
+	if ( GS->TestPlayerNum == NumReadyPlayer)
 	{
 		for (auto PS : GS->GetDMSPlayers()) {
 

@@ -158,7 +158,7 @@ public:
 
 	DECLARE_DELEGATE(FOnResponseCompleted);
 
-	TMap<UDMSSequence*, FOnResponseCompleted> OnResponseCompleted; // MAKE IT SEQ RELATIVE
+	TMap<UDMSSequence*, FOnResponseCompleted> OnResponseCompleted; 
 };
 
 template<typename FuncCompleted>

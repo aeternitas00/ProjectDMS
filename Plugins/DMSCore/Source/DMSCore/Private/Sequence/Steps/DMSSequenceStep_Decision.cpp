@@ -28,22 +28,21 @@ FGameplayTag UDMSSequenceStep_Decision::GetStepTag_Implementation() const{return
 void UDMSSequenceStep_Decision::OnBefore_Implementation()
 {
 	// Behavior
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
-
-	//DMS_LOG_SCREEN(TEXT("==-- DecisionStep_BEFORE [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
+	//auto SM = GS->GetSequenceManager();
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
+	check(SM);
 	ProgressComplete();
 }
 
 void UDMSSequenceStep_Decision::OnDuring_Implementation()
 {
 	// Behavior
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(); check(GS);
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
-	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
-	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(); check(SelM);
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(this); check(GS);
+	auto SM = GS->GetSequenceManager(); check(SM);
+	auto EH = GS->GetEffectHandler(); check(EH);
+	auto SelM = GS->GetSelectorManager(); check(SelM);
 
-	//DMS_LOG_SCREEN(TEXT("==-- DecisionStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
-	
 	ADMSPlayerControllerBase* WidgetOwner = nullptr;
 
 	auto DecisionMakers = DecisionMaker->GetTargets(OwnerSequence->GetSourceObject(), OwnerSequence);
@@ -111,7 +110,7 @@ void UDMSSequenceStep_Decision::OnDuring_Implementation()
 void UDMSSequenceStep_Decision::OnAfter_Implementation()
 {
 	// Behavior
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
 	//DMS_LOG_SCREEN(TEXT("==-- DecisionStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 	ProgressComplete();
 }

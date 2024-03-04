@@ -29,6 +29,7 @@ public:
 	//ADMSSpawnableBase(){}
 
 protected:
+	bool bInitialized=false;
 	/**
 	 * The data asset that the actor will reference. Initialization is performed through this asset.
 	 */

@@ -24,7 +24,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 {
 	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iEI->GetName(), *EffectTag.ToString());
 
-	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
+	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager(iEI);
 	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
 	
 	TArray<UDMSEffectNodeWrapper*> NodeWrappers;

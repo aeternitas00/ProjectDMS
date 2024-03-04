@@ -82,24 +82,6 @@ void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode,const EDMSAEState& Initi
 	CurrentState = InitialState;
 }
 
-//void ADMSActiveEffect_Applying::OnApplyComplete()
-//{
-//	Super::OnApplyComplete();
-//}
-//
-//void ADMSActiveEffect_Persistent::Initialize(UDMSEffectNode* iNode)
-//{
-//	Super::Initialize(iNode);
-//	CurrentState |= EDMSAEState::AES_Persistent;
-//}
-//
-//void ADMSActiveEffect_Persistent::OnApplyComplete()
-//{
-//	CurrentState &= ~EDMSAEState::AES_NotifyClosed;
-//
-//	Super::OnApplyComplete();
-//}
-
 void ADMSActiveEffect::SetupDatas(UDMSDataObjectSet* iSet) 
 { 
 	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(this); 
@@ -118,7 +100,7 @@ void ADMSActiveEffect::InheritSequenceDatas(UDMSSequence* iSeq)
 
 UDMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, UDMSSequence* ChainingSequence) 
 {
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager();
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);
 	if (SM == nullptr) return nullptr;
 	TArray<TScriptInterface<IDMSEffectorInterface>> Target;
 	Target.Add(GetOwner());

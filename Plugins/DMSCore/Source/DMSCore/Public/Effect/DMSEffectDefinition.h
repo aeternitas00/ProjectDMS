@@ -67,6 +67,9 @@ public:
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation(){return FGameplayTagContainer(EffectTag);}
 
+	/**
+	 * The list of options to be executed before applying this effect.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	TArray<TObjectPtr<UDMSEffectOption>> EffectOptions;
 
@@ -87,7 +90,6 @@ public:
 	 * @param	SourceSequence					Target sequence.
 	 * @param	iEi								Source effect instance
 	 * @param	OnWorkCompleted					Delegate excuted when work complete
-	 * @return	Return EffectTag with additional tags for further identification in each child class.
 	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void Work(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted); // temp
@@ -97,7 +99,7 @@ public:
 	 * Predict whether work will succeed or fail
 	 * @param	SourceSequence					Target sequence.
 	 * @param	iEi								Source effect instance
-	 * @return	
+	 * @return	true if effect activation condition check is successful
 	 */
 	UFUNCTION(BlueprintNativeEvent)
 	bool Predict(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI); // temp
@@ -116,7 +118,7 @@ public:
  *
  * 	========================================
  *
- *	Effect Node :: Customizable effect definition container.
+ *	Effect Node :: Customizable effect definition container. Sort of sequence definition.
  *	This class represents multiple line of effect text. 
  *	( ex. Deal 3 Damage and heal self that much. Then, if target HP is lower than ~ : Deal 2 Damage. )
  *	Pseudo tree architecture for sub-effect and branchs.
@@ -164,8 +166,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "!bIgnoreNotify", EditConditionHides))
 	TObjectPtr<UDMSConditionCombiner> Conditions;
 
+	/**
+	 * Effect's default attributes.
+	 */ 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	TArray<FDMSAttributeDefinition> EffectAttributes;
+
 	/**
 	 * Has a choice about triggering the effect ? 
 	 * true : Forced trigger when meet the conditions. / false : Can choose Y / N of trigger.
@@ -181,8 +187,8 @@ public:
 	bool bIgnoreNotify;
 
 	/**
-	* Effect's terminate condition.
-	*/ 
+	 * Effect's terminate condition.
+	 */ 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "bIsPersistent", EditConditionHides))
 	TObjectPtr<UDMSConditionCombiner> TerminateConditions;
 
@@ -208,8 +214,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSTargetGenerator> ApplyTargetGenerator;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "TargetGenerator||ApplyTargetGenerator", EditConditionHides))
-	bool bLazyTargetting;
+	/**
+	 * 
+	 */
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "TargetGenerator||ApplyTargetGenerator", EditConditionHides))
+	//bool bLazyTargetting;
 
 	/**
 	 * Use this when effect has to set targets with runtime data ( Sequence ).
@@ -244,13 +253,13 @@ public:
 	//=================== Step ===================//
 
 public:
+
+	/** 
+	 * The list of steps that this sequence will have and execute.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TArray<TObjectPtr<UDMSSequenceStep>> StepRequirements;
 
-
-
-	//virtual void Serialize(FArchive& Ar) override;
-	//virtual void PostInitProperties() override;
 };
 
 /** 

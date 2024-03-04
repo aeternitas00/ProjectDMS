@@ -122,9 +122,9 @@ void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq)
 
 void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
 {
-	for ( auto& TargetToEI :TargetAndEIs )
+	for ( auto& TargetToEI : TargetAndEIs )
 	{ 
-		for (auto& EI : TargetToEI.EIs) EI->OnApplyComplete();
+		for (auto& EI : TargetToEI.EIs) EI->DetachFromOwner();
 	}
 	TargetAndEIs.Reset();
 
@@ -200,7 +200,7 @@ void UDMSSequence::OnSequenceFinish(bool Succeeded)
 
 void UDMSSequence::OnStepQueueCompleted(bool Succeeded)
 {
-	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 
 	SeqManager->CompleteSequence(this, Succeeded); 
 }

@@ -24,7 +24,7 @@ AActor* IDMSEffectorInterface::GetObject()
 AActor* IDMSEffectorInterface::GetOwningPlayer() 
 { 
 	auto Spawnable = Cast<ADMSSpawnableBase>(this);
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameMode()->GetDMSGameState();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameMode(Cast<UObject>(this))->GetDMSGameState();
 	auto Player = Spawnable == nullptr ? nullptr : GS->FindPlayerFromId(Spawnable->GetOwnerID());
 
 	// ADMSSpawnableBase 처럼 넷 오너 ID가 있을 경우 그것의 플레이어 리턴
@@ -55,27 +55,6 @@ UDMSEIManagerComponent* IDMSEffectorInterface::GetEffectorManagerComponent()
 		return thisActor->FindComponentByClass<UDMSEIManagerComponent>();
 	return nullptr;
 }
-
-//void IDMSEffectorInterface::AttachEffectInstance(ADMSActiveEffect* EI)
-//{
-//	AActor* thisActor = Cast<AActor>(this);
-//	if(thisActor->IsValidLowLevelFast())
-//		thisActor->FindComponentByClass<UDMSEIManagerComponent>()->AttachEffectInstance(EI);
-//}
-
-//bool IDMSEffectorInterface::ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, UObject* SourceTweak)
-//{
-//	AActor* thisActor = Cast<AActor>(this);
-//
-//	 //기본 구현형인 컴포넌트 사용시의 SourceTweak 적용.
-//	if (thisActor->IsValidLowLevelFast())
-//	{
-//		return thisActor->FindComponentByClass<UDMSEIManagerComponent>()->ReceiveNotify(ResponsedObjects, iChainable, Seq, thisActor);
-//	}
-//
-//	 //컴포넌트 미사용시 직접 구현해야함.
-//	return false;
-//}
 
 UDMSEffectSet* IDMSEffectorInterface::GetOwningEffectSet(const FGameplayTag& iSetName)
 { 

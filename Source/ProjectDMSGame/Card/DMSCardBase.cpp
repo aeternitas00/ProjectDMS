@@ -81,8 +81,6 @@ void ADMSCardBase::OnInitialized_Implementation()
 
 	Super::OnInitialized_Implementation();
 	// EIManagerComponent->CleanupOwnEffect(); ?
-	// 
-
 
 	check(CardDefinition);
 
@@ -96,11 +94,6 @@ void ADMSCardBase::OnInitialized_Implementation()
 	for(auto& Attribute : CardDefinition->DefaultAttributes)
 		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue);
 }
-
-//void ADMSCardBase::PostInitialize_Implementation()
-//{
-//	Super::PostInitialize_Implementation();
-//}
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FGameplayTag& iSetName)
 {

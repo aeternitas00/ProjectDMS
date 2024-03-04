@@ -27,7 +27,7 @@ struct FDMSSelectorRequestForm
 	 * Data objects what wrapped Candidate.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	TArray<UDMSDataObject*> Candidates;
+	TArray<TObjectPtr<UDMSDataObject>> Candidates;
 
 	/**
 	 * The number of selections the selector to be created will choose.
@@ -49,7 +49,9 @@ struct FDMSSelectorRequestForm
 	FOnSelectorCompleted OnCompletedNative;
 };
 
-
+/**
+ * 
+ */
 UCLASS(ClassGroup = (Selector))
 class DMSCORE_API UDMSSelectorHandle : public UObject
 {
@@ -116,17 +118,19 @@ void UDMSSelectorHandle::SetupDelegates( FuncCompleted&& iOnCompleted , FuncCanc
 	OnSelectCanceled.AddLambda( std::forward<FuncCanceled&&> ( iOnCanceled ) );
 }
 
+/**
+ *	Management class that sends queries to the client side during game event processing on the server side, 
+ *	specifically for user-selected elements, and receives responses (via widgets)
+ */
 UCLASS( ClassGroup=(Selector), meta=(BlueprintSpawnableComponent) )
 class DMSCORE_API UDMSSelectorManager : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UDMSSelectorManager();
 
 protected:
-	// Called when the game starts
 	//virtual void BeginPlay() override;
 
 public:

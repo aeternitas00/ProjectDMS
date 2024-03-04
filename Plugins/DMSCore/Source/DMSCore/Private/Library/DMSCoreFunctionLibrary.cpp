@@ -21,52 +21,52 @@ FString UDMSCoreFunctionLibrary::GetTimingString(const EDMSTimingFlag& Flag)
 	}
 }
 
-ADMSGameModeBase* UDMSCoreFunctionLibrary::GetDMSGameMode()
+ADMSGameModeBase* UDMSCoreFunctionLibrary::GetDMSGameMode(UObject* WorldContext)
 {
-	UWorld* tWorld = GEngine->GameViewport->GetWorld();
+	UWorld* tWorld = WorldContext==nullptr ? GEngine->GameViewport->GetWorld() : WorldContext->GetWorld();
 
-	return (Cast<ADMSGameModeBase>(UGameplayStatics::GetGameMode(tWorld)));
+	return tWorld->GetAuthGameMode<ADMSGameModeBase>();
 }
 
-ADMSGameStateBase* UDMSCoreFunctionLibrary::GetDMSGameState()
+ADMSGameStateBase* UDMSCoreFunctionLibrary::GetDMSGameState(UObject* WorldContext)
 {
-	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode(WorldContext);
 
 	return GM != nullptr ? GM->GetDMSGameState() : nullptr;
 }
 
-UDMSSeqManager* UDMSCoreFunctionLibrary::GetDMSSequenceManager()
+UDMSSeqManager* UDMSCoreFunctionLibrary::GetDMSSequenceManager(UObject* WorldContext)
 {
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(WorldContext);
 
 	return GS != nullptr ? GS->GetSequenceManager() : nullptr;
 }
 
-UDMSNotifyManager* UDMSCoreFunctionLibrary::GetDMSNotifyManager()
+UDMSNotifyManager* UDMSCoreFunctionLibrary::GetDMSNotifyManager(UObject* WorldContext)
 {
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(WorldContext);
 
 	return GS != nullptr ? GS->GetNotifyManager() : nullptr;
 }
 
-UDMSEffectHandler* UDMSCoreFunctionLibrary::GetDMSEffectHandler()
+UDMSEffectHandler* UDMSCoreFunctionLibrary::GetDMSEffectHandler(UObject* WorldContext)
 {
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(WorldContext);
 
 	return GS != nullptr ? GS->GetEffectHandler() : nullptr;
 }
 
 
-UDMSPhaseManager* UDMSCoreFunctionLibrary::GetDMSPhaseManager()
+UDMSPhaseManager* UDMSCoreFunctionLibrary::GetDMSPhaseManager(UObject* WorldContext)
 {
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(WorldContext);
 
 	return GS != nullptr ? GS->GetPhaseManager() : nullptr;
 }
 
-UDMSSelectorManager* UDMSCoreFunctionLibrary::GetDMSSelectorManager()
+UDMSSelectorManager* UDMSCoreFunctionLibrary::GetDMSSelectorManager(UObject* WorldContext)
 {
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(WorldContext);
 
 	return GS != nullptr ? GS->GetSelectorManager() : nullptr;
 }

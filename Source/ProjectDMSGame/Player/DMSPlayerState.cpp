@@ -75,6 +75,7 @@ void ADMSPlayerState::SetupDefaults()
 {
 	SetupCardContainers();
 	SetupAttributes();
+	LoadSaveGame("TestSlot",0);
 }
 
 void ADMSPlayerState::OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem)

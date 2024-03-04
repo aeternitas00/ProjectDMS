@@ -38,25 +38,25 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static ADMSGameModeBase* GetDMSGameMode();
+	static ADMSGameModeBase* GetDMSGameMode(UObject* WorldContext = nullptr);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static ADMSGameStateBase* GetDMSGameState();
+	static ADMSGameStateBase* GetDMSGameState(UObject* WorldContext = nullptr);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static UDMSSeqManager* GetDMSSequenceManager();
+	static UDMSSeqManager* GetDMSSequenceManager(UObject* WorldContext = nullptr);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static UDMSNotifyManager* GetDMSNotifyManager();
+	static UDMSNotifyManager* GetDMSNotifyManager(UObject* WorldContext = nullptr);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static UDMSEffectHandler* GetDMSEffectHandler();
+	static UDMSEffectHandler* GetDMSEffectHandler(UObject* WorldContext = nullptr);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static UDMSPhaseManager* GetDMSPhaseManager();
+	static UDMSPhaseManager* GetDMSPhaseManager(UObject* WorldContext = nullptr);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Project DMS")
-	static UDMSSelectorManager* GetDMSSelectorManager();
+	static UDMSSelectorManager* GetDMSSelectorManager(UObject* WorldContext = nullptr);
 
 	static FString GetTimingString(const EDMSTimingFlag& Flag);
 

@@ -55,6 +55,8 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(UDMSSequ
 	if (Storages.Num() == 0)
 	{
 		DMS_LOG_SIMPLE(TEXT("%s : ApplyTargets is emtpy "), *EffectNode->GetName());
+		Sequence->SetTargetted(false);
+		return {};
 	}
 
 	// Attach temporal AE to target. 

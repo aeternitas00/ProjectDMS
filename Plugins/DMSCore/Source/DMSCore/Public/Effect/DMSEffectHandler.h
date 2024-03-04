@@ -113,7 +113,7 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolve
 {
 	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
-	if (Sequence->GetAllEIs().Num() == 0) {
+	if (Sequence->GetAllEIs().Num() == 0 || !Sequence->IsTargetted()) {
 		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
 		goto ResolveSkipped;
 	}

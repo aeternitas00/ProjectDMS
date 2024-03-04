@@ -211,14 +211,20 @@ public:
 
 	/**
 	 * Handle notifing data
-	 * @param	iChainable						
-	 * @param	Seq								
-	 * @param	SourceTweak						
-	 * @out		ResponsedObjects			
+	 * @param	iChainable						Flag whether the user can chain on this effect. (forced trigger effects will ignore this and execute the notification)
+	 * @param	Seq								Current sequence ( notifying info )
+	 * @param	SourceTweak						Indicating who the active effect responsed to when triggered (typically the owner of the AE).
+	 * @out		ResponsedObjects				When the response is successful, this AE and the owner (varies depending on Source Tweak) are registered in the parameter map. 
+												This is done to inform external objects using notification (typically a notify manager) 
+												about which AE responsed to which game actor.
 	 * @return	true if Response success.
 	 */
 	bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak);
 
+	/**
+	 *	Add a param lambda expression to the native delegate to be executed after this active effect has been applied.
+	 *	@param	iOnSequenceFinished				lambda expression to be added.
+	 */
 	template<typename FuncFinished>
 	void AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFinished);
 
@@ -227,6 +233,9 @@ public:
 	 */
 	void DetachFromOwner();
 
+	/**
+	 *	Safely clean up the workers used in AE applying.
+	 */
 	void CleanupWorker(UDMSEffectApplyWorker* Worker);
 
 	// =========== INTERFACE FUNCTION =========== // 
@@ -243,27 +252,3 @@ void ADMSActiveEffect::AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFin
 {
 	OnApplyComplete_Native.AddLambda(iOnSequenceFinished);
 }
-
-//UCLASS(BlueprintType)
-//class DMSCORE_API ADMSActiveEffect_Persistent : public ADMSActiveEffect
-//{
-//	GENERATED_BODY()
-//
-//public:
-//
-//	virtual void Initialize(UDMSEffectNode* iNode) override;
-//	virtual void OnApplyComplete() override;
-//};
-//
-//
-//UCLASS(BlueprintType)
-//class DMSCORE_API ADMSActiveEffect_Applying : public ADMSActiveEffect
-//{
-//	GENERATED_BODY()
-//
-//public:
-//
-//	// Temporal AE does not receive notify.
-//	virtual bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak){return false;};
-//	virtual void OnApplyComplete() override;
-//};

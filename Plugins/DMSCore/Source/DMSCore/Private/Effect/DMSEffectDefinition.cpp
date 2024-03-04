@@ -53,7 +53,7 @@ TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode
 	for (auto& Storage : Storages)
 		Storage.ApplyTargets.Reset();
 	
-
+	// 별도의 어플라이 타게터가 없으면 메인 타겟을 따라가도록.
 	if (Node->ApplyTargetGenerator == nullptr) {
 		for ( auto& Storage : Storages )
 			Storage.ApplyTargets.Add(Storage.MainTarget);
@@ -73,7 +73,7 @@ TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode
 }
 
 
-UDMSEffectNode::UDMSEffectNode() : bForced(false), bIgnoreNotify(false), bLazyTargetting(false) , bIsChainableEffect(true)
+UDMSEffectNode::UDMSEffectNode() : bForced(false), bIgnoreNotify(false), bIsChainableEffect(true)
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 

@@ -26,10 +26,14 @@ void UDMSPhase::End_OnPreStartPhase()
 
 void UDMSPhase::OnStartPhase_Implementation()
 {
-	if ( !GIsServer ) 
-		{DMS_LOG_C(Warning);return;}
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(); check(GS);
+	auto GM = GetWorld()->GetAuthGameMode();
+	if ( !GM ) {
+		DMS_LOG_C(Warning);return;
+	}
+	//auto GS = Cast<ADMSGameModeBase>(GM)->GetDMSGameState();
+	//auto SM = GS->GetSequenceManager();
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(this); check(GS);
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
 
 	auto NewSeq = SM->RequestCreateSequence(GS,GS,PhaseNode,{});
 

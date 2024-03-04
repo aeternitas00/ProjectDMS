@@ -2,7 +2,8 @@
 
 
 #include "Sequence/DMSSequenceStep.h"
-
+#include "GameModes/DMSGameModeBase.h"
+#include "GameModes/DMSGameStateBase.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
@@ -55,7 +56,10 @@ void UDMSSequenceStep::Progress_Before()
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress Before ===="), *GetClass()->GetName());
 
-	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
+	//auto NotifyManager = GS->GetNotifyManager();
+
+	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(this);
 
 	check(NotifyManager);
 
@@ -66,7 +70,8 @@ void UDMSSequenceStep::Progress_During()
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress During ===="), *GetClass()->GetName());
 
-	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+	auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
+	auto NotifyManager = GS->GetNotifyManager();
 
 	check(NotifyManager);
 
@@ -77,7 +82,8 @@ void UDMSSequenceStep::Progress_After()
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress After ===="), *GetClass()->GetName());
 
-	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+	auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
+	auto NotifyManager = GS->GetNotifyManager();
 
 	check(NotifyManager);
 

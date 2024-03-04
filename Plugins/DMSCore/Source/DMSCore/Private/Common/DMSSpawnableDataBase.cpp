@@ -12,11 +12,15 @@ FPrimaryAssetId UDMSSpawnableDataBase::GetPrimaryAssetId() const
 
 void ADMSSpawnableBase::Initialize(const UDMSSpawnableDataBase* inData)
 {
+	if (bInitialized) return;
+
 	OriginalData = inData; 
 
 	ForEachComponent<UDMSSpawnableComponent>(false,[](UDMSSpawnableComponent* Comp){
 		Comp->UpdateParentComponent();
 	});
+
+	bInitialized=true;
 
 	OnInitialized();
 	

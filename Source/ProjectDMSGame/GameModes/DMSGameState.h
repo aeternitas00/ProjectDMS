@@ -17,6 +17,10 @@ class PROJECTDMSGAME_API ADMSGameState : public ADMSGameStateBase
 {
 	GENERATED_BODY()
 public:
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	int TestPlayerNum = 0;
+
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	TArray<ADMSLocationBase*> Locations;
 

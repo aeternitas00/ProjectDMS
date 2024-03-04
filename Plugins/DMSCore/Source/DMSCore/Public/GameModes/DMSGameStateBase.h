@@ -31,19 +31,19 @@ protected:
 	 * Manager objects / components.
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Replicated)
-	UDMSEffectHandler* EffectHandler;
+	TObjectPtr<UDMSEffectHandler> EffectHandler;
 
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Replicated)
-	UDMSSeqManager* SequenceManager;
+	TObjectPtr<UDMSSeqManager> SequenceManager;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Replicated)
-	UDMSNotifyManager* NotifyManager;
+	TObjectPtr<UDMSNotifyManager> NotifyManager;
 
 	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Replicated)
-	UDMSPhaseManager* PhaseManager;
+	TObjectPtr<UDMSPhaseManager> PhaseManager;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Replicated)
-	UDMSSelectorManager* SelectorManager;
+	TObjectPtr<UDMSSelectorManager> SelectorManager;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -53,7 +53,7 @@ protected:
 	TSubclassOf<UDMSPhaseManager> PhaseManagerClass;
 
 	UPROPERTY(BlueprintReadOnly, Replicated)
-	UDMSEIManagerComponent* EIManagerComponent;
+	TObjectPtr<UDMSEIManagerComponent> EIManagerComponent;
 
 	UPROPERTY(BlueprintReadOnly/*, Replicated*/)
 	int32 LeaderPlayerID;

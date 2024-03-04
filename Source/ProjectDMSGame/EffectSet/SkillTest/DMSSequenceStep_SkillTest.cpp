@@ -40,7 +40,7 @@ void UDMSSequenceStep_SkillTest::OnStepInitiated()
 
 void UDMSSequenceStep_SkillTest::OnBefore_Implementation()
 {
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
 
 	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_BEFORE [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 	ProgressComplete();
@@ -49,10 +49,10 @@ void UDMSSequenceStep_SkillTest::OnBefore_Implementation()
 void UDMSSequenceStep_SkillTest::OnDuring_Implementation()
 {
 	// Behavior
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(); check(GS);
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
-	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
-	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(); check(SelM);
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(this); check(GS);
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
+	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this); check(EH);
+	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(this); check(SelM);
 
 	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 
@@ -116,7 +116,7 @@ inline FGameplayTag UDMSSequenceStep_SkillTest::GetStepTag_Implementation() cons
 
 void UDMSSequenceStep_SkillTest::OnAfter_Implementation()
 {
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(); check(SM);
+	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
 
 	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 

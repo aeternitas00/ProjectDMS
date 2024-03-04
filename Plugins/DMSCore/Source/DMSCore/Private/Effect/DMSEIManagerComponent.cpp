@@ -79,7 +79,7 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 	DMS_LOG_SIMPLE(TEXT("%s : Setup own effects [%s]"), *GetOwner()->GetName(), *SetName.ToString());
 	if (EffectSet == nullptr) { DMS_LOG_DETAIL(Display, TEXT("%s : No Default Effect"),*GetOwner()->GetName()); return; }
 
-	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler();
+	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);
 	if (!EH) { DMS_LOG_DETAIL(Error, TEXT("No Effect Handler")); 	return; }
 
 	auto EffectNodes = EffectSet->EffectNodes;

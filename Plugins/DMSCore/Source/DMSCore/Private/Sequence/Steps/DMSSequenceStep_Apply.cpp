@@ -20,7 +20,7 @@ UDMSSequenceStep_Apply::UDMSSequenceStep_Apply()
 void UDMSSequenceStep_Apply::OnStepInitiated()
 {
 	if(!OwnerSequence->IsTargetted()){
-		auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(); check(EH);
+		auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this); check(EH);
 		EH->CreateApplyingActiveEffect(OwnerSequence, OwnerSequence->OriginalEffectNode);
 	}
 	UDMSSequenceStep::OnStepInitiated();
@@ -32,36 +32,26 @@ void UDMSSequenceStep_Apply::OnBefore_Implementation()
 {
 	// ==== ON BEFORE TIMING RESPONSE ENDED ====
 
-//	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager();			check(NotifyManager);
-	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler();			check(EffectHandler);
-	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);			check(EffectHandler);
+	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : Apply Sequence [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 
-	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep Starts by %s : [%s]"), *OwnerSequence->GetSourceObject()->GetName(),
-	//	*OwnerSequence->OriginalEffectNode->GenerateTagContainer().ToString());
-
-	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_BEFORE [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
-
 	ProgressComplete();
-
 }
 
 void UDMSSequenceStep_Apply::Progress_During()
 {
 	// Behavior
-	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager();			check(NotifyManager);
-	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler();			check(EffectHandler);
-	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager(this);			check(NotifyManager);
+	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);			check(EffectHandler);
+	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress During ===="), *GetClass()->GetName());
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : ON BEFORE TIMING RESPONSE ENDED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
+	
 	// Proceed to 'During Timing'
-	//BeforeSequence->Progress = EDMSTimingFlag::T_During;
-
-	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
-
 	// Resolve First
 	DMS_LOG_SIMPLE(TEXT("==== %s : RESOLVE START ===="), *OwnerSequence->GetName());
 
@@ -73,7 +63,7 @@ void UDMSSequenceStep_Apply::Progress_During()
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 			// 'During Timing' broadcast starts.
 
-			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(this);
 
 			check(NotifyManager);
 
@@ -81,8 +71,6 @@ void UDMSSequenceStep_Apply::Progress_During()
 
 		}
 		else {
-			//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_DURING : Failed [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
-
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE FAILED [ Depth : %d ] ===="), *OwnerSequence->GetName(), SeqManager->GetDepth(OwnerSequence));
 			ProgressComplete(false);
 		}
@@ -92,7 +80,7 @@ void UDMSSequenceStep_Apply::Progress_During()
 
 void UDMSSequenceStep_Apply::OnDuring_Implementation()
 {
-	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 
 	// ==== ON DURING TIMING RESPONSE ENDED ====
 
@@ -104,9 +92,9 @@ void UDMSSequenceStep_Apply::OnDuring_Implementation()
 void UDMSSequenceStep_Apply::OnAfter_Implementation()
 {
 	// When 'After Timing' broadcast finished.
-	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager(); 		check(NotifyManager);
-	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler();			check(EffectHandler);
-	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
+	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager(this); 		check(NotifyManager);
+	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);			check(EffectHandler);
+	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 
 	//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_AFTER [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 
@@ -117,11 +105,10 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 	if (OwnerSequence->OriginalEffectNode->ChildEffect != nullptr && OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode() != nullptr &&
 		OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode()->Conditions->CheckCondition(OwnerSequence->GetSourceObject(), OwnerSequence)) {
 
-		//DMS_LOG_SCREEN(TEXT("==-- Child Sequence Created [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
 		// Proceed to run child effect sequence.
 		DMS_LOG_SIMPLE(TEXT("==== %s : Child Sequence Created -> Advance ===="), *OwnerSequence->GetName());
 		auto ChildNode = OwnerSequence->OriginalEffectNode->ChildEffect->GetEffectNode();
-		// follows parents data. 0
+		// follows parents data. 
 		auto NewSeq = SeqManager->RequestCreateSequence(OwnerSequence->GetSourceObject(), OwnerSequence->GetSourcePlayer(), ChildNode,
 			TArray<TScriptInterface<IDMSEffectorInterface>>(), OwnerSequence->SequenceDatas, OwnerSequence);
 
@@ -131,7 +118,7 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 			// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
 
-			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager();
+			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(this);
 
 			// Resume parent sequence closing
 			this->ProgressComplete();
@@ -141,8 +128,8 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 		SeqManager->RunSequence(NewSeq);
 	}
 
-	else {//Complete this step.
-		//DMS_LOG_SCREEN(TEXT("==-- ApplyStep_AFTER : No Child .. \"END\" [ Depth : %d ] --=="), SeqManager->GetDepth(OwnerSequence));
+	else {
+		//Complete this step.
 		ProgressComplete();
 	}
 }

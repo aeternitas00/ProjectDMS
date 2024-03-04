@@ -21,7 +21,7 @@ ADMSLevelScriptActor::ADMSLevelScriptActor(/*const FObjectInitializer& ObjectIni
 
 void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBase*>& Locations*/)
 {
-	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode();
+	auto GM = UDMSCoreFunctionLibrary::GetDMSGameMode(this);
 	check(GM);
 
 	ADMSGameState* GS = Cast<ADMSGameState>(GM->GetDMSGameState());
@@ -83,7 +83,7 @@ TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()
 */
 //virtual UObject* GetObject() override {return this;} // RENAME?
 
-AActor* ADMSLevelScriptActor::GetOwningPlayer() { return UDMSCoreFunctionLibrary::GetDMSGameMode()->GameState; }
+AActor* ADMSLevelScriptActor::GetOwningPlayer() { return UDMSCoreFunctionLibrary::GetDMSGameMode(this)->GameState; }
 
 UDMSEffectSet* ADMSLevelScriptActor::GetOwningEffectSet(const FGameplayTag& iSetName)
 { 
