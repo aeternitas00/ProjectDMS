@@ -3,7 +3,6 @@
 #pragma once
 
 #include "ProjectDMS.h"
-#include "EffectSet/DMSEffect_SkillTest.h"
 #include "Selector/DMSConfirmWidgetBase.h"
 #include "Selector/DMSSelectorManager.h"
 #include "Sequence/DMSSequenceStep.h"

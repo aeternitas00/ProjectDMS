@@ -250,7 +250,7 @@ public:
 };
 
 /**
- *	Class for defining preprocessing steps before the actual logic is used when using data from multiple definitions.
+ *	Class for defining preprocessing steps before the actual logic is used when using data from other definitions.
  */
 UCLASS(Abstract,Blueprintable,BlueprintType,EditInlineNew)
 class DMSCORE_API UDMSDataProcesser : public UObject

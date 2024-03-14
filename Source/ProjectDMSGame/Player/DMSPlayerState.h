@@ -88,20 +88,28 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<FDMSCardData> OriginalCardDatas;
 
+	/**
+	 * Default character's data		
+	 * ( FOR TEST :: this is intended to spawn a character actor with the character information stored in a saved game and pass the information to the character actor. 
+	 * Therefore, it should take the form of having only a character reference ) 
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FDMSPlayerCharacterData PlayerCharacterData;
 
+	/**
+	 * Actual possession target for gameplay. 
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TObjectPtr<ADMSCharacterBase> CharacterRef;
 
 	/**
-	 * 
+	 * Runtime Exp data ( for test )
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 EXP;
 
 	/**
-	 *
+	 * Runtime level data ( for test )
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Level;
