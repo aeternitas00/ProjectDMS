@@ -8,15 +8,18 @@
 #include "DMSSequenceStep.generated.h"
 
 /**
- * Smallest unit of a sequence.
+ * progress unit of a sequence.
  */
-UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract)
+UCLASS(NotBlueprintable, DefaultToInstanced, EditInlineNew, Abstract)
 class DMSCORE_API UDMSSequenceStep : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	UDMSSequenceStep();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UDMSSequenceStepDefinition> StepDefinition;
 
 	/**
 	 * Current timing of this step.
@@ -36,6 +39,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSSequence> OwnerSequence;
 
+	void Initialize(UDMSSequenceStepDefinition* Definition,UDMSSequence* iOwnerSequence);
 	/**
 	 * Initiate step delegates.
 	 * @param	StepInitiated			
@@ -56,12 +60,30 @@ public:
 	void CloseStep(bool bSucceeded = true);
 
 	/**
+	 * Current timing of this step.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,BlueprintPure)
+	FGameplayTagContainer GetCurrentProgressTag() const;
+	virtual FGameplayTagContainer GetCurrentProgressTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
+
+	/**
 	 * Get tag of step.
 	 */
 	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	FGameplayTag GetStepTag() const;
-	virtual FGameplayTag GetStepTag_Implementation() const {return FGameplayTag::EmptyTag;}
+	FGameplayTagContainer GetStepTag() const;
+	virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
 
+	DECLARE_MULTICAST_DELEGATE(FOnStepInitiated);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
+
+	FOnStepInitiated OnStepInitiated_Delegate;
+	FOnStepFinished OnStepFinished_Delegate;
+	
+	void ProgressComplete(bool bSucceeded = true);
+	void ProgressEnd(bool bSucceeded = true);
+
+	// ======== MIGRATE TO DEF and Progress ======== //
+	// 
 	// IMPLEMENTS :: Step Behaviour
 	virtual void OnStepInitiated();
 	virtual void OnStepFinished(bool bSucceeded = true);
@@ -83,13 +105,7 @@ public:
 	void OnAfter();
 	virtual void OnAfter_Implementation();
 
-	DECLARE_MULTICAST_DELEGATE(FOnStepInitiated);
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
-
-	FOnStepInitiated OnStepInitiated_Delegate;
-	FOnStepFinished OnStepFinished_Delegate;
-	
-	void ProgressComplete(bool bSucceeded = true);
+	// =================================== //
 
 	friend class UDMSSequence;
 };
@@ -100,3 +116,34 @@ void UDMSSequenceStep::InitializeDelegates(FuncInitiated&& StepInitiated, FuncFi
 	OnStepInitiated_Delegate.AddLambda(StepInitiated);
 	OnStepFinished_Delegate.AddLambda(StepFinished);
 }
+
+/**
+ * progress unit of a sequence.
+ */
+UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract)
+class DMSCORE_API UDMSSequenceStepDefinition : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UDMSSequenceStepDefinition(){}
+
+	UFUNCTION(BlueprintCallable)
+	void BroadcastProgress(UDMSSequenceStep* InstancedStep, const FGameplayTag& ProgressTag);
+
+	UFUNCTION(BlueprintNativeEvent)
+	bool GetProgressOps(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutors);
+	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutors);
+
+	//UFUNCTION()
+	//void Progress_Sample(UDMSSequenceStep* InstancedStep){ /*SOME BEHAVIORS ...*/ InstancedStep->ProgressEnd(false); }
+
+	/**
+	 * Get tag of step.
+	 */
+	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	FGameplayTagContainer GetStepTag() const;
+	virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
+
+};
+

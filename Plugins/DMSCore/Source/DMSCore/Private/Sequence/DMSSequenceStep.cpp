@@ -12,6 +12,12 @@ UDMSSequenceStep::UDMSSequenceStep()
 	Progress=EDMSTimingFlag::T_Before;
 }
 
+void UDMSSequenceStep::Initialize(UDMSSequenceStepDefinition* Definition, UDMSSequence* iOwnerSequence)
+{
+	StepDefinition=Definition;
+	OwnerSequence=iOwnerSequence;
+}
+
 void UDMSSequenceStep::RunStep()
 {
 	Progress=EDMSTimingFlag::T_Before;
@@ -139,8 +145,21 @@ void UDMSSequenceStep::ProgressComplete(bool bSucceeded)
 	}
 }
 
-//void UDMSSequenceStep::ExecuteNextProgress(const EDMSTimingFlag& CurrentProgress)
-//{
-//	ProgressDelegatesMap[CurrentProgress].Broadcast();
-//}
+void UDMSSequenceStep::ProgressEnd(bool bSucceeded)
+{
+	OwnerSequence->ProgressEnd(bSucceeded);
+}
 
+
+
+void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedStep, const FGameplayTag& ProgressTag)
+{
+}
+
+bool UDMSSequenceStepDefinition::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
+{	
+	// If step contains proper progress ops which matching with @ProgressTag. add a binded delegate to @OutExecutors and return true.
+
+	// return false if there's no matching progress ops
+	return false;
+}

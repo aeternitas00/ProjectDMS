@@ -47,7 +47,7 @@ void ADMSGameMode::PreInitializeComponents()
 }
 
 
-ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName)
+ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FGameplayTag& DefaultContainerName)
 {
 	ADMSCardBase* SpawnedCard = SpawnDMSGameActor<ADMSCardBase>(CardData.CardDefinition, OwnerID);
 	SpawnedCard->SetActorHiddenInGame(true);
@@ -111,10 +111,10 @@ void ADMSGameMode::PlayerReady()
 			// Spawn cards
 
 			for (auto CardData : PS->OriginalCardDatas)
-				SpawnCard(CardData, PlayerID,TEXT("Deck"));
+				SpawnCard(CardData, PlayerID,FGameplayTag::RequestGameplayTag("Field.Vanilla.Deck"));
 
-			if (PS->SearchContainer(TEXT("Deck")))
-				PS->SearchContainer(TEXT("Deck"))->ShuffleTopNCards();
+			if (PS->SearchContainer(FGameplayTag::RequestGameplayTag("Field.Vanilla.Deck")))
+				PS->SearchContainer(FGameplayTag::RequestGameplayTag("Field.Vanilla.Deck"))->ShuffleTopNCards();
 		}
 
 		OnAllPlayerReady();
@@ -151,9 +151,6 @@ ADMSSpawnableBase* ADMSGameMode::SpawnDMSGameActor(const TSubclassOf<ADMSSpawnab
 		GetDMSGameState()->GetNotifyManager()->RegisterNotifyObject(Effector);
 	}
 	SpawnedActor->AddActorLocalTransform(inRelativeTransform);
-	//SpawnedActor->SetActorRelativeRotation(inRelativeTransform.GetRotation());
-	//SpawnedActor->SetActorRelativeScale3D(inRelativeTransform.GetScale3D());
-	//SpawnedActor->AddActorLocalOffset(inRelativeTransform.GetLocation());
 
 	return SpawnedActor;
 }

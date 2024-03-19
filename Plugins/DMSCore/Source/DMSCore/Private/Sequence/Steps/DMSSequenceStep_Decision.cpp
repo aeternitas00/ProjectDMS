@@ -10,6 +10,7 @@
 #include "Effect/DMSEffectHandler.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Player/DMSPlayerControllerBase.h"
+#include "Notify/DMSNotifyManager.h"
 #include "GameFramework/PlayerController.h"
 #include "GameModes/DMSGameStateBase.h"
 
@@ -21,9 +22,7 @@ UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
 	DecisionMaker = CreateDefaultSubobject<UDMSTargetGenerator_SourcePlayer>("DecisionMaker");
 }
 
-
-
-FGameplayTag UDMSSequenceStep_Decision::GetStepTag_Implementation() const{return TAG_DMS_Step_Decision;}
+FGameplayTagContainer UDMSSequenceStep_Decision::GetStepTag_Implementation() const{return FGameplayTagContainer(TAG_DMS_Step_Decision);}
 
 void UDMSSequenceStep_Decision::OnBefore_Implementation()
 {
@@ -113,4 +112,41 @@ void UDMSSequenceStep_Decision::OnAfter_Implementation()
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
 	//DMS_LOG_SCREEN(TEXT("==-- DecisionStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 	ProgressComplete();
+}
+
+
+
+
+
+
+
+
+
+
+UDMSSequenceStepDefinition_Decision::UDMSSequenceStepDefinition_Decision()
+{
+}
+
+void UDMSSequenceStepDefinition_Decision::Progress_Decision(UDMSSequenceStep* InstancedStep)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress During ===="), *GetClass()->GetName());
+
+	auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
+	auto NotifyManager = GS->GetNotifyManager();
+
+	check(NotifyManager);
+
+	NotifyManager->Broadcast(OwnerSequence, [this]() {OnDuring();});
+}
+
+FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementation() const
+{
+	return FGameplayTagContainer(TAG_DMS_Step_Decision);
+}
+
+bool UDMSSequenceStepDefinition_Decision::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutDelegates)
+{
+	if(!GetStepTag().HasTagExact(ProgressTag)) return false;
+
+	OutDelegates.Add({this,"Progress_Decision"});
 }

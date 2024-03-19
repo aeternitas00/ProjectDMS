@@ -57,7 +57,6 @@ void ADMSCardBase::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
 
 ADMSLocationBase* ADMSCardBase::GetCurrentLocation_Implementation()
 {
-	//return LocationRef;
 	return IDMSLocatableInterface::Execute_GetCurrentLocation(GetOwningPlayer());
 }
 

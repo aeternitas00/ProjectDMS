@@ -49,6 +49,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	
 	// Test Feature
 	Sequence->InitializeSteps(EffectNode->StepRequirements);
+	Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
 
 	// Add new seq to seq tree.
 	if (ParentSequence == nullptr) {

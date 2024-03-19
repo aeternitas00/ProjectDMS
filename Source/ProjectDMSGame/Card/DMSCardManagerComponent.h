@@ -41,23 +41,23 @@ protected:
 	// Set replicated in constructor
 	// 직접 생성할 이유는 별로 없고 외부에서 생성하게 될 것. ( DMS PC의 예 ) 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<FName, TObjectPtr<UDMSCardContainerComponent>> Containers;
+	TMap<FGameplayTag, TObjectPtr<UDMSCardContainerComponent>> Containers;
 
 public:
 	// Post Init 이후 생성된 카드 컨테이너들에 대해 레플리케이션 실행.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	UFUNCTION(BlueprintCallable)
-	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
+	UDMSCardContainerComponent* SearchContainer(const FGameplayTag& ContainerName);
 		
-	void ConstructContainer(const FName& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass);
+	void ConstructContainer(const FGameplayTag& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass);
 
 	static void MigrateCard(UDMSCardContainerComponent* Origin, uint16 OrgIdx, uint16 Num, UDMSCardContainerComponent* Dest, uint16 DestIdx);
 	static void MigrateCard(ADMSCardBase* Card, UDMSCardContainerComponent* Dest, uint16 DestIdx);
 	static void MigrateCard(TArray<ADMSCardBase*> Cards, UDMSCardContainerComponent* Dest, uint16 DestIdx);
 
 	UFUNCTION(BlueprintCallable)
-	void AddCardtoContainer(TArray<ADMSCardBase*> Cards,const FName& ContainerName);
+	void AddCardtoContainer(TArray<ADMSCardBase*> Cards,const FGameplayTag& ContainerName);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSCardBase*> GetAllCards();

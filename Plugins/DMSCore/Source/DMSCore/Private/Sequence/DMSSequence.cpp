@@ -97,16 +97,60 @@ void UDMSSequence::RunStepQueue()
 	if (CurrentStep==nullptr) 
 	{
 		DMS_LOG_SIMPLE(TEXT("==== %s : Current Step was nullptr ===="), *GetName());
-		return;
+		OnStepQueueCompleted(false); return;
 	}
 	CurrentStep->RunStep();
+}
+
+void UDMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
+{
+	CurrentProgressIndex=0;
+	if (StepDefinitions.Num()==0) return;
+	InstancedSteps.Empty(StepDefinitions.Num());
+	ProgressExecutors.Empty();
+
+	for (auto& OriginalStep : StepDefinitions) {
+		auto InstancedStep = NewObject<UDMSSequenceStep>(this);
+		InstancedStep->Initialize(OriginalStep,this);
+		InstancedSteps.Add(InstancedStep);
+	}
+	
+	for (auto& ProgressTag : ProgressOrder)	{	
+		for(auto& InstancedStep : InstancedSteps){
+			TArray<FProgressExecutor> tExecutors;
+			if(InstancedStep->StepDefinition->GetProgressOps_Implementation(ProgressTag,tExecutors)) {
+				for (auto& tExec : tExecutors ) tExec.ExecutingStep = InstancedStep;
+				ProgressExecutors.Append(tExecutors); break;
+			}
+		}
+	}
+}
+
+void UDMSSequence::ProgressEnd(bool Succeeded)
+{
+	if(!Succeeded){OnStepQueueCompleted(false); return;}
+	if(CurrentProgressIndex==ProgressExecutors.Num()) {OnStepQueueCompleted(true); return;}
+	ExecuteNextProgress();
+}
+
+void UDMSSequence::RunStepProgressQueue()
+{
+	if (ProgressExecutors.Num()==0) { OnStepQueueCompleted(false); return; }
+	ExecuteNextProgress();
+}
+
+void UDMSSequence::ExecuteNextProgress()
+{
+	auto& CurrentExec = ProgressExecutors[CurrentProgressIndex];
+	CurrentExec.ExecutorDelegate.ExecuteIfBound(CurrentExec.ExecutingStep);
+	CurrentProgressIndex++;
 }
 
 FGameplayTagContainer UDMSSequence::GenerateTagContainer()
 {
 	FGameplayTagContainer rv;
-	rv.AppendTags(OriginalEffectNode->GenerateTagContainer());
-	rv.AddTagFast(CurrentStep->GetStepTag());
+	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
+	rv.AppendTags(CurrentStep->GetStepTag());
 	return rv;
 }
 

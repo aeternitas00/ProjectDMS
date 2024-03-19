@@ -70,8 +70,8 @@ public:
 	 * Spawn card with card data and owner info.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	ADMSCardBase* SpawnCard(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName=TEXT("Deck"));
-	virtual ADMSCardBase* SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FName& DefaultContainerName = NAME_None);
+	ADMSCardBase* SpawnCard(const FDMSCardData& CardData, int32 OwnerID, const FGameplayTag& DefaultContainerName);
+	virtual ADMSCardBase* SpawnCard_Implementation(const FDMSCardData& CardData, int32 OwnerID, const FGameplayTag& DefaultContainerName = FGameplayTag::EmptyTag);
 
 	/**
 	 * Setup DMS Game systems.

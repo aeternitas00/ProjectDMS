@@ -24,10 +24,33 @@ public:
 	virtual void OnStepInitiated() override;
 	virtual void Progress_During() override;
 
-	virtual FGameplayTag GetStepTag_Implementation() const;
+	virtual FGameplayTagContainer GetStepTag_Implementation() const;
 
 	virtual void OnBefore_Implementation() override;
 	virtual void OnDuring_Implementation() override;
 	virtual void OnAfter_Implementation() override;
+};
+
+UCLASS()
+class DMSCORE_API UDMSSequenceStepDefinition_Apply : public UDMSSequenceStepDefinition
+{
+	GENERATED_BODY()
+
+public:
+	UDMSSequenceStepDefinition_Apply();
+
+	UFUNCTION()
+	void Progress_Before(UDMSSequenceStep* InstancedStep);
+
+	UFUNCTION()
+	void Progress_During(UDMSSequenceStep* InstancedStep);
+
+	UFUNCTION()
+	void Progress_After(UDMSSequenceStep* InstancedStep);
+
+
+	// Implementations
+	virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 

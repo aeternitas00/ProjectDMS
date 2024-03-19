@@ -81,7 +81,7 @@ UDMSEffectNode::UDMSEffectNode() : bForced(false), bIgnoreNotify(false), bIsChai
 	StepRequirements.Add(CreateDefaultSubobject<UDMSSequenceStep_Apply>("ApplyStep"));
 }
 
-FGameplayTagContainer UDMSEffectNode::GenerateTagContainer()
+FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(UDMSSequence* CurrentSequence)
 {
 	FGameplayTagContainer ctn;
 	ctn.AddTagFast(NodeTag);
@@ -90,66 +90,20 @@ FGameplayTagContainer UDMSEffectNode::GenerateTagContainer()
 	return ctn;
 }
 
-bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
+bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence)
 {
-	return GenerateTagContainer().MatchesQuery(EffectTagQuery);
+	return GenerateTagContainer(CurrentSequence).MatchesQuery(EffectTagQuery);
 }
 
-bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery)
+bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence)
 {
 	for (auto node : EffectNodes)
 	{
-		if (node->GetEffectNode()->ExecuteTagQuery(EffectTagQuery)) return true;
+		if (node->GetEffectNode()->ExecuteTagQuery(EffectTagQuery,CurrentSequence)) return true;
 	}
 
 	return false;
 }
-
-//TArray<UDMSEffectElementSelectorWidget*> UDMSEffectNode::CreateSelectors(UDMSSequence* OwnerSeq,APlayerController* WidgetOwner)
-//{
-//	// TODO :: Callback and Queued Selectors
-//
-//	//DMS_LOG_SCREEN(TEXT("CreateSelectors"));
-//	TArray<UDMSEffectElementSelectorWidget*> rv;
-//	for (auto ED : EffectDefinitions)
-//	{
-//		//rv.Append(ED->CreateSelectors());
-//		auto t= ED->CreatePairedSelector(OwnerSeq,WidgetOwner);	
-//		if(t==nullptr) continue;
-//		rv.Add(t);
-//	}
-//	return rv;
-//
-//}
-//
-//TArray<UDMSDecisionWidget*> UDMSEffectNode::CreateDecisionWidgets(UDMSSequence* OwnerSequence,APlayerController* WidgetOwner)
-//{
-//	TArray<UDMSDecisionWidget*> rv;
-//	for (auto& WidgetClass : DecisionWidgetClasses)
-//	{
-//		auto NewWidget = CreateWidget<UDMSDecisionWidget>(WidgetOwner,WidgetClass);
-//		NewWidget->CurrentSequence= OwnerSequence;
-//		rv.Add(NewWidget);
-//	}
-//
-//	InitializeDecisionWidget(rv);
-//	return rv;
-//}
-
-//UDMSEffectElementSelectorWidget* UDMSEffectDefinition::CreatePairedSelector(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner)
-//{
-//	if(!bIsUsingSelector) return nullptr;
-//	
-//	auto rv = GetPairedSelector().Get() != nullptr ? CreateWidget<UDMSEffectElementSelectorWidget>(WidgetOwner, GetPairedSelector().Get()) : nullptr;
-//	
-//	// Never happen?
-//	if (rv == nullptr) return nullptr;
-//	rv->SetSourceEffectDefinition(this);
-//	rv->CurrentSequence = OwnerSeq;
-//	InitializePairedSelector(rv);
-//
-//	return rv;
-//}
 
 //TArray<UDMSEffectNodeWrapper*> UDMSEffectSet::GetEffectNodeWithComparer(const FNodeComparer& Comparer)
 //{

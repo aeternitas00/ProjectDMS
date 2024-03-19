@@ -93,7 +93,7 @@ void ADMSPlayerState::LoadSaveGame(const FString& SlotName, const int32 UserInde
 }
 
 
-UDMSCardContainerComponent* ADMSPlayerState::SearchContainer(const FName& ContainerName)
+UDMSCardContainerComponent* ADMSPlayerState::SearchContainer(const FGameplayTag& ContainerName)
 {
 	return CardManagerComponent ? CardManagerComponent->SearchContainer(ContainerName) : nullptr;
 }

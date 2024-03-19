@@ -50,10 +50,10 @@ public:
 	FText CardName;
 
 	/**
-	 * Name of card type.
+	 * Container of traits.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	FName DefaultCardType; // ENUM?
+	FGameplayTagContainer DefaultCardTraits;
 
 	/**
 	 * Description text of card effect.
@@ -66,18 +66,6 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FText FlavorText;
-
-	/**
-	 * Displaying mana cost of card. (not actual cost. cosmetic)
-	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	//FText DisplayManaCost;
-	
-	/**
-	 * Displaying action point cost of card. (not actual cost. cosmetic)
-	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	//FText DisplayAPCost;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = CardEffect)
 	TArray<FDMSAttributeDefinition> DefaultAttributes;

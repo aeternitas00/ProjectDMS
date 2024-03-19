@@ -34,10 +34,10 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, ADMS
 	// 시전한 플레이어의 (Name) 컨테이너 / AI가 사용했다던가 했을땐 카드가 원래 있던 컨테이너의 주인 기준으로 (Name)컨테이너 찾아서
 	UDMSCardManagerComponent* Manager = Cast<UDMSCardManagerComponent>(iEI->SourcePlayer->GetComponentByClass(UDMSCardManagerComponent::StaticClass()));
 	if (Manager) {
-		Container_Destination = Manager->SearchContainer(NameDestination); 
+		Container_Destination = Manager->SearchContainer(TagDestination); 
 	}
 	if (Container_Destination==nullptr&& FromTemp!=nullptr) {
-		Container_Destination = Cast<UDMSCardManagerComponent>(FromTemp->GetOuter())->SearchContainer(NameDestination);
+		Container_Destination = Cast<UDMSCardManagerComponent>(FromTemp->GetOuter())->SearchContainer(TagDestination);
 	}
 
 	if (Container_Destination == nullptr)

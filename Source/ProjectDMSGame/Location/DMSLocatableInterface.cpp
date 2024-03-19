@@ -17,55 +17,53 @@ int IDMSLocatableInterface::GetDistanceWith_Implementation(const TScriptInterfac
     if(CurrentLoc==nullptr || TargetLoc == nullptr) return -1;
 
     if (CurrentLoc == TargetLoc) return 0;
-    // °Å¸® ±¸ÇÏ±â
+    // ê±°ë¦¬ êµ¬í•˜ê¸°
     int Distance = 0;
 
     TArray<ADMSLocationBase*> VisitedNodes;
     TArray<ADMSLocationBase*> CurrentNodes;
     TArray<ADMSLocationBase*> NextNodes;
 
-    // ½ÃÀÛ ³ëµå Ãß°¡
+    // ì‹œì‘ ë…¸ë“œ ì¶”ê°€
     CurrentNodes.Add(CurrentLoc);
 
     while (CurrentNodes.Num() > 0)
     {
-        // ÇöÀç ³ëµåµéÀ» ¹æ¹®ÇÑ ³ëµå ¸®½ºÆ®¿¡ Ãß°¡
-        for (ADMSLocationBase* VisitedNode : CurrentNodes)
-        {
+        // í˜„ì¬ ë…¸ë“œë“¤ì„ ë°©ë¬¸í•œ ë…¸ë“œ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
+        for (ADMSLocationBase* VisitedNode : CurrentNodes)  {
             VisitedNodes.AddUnique(VisitedNode);
         }
 
-        // ´ÙÀ½ ·¹º§ÀÇ ³ëµå¸¦ Ã£±â À§ÇØ ÇöÀç ³ëµåµéÀÇ ÀÌ¿ô ³ëµå¸¦ Ã£À½
+        // ë‹¤ìŒ ë ˆë²¨ì˜ ë…¸ë“œë¥¼ ì°¾ê¸° ìœ„í•´ í˜„ì¬ ë…¸ë“œë“¤ì˜ ì´ì›ƒ ë…¸ë“œë¥¼ ì°¾ìŒ
         for (ADMSLocationBase* CurrentNode : CurrentNodes)
         {
             for (ADMSLocationBase* NextNode : CurrentNode->ConnectingLocations)
             {
-                // ÀÌ¹Ì ¹æ¹®ÇÑ ³ëµåÀÎ °æ¿ì ÆĞ½º
+                // ì´ë¯¸ ë°©ë¬¸í•œ ë…¸ë“œì¸ ê²½ìš° íŒ¨ìŠ¤
                 if (VisitedNodes.Contains(NextNode))
                 {
                     continue;
                 }
 
-                // Å¸°Ù ³ëµå¸¦ Ã£Àº °æ¿ì °Å¸® ¹İÈ¯
-                if (NextNode == TargetLoc)
-                {
+                // íƒ€ê²Ÿ ë…¸ë“œë¥¼ ì°¾ì€ ê²½ìš° ê±°ë¦¬ ë°˜í™˜
+                if (NextNode == TargetLoc) {
                     return Distance + 1;
                 }
 
-                // ÀÌ¿ô ³ëµå¸¦ ´ÙÀ½ ·¹º§ ³ëµå ¸®½ºÆ®¿¡ Ãß°¡
+                // ì´ì›ƒ ë…¸ë“œë¥¼ ë‹¤ìŒ ë ˆë²¨ ë…¸ë“œ ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
                 NextNodes.AddUnique(NextNode);
             }
         }
 
-        // ´ÙÀ½ ·¹º§ ³ëµå ¸®½ºÆ®¸¦ ÇöÀç ³ëµå ¸®½ºÆ®·Î º¯°æ
+        // ë‹¤ìŒ ë ˆë²¨ ë…¸ë“œ ë¦¬ìŠ¤íŠ¸ë¥¼ í˜„ì¬ ë…¸ë“œ ë¦¬ìŠ¤íŠ¸ë¡œ ë³€ê²½
         CurrentNodes = NextNodes;
         NextNodes.Empty();
 
-        // °Å¸® 1 Áõ°¡
+        // ê±°ë¦¬ 1 ì¦ê°€
         Distance++;
     }
 
-    // Å¸°Ù ³ëµå¸¦ Ã£Áö ¸øÇÑ °æ¿ì ¹«ÇÑ´ë ¹İÈ¯
+    // íƒ€ê²Ÿ ë…¸ë“œë¥¼ ì°¾ì§€ ëª»í•œ ê²½ìš° ë¬´í•œëŒ€ ë°˜í™˜
     return TNumericLimits<int>::Max();
 }
 

@@ -58,7 +58,7 @@ protected:
 	 * Player's default card containers list and intancing class.
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<FName, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
+	TMap<FGameplayTag, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
 	/**
 	 * Attribute component.
@@ -152,7 +152,7 @@ public:
 	 * Search for named card container from CardManagerComponent.
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSCardContainerComponent* SearchContainer(const FName& ContainerName);
+	UDMSCardContainerComponent* SearchContainer(const FGameplayTag& ContainerName);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnLoadSaveGame(UDMSSaveGame* LoadedItem);

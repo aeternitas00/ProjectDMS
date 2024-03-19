@@ -24,6 +24,7 @@
 class UDMSAttribute;
 class UDMSEffectOption;
 class UDMSSequenceStep;
+class UDMSSequenceStepDefinition;
 class UDMSDecisionWidget;
 class UDMSDataObjectSet;
 class UDMSSequence;
@@ -146,14 +147,16 @@ public:
 	/**
 	 * It returns a container that consolidates all the tags associated with the node like EffectDefinition's one (e.g., tags for the target attribute in ED_ModAtt). 
 	 */
-	FGameplayTagContainer GenerateTagContainer();
+	UFUNCTION(BlueprintNativeEvent)
+	FGameplayTagContainer GenerateTagContainer(UDMSSequence* CurrentSequence);
+	virtual FGameplayTagContainer GenerateTagContainer_Implementation(UDMSSequence* CurrentSequence);
 
 	/**
 	 * Execute param tag query to generated node tag container.
 	 * @param	EffectTagQuery				Executing tag query
 	 * @return	Query result.
 	 */
-	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
+	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence = nullptr);
 
 //=================== Main Effect ===================//
 //== TODO :: Migrate to ApplyStep ==//
@@ -163,27 +166,27 @@ public:
 	/**
 	 * Effect's activatable timing.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "!bIgnoreNotify", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Trigger Conditions" ,EditCondition = "!bIgnoreNotify", EditConditionHides))
 	TObjectPtr<UDMSConditionCombiner> Conditions;
 
 	/**
 	 * Effect's default attributes.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Active Effect's Default Attributes"))
 	TArray<FDMSAttributeDefinition> EffectAttributes;
 
 	/**
 	 * Has a choice about triggering the effect ? 
 	 * true : Forced trigger when meet the conditions. / false : Can choose Y / N of trigger.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "!bIgnoreNotify", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Is forced trigger", EditCondition = "!bIgnoreNotify", EditConditionHides))
 	bool bForced;
 
 	/**
 	 * This Effect doesn't receive notifies. 
 	 * It will not be activated except through other 'Activate Effect' effect. 
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Is able to trigger"))
 	bool bIgnoreNotify;
 
 	/**
@@ -205,20 +208,14 @@ public:
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
 	 * The EffectNode uses this target generator to set the target of sequence by itself.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Main target searcher"))
 	TObjectPtr<UDMSTargetGenerator> TargetGenerator;
 
 	/**
 	 * Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Apply target searcher"))
 	TObjectPtr<UDMSTargetGenerator> ApplyTargetGenerator;
-
-	/**
-	 * 
-	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "TargetGenerator||ApplyTargetGenerator", EditConditionHides))
-	//bool bLazyTargetting;
 
 	/**
 	 * Use this when effect has to set targets with runtime data ( Sequence ).
@@ -260,6 +257,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TArray<TObjectPtr<UDMSSequenceStep>> StepRequirements;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TSet<TObjectPtr<UDMSSequenceStepDefinition>> StepClassRequirements;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	TArray<FGameplayTag> ProgressOrder;
 };
 
 /** 
@@ -354,6 +356,6 @@ public:
 	 * @param	EffectTagQuery				Executing tag query
 	 * @return	Query result.
 	 */
-	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery);
+	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence = nullptr);
 };
 

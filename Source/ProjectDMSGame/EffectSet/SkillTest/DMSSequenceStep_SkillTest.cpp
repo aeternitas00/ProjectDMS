@@ -110,8 +110,8 @@ void UDMSSequenceStep_SkillTest::OnSkillTestFailed_Implementation()
 
 inline bool UDMSSequenceStep_SkillTest::IsTestByEachApplyTarget() const { return SkillTestData.TestByEachApplyTarget && OwnerSequence->IsTargetted(); }
 
-inline FGameplayTag UDMSSequenceStep_SkillTest::GetStepTag_Implementation() const {
-	return SkillTestData.IsCommittable ? TAG_DMS_Step_SkillTest_Committable : TAG_DMS_Step_SkillTest; 
+inline FGameplayTagContainer UDMSSequenceStep_SkillTest::GetStepTag_Implementation() const {
+	return SkillTestData.IsCommittable ? FGameplayTagContainer(TAG_DMS_Step_SkillTest_Committable) : FGameplayTagContainer(TAG_DMS_Step_SkillTest); 
 }
 
 void UDMSSequenceStep_SkillTest::OnAfter_Implementation()

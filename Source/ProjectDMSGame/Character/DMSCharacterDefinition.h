@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Character)
 	FText CharacterName;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
+	FGameplayTagContainer DefaultCharacterTraits;
+
 	/**
 	 * Flavor text of character.
 	 */

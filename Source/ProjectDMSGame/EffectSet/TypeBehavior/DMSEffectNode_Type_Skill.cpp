@@ -32,7 +32,7 @@ UDMSEffectNode_Type_Skill::UDMSEffectNode_Type_Skill()
 
 	auto scnd = CreateDefaultSubobject<UDMSEffect_MoveCard>("Skill_MovetoDiscardPile");
 
-	scnd->NameDestination=TEXT("DiscardPile");
+	scnd->TagDestination=FGameplayTag::RequestGameplayTag(FName("Field.Vanilla.Discard"));
 
 	EffectDefinitions.Add(scnd);
 }

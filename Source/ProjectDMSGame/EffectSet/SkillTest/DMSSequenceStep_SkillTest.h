@@ -109,7 +109,7 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool IsTestByEachApplyTarget() const;
 
-	virtual FGameplayTag GetStepTag_Implementation() const;
+	virtual FGameplayTagContainer GetStepTag_Implementation() const;
 };
 
 // 변종 테스트의 경우는 상속 받아서 변경하는 것으로 구현하는게 맞을듯.

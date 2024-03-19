@@ -8,18 +8,9 @@
 // Sets default values for this component's properties
 UDMSCardManagerComponent::UDMSCardManagerComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	Containers.Add(NAME_None, CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("NoneContainer")));
-
-	// Now supported ( had to use OnComponentCreated before )
-	//Deck=CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("Deck"));
-	//Hand = CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("Hand"));
-	//PlayArea = CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("PlayArea"));
-	//DiscardPile = CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("DiscardPile"));
-	// ...
+	Containers.Add(FGameplayTag::EmptyTag, CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("NoneContainer")));
 }
 
 
@@ -40,9 +31,9 @@ void UDMSCardManagerComponent::MigrateCard(TArray<ADMSCardBase*> Cards, UDMSCard
 	Dest->Insert(Cards, DestIdx);
 }
 
-void UDMSCardManagerComponent::AddCardtoContainer(TArray<ADMSCardBase*> Cards, const FName& ContainerName)
+void UDMSCardManagerComponent::AddCardtoContainer(TArray<ADMSCardBase*> Cards, const FGameplayTag& ContainerName)
 {
-	if(!Containers.Contains(ContainerName)) Containers[NAME_None]->Insert(Cards,0);
+	if(!Containers.Contains(ContainerName)) Containers[FGameplayTag::EmptyTag]->Insert(Cards,0);
 	else Containers[ContainerName]->Insert(Cards,0);
 }
 
@@ -63,18 +54,18 @@ void UDMSCardManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-UDMSCardContainerComponent* UDMSCardManagerComponent::SearchContainer(const FName& ContainerName)
+UDMSCardContainerComponent* UDMSCardManagerComponent::SearchContainer(const FGameplayTag& ContainerName)
 {
 	return Containers.Contains(ContainerName) ? Containers[ContainerName] : nullptr;
 }
 
-void UDMSCardManagerComponent::ConstructContainer(const FName& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass)
+void UDMSCardManagerComponent::ConstructContainer(const FGameplayTag& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass)
 {
 	if (Containers.Contains(ContainerName)) return;
 
 	//DMS_LOG_SCREEN(TEXT("%s"), *ContainerClass->GetName());
 
-	UDMSCardContainerComponent* NewContainer = NewObject<UDMSCardContainerComponent>(this, ContainerClass, ContainerName);
+	UDMSCardContainerComponent* NewContainer = NewObject<UDMSCardContainerComponent>(this, ContainerClass, ContainerName.GetTagName());
 	
 	Containers.Add(ContainerName, NewContainer);
 	NewContainer->ContainerName = ContainerName;

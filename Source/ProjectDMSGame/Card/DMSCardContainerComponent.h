@@ -69,13 +69,16 @@ public:
 	 * NOTE :: TO TAG?
 	 */
 	UPROPERTY()
-	FName ContainerName;
+	FGameplayTag ContainerName;
 
 	/**
 	 * Wrapper of card array. 
 	 */
 	UPROPERTY()
 	FDMSCardList CardList;
+
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	bool bIsPublicContainer = false;
 
 protected:
 	virtual void BeginPlay() override;
@@ -106,7 +109,7 @@ public:
 	void ShuffleTopNCards(int Num=0);
 
 	UFUNCTION(BlueprintPure,BlueprintCallable)
-	FName GetContainerName() const {return ContainerName; }
+	FGameplayTag GetContainerName() const { return ContainerName; }
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);

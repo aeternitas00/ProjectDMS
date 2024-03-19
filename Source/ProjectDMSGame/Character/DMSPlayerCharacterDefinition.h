@@ -31,6 +31,11 @@ class PROJECTDMSGAME_API UDMSPlayerCharacterDefinition : public UDMSCharacterDef
 	GENERATED_BODY()
 
 public:
+	//Deck restriction.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Character)
+	TArray<FGameplayTagQuery> DefaultDeckRestriction;
+
+
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// TODO :: Asset Management Helper Funcs
 };

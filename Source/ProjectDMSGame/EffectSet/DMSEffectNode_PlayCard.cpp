@@ -23,7 +23,7 @@ UDMSEffectNode_PlayCard::UDMSEffectNode_PlayCard():UDMSEffectNode()
 	auto ChildWrapper = CreateDefaultSubobject<UDMSEffectNodeWrapper_Manual>("ChildWrapper");
 	auto MoveCardNode = CreateDefaultSubobject<UDMSEffectNode>("MoveCardNode");
 	auto MoveCardEffect = CreateDefaultSubobject<UDMSEffect_MoveCard>("MoveCardEffect");
-	MoveCardEffect->NameDestination = TEXT("PlayArea");
+	MoveCardEffect->TagDestination = FGameplayTag::RequestGameplayTag("Field.Vanilla.PlayArea");
 
 	MoveCardNode->bForced = true;
 	MoveCardNode->bIsChainableEffect = false;

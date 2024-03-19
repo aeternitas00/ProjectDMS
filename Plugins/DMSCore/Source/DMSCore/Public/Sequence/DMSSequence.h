@@ -23,6 +23,7 @@
 
 
 class UDMSSequenceStep;
+class UDMSSequenceStepDefinition;
 class ADMSActiveEffect;
 class UDMSDataObjectSet;
 class UDMSEffectorInterface;
@@ -44,16 +45,27 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceInitiatedDynamic);
 DECLARE_DELEGATE_OneParam(FOnSequenceFinished_Signature, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSequenceFinished, bool);
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FProgressExecutor_Signature, UDMSSequenceStep*, InstancedStep);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnProgressFinished, bool, Succeeded);
+
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Succeeded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succeeded);
 
-//DECLARE_DELEGATE_OneParam(FOnStepFinished_Signature, bool);
-//DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
-//
-//DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStepFinishedDynamic_Signature, bool, Succeeded);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStepFinishedDynamic, bool, Succeeded);
+USTRUCT(BlueprintType)
+struct FProgressExecutor
+{
+	GENERATED_BODY()
 
+	FProgressExecutor(){}
+	FProgressExecutor(const FProgressExecutor_Signature& iExecutor):ExecutorDelegate(iExecutor){};
+	FProgressExecutor(UDMSSequenceStepDefinition* Definition,const FName& FunctionName){ExecutorDelegate.BindUFunction(Definition,FunctionName);}
 
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	FProgressExecutor_Signature ExecutorDelegate;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TObjectPtr<UDMSSequenceStep> ExecutingStep;
+};
 /** 
  * 	========================================
  *
@@ -251,18 +263,35 @@ public:
 	/**
 	 * Reference of CurrentStep.
 	 */
+	// DEPRECATED
+	UPROPERTY()
 	TObjectPtr<UDMSSequenceStep> CurrentStep;
 
 	/**
 	 * Instancing & initiate steps with effect node.
 	 * @param	StepClasses				Step classes to instantiate & initialize.
 	 */
+	// DEPRECATED
 	void InitializeSteps(const TArray<TObjectPtr<UDMSSequenceStep>>& StepClasses);
+
+	/**
+	* Instancing & initiate steps with effect node.
+	* @param	StepClasses				Step classes to instantiate & initialize.
+	*/
+	void InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions,const TArray<FGameplayTag>& ProgressOrder);
 
 	/**
 	 * Run registered steps synchronously.
 	 */
+	// DEPRECATED
 	void RunStepQueue();
+
+	void RunStepProgressQueue();
+
+	void ExecuteNextProgress();
+
+	UFUNCTION()
+	void ProgressEnd(bool Succeeded);
 
 	/**
 	 * Executed when step queue completed.
@@ -274,21 +303,24 @@ protected:
 	/**
 	 * Store instanced steps.
 	 */
+	UPROPERTY()
 	TArray<TObjectPtr<UDMSSequenceStep>> InstancedSteps;
-	
+
+private:
+	/**
+	 * 
+	 */
+	TArray<FProgressExecutor> ProgressExecutors;
+
+	/**
+	 * 
+	 */
+	int CurrentProgressIndex;
+
+public:
 	friend class UDMSSequenceStep;
 	friend class UDMSSeqManager;
 };
-//
-//
-//template<typename FuncFinished, typename FuncCanceled >
-//void UDMSSequence::RunWidgetQueue(FuncFinished&& iOnSelectorFinished, FuncCanceled&& iOnSelectorCanceled)
-//{
-//	SelectorQueue.RunSelectors(
-//		std::forward<FuncFinished&&>(iOnSelectorFinished),
-//		std::forward<FuncCanceled&&>(iOnSelectorCanceled)
-//	);
-//}
 
 template<typename FuncInitiated>
 void UDMSSequence::AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated)

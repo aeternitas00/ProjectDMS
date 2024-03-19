@@ -26,7 +26,7 @@ void UDMSSequenceStep_Apply::OnStepInitiated()
 	UDMSSequenceStep::OnStepInitiated();
 }
 
-inline FGameplayTag UDMSSequenceStep_Apply::GetStepTag_Implementation() const {return TAG_DMS_Step_Apply;}
+inline FGameplayTagContainer UDMSSequenceStep_Apply::GetStepTag_Implementation() const {return FGameplayTagContainer(TAG_DMS_Step_Apply);}
 
 void UDMSSequenceStep_Apply::OnBefore_Implementation()
 {
@@ -132,4 +132,48 @@ void UDMSSequenceStep_Apply::OnAfter_Implementation()
 		//Complete this step.
 		ProgressComplete();
 	}
+}
+
+UDMSSequenceStepDefinition_Apply::UDMSSequenceStepDefinition_Apply()
+{
+}
+
+void UDMSSequenceStepDefinition_Apply::Progress_Before(UDMSSequenceStep* InstancedStep)
+{
+}
+
+void UDMSSequenceStepDefinition_Apply::Progress_During(UDMSSequenceStep* InstancedStep)
+{
+}
+
+void UDMSSequenceStepDefinition_Apply::Progress_After(UDMSSequenceStep* InstancedStep)
+{
+}
+
+FGameplayTagContainer UDMSSequenceStepDefinition_Apply::GetStepTag_Implementation() const
+{
+	return FGameplayTagContainer(TAG_DMS_Step_Apply);
+}
+
+bool UDMSSequenceStepDefinition_Apply::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
+{
+	if(ProgressTag.MatchesTagExact(TAG_DMS_Step_Apply)){
+		FProgressExecutor_Signature B,D,A;
+		B.BindDynamic(this,&UDMSSequenceStepDefinition_Apply::Progress_Before);
+		D.BindDynamic(this,&UDMSSequenceStepDefinition_Apply::Progress_During);
+		A.BindDynamic(this,&UDMSSequenceStepDefinition_Apply::Progress_After);
+		OutExecutor.Append({B,D,A});	
+		return true;
+	}
+	else if(ProgressTag.MatchesTag(TAG_DMS_Step_Apply)){
+		// Alt :: Using native defined tag 
+		TArray<FString> Words;	ProgressTag.ToString().ParseIntoArray(Words,TEXT("."));
+		FName FunctionName(TEXT("Progress_%s",*Words.Last()));
+
+		if ( FindFunction(FunctionName) == nullptr ) return false;
+
+		OutExecutor.Add({this,FunctionName});		
+	}
+
+	return false;
 }

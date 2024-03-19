@@ -46,7 +46,7 @@ public:
 	void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
 
 	// Implementations
-	virtual FGameplayTag GetStepTag_Implementation() const;
+	virtual FGameplayTagContainer GetStepTag_Implementation() const;
 
 	virtual void OnBefore_Implementation() override;
 	virtual void OnDuring_Implementation() override;
@@ -66,3 +66,50 @@ void UDMSSequenceStep_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetO
 		}
 	);
 }
+
+
+UCLASS()
+class DMSCORE_API UDMSSequenceStepDefinition_Decision : public UDMSSequenceStepDefinition
+{
+	GENERATED_BODY()
+
+public:
+	UDMSSequenceStepDefinition_Decision();
+
+	/**
+	* Target generator for who will handle this step.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Decision)
+	TObjectPtr<UDMSTargetGenerator> DecisionMaker;
+
+	/**
+	* Definitions regarding what to select and how it should be processed.
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
+	TArray<FDMSDecisionDefinition> DecisionDefinitions;
+
+	UFUNCTION()
+	void Progress_Decision(UDMSSequenceStep* InstancedStep);
+
+	template<typename FuncSucceeded>
+	void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
+
+	// Implementations
+	virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
+
+};
+
+template<typename FuncSucceeded>
+void UDMSSequenceStepDefinition_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
+{
+	WidgetOwner->RunWidgetQueue(		
+		Succeeded,
+		[=](UDMSSequence* pSequence) {
+			// Decision canceled
+			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
+			ProgressComplete(false);
+		}
+	);
+}
+
