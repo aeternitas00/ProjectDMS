@@ -16,9 +16,9 @@
 
 
 
-UDMSSeqManager::UDMSSeqManager() : /*bUsingSteps(false),*/ RootSequence(nullptr), CurrentSequence(nullptr)
+UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr), CurrentSequence(nullptr)
 {
-
+	
 }
 
 
@@ -32,6 +32,10 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	UDMSSequence* ParentSequence
 )
 {
+	if( !IsValid(EffectNode) || !IsValid(SourceObject) || !IsValid(SourcePlayer) ){ 
+		DMS_LOG_SIMPLE(TEXT("==== Request Create Sequence Failed [Essential params not valid] ===="));
+		return nullptr;
+	}
 	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
 	//UDMSEffectHandler* EH = GS->GetEffectHandler();
 	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);	check(EH);
@@ -48,7 +52,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->SetTarget(Targets);
 	
 	// Test Feature
-	Sequence->InitializeSteps(EffectNode->StepRequirements);
+	//Sequence->InitializeSteps(EffectNode->StepRequirements);
 	Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
 
 	// Add new seq to seq tree.
@@ -57,8 +61,7 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 			RootSequence = Sequence;
 
 			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
-			RootSequence->OnSequenceFinished.AddLambda([this](bool){OnSequenceTreeCompleted();});
-			RootSequence->OnSequenceFinished.AddLambda([this](bool){CleanupSequenceTree();});
+			RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
 		}
 		else if (CurrentSequence != nullptr)
 			CurrentSequence->AttachChildSequence(Sequence);
@@ -102,6 +105,9 @@ void UDMSSeqManager::RemoveSequence_Implementation(UDMSSequence* Sequence)
 
 void UDMSSeqManager::RunSequence_Implementation(UDMSSequence* iSeq)
 {
+	if(!IsValid(iSeq)){
+		DMS_LOG_SIMPLE(TEXT("==== RUN SEQUENCE FAILED [iSeq not vaild] ====")); return;
+	}
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
 
 	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
@@ -114,7 +120,8 @@ void UDMSSeqManager::RunSequence_Implementation(UDMSSequence* iSeq)
 	// 미리 시퀀스 타겟을 지정하지 않았고, 타겟 제너레이터까지 없으면 따로 AE를 만들지 않음. 스텝 진행중에 별도로 타겟을 정하는 과정이 없으면 타겟 미지정인 상태로 시퀀스 진행.
 	if(iSeq->OriginalEffectNode->TargetGenerator != nullptr || iSeq->GetTargets().Num() > 0)
 		EH->CreateApplyingActiveEffect(iSeq, iSeq->OriginalEffectNode);
-	CurrentSequence->RunStepQueue();
+	//CurrentSequence->RunStepQueue();
+	CurrentSequence->RunStepProgressQueue();
 }
 
 int UDMSSeqManager::GetDepth(UDMSSequence* iSeq) {
@@ -144,18 +151,19 @@ void UDMSSeqManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void UDMSSeqManager::CompleteSequence_Implementation(UDMSSequence* Sequence, bool Succeeded)
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s : Complete Sequence ===="), *Sequence->GetName());
+	if(!IsValid(Sequence)){DMS_LOG_SIMPLE(TEXT("==== Complete Sequence failed [Sequence is not valid] ===="));}
 
-	// 이렇게 분기 안걸어도 되는데 혹시 몰라서 일단.
+	DMS_LOG_SIMPLE(TEXT("==== %s : SM -> Complete Sequence ===="), *Sequence->GetName());
+
 	if (CurrentSequence == RootSequence) {
 		CurrentSequence = nullptr;
 		RootSequence = nullptr;
 	}
-	else
+	else{
 		CurrentSequence = Sequence->ParentSequence;
-
+		CurrentSequence->ChildSequence=nullptr;
+	}
 	Sequence->OnSequenceFinish(Succeeded);
-
 }
 
 
@@ -164,7 +172,9 @@ void UDMSSeqManager::CleanupSequenceTree()
 {
 	//...
 	RootSequence = nullptr;
+	
 	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this)->CleanupNonPersistent();
+	//UDMSCoreFunctionLibrary::GetDMSNotifyManager(this)->CleanupNonPersistent();
 	// Else will be GCed.
 	//...
 }

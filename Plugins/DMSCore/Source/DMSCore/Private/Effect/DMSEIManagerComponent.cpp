@@ -49,7 +49,8 @@ bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEff
 {
 	bool rv=false;
 	for (auto OwnEI : OwnEffectInstances) {
-		rv = rv || OwnEI->ReceiveNotify(ResponsedObjects, iChainable, Seq, SourceTweak==nullptr ? GetOwner() : SourceTweak);
+		//NOTE :: beware of order
+		rv = OwnEI->ReceiveNotify(ResponsedObjects, iChainable, Seq, SourceTweak==nullptr ? GetOwner() : SourceTweak) || rv;
 	}
 	return rv;
 }

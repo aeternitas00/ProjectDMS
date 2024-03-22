@@ -52,19 +52,22 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Su
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succeeded);
 
 USTRUCT(BlueprintType)
-struct FProgressExecutor
+struct DMSCORE_API FProgressExecutor
 {
 	GENERATED_BODY()
 
 	FProgressExecutor(){}
-	FProgressExecutor(const FProgressExecutor_Signature& iExecutor):ExecutorDelegate(iExecutor){};
-	FProgressExecutor(UDMSSequenceStepDefinition* Definition,const FName& FunctionName){ExecutorDelegate.BindUFunction(Definition,FunctionName);}
+	FProgressExecutor(const FProgressExecutor_Signature& iExecutor,const FGameplayTag& ProgressTag):ExecutorDelegate(iExecutor),ExactTag(ProgressTag){};
+	FProgressExecutor(UDMSSequenceStepDefinition* Definition,const FGameplayTag& ProgressTag, const FName& FunctionName);
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	FProgressExecutor_Signature ExecutorDelegate;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	TObjectPtr<UDMSSequenceStep> ExecutingStep;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	FGameplayTag ExactTag;
 };
 /** 
  * 	========================================
@@ -123,9 +126,13 @@ public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	//EDMSTimingFlag Progress;
 
+	// DEPRECATED
 	UFUNCTION(BlueprintCallable)
 	EDMSTimingFlag GetCurrentProgress();
 	
+	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetCurrentProgressTag();
+
 	//UFUNCTION(BlueprintCallable)
 	void SetTargetted(const bool& iTargetted) {bTargeted=iTargetted;}
 
@@ -241,6 +248,7 @@ public:
 protected:
 	FSimpleMulticastDelegate OnSequenceInitiated;
 	FOnSequenceFinished OnSequenceFinished;
+	FOnSequenceFinished PreSequenceFinished;
 
 	FOnSequenceInitiatedDynamic OnSequenceInitiated_Dynamic;
 	FOnSequenceFinishedDynamic OnSequenceFinishedDynamic;
@@ -248,6 +256,9 @@ protected:
 public:
 	template<typename FuncInitiated>
 	void AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated);
+
+	template<typename FuncFinished>
+	void AddToPreSequenceFinished_Native(FuncFinished&& iOnSequenceFinished);
 
 	template<typename FuncFinished>
 	void AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished);
@@ -263,7 +274,6 @@ public:
 	/**
 	 * Reference of CurrentStep.
 	 */
-	// DEPRECATED
 	UPROPERTY()
 	TObjectPtr<UDMSSequenceStep> CurrentStep;
 
@@ -337,5 +347,17 @@ void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFini
 		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
 	}
 	OnSequenceFinished.AddLambda(iOnSequenceFinished);
+
+}
+
+template<typename FuncFinished>
+void UDMSSequence::AddToPreSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO Pre SEQ FINISHIED ===="), *GetName());
+
+	if (PreSequenceFinished.IsBound()) {
+		DMS_LOG_SIMPLE(TEXT("==== %s : Pre SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
+	}
+	PreSequenceFinished.AddLambda(iOnSequenceFinished);
 
 }

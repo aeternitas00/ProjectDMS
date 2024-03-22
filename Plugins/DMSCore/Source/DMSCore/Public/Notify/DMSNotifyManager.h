@@ -27,6 +27,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_Respondent)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_ActivatingEffect)
 
 
+
 // Not using selector form
 UCLASS()
 class DMSCORE_API UDMSNotifyRespondentSelector : public UDMSSelectorBase
@@ -111,16 +112,21 @@ protected:
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	TSubclassOf<UDMSNotifyRespondentSelector> ResponsedObjectSelector;
 public:
-
-	//이거 좀 더 전체순회 없이 하는 방법 있을까?
+	
 	/**
-	 * Broadcast sequence for NotifyObjects.
-	 * @param	NotifyData						Current sequence.
-	 * @param	ResponseCompleted				
+	 * Deprecated
+	 * The form where the notify manager directly receives the context to execute after broadcasting as a parameter and registers it in its container as a delegate caused an error.
 	 */
 	template<typename FuncCompleted >
 	void Broadcast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted);
 
+	//이거 좀 더 전체순회 없이 하는 방법 있을까?
+	/**
+	* Broadcast sequence for NotifyObjects.
+	* @param	NotifyData						Current sequence.
+	* @param	ResponseCompleted				
+	*/
+	void Broadcast_New(UDMSSequence* NotifyData, FSimpleDelegate& ResponseCompleted);
 	/**
 	 * Broadcast sequence for NotifyObjects.
 	 * @param	Object							Register target.
@@ -134,7 +140,7 @@ public:
 	 * @param	CurrentSequence					Current sequence.
 	 * @param	ResponsedObjects				Out Responsed object.
 	 */
-	void CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects);
+	void CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects,FSimpleDelegate& ResponseCompleted);
 	
 	/**
 	 * Broadcast sequence for NotifyObjects.
@@ -156,15 +162,37 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	TArray<TScriptInterface<IDMSEffectorInterface>> GetNotifyObjects(){ return NotifyObjects; }
 
-	DECLARE_DELEGATE(FOnResponseCompleted);
+//	DECLARE_DELEGATE(FOnResponseCompleted);
 
-	TMap<UDMSSequence*, FOnResponseCompleted> OnResponseCompleted; 
+	struct FRespCompKey
+	{
+		FRespCompKey(){}
+		FRespCompKey(UDMSSequence* Seq):OriginalSequence(Seq),ProgressTag(Seq->GetCurrentProgressTag()){}
+		//FRespCompKey(UDMSSequence* Seq):OriginalSequence(Seq),ProgressTag(Seq->GetCurrentProgress()){}
+
+		TObjectPtr<UDMSSequence> OriginalSequence;
+		FGameplayTag ProgressTag;
+		//EDMSTimingFlag ProgressTag;
+
+		friend uint32 GetTypeHash(const FRespCompKey& Key)	{
+			return HashCombine(GetTypeHash(Key.OriginalSequence), GetTypeHash(Key.ProgressTag));
+		}
+
+		bool operator==(const FRespCompKey& Other) const 	{
+			return OriginalSequence == Other.OriginalSequence && ProgressTag == Other.ProgressTag;
+		}
+	};
+	TMap<FRespCompKey, FSimpleDelegate> OnResponseCompleted; 
+
+	void CleanupPrevSeqTree();
 };
 
 template<typename FuncCompleted>
 void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& ResponseCompleted)
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : BROADCASTING  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress()));
+	DMS_LOG_SIMPLE(TEXT("==== %s : BROADCASTING  ===="), *NotifyData->GetName());
+	FString TimingStr = NotifyData->GetCurrentProgressTag().ToString();
+	//FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress());
 
 	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled) {
 		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
@@ -206,30 +234,37 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 	if (ForcedEIMap[NotifyData].ForcedObjects.Num() != 0)
 	{
 		// Resolve forced effect
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATING FORCED EFFECT START  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress()));
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATING FORCED EFFECT START  ===="), *NotifyData->GetName(), *TimingStr);
 
 		ForcedEIMap[NotifyData].NonForcedObjects = ResponsedObjects;
 
 		ForcedEIMap[NotifyData].IteratingDelegate.BindLambda([this](UDMSSequence* Sequence) {
 
+			FString InTimingStr = Sequence->GetCurrentProgressTag().ToString();
+			//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
 			if (ForcedEIMap[Sequence].Count == ForcedEIMap[Sequence].ForcedObjects.Num()) {
-				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
+				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *InTimingStr);
 				ForcedEIMap[Sequence].ClosingDelegate.ExecuteIfBound(Sequence);
 			}
 			else {
-				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
+				DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *InTimingStr);
 
 				// Create Applying AE from Responsed Pesistent AE.
 				auto& CurrentForcedPair = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count];
 				auto NewSeq = CurrentForcedPair.Value->CreateApplyingSequence(CurrentForcedPair.Key, Sequence);
-				NewSeq->AddToOnSequenceFinished_Native([this, Sequence](bool) {ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence); });
+				NewSeq->AddToOnSequenceFinished_Native([this, Sequence](bool) {
+					ForcedEIMap[Sequence].IteratingDelegate.ExecuteIfBound(Sequence);
+					DMS_LOG_SIMPLE(TEXT("==== %s : after forced EI lambda ===="),*Sequence->GetName());
+				});
 				ForcedEIMap[Sequence].Count++;
 				UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
 			}
 		});
 
 		ForcedEIMap[NotifyData].ClosingDelegate.BindLambda([this](UDMSSequence* Sequence) {
-			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress()));
+			FString InTimingStr = Sequence->GetCurrentProgressTag().ToString();
+			//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
+			DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *InTimingStr);
 			// Cleanup Forced queue.
 			auto temp = std::move(ForcedEIMap[Sequence]);
 			ForcedEIMap.Remove(Sequence);
@@ -242,7 +277,7 @@ void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, FuncCompleted&& Resp
 	else 
 	{
 		// No remaining forced effect
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress()));
+		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *TimingStr);
 
 		ForcedEIMap.Remove(NotifyData);
 

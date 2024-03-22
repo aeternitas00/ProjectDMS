@@ -40,6 +40,15 @@ public:
 	virtual void SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI);
 };
 
+// Update target of current sequence.
+UCLASS()
+class DMSCORE_API UDMSSelectorBehaviorDefinition_UpdateTarget: public UDMSSelectorBehaviorDefinition
+{
+	GENERATED_BODY()
+public:
+	virtual void SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI);
+};
+
 
 
 

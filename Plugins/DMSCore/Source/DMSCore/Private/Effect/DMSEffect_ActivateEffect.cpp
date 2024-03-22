@@ -49,15 +49,17 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 	for ( int i=0; i<Sequences.Num() ; i++ ) 
 	{
 		if ( i < Sequences.Num()-1){
-			Sequences[i]->AddToOnSequenceFinished_Native([=,NextIdx = i+1, NextSequence = Sequences[i+1]](bool ChildSeqSucceeded) {
+			Sequences[i]->AddToPreSequenceFinished_Native([=,NextIdx = i+1, NextSequence = Sequences[i+1]](bool ChildSeqSucceeded) {
 				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN NEXT EFFECT [%d] ===="),*SourceSequence->GetName(),NextIdx);
 				SeqMan->RunSequence(NextSequence);
+				DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect run sequence lambda ends ===="),*SourceSequence->GetName());
 			});
 		}
 		else {
-			Sequences[i]->AddToOnSequenceFinished_Native([=](bool ChildSeqSucceeded) {
+			Sequences[i]->AddToPreSequenceFinished_Native([=](bool ChildSeqSucceeded) {
 				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
 				OnWorkCompleted.ExecuteIfBound(ChildSeqSucceeded);
+				DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect completed lambda ends ===="),*SourceSequence->GetName());
 			});
 		}
 	}

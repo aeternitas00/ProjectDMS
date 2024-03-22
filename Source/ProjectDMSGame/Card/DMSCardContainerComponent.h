@@ -41,7 +41,7 @@ struct FDMSCardList //; public FFastArraySerializer
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly)
 	TArray<ADMSCardBase*> Cards; // or Actor?
 
 	// Etc..
@@ -68,13 +68,13 @@ public:
 	 * Name of container 
 	 * NOTE :: TO TAG?
 	 */
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly)
 	FGameplayTag ContainerName;
 
 	/**
 	 * Wrapper of card array. 
 	 */
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly)
 	FDMSCardList CardList;
 
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)

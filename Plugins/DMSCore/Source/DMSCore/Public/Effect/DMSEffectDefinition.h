@@ -256,7 +256,8 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TArray<TObjectPtr<UDMSSequenceStep>> StepRequirements;
-
+	
+	// NOTE :: EDITOR EXTENSION?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TSet<TObjectPtr<UDMSSequenceStepDefinition>> StepClassRequirements;
 

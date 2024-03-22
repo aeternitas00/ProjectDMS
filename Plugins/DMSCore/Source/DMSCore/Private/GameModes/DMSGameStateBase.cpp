@@ -13,6 +13,10 @@
 
 ADMSGameStateBase::ADMSGameStateBase(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = true;
+	PrimaryActorTick.TickGroup = TG_PostUpdateWork;
+
 	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
 	EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 	EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("EffectHandler"));	
@@ -25,6 +29,17 @@ ADMSGameStateBase::ADMSGameStateBase(const FObjectInitializer& Initializer) /*: 
 	EffectHandler->SetIsReplicated(true);
 	NotifyManager->SetIsReplicated(true);
 	SelectorManager->SetIsReplicated(true);
+}
+
+void ADMSGameStateBase::Tick(float Deltatime)
+{
+	if(bNeedToCleanup){
+		bNeedToCleanup = false;
+		EffectHandler->CleanupNonPersistent();
+		NotifyManager->CleanupPrevSeqTree();
+	}
+
+	Super::Tick(Deltatime);
 }
 
 void ADMSGameStateBase::PreInitializeComponents()

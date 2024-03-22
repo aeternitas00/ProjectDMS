@@ -43,13 +43,13 @@ void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, ADMS
 	if (Container_Destination == nullptr)
 	{
 		/*No proper container.. continue; */ 
-		//DMS_LOG_SCREEN(TEXT("%s : Move Card Failed"), *iEI->GetName());
+		DMS_LOG_SCREEN(TEXT("%s : Move Card Failed"), *iEI->GetName());
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
 	}
 	else 
 	{
-		//DMS_LOG_SCREEN(TEXT("%s : Move Card to %s"), *iEI->GetName(), *Container_Destination->GetName());
+		DMS_LOG_SCREEN(TEXT("%s : Move Card to %s"), *iEI->GetName(), *Container_Destination->GetName());
 		UDMSCardManagerComponent::MigrateCard(Card, Container_Destination, 0);
 	}
 

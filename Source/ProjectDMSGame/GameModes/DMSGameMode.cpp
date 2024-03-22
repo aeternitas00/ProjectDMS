@@ -109,12 +109,12 @@ void ADMSGameMode::PlayerReady()
 				PS->CharacterRef = SpawnDMSGameActor<ADMSCharacterBase>(CharacterAsset, PlayerID,StartingLocation,FTransform(FVector(- 10, 0, 0)));
 
 			// Spawn cards
-
+			// TODO :: INITIAL SPAWN TO NONE CONTAINER AND DO ADDITIONAL MOVEMENT WITH OTHER METHOD FOLLOWS GAME RULE.
 			for (auto CardData : PS->OriginalCardDatas)
-				SpawnCard(CardData, PlayerID,FGameplayTag::RequestGameplayTag("Field.Vanilla.Deck"));
+				SpawnCard(CardData, PlayerID, DefaultCardSpawnContainer);
 
-			if (PS->SearchContainer(FGameplayTag::RequestGameplayTag("Field.Vanilla.Deck")))
-				PS->SearchContainer(FGameplayTag::RequestGameplayTag("Field.Vanilla.Deck"))->ShuffleTopNCards();
+			if (PS->SearchContainer(DefaultCardSpawnContainer))
+				PS->SearchContainer(DefaultCardSpawnContainer)->ShuffleTopNCards();
 		}
 
 		OnAllPlayerReady();

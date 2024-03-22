@@ -24,9 +24,15 @@ UDMSSequence::UDMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr),bTar
 	// 
 }
 
+// DEP
 EDMSTimingFlag UDMSSequence::GetCurrentProgress() 
 {
 	return CurrentStep->Progress;
+}
+
+FGameplayTag UDMSSequence::GetCurrentProgressTag()
+{
+	return ProgressExecutors[CurrentProgressIndex].ExactTag;
 }
 
 AActor* UDMSSequence::GetSourceObject() const
@@ -50,7 +56,7 @@ bool UDMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
 {
 	bool rv = NewSourcePlayer->Implements<UDMSEffectorInterface>();
 	SourcePlayer= rv ? NewSourcePlayer : nullptr;
-	return false;
+	return rv;
 }
 
 
@@ -118,7 +124,7 @@ void UDMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStep
 	for (auto& ProgressTag : ProgressOrder)	{	
 		for(auto& InstancedStep : InstancedSteps){
 			TArray<FProgressExecutor> tExecutors;
-			if(InstancedStep->StepDefinition->GetProgressOps_Implementation(ProgressTag,tExecutors)) {
+			if(InstancedStep->StepDefinition->GetProgressOps(ProgressTag,tExecutors)) {
 				for (auto& tExec : tExecutors ) tExec.ExecutingStep = InstancedStep;
 				ProgressExecutors.Append(tExecutors); break;
 			}
@@ -129,28 +135,28 @@ void UDMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStep
 void UDMSSequence::ProgressEnd(bool Succeeded)
 {
 	if(!Succeeded){OnStepQueueCompleted(false); return;}
-	if(CurrentProgressIndex==ProgressExecutors.Num()) {OnStepQueueCompleted(true); return;}
-	ExecuteNextProgress();
+	if((CurrentProgressIndex+1)==ProgressExecutors.Num()) {OnStepQueueCompleted(true); return;}
+	CurrentProgressIndex++; ExecuteNextProgress();
 }
 
 void UDMSSequence::RunStepProgressQueue()
 {
-	if (ProgressExecutors.Num()==0) { OnStepQueueCompleted(false); return; }
+	if (ProgressExecutors.Num()==0) { OnStepQueueCompleted(true); return; }
 	ExecuteNextProgress();
 }
 
 void UDMSSequence::ExecuteNextProgress()
 {
 	auto& CurrentExec = ProgressExecutors[CurrentProgressIndex];
+	CurrentStep = CurrentExec.ExecutingStep;
 	CurrentExec.ExecutorDelegate.ExecuteIfBound(CurrentExec.ExecutingStep);
-	CurrentProgressIndex++;
 }
 
 FGameplayTagContainer UDMSSequence::GenerateTagContainer()
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
-	rv.AppendTags(CurrentStep->GetStepTag());
+	if(ProgressExecutors.Num()!=0)	rv.AddTag(GetCurrentProgressTag());
 	return rv;
 }
 
@@ -235,6 +241,11 @@ void UDMSSequence::OnSequenceFinish(bool Succeeded)
 	//temp.Broadcast(Succeeded);
 	//temp_Dynamic.Broadcast(Succeeded);
 	// Cleanup 
+
+	DMS_LOG_SIMPLE(TEXT("==== %s : Broadcast Pre Sequence Finished ===="), *GetName());
+	PreSequenceFinished.Broadcast(Succeeded);
+
+	DMS_LOG_SIMPLE(TEXT("==== %s : Broadcast Sequence Finished ===="), *GetName());
 	OnSequenceFinished.Broadcast(Succeeded);
 	OnSequenceFinishedDynamic.Broadcast(Succeeded);
 	
@@ -272,3 +283,7 @@ void UDMSSequence::OnStepQueueCompleted(bool Succeeded)
 //	return Cast<ADMSGameStateBase>(SourcePlayer)->GetLeaderPlayerController();
 //}
 
+FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) : ExactTag(ProgressTag)
+{
+	ExecutorDelegate.BindUFunction(Definition, FunctionName); 
+}

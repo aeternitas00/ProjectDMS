@@ -39,10 +39,14 @@ public:
 
 protected:
 	// Set replicated in constructor
-	// 직접 생성할 이유는 별로 없고 외부에서 생성하게 될 것. ( DMS PC의 예 ) 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly)
 	TMap<FGameplayTag, TObjectPtr<UDMSCardContainerComponent>> Containers;
 
+	/**
+	* Player's default card containers list and intancing class.
+	*/
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TMap<FGameplayTag, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 public:
 	// Post Init 이후 생성된 카드 컨테이너들에 대해 레플리케이션 실행.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
@@ -62,4 +66,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSCardBase*> GetAllCards();
 
+	virtual void InitializeComponent();
 };

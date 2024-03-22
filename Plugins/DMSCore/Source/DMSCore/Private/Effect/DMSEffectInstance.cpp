@@ -151,6 +151,7 @@ void ADMSActiveEffect::DetachFromOwner()
 
 void ADMSActiveEffect::CleanupWorker(UDMSEffectApplyWorker* Worker)
 {
+	DMS_LOG_C(Warning);
 	ApplyWorkers.Remove(Worker);
 	Worker->MarkAsGarbage();
 }
@@ -215,21 +216,27 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 {
 	if (!PrevSucceeded)
 	{
+		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate ===="),*SourceSequence->GetName());
 		// DISCUSSION :: Stopping immediately when failed is FINE?
 		OwnerInstance->OnApplyComplete();
-		OwnerInstance->CleanupWorker(this);
+		//OwnerInstance->CleanupWorker(this);
 		CompletedDelegate.ExecuteIfBound(SourceSequence, false);
+		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate closed ===="),*SourceSequence->GetName());
 		return;
 	}
 
 	if (CurrentEDIndex == ApplyingEffect->EffectDefinitions.Num()) {
+		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate ===="),*SourceSequence->GetName());
 		// 여기서 AEState를 원상복구 할시 During notify부터 부착된 이펙트들이 다시 노티파이 콜을 받을 수 있는 상태가 되므로 조정이 필요함.
 		OwnerInstance->OnApplyComplete();
 		OwnerInstance->CleanupWorker(this);
 		CompletedDelegate.ExecuteIfBound(SourceSequence, true);
+		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate closed ===="),*SourceSequence->GetName());
 	}
 	else {
 		CurrentDef = ApplyingEffect->EffectDefinitions[CurrentEDIndex++];
+		FString DebugStr = CurrentDef->GetEffectTags().ToString();
+		DMS_LOG_SIMPLE(TEXT("==== %s : ApplyNextEffectDef [%s] ===="),*SourceSequence->GetName(),*DebugStr);
 
 		// ====================== //
 		//    Effect Canceling    //
@@ -256,7 +263,9 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 			// Ignored effect is considered to Succeeded.
 			ApplyNextEffectDef(true);
 		}
+		DMS_LOG_SIMPLE(TEXT("==== %s : ApplyNextEffectDef closed [%s] ===="),*SourceSequence->GetName(),*DebugStr);
 	}
+	
 }
 
 void UDMSEffectApplyWorker::OnEffectOptionCompleted(UDMSEffectOption* CompletedOption)

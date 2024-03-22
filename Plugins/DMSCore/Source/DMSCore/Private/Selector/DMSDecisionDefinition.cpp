@@ -3,12 +3,13 @@
 
 #include "Selector/DMSDecisionDefinition.h"
 #include "Effect/DMSEffectInstance.h"
+#include "Effect/DMSEffectHandler.h"
 #include "Sequence/DMSSequence.h"
 #include "Common/DMSTargetGenerator.h"
 #include "Library/DMSDataObjectHelperLibrary.h"
+#include "Library/DMSCoreFunctionLibrary.h"
 
 // 리퀘스트 폼을 제작 
-
 TArray<FDMSSelectorRequestForm> UDMSSelectorRequestGenerator::GenerateRequestForm(UDMSSequence* Sequence, bool SelectForEachEI)
 {
 	TArray<FDMSSelectorRequestForm> Rv;
@@ -119,3 +120,22 @@ void UDMSSelectorBehaviorDefinition_UpdateData::SetupFormDelegates(UDMSSequence*
 	}
 }
 
+void UDMSSelectorBehaviorDefinition_UpdateTarget::SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI)
+{
+	FormArr[0].OnCompletedNative.BindLambda([=](TArray<uint8> IndexArr) {
+			auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(Sequence); check(EH);
+
+			TArray<TScriptInterface<IDMSEffectorInterface>> SelectedTargets;
+			for (auto& i : IndexArr)
+			{
+				UDMSDataObject* TargetObject = FormArr[0].Candidates[i];
+				if ( TargetObject->TypeCheck<UObject*>() ) {
+					TScriptInterface<IDMSEffectorInterface> TargetInf = TargetObject->Get<UObject*>();
+					SelectedTargets.Add(TargetInf);
+				}
+			}
+			Sequence->SetTarget(SelectedTargets);
+			EH->CreateApplyingActiveEffect(Sequence, Sequence->OriginalEffectNode);
+	});
+	
+}

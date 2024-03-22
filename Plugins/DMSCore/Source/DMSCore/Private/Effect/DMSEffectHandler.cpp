@@ -20,6 +20,10 @@
 
 #include "Library/DMSCoreFunctionLibrary.h"
 
+UDMSEffectHandler::UDMSEffectHandler()
+{
+	//ResolveIteratingDelegate.BindUObject(this, &UDMSEffectHandler::ApplyNextEffectInstance);
+}
 
 // Owned effect creating helper
 ADMSActiveEffect* UDMSEffectHandler::CreatePersistentActiveEffect(AActor* SourceObject,AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
@@ -93,24 +97,60 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(UDMSSequ
 	return rv;
 }
 
+/**
+* Resolve param sequence and executed paramed lambda function when resolve completed.
+* @param	Sequence					Resolving sequence.
+* @param	OnResolveCompleted			Lambda executed when resolve completed.
+*/
+void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, const FOnResolveCompleted& OnResolveCompleted)
+{
+	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
-void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence, bool PrevSucceeded)
+	if(Sequence->GetAllEIs().Num() == 0 || !Sequence->IsTargetted()) {
+		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
+		goto ResolveSkipped;
+	}
+	// seperate for logging
+	if(Sequence->SequenceState != EDMSSequenceState::SS_Default) {
+		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : Sequence is canceled or ignored"));
+	ResolveSkipped:
+		OnResolveCompleted.ExecuteIfBound(true);
+		return;
+	}
+	
+	OnResolveCompletedMap.Add(Sequence);
+	OnResolveCompletedMap[Sequence].Count = 0;
+	OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllEIs();
+	OnResolveCompletedMap[Sequence].Iterator.BindLambda([=](UDMSSequence* SourceSequence, bool PrevSucceeded){
+		ApplyNextEffectInstance(SourceSequence,OnResolveCompleted,PrevSucceeded);
+	});
+	ApplyNextEffectInstance(Sequence, OnResolveCompleted, true);
+}
+
+
+void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence,const FOnResolveCompleted& OnResolveCompleted, bool PrevSucceeded)
 {
 	if (!PrevSucceeded)
 	{
 		// DISCUSSION :: Stopping immediately when failed is FINE?
-		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound(false);
+		OnResolveCompleted.ExecuteIfBound(false);
 		return;
 	}
 
 	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->GetAllEIs().Num())
-		OnResolveCompletedMap[SourceSequence].Delegate.ExecuteIfBound(true);
+		OnResolveCompleted.ExecuteIfBound(true);
 	else
-		OnResolveCompletedMap[SourceSequence].Getter.Execute(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].IteratingDelegate);
+		ApplyAEGetter(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].Iterator);
+}
+
+ADMSActiveEffect* UDMSEffectHandler::ApplyAEGetter(UDMSSequence* OwnerSequence)
+{
+	return OnResolveCompletedMap[OwnerSequence].ApplyingEIs[OnResolveCompletedMap[OwnerSequence].Count++];
 }
 
 void UDMSEffectHandler::CleanupNonPersistent()
 {
+	OnResolveCompletedMap.Empty();
 	EIList.RemoveAllSwap([](ADMSActiveEffect* EI) {
 		bool rv = (EI->GetCurrentState() & EDMSAEState::AES_Persistent) != EDMSAEState::AES_Persistent;
 		if (rv){ EI->DetachFromOwner(); EI->Destroy(); }

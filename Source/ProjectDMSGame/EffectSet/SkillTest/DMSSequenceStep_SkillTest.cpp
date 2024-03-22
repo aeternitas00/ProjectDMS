@@ -6,7 +6,6 @@
 #include "Attribute/DMSAttributeComponent.h"
 #include "Library/DMSGameFunctionLibrary.h"
 #include "Player/DMSPlayerController.h"
-#include "Sequence/DMSSequence.h"
 #include "Card/DMSCardDefinition.h"
 #include "Card/DMSCardManagerComponent.h"
 #include "Conditions/DMSConditionObject.h"
@@ -197,11 +196,37 @@ void UDMSSelector_SkillTest::UpdateSkillTestResult()
 
 float UDMSSelector_SkillTest::GetUsableBonus(AActor* Tester)
 {
-	
 	auto Attribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(FGameplayTagContainer(UDMSSequenceStep_SkillTest::SkillBonusTag)));
 	float rv= Attribute ? Attribute->GetValue() : 0.0f;
 	for(auto& UsedBonus : UsedBonusValues)
 		rv-=UsedBonus;
 	
 	return rv;
+}
+
+FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetStepTag_Implementation() const
+{
+	return FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
+}
+
+bool UDMSSequenceStepDefinition_SkillTest::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
+{
+	FGameplayTag BaseTag = FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest");
+	if(ProgressTag.MatchesTagExact(BaseTag)) {
+		for(int i=1;i<=8;i++){
+			FName FunctionName(FString::Printf(TEXT("Progres_ST%d"),i));
+			FGameplayTag ExactTag(FGameplayTag::RequestGameplayTag(*FString::Printf(TEXT("Step.Arkham.SkillTest.ST%d"),i)));
+			OutExecutor.Add(FProgressExecutor(this,ExactTag,FunctionName));
+		}
+		return true;
+	}
+	else if(ProgressTag.MatchesTag(BaseTag)){
+		// Alt :: Using native defined tag 
+		TArray<FString> Words;	ProgressTag.ToString().ParseIntoArray(Words,TEXT("."));
+		FName FunctionName(FString::Printf(TEXT("Progress_%s"), *Words.Last()));
+		if ( FindFunction(FunctionName) == nullptr ) return false;
+
+		OutExecutor.Add(FProgressExecutor(this,ProgressTag,FunctionName));		
+	}
+	return false;
 }

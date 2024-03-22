@@ -48,6 +48,8 @@ public:
 	UFUNCTION()
 	void Progress_After(UDMSSequenceStep* InstancedStep);
 
+	UFUNCTION()
+	void ApplyChildEffect(UDMSSequenceStep* InstancedStep);
 
 	// Implementations
 	virtual FGameplayTagContainer GetStepTag_Implementation() const;

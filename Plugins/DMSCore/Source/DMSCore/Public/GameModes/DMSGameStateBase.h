@@ -27,6 +27,7 @@ class DMSCORE_API ADMSGameStateBase : public AGameStateBase, public IDMSEffector
 	GENERATED_BODY()
 
 protected:
+	bool bNeedToCleanup;
 	/**
 	 * Manager objects / components.
 	 */
@@ -85,6 +86,7 @@ public:
 public:
 	ADMSGameStateBase(const FObjectInitializer& Initializer);
 	
+	virtual void Tick(float Deltatime) override;
 	virtual void PreInitializeComponents() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
@@ -95,6 +97,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object);
 
+	void NotifyNeedToCleanup(){	bNeedToCleanup = true; }
 	// Interface implements
 	virtual AActor* GetOwningPlayer() override { return this; }
 	virtual int32 GetID() override { /* temp */return -1; }

@@ -36,7 +36,7 @@ public:
 	/**
 	 * Storing attribute instances
 	 */
-	UPROPERTY(BlueprintReadOnly, Replicated)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Replicated)
 	TArray<TObjectPtr<UDMSAttribute>> Attributes; // Resources
 	
 	/**

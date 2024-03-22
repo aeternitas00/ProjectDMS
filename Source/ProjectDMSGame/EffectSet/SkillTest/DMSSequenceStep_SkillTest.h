@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ProjectDMS.h"
 #include "Selector/DMSConfirmWidgetBase.h"
 #include "Selector/DMSSelectorManager.h"
 #include "Sequence/DMSSequenceStep.h"
@@ -151,4 +150,64 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetUsableBonus(AActor* Tester);
+};
+
+
+
+/**
+* Skill test is for one tester : one test target 
+*/
+UCLASS()
+class PROJECTDMSGAME_API UDMSSequenceStepDefinition_SkillTest : public UDMSSequenceStepDefinition
+{
+	GENERATED_BODY()
+
+protected: 
+
+public: 
+	UDMSSequenceStepDefinition_SkillTest(){}
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FDMSSkillTestData SkillTestData;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
+
+	void SetupTargets(TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator){}
+
+	UFUNCTION()
+	void Progress_ST1(UDMSSequenceStep* InstancedStep){}
+	UFUNCTION()
+	void Progress_ST2(UDMSSequenceStep* InstancedStep){}
+	UFUNCTION()
+	void Progress_ST3(UDMSSequenceStep* InstancedStep){}
+	UFUNCTION()
+	void Progress_ST4(UDMSSequenceStep* InstancedStep){}
+	UFUNCTION()
+	void Progress_ST5(UDMSSequenceStep* InstancedStep){}
+	UFUNCTION()
+	void Progress_ST6(UDMSSequenceStep* InstancedStep){}
+	UFUNCTION()
+	void Progress_ST7(UDMSSequenceStep* InstancedStep){}
+	UFUNCTION()
+	void Progress_ST8(UDMSSequenceStep* InstancedStep){}
+
+	//UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	//float CalculateSkillTestResult(AActor* Tester, AActor* TestTarget,float BonusValue);
+	//virtual float CalculateSkillTestResult_Implementation(AActor* Tester, AActor* TestTarget,float BonusValue);
+	////...
+	//// Branch for failed Skill test?
+	//UFUNCTION(BlueprintNativeEvent)
+	//void OnSkillTestCompleted();
+	//virtual void OnSkillTestCompleted_Implementation();
+
+	//UFUNCTION(BlueprintNativeEvent)
+	//void OnSkillTestFailed();
+	//virtual void OnSkillTestFailed_Implementation();
+
+	//UFUNCTION(BlueprintCallable,BlueprintPure)
+	//bool IsTestByEachApplyTarget() const;
+
+	virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };

@@ -25,6 +25,18 @@ class UDMSDataObjectSet;
 class IDMSEffectorInterface;
 
 /**
+* Structure for implementing chained delegates to ensure synchronization in the Resolve step.
+*/
+USTRUCT()
+struct FResolveDelegateCounter {
+	GENERATED_BODY()
+	
+	uint8 Count=0;
+	FResolveIteratingDelegate Iterator;
+	TArray<ADMSActiveEffect*> ApplyingEIs;
+};
+
+/**
  *	working...
  */
 UCLASS(BlueprintType, Blueprintable/*ClassGroup = (Effect)*/)
@@ -41,38 +53,26 @@ protected:
 	UPROPERTY()
 	TArray<ADMSActiveEffect*> EIList;
 
-	DECLARE_DELEGATE_RetVal_OneParam(ADMSActiveEffect*, FEIGetter, UDMSSequence*);
-	/**
-	 * Structure for implementing chained delegates to ensure synchronization in the Resolve step.
-	 */
-	struct FResolveDelegateCounter {
-		FOnResolveCompleted Delegate;
-		uint8 Count=0;
-		FResolveIteratingDelegate IteratingDelegate;
-		FEIGetter Getter;
-		TArray<ADMSActiveEffect*> ApplyingEIs;
-		bool bIsPreview;
-	};
-
 	/**
 	 * Store FResolveDelegateCounters for each sequences.
 	 */
-	TMap<UDMSSequence*, FResolveDelegateCounter> OnResolveCompletedMap;
+	UPROPERTY()
+	TMap<TObjectPtr<UDMSSequence>, FResolveDelegateCounter> OnResolveCompletedMap;
 
 	/**
 	 * Function for sequential execution of Resolving EI in a sequence.
 	 * Work with OnResolveCompletedMap.
 	 * @param	Sequence					Resolving sequence.
 	 */
-	void ApplyNextEffectInstance(UDMSSequence* SourceSequence, bool PrevSucceeded);
+	void ApplyNextEffectInstance(UDMSSequence* SourceSequence, const FOnResolveCompleted& OnResolveCompleted, bool PrevSucceeded);
 	//void ApplyNextEffectInstance_Preview(UDMSSequence* SourceSequence, bool PrevSucceeded);
-	/**
-	 * 
-	 * @param	Sequence					Resolving sequence.
-	 */
-	//void InitiateApplyTraversal(UDMSSequence* Sequence, bool ForPreview = false);
+
+	ADMSActiveEffect* ApplyAEGetter(UDMSSequence* OwnerSequence);
+
+	//FResolveIteratingDelegate ResolveIteratingDelegate;
 
 public:
+	UDMSEffectHandler();
 
 	/**
 	 * Remove non persistent EI from EIList.
@@ -103,38 +103,6 @@ public:
 	 * @param	Sequence					Resolving sequence.
 	 * @param	OnResolveCompleted			Lambda executed when resolve completed.
 	 */
-	template <typename FuncFinished>
-	void Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted);
-
+	void Resolve(UDMSSequence* Sequence, const FOnResolveCompleted& OnResolveCompleted);
 };
 
-template <typename FuncFinished>
-void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, FuncFinished&& OnResolveCompleted)
-{
-	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
-
-	if (Sequence->GetAllEIs().Num() == 0 || !Sequence->IsTargetted()) {
-		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
-		goto ResolveSkipped;
-	}
-	// seperate for logging
-	if (Sequence->SequenceState != EDMSSequenceState::SS_Default) {
-		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : Sequence is canceled or ignored"));
-	ResolveSkipped:
-		OnResolveCompleted(true);
-		return;
-	}
-
-
-	OnResolveCompletedMap.Add(Sequence);
-	OnResolveCompletedMap[Sequence].Delegate.BindLambda(OnResolveCompleted);
-	OnResolveCompletedMap[Sequence].Count = 0;
-	OnResolveCompletedMap[Sequence].IteratingDelegate.BindUObject(this, &UDMSEffectHandler::ApplyNextEffectInstance);
-	OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllEIs();
-
-	OnResolveCompletedMap[Sequence].Getter.BindLambda( [this,Sequence](UDMSSequence* SourceSequence){
-		return OnResolveCompletedMap[Sequence].ApplyingEIs[OnResolveCompletedMap[SourceSequence].Count++];
-	});
-
-	ApplyNextEffectInstance(Sequence, true);
-}

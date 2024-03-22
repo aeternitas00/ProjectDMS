@@ -10,7 +10,7 @@
 /**
  * progress unit of a sequence.
  */
-UCLASS(NotBlueprintable, DefaultToInstanced, EditInlineNew, Abstract)
+UCLASS(NotBlueprintable, DefaultToInstanced, EditInlineNew)
 class DMSCORE_API UDMSSequenceStep : public UObject
 {
 	GENERATED_BODY()
@@ -62,9 +62,8 @@ public:
 	/**
 	 * Current timing of this step.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,BlueprintPure)
-	FGameplayTagContainer GetCurrentProgressTag() const;
-	virtual FGameplayTagContainer GetCurrentProgressTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FGameplayTagContainer GetCurrentProgressTag() {return FGameplayTagContainer::EmptyContainer;}
 
 	/**
 	 * Get tag of step.
@@ -120,7 +119,7 @@ void UDMSSequenceStep::InitializeDelegates(FuncInitiated&& StepInitiated, FuncFi
 /**
  * progress unit of a sequence.
  */
-UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract)
+UCLASS(Blueprintable, BlueprintType, DefaultToInstanced, EditInlineNew, Abstract)
 class DMSCORE_API UDMSSequenceStepDefinition : public UObject
 {
 	GENERATED_BODY()
@@ -129,10 +128,10 @@ public:
 	UDMSSequenceStepDefinition(){}
 
 	UFUNCTION(BlueprintCallable)
-	void BroadcastProgress(UDMSSequenceStep* InstancedStep, const FGameplayTag& ProgressTag);
+	void BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName);
 
 	UFUNCTION(BlueprintNativeEvent)
-	bool GetProgressOps(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutors);
+	bool GetProgressOps(const FGameplayTag& ProgressTag,UPARAM(ref) TArray<FProgressExecutor>& OutExecutors);
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutors);
 
 	//UFUNCTION()

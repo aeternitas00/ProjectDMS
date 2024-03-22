@@ -34,7 +34,7 @@ protected:
 	 * Current phase. 
 	 */
 	UPROPERTY()
-	UDMSPhase* CurrentPhase;
+	TObjectPtr<UDMSPhase> CurrentPhase;
 
 public:
 

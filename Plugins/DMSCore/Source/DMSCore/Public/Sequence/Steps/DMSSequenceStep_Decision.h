@@ -91,8 +91,11 @@ public:
 	UFUNCTION()
 	void Progress_Decision(UDMSSequenceStep* InstancedStep);
 
+	UFUNCTION()
+	void MakeDecision(UDMSSequenceStep* InstancedStep);
+
 	template<typename FuncSucceeded>
-	void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
+	void RunWidgetQueue(UDMSSequenceStep* InstancedStep, ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
 
 	// Implementations
 	virtual FGameplayTagContainer GetStepTag_Implementation() const;
@@ -101,14 +104,14 @@ public:
 };
 
 template<typename FuncSucceeded>
-void UDMSSequenceStepDefinition_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
+void UDMSSequenceStepDefinition_Decision::RunWidgetQueue(UDMSSequenceStep* InstancedStep, ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
 {
 	WidgetOwner->RunWidgetQueue(		
 		Succeeded,
 		[=](UDMSSequence* pSequence) {
 			// Decision canceled
 			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
-			ProgressComplete(false);
+			InstancedStep->ProgressEnd(false);
 		}
 	);
 }

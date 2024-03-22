@@ -51,20 +51,14 @@ protected:
 	 * Card manager component.
 	 * Manage player's card containers like deck, hand, discard pile...
 	 */
-	UPROPERTY(BlueprintReadOnly,Replicated)
+	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
 	TObjectPtr<UDMSCardManagerComponent> CardManagerComponent;
-
-	/**
-	 * Player's default card containers list and intancing class.
-	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<FGameplayTag, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
 
 	/**
 	 * Attribute component.
 	 * Manage mana, resource, etc... of player.
 	 */
-	UPROPERTY(BlueprintReadOnly,Replicated)
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Replicated)
 	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 
 	/**
@@ -141,7 +135,7 @@ public:
 	/**
 	 * Setup player's CardManager.
 	 */
-	void SetupCardContainers();
+	//void SetupCardContainers();
 
 	/**
 	 * Setup player's AttributeManager.

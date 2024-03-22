@@ -40,12 +40,12 @@ ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPl
 	//DefaultStats.Add(TAG_DMS_Attribute_SavedSkillBonus, 0);
 }
 
-void ADMSPlayerState::SetupCardContainers()
-{
-	for (auto ContainerDef : CardContainerTypes) {
-		CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
-	}
-}
+//void ADMSPlayerState::SetupCardContainers()
+//{
+	//for (auto ContainerDef : CardContainerTypes) {
+	//	CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
+	//}
+//}
 
 void ADMSPlayerState::SetupAttributes()
 {
@@ -73,7 +73,7 @@ void ADMSPlayerState::SetCardDatas(const TArray<FDMSCardData>& InDatas)
 
 void ADMSPlayerState::SetupDefaults()
 {
-	SetupCardContainers();
+	//SetupCardContainers();
 	SetupAttributes();
 	LoadSaveGame("TestSlot",0);
 }

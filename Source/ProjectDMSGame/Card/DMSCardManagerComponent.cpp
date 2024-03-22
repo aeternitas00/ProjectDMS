@@ -9,7 +9,7 @@
 UDMSCardManagerComponent::UDMSCardManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	bWantsInitializeComponent = true;
 	Containers.Add(FGameplayTag::EmptyTag, CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("NoneContainer")));
 }
 
@@ -46,6 +46,15 @@ TArray<ADMSCardBase*> UDMSCardManagerComponent::GetAllCards()
 		rv.Append(Container.Value->GetCards());
 	}
 	return rv;
+}
+
+void UDMSCardManagerComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	for (auto& ContainerDef : CardContainerTypes) {
+		ConstructContainer(ContainerDef.Key, ContainerDef.Value);
+	}
 }
 
 

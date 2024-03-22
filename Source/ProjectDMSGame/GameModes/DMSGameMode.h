@@ -54,6 +54,9 @@ protected:
 	TMap<FPrimaryAssetType, TSubclassOf<ADMSSpawnableBase>> DefaultSpawningClasses;
 
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	FGameplayTag DefaultCardSpawnContainer;
+
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	int NumReadyPlayer = 0;
 
 protected:

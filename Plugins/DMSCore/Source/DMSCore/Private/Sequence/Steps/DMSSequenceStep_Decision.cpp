@@ -129,24 +129,57 @@ UDMSSequenceStepDefinition_Decision::UDMSSequenceStepDefinition_Decision()
 
 void UDMSSequenceStepDefinition_Decision::Progress_Decision(UDMSSequenceStep* InstancedStep)
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress During ===="), *GetClass()->GetName());
+	BroadcastProgress(InstancedStep, FName("MakeDecision"));
+}
 
-	auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
-	auto NotifyManager = GS->GetNotifyManager();
+void UDMSSequenceStepDefinition_Decision::MakeDecision(UDMSSequenceStep* InstancedStep)
+{
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(InstancedStep); check(GS);
+	auto SM = GS->GetSequenceManager(); check(SM);
+	auto EH = GS->GetEffectHandler(); check(EH);
+	auto SelM = GS->GetSelectorManager(); check(SelM);
 
-	check(NotifyManager);
+	ADMSPlayerControllerBase* WidgetOwner = nullptr;
 
-	NotifyManager->Broadcast(OwnerSequence, [this]() {OnDuring();});
+	auto DecisionMakers = DecisionMaker->GetTargets(InstancedStep->OwnerSequence->GetSourceObject(), InstancedStep->OwnerSequence);
+
+	TArray<ADMSPlayerControllerBase*> CastedDecisionMakers;
+
+	for (auto DM : DecisionMakers)
+	{
+		if (!DM->Implements<UDMSEffectorInterface>()) continue;
+		CastedDecisionMakers.AddUnique(Cast<IDMSEffectorInterface>(DM)->GetOwningPlayerController());
+	}
+
+	// TODO :: Implementing for cases where multiple players make selections sequentially.
+	WidgetOwner = CastedDecisionMakers.Num() == 0 ? nullptr : CastedDecisionMakers[0];
+
+	TArray<FDMSSelectorRequestForm> DecisionForms;
+
+	for ( auto& DD : DecisionDefinitions )
+		DecisionForms.Append(DD.SetupRequestForm(InstancedStep->OwnerSequence));
+
+	if ( WidgetOwner == nullptr || !WidgetOwner->SetupWidgetQueue(InstancedStep->OwnerSequence, SelM->RequestCreateSelectors(DecisionForms))) {
+		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Canceled  ===="), *InstancedStep->OwnerSequence->GetName());
+
+		InstancedStep->ProgressEnd(false); return;
+	}
+
+	RunWidgetQueue(InstancedStep, WidgetOwner, [=](UDMSSequence* pSequence) {
+		// Run sequence ( Notifying steps and apply )
+		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequence->GetName());
+		InstancedStep->ProgressEnd(); return;
+	});
 }
 
 FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementation() const
 {
-	return FGameplayTagContainer(TAG_DMS_Step_Decision);
+	return FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Step.Arkham.Decision"));
 }
 
 bool UDMSSequenceStepDefinition_Decision::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutDelegates)
 {
 	if(!GetStepTag().HasTagExact(ProgressTag)) return false;
 
-	OutDelegates.Add({this,"Progress_Decision"});
+	OutDelegates.Add({this,ProgressTag,"Progress_Decision"}); return true;
 }
