@@ -139,9 +139,8 @@ protected:
 	/**
 	 * Clear sequence tree. 
 	 * ( acutally it just nullifying root sequence. the rest is left to be handled by the gc. )
-	 * @param	Sequence
 	 */
-	void CleanupSequenceTree();	
+	//void CleanupSequenceTree();	
 	
 public:
 	/*

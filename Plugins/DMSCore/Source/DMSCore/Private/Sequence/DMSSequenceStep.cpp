@@ -9,153 +9,60 @@
 
 UDMSSequenceStep::UDMSSequenceStep()
 {
-	Progress=EDMSTimingFlag::T_Before;
 }
 
-void UDMSSequenceStep::Initialize(UDMSSequenceStepDefinition* Definition, UDMSSequence* iOwnerSequence)
+void UDMSSequenceStep::InitializeStepProgress(UDMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& iStepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
 {
-	StepDefinition=Definition;
+	CurrentProgressIndex=0;
 	OwnerSequence=iOwnerSequence;
-}
+	if(iStepDefinitions.Num()==0) return;
 
-void UDMSSequenceStep::RunStep()
-{
-	Progress=EDMSTimingFlag::T_Before;
-	OnStepInitiated();
-}
+	StepDefinitions=iStepDefinitions.Array();
+	//ProgressExecutors.Empty();
 
-void UDMSSequenceStep::CloseStep(bool bSucceeded)
-{
-	OnStepFinished(bSucceeded);
-}
+	for(auto& ProgressTag : ProgressOrder)	{
 
-void UDMSSequenceStep::OnStepInitiated()
-{
-	OnStepInitiated_Delegate.Broadcast();
-	Progress_Before();
-}
-
-void UDMSSequenceStep::OnStepFinished(bool bSucceeded)
-{
-	OnStepFinished_Delegate.Broadcast(bSucceeded);
-	
-	// DEBUG
-	if ( NextStep != nullptr ) {
-		auto NOuter = NextStep->OwnerSequence;
-		auto tOuter = this->OwnerSequence;
-		if ( NOuter != tOuter )
-				DMS_LOG_SIMPLE(TEXT("==== %s : Step Outer is different %s %s===="),NOuter,tOuter);
+		TObjectPtr<UDMSSequenceStepDefinition> MatchingDef=nullptr;
+		for(auto& Def : StepDefinitions) {
+			if(ProgressTag.MatchesTag(Def->GetPureStepTag())){MatchingDef=Def; break;}
+		}
+		if(!IsValid(MatchingDef)) continue;
+		MatchingDef->GetProgressOps(ProgressTag, ProgressExecutors);
 	}
-
-	if (bSucceeded && NextStep != nullptr)	{ 
-		OwnerSequence->CurrentStep = NextStep; NextStep->RunStep(); 
-	}
-	
-	else {
-		OwnerSequence->CurrentStep = nullptr;
-		OwnerSequence->OnStepQueueCompleted(bSucceeded);
-	}
-		
 }
 
-void UDMSSequenceStep::Progress_Before()
+void UDMSSequenceStep::RunStepProgressQueue()
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress Before ===="), *GetClass()->GetName());
-
-	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
-	//auto NotifyManager = GS->GetNotifyManager();
-
-	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(this);
-
-	check(NotifyManager);
-
-	NotifyManager->Broadcast(OwnerSequence, [this]() {OnBefore();});
+	if(ProgressExecutors.Num()==0) { OwnerSequence->OnStepQueueCompleted(true); return; }
+	ExecuteNextProgress();
 }
 
-void UDMSSequenceStep::Progress_During()
+void UDMSSequenceStep::ExecuteNextProgress()
 {
-	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress During ===="), *GetClass()->GetName());
-
-	auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
-	auto NotifyManager = GS->GetNotifyManager();
-
-	check(NotifyManager);
-
-	NotifyManager->Broadcast(OwnerSequence, [this]() {OnDuring();});
-}
-
-void UDMSSequenceStep::Progress_After()
-{
-	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress After ===="), *GetClass()->GetName());
-
-	auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
-	auto NotifyManager = GS->GetNotifyManager();
-
-	check(NotifyManager);
-
-	NotifyManager->Broadcast(OwnerSequence, [this]() {OnAfter();});
-}
-
-void UDMSSequenceStep::OnBefore_Implementation()
-{
-	// Behavior
-	ProgressComplete();
-}
-
-void UDMSSequenceStep::OnDuring_Implementation()
-{
-	// Behavior
-	ProgressComplete();
-}
-
-void UDMSSequenceStep::OnAfter_Implementation()
-{
-	// Behavior
-	ProgressComplete();
-}
-
-void UDMSSequenceStep::ProgressComplete(bool bSucceeded)
-{
-	//auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager();		check(SeqManager);
-	//
-	//DEBUG
-	if (OwnerSequence == nullptr)
-	{
-		DMS_LOG_SIMPLE(TEXT("==== %s : SequenceStep has no owner ===="), *GetName());
-		return;
-	}
-
-	if (!bSucceeded || (OwnerSequence->SequenceState == EDMSSequenceState::SS_Canceled)){
-		DMS_LOG_SIMPLE(TEXT("==== %s : [%s] Failed ===="), *OwnerSequence->GetName(), *GetName());
-		CloseStep(false); return;
-	}
-
-	if (Progress == EDMSTimingFlag::T_After) { CloseStep(); return; }
-	Progress = EDMSTimingFlag((uint8)Progress + 1);
-	switch (Progress)
-	{
-		case EDMSTimingFlag::T_During:
-			Progress_During();
-			break;
-		case EDMSTimingFlag::T_After:
-			Progress_After();
-			break;
-		default:
-			break;
-	}
+	auto& CurrentExec = ProgressExecutors[CurrentProgressIndex];
+	CurrentExec.ExecutorDelegate.ExecuteIfBound(this);
 }
 
 void UDMSSequenceStep::ProgressEnd(bool bSucceeded)
 {
-	OwnerSequence->ProgressEnd(bSucceeded);
+	if(!bSucceeded){OwnerSequence->OnStepQueueCompleted(false); return;}
+	if(IsProgressQueueFinished()) {OwnerSequence->OnStepQueueCompleted(true); return;}
+	CurrentProgressIndex++; ExecuteNextProgress();
+}
+
+bool UDMSSequenceStep::IsProgressQueueFinished()
+{
+	return (CurrentProgressIndex+1)==ProgressExecutors.Num();
+}
+
+FGameplayTag UDMSSequenceStep::GetCurrentProgressTag()
+{
+	return ProgressExecutors[CurrentProgressIndex].ExactTag;
 }
 
 void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Broadcast Step progress [%s] ===="), *InstancedStep->OwnerSequence->GetName(), *GetClass()->GetName());
-
-	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
-	//auto NotifyManager = GS->GetNotifyManager();
 
 	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(InstancedStep);
 	check(NotifyManager);

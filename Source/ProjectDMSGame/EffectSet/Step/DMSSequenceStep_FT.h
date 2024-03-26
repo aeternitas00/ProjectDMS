@@ -24,43 +24,19 @@ protected:
 public: 
 	UDMSSequenceStep_FT(){}
 
-	virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	virtual FGameplayTag GetPureStepTag_Implementation() const;
 };
 
-//UCLASS(Blueprintable, Abstract)
-//class UDMSSelector_SkillTest : public UDMSSelectorBase
-//{
-//	GENERATED_BODY()
-//
-//public:
-//	UPROPERTY(BlueprintReadOnly)
-//	TObjectPtr<UDMSSequenceStep_SkillTest> OwnerStep;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	int CurrentEIIndex;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	int EIIndexMax;
-//
-//	TArray<std::function<void()>> Updaters;
-//	TArray<float> UsedBonusValues;
-//
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	TArray<TObjectPtr<AActor>> TesterCandidates;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	TArray<TObjectPtr<AActor>> TestTargetCandidates;
-//
-//	UFUNCTION(BlueprintCallable)
-//	void PushResultUpdater(AActor* Tester, AActor* TestTarget = nullptr, float BonusValue = 0.0f);
-//
-//	UFUNCTION(BlueprintCallable)
-//	void PopResultUpdater();
-//
-//	UFUNCTION(BlueprintCallable)
-//	void UpdateSkillTestResult();
-//
-//	UFUNCTION(BlueprintCallable)
-//	float GetUsableBonus(AActor* Tester);
-//};
+UCLASS(Blueprintable, Abstract)
+class PROJECTDMSGAME_API UDMSSelector_FT: public UDMSSelectorBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UDMSSequenceStep> OwnerStep;
+
+	UFUNCTION(BlueprintCallable)
+	TScriptInterface<IDMSEffectorInterface> GetTriggerableEffectors();
+
+};

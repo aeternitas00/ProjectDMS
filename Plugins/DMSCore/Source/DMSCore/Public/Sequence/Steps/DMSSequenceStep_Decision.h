@@ -42,30 +42,28 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
 	TArray<FDMSDecisionDefinition> DecisionDefinitions;
 	
-	template<typename FuncSucceeded>
-	void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
-
+	//template<typename FuncSucceeded>
+	//void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
 	// Implementations
-	virtual FGameplayTagContainer GetStepTag_Implementation() const;
-
-	virtual void OnBefore_Implementation() override;
-	virtual void OnDuring_Implementation() override;
-	virtual void OnAfter_Implementation() override;
+	//virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	//virtual void OnBefore_Implementation() override;
+	//virtual void OnDuring_Implementation() override;
+	//virtual void OnAfter_Implementation() override;
 
 };
 
-template<typename FuncSucceeded>
-void UDMSSequenceStep_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
-{
-	WidgetOwner->RunWidgetQueue(		
-		Succeeded,
-		[=](UDMSSequence* pSequence) {
-			// Decision canceled
-			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
-			ProgressComplete(false);
-		}
-	);
-}
+//template<typename FuncSucceeded>
+//void UDMSSequenceStep_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
+//{
+//	WidgetOwner->RunWidgetQueue(		
+//		Succeeded,
+//		[=](UDMSSequence* pSequence) {
+//			// Decision canceled
+//			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
+//			ProgressComplete(false);
+//		}
+//	);
+//}
 
 
 UCLASS()
@@ -98,6 +96,7 @@ public:
 	void RunWidgetQueue(UDMSSequenceStep* InstancedStep, ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
 
 	// Implementations
+	virtual FGameplayTag GetPureStepTag_Implementation() const;
 	virtual FGameplayTagContainer GetStepTag_Implementation() const;
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 

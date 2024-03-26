@@ -178,7 +178,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		if (EffectInstance == nullptr)
 		{
 			// Widget didn't made proper data.
-			NotifyManager->CallResponseCompleted(InstancedWidget->CurrentSequence);
+			ResponseCompleted.ExecuteIfBound();
 
 			InstancedWidget->CloseSelector();
 			return;

@@ -3,7 +3,15 @@
 
 #include "EffectSet/Step/DMSSequenceStep_FT.h"
 
-FGameplayTagContainer UDMSSequenceStep_FT::GetStepTag_Implementation() const
+FGameplayTag UDMSSequenceStep_FT::GetPureStepTag_Implementation() const
 {
-	return FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger"));
+	return FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger");
+}
+
+TScriptInterface<IDMSEffectorInterface> UDMSSelector_FT::GetTriggerableEffectors()
+{
+	return TScriptInterface<IDMSEffectorInterface>();
+
+	// additional condition check with owner step and find ft-able effectors.
+
 }

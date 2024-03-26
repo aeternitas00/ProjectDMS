@@ -86,11 +86,11 @@ public:
 	static const FGameplayTag SkillBonusTag;
 
 	void SetupTargets(TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
-	virtual void OnStepInitiated() override;
+	//virtual void OnStepInitiated() override;
 
-	virtual void OnBefore_Implementation() override;
-	virtual void OnDuring_Implementation() override;
-	virtual void OnAfter_Implementation() override;
+	//virtual void OnBefore_Implementation() override;
+	//virtual void OnDuring_Implementation() override;
+	//virtual void OnAfter_Implementation() override;
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	float CalculateSkillTestResult(AActor* Tester, AActor* TestTarget,float BonusValue);
@@ -115,7 +115,7 @@ public:
 
 
 UCLASS(Blueprintable, Abstract)
-class UDMSSelector_SkillTest : public UDMSSelectorBase
+class PROJECTDMSGAME_API UDMSSelector_SkillTest : public UDMSSelectorBase
 {
 	GENERATED_BODY()
 
@@ -192,22 +192,7 @@ public:
 	UFUNCTION()
 	void Progress_ST8(UDMSSequenceStep* InstancedStep){}
 
-	//UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-	//float CalculateSkillTestResult(AActor* Tester, AActor* TestTarget,float BonusValue);
-	//virtual float CalculateSkillTestResult_Implementation(AActor* Tester, AActor* TestTarget,float BonusValue);
-	////...
-	//// Branch for failed Skill test?
-	//UFUNCTION(BlueprintNativeEvent)
-	//void OnSkillTestCompleted();
-	//virtual void OnSkillTestCompleted_Implementation();
-
-	//UFUNCTION(BlueprintNativeEvent)
-	//void OnSkillTestFailed();
-	//virtual void OnSkillTestFailed_Implementation();
-
-	//UFUNCTION(BlueprintCallable,BlueprintPure)
-	//bool IsTestByEachApplyTarget() const;
-
+	virtual FGameplayTag GetPureStepTag_Implementation() const;
 	virtual FGameplayTagContainer GetStepTag_Implementation() const;
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };

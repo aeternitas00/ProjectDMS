@@ -163,18 +163,17 @@ void UDMSSeqManager::CompleteSequence_Implementation(UDMSSequence* Sequence, boo
 		CurrentSequence = Sequence->ParentSequence;
 		CurrentSequence->ChildSequence=nullptr;
 	}
-	Sequence->OnSequenceFinish(Succeeded);
 }
 
 
-
-void UDMSSeqManager::CleanupSequenceTree()
-{
-	//...
-	RootSequence = nullptr;
-	
-	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this)->CleanupNonPersistent();
-	//UDMSCoreFunctionLibrary::GetDMSNotifyManager(this)->CleanupNonPersistent();
-	// Else will be GCed.
-	//...
-}
+//
+//void UDMSSeqManager::CleanupSequenceTree()
+//{
+//	//...
+//	RootSequence = nullptr;
+//	
+//	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this)->CleanupNonPersistent();
+//	//UDMSCoreFunctionLibrary::GetDMSNotifyManager(this)->CleanupNonPersistent();
+//	// Else will be GCed.
+//	//...
+//}

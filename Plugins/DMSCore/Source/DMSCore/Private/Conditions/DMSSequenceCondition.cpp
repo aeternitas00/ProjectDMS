@@ -8,11 +8,11 @@
 bool UDMSSeqTimingCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
 {
 	//return (CurrentSequence->GetCurrentProgress() == Timing || Timing == EDMSTimingFlag::T_Null)
-	//	&& CurrentSequence->GenerateTagContainer().MatchesQuery(EffectTagQuery)
+	//	&& CurrentSequence->GetSequenceTags().MatchesQuery(EffectTagQuery)
 	//;
-	//auto debugcont = CurrentSequence->GenerateTagContainer();
+	//auto debugcont = CurrentSequence->GetSequenceTags();
 	//DMS_LOG_SIMPLE(TEXT("%s"),*debugcont.ToString());
-	return CurrentSequence->GenerateTagContainer().MatchesQuery(EffectTagQuery);
+	return CurrentSequence->GetSequenceTags().MatchesQuery(EffectTagQuery);
 }
 
 

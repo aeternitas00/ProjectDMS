@@ -30,81 +30,90 @@ UDMSSequenceStep_SkillTest::UDMSSequenceStep_SkillTest()
 	//SkillTestData.TestTargetGenerator = CreateDefaultSubobject<UDMSTargetGenerator_SequenceTarget>("TestTargetGenerator");
 }
 
-void UDMSSequenceStep_SkillTest::OnStepInitiated()
-{
-	if (SkillTestWidgetClass == nullptr) { CloseStep(false); return; }
-
-	UDMSSequenceStep::OnStepInitiated();
-}
-
-void UDMSSequenceStep_SkillTest::OnBefore_Implementation()
-{
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
-
-	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_BEFORE [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
-	ProgressComplete();
-}
-
-void UDMSSequenceStep_SkillTest::OnDuring_Implementation()
-{
-	// Behavior
-	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(this); check(GS);
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
-	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this); check(EH);
-	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(this); check(SelM);
-
-	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
-
-	// Select Tester 
-	FDMSSelectorRequestForm SkillTestForm;
-	SkillTestForm.SelectorClass = SkillTestWidgetClass;
-
-	auto Handle = SelM->RequestCreateSelector(SkillTestForm);
-	auto SourcePlayer = Cast<IDMSEffectorInterface>(OwnerSequence->GetSourceObject())->GetOwningPlayerController();
-	Handle->CreateSelectorWidget(SourcePlayer);
-	UDMSSelector_SkillTest* SkillTestWidget = Cast<UDMSSelector_SkillTest>(Handle->Widget);
-
-	// Custom widget initialize
-	SetupTargets(SkillTestWidget->TesterCandidates,SkillTestData.TesterGenerator);
-	if (!SkillTestData.bTestToStaticValue)
-		SetupTargets(SkillTestWidget->TestTargetCandidates,SkillTestData.TestTargetGenerator);
-	SkillTestWidget->EIIndexMax = 1; SkillTestWidget->CurrentEIIndex = 0; 
-	if ( IsTestByEachApplyTarget() ){	
-		SkillTestWidget->Updaters.Reserve(OwnerSequence->GetAllEIs().Num());
-		SkillTestWidget->UsedBonusValues.Reserve(OwnerSequence->GetAllEIs().Num());
-		SkillTestWidget->EIIndexMax = OwnerSequence->GetAllEIs().Num();
-	}
-	
-	SkillTestWidget->OwnerStep = this;
-
-	Handle->SetupDelegates([this,SkillTestWidget](){
-		// WidgetCompleted
-		SkillTestWidget->CloseSelector();
-		UDMSDataObjectSet* DataSet = OwnerSequence->SequenceDatas;
-		float Result = MAX_FLT;
-		if ( !DataSet->GetValidDataValue<float>(TAG_DMS_Step_SkillTest_Data_TestResult, Result) )
-			{ProgressComplete(false);return;}
-
-		if (Result>=0.0f)	OnSkillTestCompleted();	
-		else OnSkillTestFailed();
-	},	[this,SkillTestWidget](){
-		// WidgetCanceled
-		SkillTestWidget->CloseSelector();
-		ProgressComplete(false);
-	});
-	Handle->SetupSelector();	
-	Handle->RunSelector();	
-}
+//void UDMSSequenceStep_SkillTest::OnStepInitiated()
+//{
+//	//if (SkillTestWidgetClass == nullptr) { CloseStep(false); return; }
+//
+//	//UDMSSequenceStep::OnStepInitiated();
+//}
+//
+//void UDMSSequenceStep_SkillTest::OnBefore_Implementation()
+//{
+//	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
+//
+//	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_BEFORE [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+//	ProgressComplete();
+//}
+//
+//void UDMSSequenceStep_SkillTest::OnDuring_Implementation()
+//{
+//	// Behavior
+//	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(this); check(GS);
+//	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
+//	auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this); check(EH);
+//	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(this); check(SelM);
+//
+//	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+//
+//	// Select Tester 
+//	FDMSSelectorRequestForm SkillTestForm;
+//	SkillTestForm.SelectorClass = SkillTestWidgetClass;
+//
+//	auto Handle = SelM->RequestCreateSelector(SkillTestForm);
+//	auto SourcePlayer = Cast<IDMSEffectorInterface>(OwnerSequence->GetSourceObject())->GetOwningPlayerController();
+//	Handle->CreateSelectorWidget(SourcePlayer);
+//	UDMSSelector_SkillTest* SkillTestWidget = Cast<UDMSSelector_SkillTest>(Handle->Widget);
+//
+//	// Custom widget initialize
+//	SetupTargets(SkillTestWidget->TesterCandidates,SkillTestData.TesterGenerator);
+//	if (!SkillTestData.bTestToStaticValue)
+//		SetupTargets(SkillTestWidget->TestTargetCandidates,SkillTestData.TestTargetGenerator);
+//	SkillTestWidget->EIIndexMax = 1; SkillTestWidget->CurrentEIIndex = 0; 
+//	if ( IsTestByEachApplyTarget() ){	
+//		SkillTestWidget->Updaters.Reserve(OwnerSequence->GetAllEIs().Num());
+//		SkillTestWidget->UsedBonusValues.Reserve(OwnerSequence->GetAllEIs().Num());
+//		SkillTestWidget->EIIndexMax = OwnerSequence->GetAllEIs().Num();
+//	}
+//	
+//	SkillTestWidget->OwnerStep = this;
+//
+//	Handle->SetupDelegates([this,SkillTestWidget](){
+//		// WidgetCompleted
+//		SkillTestWidget->CloseSelector();
+//		UDMSDataObjectSet* DataSet = OwnerSequence->SequenceDatas;
+//		float Result = MAX_FLT;
+//		if ( !DataSet->GetValidDataValue<float>(TAG_DMS_Step_SkillTest_Data_TestResult, Result) )
+//			{ProgressComplete(false);return;}
+//
+//		if (Result>=0.0f)	OnSkillTestCompleted();	
+//		else OnSkillTestFailed();
+//	},	[this,SkillTestWidget](){
+//		// WidgetCanceled
+//		SkillTestWidget->CloseSelector();
+//		ProgressComplete(false);
+//	});
+//	Handle->SetupSelector();	
+//	Handle->RunSelector();	
+//}
+//
+//void UDMSSequenceStep_SkillTest::OnAfter_Implementation()
+//{
+//	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
+//
+//	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
+//
+//	ProgressComplete();
+//}
 
 void UDMSSequenceStep_SkillTest::OnSkillTestCompleted_Implementation()
 {
-	ProgressComplete(true);
+	//ProgressComplete(true);
 }
 
 void UDMSSequenceStep_SkillTest::OnSkillTestFailed_Implementation()
 {
 	// Implements branch for failed skill test.
-	ProgressComplete(false);
+	//ProgressComplete(false);
 }
 
 inline bool UDMSSequenceStep_SkillTest::IsTestByEachApplyTarget() const { return SkillTestData.TestByEachApplyTarget && OwnerSequence->IsTargetted(); }
@@ -113,14 +122,7 @@ inline FGameplayTagContainer UDMSSequenceStep_SkillTest::GetStepTag_Implementati
 	return SkillTestData.IsCommittable ? FGameplayTagContainer(TAG_DMS_Step_SkillTest_Committable) : FGameplayTagContainer(TAG_DMS_Step_SkillTest); 
 }
 
-void UDMSSequenceStep_SkillTest::OnAfter_Implementation()
-{
-	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this); check(SM);
 
-	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_AFTER [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
-
-	ProgressComplete();
-}
 
 float UDMSSequenceStep_SkillTest::CalculateSkillTestResult_Implementation(AActor* Tester, AActor* TestTarget, float BonusValue)
 {
@@ -204,9 +206,17 @@ float UDMSSelector_SkillTest::GetUsableBonus(AActor* Tester)
 	return rv;
 }
 
+FGameplayTag UDMSSequenceStepDefinition_SkillTest::GetPureStepTag_Implementation() const
+{
+	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest");
+}
+
 FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetStepTag_Implementation() const
 {
-	return FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
+	FGameplayTagContainer rv;
+	rv.AddTag(GetPureStepTag());
+	// Get tags from testing context
+	return rv;
 }
 
 bool UDMSSequenceStepDefinition_SkillTest::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)

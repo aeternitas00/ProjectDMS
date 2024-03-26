@@ -10,7 +10,7 @@ class UDMSSequence;
 /**
  *	Simple target generating Functor object.
  */
-UCLASS(Blueprintable, BlueprintType, Abstract, EditInlineNew)
+UCLASS(Blueprintable, BlueprintType, Abstract, EditInlineNew, meta=(DisplayName="Target Finder Base"))
 class DMSCORE_API UDMSTargetGenerator : public UObject
 {
 	GENERATED_BODY()

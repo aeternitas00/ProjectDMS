@@ -34,13 +34,13 @@ public:
 	 * List of selectors.
 	 */
 	UPROPERTY()
-	TArray<UDMSSelectorHandle*> SelectorHandles;
+	TArray<TObjectPtr<UDMSSelectorHandle>> SelectorHandles;
 
 	/**
 	 * Reference of owner sequence.
 	 */
 	UPROPERTY()
-	UDMSSequence* CurrentSequence;
+	TObjectPtr<UDMSSequence> CurrentSequence;
 
 	/**
 	 * Current index of WidgetQueue.

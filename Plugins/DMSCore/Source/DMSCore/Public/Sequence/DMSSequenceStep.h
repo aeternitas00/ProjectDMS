@@ -18,20 +18,24 @@ class DMSCORE_API UDMSSequenceStep : public UObject
 public:
 	UDMSSequenceStep();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UDMSSequenceStepDefinition> StepDefinition;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//TObjectPtr<UDMSSequenceStepDefinition> StepDefinition;
 
 	/**
-	 * Current timing of this step.
+	 *
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	EDMSTimingFlag Progress;
+	TArray<TObjectPtr<UDMSSequenceStepDefinition>> StepDefinitions;
 
 	/**
-	 * Reference of next step for Pseudo list,
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UDMSSequenceStep> NextStep;
+	* 
+	*/
+	TArray<FProgressExecutor> ProgressExecutors;
+
+	/**
+	* 
+	*/
+	int CurrentProgressIndex;
 
 	/**
 	 * Reference owner sequence.
@@ -39,7 +43,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSSequence> OwnerSequence;
 
-	void Initialize(UDMSSequenceStepDefinition* Definition,UDMSSequence* iOwnerSequence);
+	void InitializeStepProgress(UDMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder);
+
+	void RunStepProgressQueue();
+
+	void ExecuteNextProgress();
+
+	void ProgressEnd(bool bSucceeded = true);
+
+	FORCEINLINE bool IsProgressQueueFinished();
+
 	/**
 	 * Initiate step delegates.
 	 * @param	StepInitiated			
@@ -49,60 +62,39 @@ public:
 	void InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished);
 
 	/**
-	 * Run step. will be executed in sequence's step flow control.
-	 */
-	void RunStep();
-
-	/**
-	 * Close step. will be executed in sequence's step flow control.
-	 * @param	bSucceeded				Whether the step was successful or not.
-	 */
-	void CloseStep(bool bSucceeded = true);
-
-	/**
 	 * Current timing of this step.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FGameplayTagContainer GetCurrentProgressTag() {return FGameplayTagContainer::EmptyContainer;}
+	FGameplayTag GetCurrentProgressTag();
 
-	/**
-	 * Get tag of step.
-	 */
-	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	FGameplayTagContainer GetStepTag() const;
-	virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
-
-	DECLARE_MULTICAST_DELEGATE(FOnStepInitiated);
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
-
-	FOnStepInitiated OnStepInitiated_Delegate;
-	FOnStepFinished OnStepFinished_Delegate;
-	
-	void ProgressComplete(bool bSucceeded = true);
-	void ProgressEnd(bool bSucceeded = true);
 
 	// ======== MIGRATE TO DEF and Progress ======== //
-	// 
-	// IMPLEMENTS :: Step Behaviour
-	virtual void OnStepInitiated();
-	virtual void OnStepFinished(bool bSucceeded = true);
 
-	virtual void Progress_Before();
-	virtual void Progress_During();
-	virtual void Progress_After();
-
-	// Actual step's behavior, Must call ProgressComplete while progress ending.
-	UFUNCTION(BlueprintNativeEvent)
-	void OnBefore();
-	virtual void OnBefore_Implementation();
-
-	UFUNCTION(BlueprintNativeEvent)
-	void OnDuring();
-	virtual void OnDuring_Implementation();
-
-	UFUNCTION(BlueprintNativeEvent)
-	void OnAfter();
-	virtual void OnAfter_Implementation();
+	//UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	//FGameplayTagContainer GetStepTag() const;
+	//virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
+	//virtual void OnStepInitiated(){}
+	//virtual void OnStepFinished(bool bSucceeded = true){}
+	//virtual void Progress_Before(){}
+	//virtual void Progress_During(){}
+	//virtual void Progress_After(){}
+	//void ProgressComplete(bool bSucceeded = true){}
+	//// Actual step's behavior, Must call ProgressComplete while progress ending.
+	//UFUNCTION(BlueprintNativeEvent)
+	//void OnBefore();
+	//virtual void OnBefore_Implementation(){}
+	//UFUNCTION(BlueprintNativeEvent)
+	//void OnDuring();
+	//virtual void OnDuring_Implementation(){}
+	//UFUNCTION(BlueprintNativeEvent)
+	//void OnAfter();
+	//virtual void OnAfter_Implementation(){}
+	//void RunStep();
+	//void CloseStep(bool bSucceeded = true);
+	//DECLARE_MULTICAST_DELEGATE(FOnStepInitiated);
+	//DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
+	//FOnStepInitiated OnStepInitiated_Delegate;
+	//FOnStepFinished OnStepFinished_Delegate;
 
 	// =================================== //
 
@@ -141,8 +133,15 @@ public:
 	 * Get tag of step.
 	 */
 	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	FGameplayTag GetPureStepTag() const;
+	virtual FGameplayTag GetPureStepTag_Implementation() const {return FGameplayTag::EmptyTag;}
+
+	/**
+	 * Get tags of step ( with additional datas ).
+	 */
+	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
 	FGameplayTagContainer GetStepTag() const;
-	virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
+	virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer(GetPureStepTag());}
 
 };
 

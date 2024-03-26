@@ -51,6 +51,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnProgressFinished, bool, Succeeded);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Succeeded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succeeded);
 
+// move to step instance
 USTRUCT(BlueprintType)
 struct DMSCORE_API FProgressExecutor
 {
@@ -120,24 +121,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EDMSSequenceState SequenceState;
 
-	/**
-	 * Current timing of this sequence. DEPRECATED :: [Step]
-	 */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//EDMSTimingFlag Progress;
-
-	// DEPRECATED
-	UFUNCTION(BlueprintCallable)
-	EDMSTimingFlag GetCurrentProgress();
-	
-	UFUNCTION(BlueprintCallable)
-	FGameplayTag GetCurrentProgressTag();
-
 	//UFUNCTION(BlueprintCallable)
 	void SetTargetted(const bool& iTargetted) {bTargeted=iTargetted;}
-
-	UFUNCTION(BlueprintCallable,BlueprintPure)
-	bool IsTargetted() const {return bTargeted;}
 
 	/**
 	 * Effect that will be applied when the 'sequence is applied'.
@@ -145,12 +130,6 @@ public:
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDMSEffectNode> OriginalEffectNode;
-
-	/**
-	 * Container for widgets used by the player to make decisions during the progress of a sequence.
-	 */
-	//UPROPERTY(/*VisibleAnywhere, BlueprintReadOnly*/)
-	//FDMSSelectorQueue SelectorQueue;
 
 	/** 
 	 * Data needed for sequence flow, such as 'Damage' by numerical values.
@@ -200,11 +179,6 @@ public:
 	TArray<TScriptInterface<IDMSEffectorInterface>> GetTargets() const;
 
 	/**
-	 * Check sequence is chainable
-	 */
-	bool IsChainableSequence();
-
-	/**
 	 * Attach child sequence.
 	 * @param	iSeq						Attaching sequence.
 	 */
@@ -216,9 +190,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets);
-
-	UFUNCTION(BlueprintCallable)
-	bool IsSequenceActive();
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FDMSSequenceEIStorage>& GetEIStorage();
@@ -237,10 +208,34 @@ public:
 	 */
 	void OnSequenceFinish(bool Succeeded);
 
+public:
+	// ======================== //
+	//		Sequence query
+	// ======================== //
 	/**
-	 * Generate tag container for notifying.
+	* Check sequence is chainable
+	*/
+	UFUNCTION(BlueprintCallable)
+	bool IsChainableSequence();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsSequenceActive();
+
+	// DEPRECATED
+	//UFUNCTION(BlueprintCallable)
+	//EDMSTimingFlag GetCurrentProgress();
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool IsTargetted() const {return bTargeted;}
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetCurrentProgressTag();
+
+	/**
+	 * Generate tag container for context description.
 	 */
-	FGameplayTagContainer GenerateTagContainer();
+	UFUNCTION(BlueprintCallable)
+	FGameplayTagContainer GetSequenceTags();
 
 	// ================================ //
 	//		Delegates and binders.
@@ -272,19 +267,6 @@ public:
 	// STEP 
 public:
 	/**
-	 * Reference of CurrentStep.
-	 */
-	UPROPERTY()
-	TObjectPtr<UDMSSequenceStep> CurrentStep;
-
-	/**
-	 * Instancing & initiate steps with effect node.
-	 * @param	StepClasses				Step classes to instantiate & initialize.
-	 */
-	// DEPRECATED
-	void InitializeSteps(const TArray<TObjectPtr<UDMSSequenceStep>>& StepClasses);
-
-	/**
 	* Instancing & initiate steps with effect node.
 	* @param	StepClasses				Step classes to instantiate & initialize.
 	*/
@@ -293,15 +275,7 @@ public:
 	/**
 	 * Run registered steps synchronously.
 	 */
-	// DEPRECATED
-	void RunStepQueue();
-
 	void RunStepProgressQueue();
-
-	void ExecuteNextProgress();
-
-	UFUNCTION()
-	void ProgressEnd(bool Succeeded);
 
 	/**
 	 * Executed when step queue completed.
@@ -314,18 +288,9 @@ protected:
 	 * Store instanced steps.
 	 */
 	UPROPERTY()
-	TArray<TObjectPtr<UDMSSequenceStep>> InstancedSteps;
+	TObjectPtr<UDMSSequenceStep> InstancedStep;
 
 private:
-	/**
-	 * 
-	 */
-	TArray<FProgressExecutor> ProgressExecutors;
-
-	/**
-	 * 
-	 */
-	int CurrentProgressIndex;
 
 public:
 	friend class UDMSSequenceStep;

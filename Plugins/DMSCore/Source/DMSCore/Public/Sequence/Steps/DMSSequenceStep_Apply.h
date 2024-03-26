@@ -21,14 +21,12 @@ public:
 
 	// Implementations
 
-	virtual void OnStepInitiated() override;
-	virtual void Progress_During() override;
-
-	virtual FGameplayTagContainer GetStepTag_Implementation() const;
-
-	virtual void OnBefore_Implementation() override;
-	virtual void OnDuring_Implementation() override;
-	virtual void OnAfter_Implementation() override;
+	//virtual void OnStepInitiated() override;
+	//virtual void Progress_During() override;
+	//virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	//virtual void OnBefore_Implementation() override;
+	//virtual void OnDuring_Implementation() override;
+	//virtual void OnAfter_Implementation() override;
 };
 
 UCLASS()
@@ -52,7 +50,9 @@ public:
 	void ApplyChildEffect(UDMSSequenceStep* InstancedStep);
 
 	// Implementations
+	virtual FGameplayTag GetPureStepTag_Implementation() const;
 	virtual FGameplayTagContainer GetStepTag_Implementation() const;
+
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 
