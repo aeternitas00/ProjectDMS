@@ -40,14 +40,14 @@ void UDMSAttribute::ApplyModifier(const FDMSAttributeModifier& Modifier)
 
 void UDMSAttribute::GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass)
 {
-	if(AttributeValue!=nullptr) return;
+	if(AttributeValue!=nullptr) {AttributeValue->MarkAsGarbage();}
 	
 	AttributeValue = NewObject<UDMSAttributeValue>(this,ValueClass);
 }
 
 void UDMSAttribute::DuplicateValue(UDMSAttributeValue* Value)
 {	
-	if(AttributeValue!=nullptr) return;
+	if(AttributeValue!=nullptr) {AttributeValue->MarkAsGarbage();}
 	
 	AttributeValue = DuplicateObject<UDMSAttributeValue>(Value, this);
 }

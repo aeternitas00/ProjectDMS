@@ -85,16 +85,15 @@ UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer
 
 UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue)
 {
-	if (ContainAttribute(AttributeName)) return nullptr; 
-
-	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
-	NewAtt->AttributeTag = AttributeName;
+	UDMSAttribute* NewAtt = GetAttribute(AttributeName);
+	if (NewAtt == nullptr) {
+		NewAtt = NewObject<UDMSAttribute>(this);
+		NewAtt->AttributeTag = AttributeName;
+		AddReplicatedSubObject(NewAtt);
+		Attributes.Add(NewAtt);
+	}
 	NewAtt->DuplicateValue(AttributeValue);
-	AddReplicatedSubObject(NewAtt);
-	Attributes.Add(NewAtt);
-
 	return NewAtt;
-
 }
 
 UDMSAttribute* UDMSAttributeComponent::DuplicateAttribute(UDMSAttribute* Attribute)

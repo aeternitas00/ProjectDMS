@@ -26,7 +26,6 @@ class UDMSCardContainerComponent;
 class ADMSCardBase;
 class UDMSEIManagerComponent;
 class UDMSAttributeComponent;
-class UDMSAttribute_Numeric;
 class UDMSEffectNode;
 class UDMSSaveGame;
 class ADMSCharacterBase;

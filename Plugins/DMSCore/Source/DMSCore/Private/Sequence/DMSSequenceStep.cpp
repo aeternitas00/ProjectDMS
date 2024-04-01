@@ -26,7 +26,10 @@ void UDMSSequenceStep::InitializeStepProgress(UDMSSequence* iOwnerSequence,const
 		for(auto& Def : StepDefinitions) {
 			if(ProgressTag.MatchesTag(Def->GetPureStepTag())){MatchingDef=Def; break;}
 		}
-		if(!IsValid(MatchingDef)) continue;
+		if(!IsValid(MatchingDef)) {
+			// Tag to def class 테이블 만들어서 CDO 사용하게?
+			continue;
+		}
 		MatchingDef->GetProgressOps(ProgressTag, ProgressExecutors);
 	}
 }
@@ -68,22 +71,24 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	check(NotifyManager);
 
 	FSimpleDelegate AfterBroadcast;
-
-	AfterBroadcast.BindLambda( [=](){
-		FGameplayTag seqtag = InstancedStep->OwnerSequence->GetCurrentProgressTag();
-		DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
-		if( AfterFunctionName.IsNone() ) {
-			InstancedStep->ProgressEnd(true); 		
+	if( AfterFunctionName.IsNone() ) {
+		AfterBroadcast.BindLambda( [=](){ 
+			FGameplayTag seqtag = InstancedStep->OwnerSequence->GetCurrentProgressTag();
+			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
+			InstancedStep->ProgressEnd(true);
 			DMS_LOG_SIMPLE(TEXT("==== %s : after broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
-			return;
-		}
-		UDMSSequenceStep* Param = InstancedStep;
-		this->ProcessEvent(this->FindFunction(AfterFunctionName),&Param);
-
-		DMS_LOG_SIMPLE(TEXT("==== %s : after broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
-	});
-
-	NotifyManager->Broadcast_New(InstancedStep->OwnerSequence,AfterBroadcast);
+		});
+	}
+	else{
+		AfterBroadcast.BindLambda( [=](){
+			FGameplayTag seqtag = InstancedStep->OwnerSequence->GetCurrentProgressTag();
+			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
+			UDMSSequenceStep* Param = InstancedStep;
+			this->ProcessEvent(this->FindFunction(AfterFunctionName),&Param);
+			DMS_LOG_SIMPLE(TEXT("==== %s : after broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
+		});
+	}
+	NotifyManager->Broadcast(InstancedStep->OwnerSequence,AfterBroadcast);
 	DMS_LOG_SIMPLE(TEXT("==== %s : Broadcast Step progress end [%s] ===="), *InstancedStep->OwnerSequence->GetName(), *GetClass()->GetName());
 }
 

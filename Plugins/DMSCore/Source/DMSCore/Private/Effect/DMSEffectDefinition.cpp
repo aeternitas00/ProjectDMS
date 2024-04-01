@@ -73,7 +73,7 @@ TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode
 }
 
 
-UDMSEffectNode::UDMSEffectNode() : bForced(false), bIgnoreNotify(false), bIsChainableEffect(true)
+UDMSEffectNode::UDMSEffectNode() : bForced(false), bCanResponseMulTime(false), bIgnoreNotify(false), bIsChainableEffect(true)
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 

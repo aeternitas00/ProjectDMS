@@ -219,7 +219,7 @@ public:
 												about which AE responsed to which game actor.
 	 * @return	true if Response success.
 	 */
-	bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak);
+	bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak=nullptr);
 
 	/**
 	 *	Add a param lambda expression to the native delegate to be executed after this active effect has been applied.

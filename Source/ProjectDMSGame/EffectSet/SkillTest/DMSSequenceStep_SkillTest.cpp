@@ -206,6 +206,78 @@ float UDMSSelector_SkillTest::GetUsableBonus(AActor* Tester)
 	return rv;
 }
 
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* InstancedStep)
+{
+	FGameplayTagContainer SkillTestAttribute = DefaultSkillTestData.StatName;
+	SkillTestAttribute.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
+	FGameplayTagContainer TestTargetAttribute;
+	if(!DefaultSkillTestData.bTestToStaticValue){
+		TestTargetAttribute = DefaultSkillTestData.TargetStatName;
+		TestTargetAttribute.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
+	}
+	else {
+		TestTargetAttribute=FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest").GetSingleTagContainer();
+	}
+	for(auto& EI : InstancedStep->OwnerSequence->GetAllEIs()){
+		auto AttComp = EI->GetComponentByClass<UDMSAttributeComponent>();
+		AttComp->MakeAttribute(SkillTestAttribute,UDMSAttributeValue_Numeric::StaticClass());	
+		AttComp->MakeAttribute(TestTargetAttribute,UDMSAttributeValue_Numeric::StaticClass());
+	}
+	BroadcastProgress(InstancedStep,FName(NAME_None));
+	// FT WINDOW
+}
+
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST2(UDMSSequenceStep* InstancedStep)
+{
+	// Commit cards from hand to skill test.
+
+	// SELECTOR OR JUST BROADCASTING?
+	// 일단은 그냥 브로드캐스팅으로.
+	BroadcastProgress(InstancedStep,FName(NAME_None));
+
+	// FT WINDOW
+}
+
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST3(UDMSSequenceStep* InstancedStep)
+{
+	// Reveal chaos token.
+
+	// run sequence of draw chaos token?
+
+
+	InstancedStep->ProgressEnd(true);
+}
+
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST4(UDMSSequenceStep* InstancedStep)
+{
+	// Resolve chaos syombol effects.
+	InstancedStep->ProgressEnd(true);
+}
+
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST5(UDMSSequenceStep* InstancedStep)
+{
+	// Determine investigator's modified skillvalue
+	InstancedStep->ProgressEnd(true);
+}
+
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST6(UDMSSequenceStep* InstancedStep)
+{
+	// Determine success/failure of skill test.
+	InstancedStep->ProgressEnd(true);
+}
+
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST7(UDMSSequenceStep* InstancedStep)
+{
+	// Apply skill test results.
+	InstancedStep->ProgressEnd(true);
+}
+
+void UDMSSequenceStepDefinition_SkillTest::Progress_ST8(UDMSSequenceStep* InstancedStep)
+{
+	// skill test ends.
+	InstancedStep->ProgressEnd(true);
+}
+
 FGameplayTag UDMSSequenceStepDefinition_SkillTest::GetPureStepTag_Implementation() const
 {
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest");

@@ -63,9 +63,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FDMSSelectorRequestForm StoredForm;
 
-	UDMSSelectorBase* Widget;
+	TObjectPtr<UDMSSelectorBase> Widget;
 
-	UDMSWidgetQueue* OwnerQueue;
+	TObjectPtr<UDMSWidgetQueue> OwnerQueue;
 
 public:
 	UFUNCTION(BlueprintCallable)

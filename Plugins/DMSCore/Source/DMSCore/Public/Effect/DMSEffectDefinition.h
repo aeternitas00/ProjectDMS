@@ -183,6 +183,13 @@ public:
 	bool bForced;
 
 	/**
+	 * Has a choice about triggering the effect ? 
+	 * true : Forced trigger when meet the conditions. / false : Can choose Y / N of trigger.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Can activate multiple time in single notify", EditCondition = "!bIgnoreNotify&&!bForced", EditConditionHides))
+	bool bCanResponseMulTime;
+
+	/**
 	 * This Effect doesn't receive notifies. 
 	 * It will not be activated except through other 'Activate Effect' effect. 
 	 */

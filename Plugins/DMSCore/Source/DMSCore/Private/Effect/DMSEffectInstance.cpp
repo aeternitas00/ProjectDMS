@@ -125,8 +125,8 @@ bool ADMSActiveEffect::ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInte
 	// 3. Check whether the state is explicitly closed to notifying.
 	if ( (CurrentState & EDMSAEState::AES_NotifyClosed) == EDMSAEState::AES_NotifyClosed)  return false;
 
-	// NOTIFIED
-
+	// FURTHER CHECKS
+	SourceTweak = SourceTweak==nullptr? GetOwner() : SourceTweak;
 	// Terminate condition check
 	if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) ){
 		CurrentState &= ~EDMSAEState::AES_Persistent;

@@ -24,6 +24,9 @@ protected:
 public: 
 	UDMSSequenceStep_FT(){}
 
+	UFUNCTION()
+	void Progress_FT(UDMSSequenceStep* InstancedStep);
+
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
 };
 
