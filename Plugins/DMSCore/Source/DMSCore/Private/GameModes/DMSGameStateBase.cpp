@@ -36,7 +36,7 @@ void ADMSGameStateBase::Tick(float Deltatime)
 	if(bNeedToCleanup){
 		bNeedToCleanup = false;
 		EffectHandler->CleanupNonPersistent();
-		NotifyManager->CleanupPrevSeqTree();
+		//NotifyManager->CleanupPrevSeqTree();
 	}
 
 	Super::Tick(Deltatime);

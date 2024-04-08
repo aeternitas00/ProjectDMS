@@ -12,7 +12,7 @@
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Library/DMSDataObjectHelperLibrary.h"
 #include "Player/DMSPlayerController.h"
-#include "GameModes/DMSGameStateBase.h"
+#include "GameModes/DMSGameState.h"
 #include "Selector/DMSDecisionDefinition.h"
 #include "Attribute/DMSAttribute.h"
 
@@ -206,6 +206,18 @@ float UDMSSelector_SkillTest::GetUsableBonus(AActor* Tester)
 	return rv;
 }
 
+void UDMSSequenceStepDefinition_SkillTest::SetupTargets(UDMSSequenceStep* InstancedStep, TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator)
+{
+	for (auto& TObj : Generator->GetTargets(InstancedStep->OwnerSequence->GetSourceObject(), InstancedStep->OwnerSequence))
+	{
+		AActor* CastedObj = Cast<AActor>(TObj);
+		if (CastedObj==nullptr || !CastedObj->Implements<UDMSEffectorInterface>()
+			/*|| CastedObj->GetComponentByClass<UDMSAttributeComponent>() == nullptr*/)	continue;
+
+		Arr.Add(Cast<AActor>(TObj));
+	}
+}
+
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* InstancedStep)
 {
 	FGameplayTagContainer SkillTestAttribute = DefaultSkillTestData.StatName;
@@ -243,8 +255,8 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST3(UDMSSequenceStep* Instan
 	// Reveal chaos token.
 
 	// run sequence of draw chaos token?
-
-
+	auto DrawSeq = Cast<ADMSGameState>(UDMSCoreFunctionLibrary::GetDMSGameState(InstancedStep))->CreateChaosTokenDrawSeq(InstancedStep->OwnerSequence);
+	
 	InstancedStep->ProgressEnd(true);
 }
 

@@ -233,6 +233,8 @@ public:
 	 */
 	void DetachFromOwner();
 
+	FSimpleMulticastDelegate OnDetach;
+
 	/**
 	 *	Safely clean up the workers used in AE applying.
 	 */

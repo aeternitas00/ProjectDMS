@@ -174,7 +174,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
 
-	void SetupTargets(TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator){}
+	void SetupTargets(UDMSSequenceStep* InstancedStep, TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
 
 	UFUNCTION()
 	void Progress_ST1(UDMSSequenceStep* InstancedStep);

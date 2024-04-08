@@ -105,18 +105,6 @@ bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMS
 	return false;
 }
 
-//TArray<UDMSEffectNodeWrapper*> UDMSEffectSet::GetEffectNodeWithComparer(const FNodeComparer& Comparer)
-//{
-//	TArray<UDMSEffectNodeWrapper*> rv;
-//
-//	for (auto NodeWrapper : EffectNodes)
-//	{
-//		if (Comparer.Execute(NodeWrapper->GetEffectNode())) rv.Add(NodeWrapper);
-//	}
-//	return rv;
-//}
-
-
 // SERIALIZATIONS
 
 //void UDMSEffectDefinition::Serialize(FArchive& Ar)

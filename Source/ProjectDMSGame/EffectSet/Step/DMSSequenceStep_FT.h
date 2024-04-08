@@ -30,16 +30,16 @@ public:
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
 };
 
-UCLASS(Blueprintable, Abstract)
-class PROJECTDMSGAME_API UDMSSelector_FT: public UDMSSelectorBase
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UDMSSequenceStep> OwnerStep;
-
-	UFUNCTION(BlueprintCallable)
-	TScriptInterface<IDMSEffectorInterface> GetTriggerableEffectors();
-
-};
+//UCLASS(Blueprintable, Abstract)
+//class PROJECTDMSGAME_API UDMSSelector_FT: public UDMSSelectorBase
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UPROPERTY(BlueprintReadOnly)
+//	TObjectPtr<UDMSSequenceStep> OwnerStep;
+//
+//	UFUNCTION(BlueprintCallable)
+//	TScriptInterface<IDMSEffectorInterface> GetTriggerableEffectors();
+//
+//};

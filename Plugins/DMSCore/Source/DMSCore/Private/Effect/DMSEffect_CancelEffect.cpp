@@ -10,6 +10,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_IgnoreEffect, "Effect.IgnoreEffect");
 //{
 //}
 
+// 올드 소스 : 작동되는지 확인해야함.
 void UDMSEffect_CancelEffect::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("CancelEffect Working"));

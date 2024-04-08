@@ -145,7 +145,7 @@ void ADMSActiveEffect::DetachFromOwner()
 {
 	auto Comp = GetOwner()->GetComponentByClass<UDMSEIManagerComponent>();
 	if(Comp==nullptr){/* Impossible case */return;}
-
+	OnDetach.Broadcast();
 	Comp->DetachActiveEffect(this);
 }
 

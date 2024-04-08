@@ -72,6 +72,10 @@ public:
 	void ExecuteModifier(const FDMSAttributeModifier& Modifier);
 	virtual void ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier);
 
+	//UFUNCTION(BlueprintNativeEvent, Category = Attribute)
+	virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+	//virtual void GetDeltaAfterModify_Implementation(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+
 	virtual bool IsSupportedForNetworking() const override {return true;}
 };
 
@@ -109,12 +113,15 @@ public:
 	/**
 	* Bind to OnAttributeModified
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void BindOnModified(const FOnAttributeModifiedSignature& iDelegate);
 
 	// Implements Ops
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void ApplyModifier(const FDMSAttributeModifier& Modifier);
+
+	//UFUNCTION(BlueprintCallable, Category = Attribute)
+	void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
 
 	void GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass);
 	void DuplicateValue(UDMSAttributeValue* Value);
@@ -175,6 +182,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void SetValue(float i) { Value=i; }
+
+	virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

@@ -6,6 +6,8 @@
 #include "Sequence/DMSSequence.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute, "Effect.ModAttribute");
+UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute_Revert, "Effect.ModAttribute.Revert");
+
 
 // 자손임을 표현하기 위해 파생 키워드들은 + ".~~" 하는 형태? ex) ModifyAttribute.Deal 
 // ( 일종의 포함 관계에 속하는 이펙트들의 구분 위함. --> HP가 변화했을 때 > { HP 피해를 입었을 때 , HP 회복을 했을 때 } )
@@ -33,8 +35,6 @@ bool UDMSEffect_ModAtt::GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarg
 
 void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
-	// predict에 valid check 를 다 하고가니 이런거 필요 한가 다시 생각해보긴 해야할텐데...
-
 	//DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *iEI->GetOuter()->GetName());	
 
 	AActor* Outer=nullptr;
@@ -55,9 +55,30 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSAc
 	
 	if (bCreateIfNull)	AttComp->MakeAttribute(TargetAttributeTags,Modifier.Value->GetClass());
 	
-	float OutValue = 0.0f;
-	
-	AttComp->GetAttribute(TargetAttributeTags)->ApplyModifier(Modifier);
+	UDMSAttribute* TargetAtt = AttComp->GetAttribute(TargetAttributeTags);
+
+	// 일반적인 로직으로 구현?? // ED_Revertable?
+	if (bTemporal){
+		auto AEAtt = iEI->GetComponentByClass<UDMSAttributeComponent>();
+		// 일반화 구현을 위한 테스트. (Value만 따로 생성해도 무방)
+		FGameplayTagContainer AEAttTag(TargetAttributeTags);
+		AEAttTag.AddTag(TAG_DMS_Effect_ModAttribute_Revert);
+		auto NewAEAtt = AEAtt->MakeAttribute(AEAttTag,TargetAtt->AttributeValue->GetClass());
+		TargetAtt->GetDeltaAfterModify(Modifier,NewAEAtt->AttributeValue);
+
+		iEI->OnDetach.AddLambda([=](){
+			FDMSAttributeModifier RevertMod;
+
+			RevertMod.ModifierOp = DuplicateObject(Modifier.ModifierOp,iEI);
+			RevertMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Subtractive;
+			RevertMod.Value=NewAEAtt->AttributeValue;
+
+			TargetAtt->ApplyModifier(RevertMod);
+
+			AEAtt->RemoveAttribute(NewAEAtt->AttributeTag);
+		});
+	}
+	TargetAtt->ApplyModifier(Modifier);
 
 	OnWorkCompleted.ExecuteIfBound(true);
 }
@@ -148,8 +169,7 @@ bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActive
 	ModifierValue = DuplicateObject<UDMSAttributeValue_Numeric>(ModifierValue,EI);
 
 	for (auto& Prc : ValueProcessers)
-		Prc->Process(ModifierValue);
-	
+		Prc->Process(ModifierValue);	
 	
 	OutModifier.ModifierOp = ModifierOp;
 	OutModifier.Value = ModifierValue;

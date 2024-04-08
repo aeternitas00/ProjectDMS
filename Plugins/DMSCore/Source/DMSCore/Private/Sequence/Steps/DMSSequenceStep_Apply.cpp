@@ -219,7 +219,7 @@ void UDMSSequenceStepDefinition_Apply::ApplyChildEffect(UDMSSequenceStep* Instan
 			// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
 
-			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(this);
+			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(InstancedStep);
 
 			// Resume parent sequence closing
 			InstancedStep->ProgressEnd();

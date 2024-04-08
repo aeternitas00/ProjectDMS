@@ -6,7 +6,7 @@
 #include "Player/DMSPlayerState.h"
 #include "Player/DMSPlayerController.h"
 #include "GameModes/DMSGameModeBase.h"
-#include "GameModes/DMSGameStateBase.h"
+#include "GameModes/DMSGameState.h"
 #include "Location/DMSLocationBase.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Effect/DMSEffectorInterface.h"

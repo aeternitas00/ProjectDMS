@@ -159,8 +159,7 @@ public:
 	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence = nullptr);
 
 //=================== Main Effect ===================//
-//== TODO :: Migrate to ApplyStep ==//
-
+	//== TODO :: Migrate to ApplyStep ==//
 	//=================== Conditions and timing that check before activate main effect ===================//
 
 	/**
@@ -193,7 +192,7 @@ public:
 	 * This Effect doesn't receive notifies. 
 	 * It will not be activated except through other 'Activate Effect' effect. 
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Is able to trigger"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Is unable to trigger"))
 	bool bIgnoreNotify;
 
 	/**

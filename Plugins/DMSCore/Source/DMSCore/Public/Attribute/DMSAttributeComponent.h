@@ -67,6 +67,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UDMSAttribute* GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue);
 
+	UFUNCTION(BlueprintCallable)
+	void RemoveAttribute(const FGameplayTagContainer& AttributeName);
 	/**
 	* Make named attribute if component doesn't contain param name.
 	* @param	AttributeName						key of Attributes

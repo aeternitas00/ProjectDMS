@@ -96,6 +96,14 @@ UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTa
 	return NewAtt;
 }
 
+void UDMSAttributeComponent::RemoveAttribute(const FGameplayTagContainer& AttributeName)
+{
+	UDMSAttribute* Att = GetAttribute(AttributeName);
+	if (Att == nullptr) return;
+	Attributes.Remove(Att);
+	Att->MarkAsGarbage();
+}
+
 UDMSAttribute* UDMSAttributeComponent::DuplicateAttribute(UDMSAttribute* Attribute)
 {
 	if (!Attribute || ContainAttribute(Attribute->AttributeTag)) return nullptr; // log or what\

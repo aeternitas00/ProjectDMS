@@ -25,6 +25,7 @@ enum class EDMSModifierType : uint8
 	MT_Additive UMETA(DisplayName = "Additive"),
 	MT_Multiplicative UMETA(DisplayName = "Multiplicative"),
 	MT_Override UMETA(DisplayName = "Set (Override)"),
+	MT_Subtractive UMETA(DisplayName = "Subtractive"),
 	MT_MAX
 };
 

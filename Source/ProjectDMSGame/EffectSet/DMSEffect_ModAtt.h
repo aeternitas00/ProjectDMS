@@ -9,7 +9,7 @@
 
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute)
-
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute_Revert);
 /**
  *	Base for effects that change value of attributes.
  *	Implementing the GenerateModifier function allows implementing 'how to adjust attributes' in various ways."
@@ -36,6 +36,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
 	FGameplayTagContainer TargetAttributeTags;
 
+	/**
+	 *	Create attribute if there isn't matching one.
+	 */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Revert when AE was detached from target"))
+	bool bTemporal;
 
 	// Attribute Modifier generating rules
 
@@ -50,7 +55,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	bool GenerateModifier(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
 	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
-	
+
+	void Revert(ADMSActiveEffect* iEI);
 	// vf implements
 
 	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
