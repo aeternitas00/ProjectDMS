@@ -2,24 +2,17 @@
 
 
 #include "Attribute/DMSAttribute.h"
-
+#include "Effect/DMSEffectorInterface.h"
 
 UDMSAttribute::UDMSAttribute():AttributeValue(nullptr)
 {
 }
-
-
 
 void UDMSAttribute::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UDMSAttribute,AttributeValue);
-}
-
-
-UDMSAttributeValue_Numeric::UDMSAttributeValue_Numeric() : Value(0.0f)
-{
 }
 
 void UDMSAttribute::BindOnModified(const FOnAttributeModifiedSignature& iDelegate)
@@ -57,6 +50,25 @@ void UDMSAttribute::DuplicateValue(UDMSAttributeValue* Value)
 	AttributeValue = DuplicateObject<UDMSAttributeValue>(Value, this);
 }
 
+void UDMSAttributeValue::ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier) { Modifier.ModifierOp->ExecuteOp(this, Modifier.Value); }
+
+void UDMSAttributeValue::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
+{
+	//OutValue->Value = Modifier.Value->Value;
+}
+
+
+
+
+
+
+
+
+
+
+UDMSAttributeValue_Numeric::UDMSAttributeValue_Numeric() : Value(0.0f)
+{
+}
 
 void UDMSAttributeValue_Numeric::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -154,19 +166,43 @@ bool UDMSAttributeModifierOp_Numeric::Predict_Implementation(UDMSAttribute* Targ
 }
 
 
-//void UDMSAttribute_Numeric::Serialize(FArchive& Ar)
-//{
-//	Super::Serialize(Ar);
-//	auto s = ToSerialized();
-//	Ar << s;
-//
-//	//if (Ar.IsSaving()) {}
-//	//else if (Ar.IsLoading()) {}
-//}
 
-void UDMSAttributeValue::ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier) { Modifier.ModifierOp->ExecuteOp(this, Modifier.Value); }
 
-void UDMSAttributeValue::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
+void UDMSAttributeValue_Effector::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier, TObjectPtr<UDMSAttributeValue>& OutValue)
 {
-	//OutValue->Value = Modifier.Value->Value;
+}
+
+void UDMSAttributeValue_Effector::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UDMSAttributeValue_Effector, Value);
+}
+
+void UDMSAttributeModifierOp_Effector::ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue)
+{
+	auto CastedValue = Cast<UDMSAttributeValue_Effector>(AttValue);
+	auto CastedRightValue = Cast<UDMSAttributeValue_Effector>(ModifierValue);
+	if(!CastedValue || !CastedRightValue) return;
+
+	switch(AttributeModifierType)
+	{
+		case EDMSModifierType::MT_Additive:
+			CastedValue->Add(CastedRightValue->GetValue());
+			break;
+		case EDMSModifierType::MT_Override:
+			CastedValue->SetValue(CastedRightValue->GetValue());
+			break;
+		case EDMSModifierType::MT_Subtractive:
+			CastedValue->Remove(CastedRightValue->GetValue());
+			break;
+		default:
+			break;
+	}
+}
+
+bool UDMSAttributeModifierOp_Effector::Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue)
+{
+	// false if remove failed?
+	return true;
 }

@@ -19,7 +19,7 @@
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest, "Step.SkillTest");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest_Committable, "Step.SkillTest.Committable");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest_Data_TestDiffModifier, "Step.SkillTest.Data.TestDiffModifier");
-UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest_Data_TestResult, "Step.SkillTest.Data.TestResult");
+UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest_Data_TestResult, "Step.Arkham.SkillTest.TestResult");
 
 const FGameplayTag UDMSSequenceStep_SkillTest::SkillBonusTag = FGameplayTag::RequestGameplayTag("Attribute.SavedSkillBonus", false);
 
@@ -169,13 +169,13 @@ void UDMSSelector_SkillTest::PushResultUpdater(AActor* Tester, AActor* TestTarge
 	if (OwnerStep->IsTestByEachApplyTarget()){
 		Updaters.Push([=]() __declspec(noinline) {
 			DMS_LOG_SCREEN(TEXT("Update Data"));
-			OwnerStep->OwnerSequence->GetAllEIs()[CurrentEIIndex]->DataSet->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
+			//OwnerStep->OwnerSequence->GetAllEIs()[CurrentEIIndex]->DataSet->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
 		});
 	}
 	else{
 		Updaters.Push( [=]() __declspec(noinline) {
 			DMS_LOG_SCREEN(TEXT("Update Data"));
-			OwnerStep->OwnerSequence->SequenceDatas->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
+			//OwnerStep->OwnerSequence->SequenceDatas->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
 		});
 	}
 	UsedBonusValues.Push(BonusValue);
@@ -218,23 +218,54 @@ void UDMSSequenceStepDefinition_SkillTest::SetupTargets(UDMSSequenceStep* Instan
 	}
 }
 
+FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetSeqAttributeTag_Tester()
+{
+	FGameplayTagContainer rv = DefaultSkillTestData.StatName;	
+	rv.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
+
+	return rv;
+}
+
+FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetSeqAttributeTag_TestTarget()
+{
+	FGameplayTagContainer rv = DefaultSkillTestData.bTestToStaticValue ? DefaultSkillTestData.StatName : DefaultSkillTestData.TargetStatName;
+
+	rv.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
+
+	return rv;
+}
+
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* InstancedStep)
 {
-	FGameplayTagContainer SkillTestAttribute = DefaultSkillTestData.StatName;
-	SkillTestAttribute.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
-	FGameplayTagContainer TestTargetAttribute;
-	if(!DefaultSkillTestData.bTestToStaticValue){
-		TestTargetAttribute = DefaultSkillTestData.TargetStatName;
-		TestTargetAttribute.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest"));
-	}
-	else {
-		TestTargetAttribute=FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest").GetSingleTagContainer();
-	}
-	for(auto& EI : InstancedStep->OwnerSequence->GetAllEIs()){
-		auto AttComp = EI->GetComponentByClass<UDMSAttributeComponent>();
-		AttComp->MakeAttribute(SkillTestAttribute,UDMSAttributeValue_Numeric::StaticClass());	
-		AttComp->MakeAttribute(TestTargetAttribute,UDMSAttributeValue_Numeric::StaticClass());
-	}
+	FGameplayTagContainer SkillTestAttribute = GetSeqAttributeTag_Tester();	
+	FGameplayTagContainer TestTargetAttribute = GetSeqAttributeTag_TestTarget();
+
+	auto AttComp = InstancedStep->OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
+
+	auto SeqTesterValue = Cast<UDMSAttributeValue_Numeric>(AttComp->MakeAttribute(SkillTestAttribute,UDMSAttributeValue_Numeric::StaticClass()));	
+	auto SeqTestTargetValue = Cast<UDMSAttributeValue_Numeric>(AttComp->MakeAttribute(TestTargetAttribute,UDMSAttributeValue_Numeric::StaticClass()));
+
+	auto SeqAttTester = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Tester").GetSingleTagContainer());
+	UDMSAttributeValue_Effector* AttVTester = nullptr;
+	AActor* Tester = nullptr;
+	if(	SeqAttTester ) AttVTester = Cast<UDMSAttributeValue_Effector>(SeqAttTester->AttributeValue);
+	if( AttVTester ) Tester = Cast<AActor>(AttVTester->GetValue()[0].GetObject());
+	if( !Tester ) Tester = InstancedStep->OwnerSequence->GetSourceObject();
+
+	UDMSAttributeValue_Numeric* TesterAttribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.StatName));
+	if ( TesterAttribute ) SeqTesterValue->SetValue(TesterAttribute->GetValue());
+	
+	auto SeqAttTestTarget = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget").GetSingleTagContainer());
+	UDMSAttributeValue_Effector* AttVTestTarget  = nullptr;
+	AActor* TestTarget  = nullptr;
+	if(	SeqAttTestTarget ) AttVTestTarget = Cast<UDMSAttributeValue_Effector>(SeqAttTestTarget->AttributeValue);
+	if( AttVTestTarget ) TestTarget = Cast<AActor>(AttVTestTarget->GetValue()[0].GetObject());
+	if( !TestTarget ) TestTarget = Cast<AActor>(InstancedStep->OwnerSequence->GetTargets()[0].GetObject());
+	
+	UDMSAttributeValue_Numeric* TestTargetAttVal  = Cast<UDMSAttributeValue_Numeric>(TestTarget->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.TargetStatName));
+	if ( TestTargetAttVal ) SeqTestTargetValue->SetValue(TestTargetAttVal->GetValue());
+	
+
 	BroadcastProgress(InstancedStep,FName(NAME_None));
 	// FT WINDOW
 }
@@ -253,41 +284,59 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST2(UDMSSequenceStep* Instan
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST3(UDMSSequenceStep* InstancedStep)
 {
 	// Reveal chaos token.
-
+	auto SeqManager		=	UDMSCoreFunctionLibrary::GetDMSSequenceManager(InstancedStep);		check(SeqManager);
 	// run sequence of draw chaos token?
 	auto DrawSeq = Cast<ADMSGameState>(UDMSCoreFunctionLibrary::GetDMSGameState(InstancedStep))->CreateChaosTokenDrawSeq(InstancedStep->OwnerSequence);
 	
-	InstancedStep->ProgressEnd(true);
+	if(DrawSeq==nullptr) InstancedStep->ProgressEnd(false);
+
+	DrawSeq->AddToOnSequenceFinished_Native([=](bool){
+		InstancedStep->ProgressEnd(true);
+	});
+
+	SeqManager->RunSequence(DrawSeq);
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST4(UDMSSequenceStep* InstancedStep)
 {
 	// Resolve chaos syombol effects.
-	InstancedStep->ProgressEnd(true);
+	BroadcastProgress(InstancedStep,FName(NAME_None));
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST5(UDMSSequenceStep* InstancedStep)
 {
 	// Determine investigator's modified skillvalue
-	InstancedStep->ProgressEnd(true);
+	BroadcastProgress(InstancedStep,FName(NAME_None));
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST6(UDMSSequenceStep* InstancedStep)
 {
 	// Determine success/failure of skill test.
-	InstancedStep->ProgressEnd(true);
+	auto SeqAttComp = InstancedStep->OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
+
+	auto ResultAttribute = Cast<UDMSAttributeValue_Numeric>(SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),UDMSAttributeValue_Numeric::StaticClass()));
+
+	auto TesterAttribute = Cast<UDMSAttributeValue_Numeric>(SeqAttComp->GetAttribute(GetSeqAttributeTag_Tester()));
+	auto TestTargetAttribute = Cast<UDMSAttributeValue_Numeric>(SeqAttComp->GetAttribute(GetSeqAttributeTag_TestTarget()));
+
+	if(!TesterAttribute || !TestTargetAttribute)
+		ResultAttribute->SetValue(0);
+	else 
+		ResultAttribute->SetValue(TestTargetAttribute->GetValue()-TesterAttribute->GetValue());
+
+	BroadcastProgress(InstancedStep,FName(NAME_None));
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST7(UDMSSequenceStep* InstancedStep)
 {
 	// Apply skill test results.
-	InstancedStep->ProgressEnd(true);
+	BroadcastProgress(InstancedStep,FName(NAME_None));
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST8(UDMSSequenceStep* InstancedStep)
 {
 	// skill test ends.
-	InstancedStep->ProgressEnd(true);
+	BroadcastProgress(InstancedStep,FName(NAME_None));
 }
 
 FGameplayTag UDMSSequenceStepDefinition_SkillTest::GetPureStepTag_Implementation() const

@@ -7,7 +7,7 @@
 #include "UObject/NoExportTypes.h"
 #include "DMSEffectOption.generated.h"
 
-class UDMSSequence;
+class ADMSSequence;
 class ADMSActiveEffect;
 
 /**
@@ -34,13 +34,13 @@ public:
 	/*
 	 * @param	OnOptionCompleted	()->void lambda param 
 	 */
-	void ExecuteOption(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	void ExecuteOption(ADMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
 
-	//void ExecuteOption(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, FOnExecuteCompleted OnOptionCompleted);
+	//void ExecuteOption(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, FOnExecuteCompleted OnOptionCompleted);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void OnExecuteOption(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
-	virtual void OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI , const FOnOptionCompleted& OnOptionCompleted);
+	void OnExecuteOption(ADMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	virtual void OnExecuteOption_Implementation(ADMSSequence* iSourceSeq, ADMSActiveEffect* iEI , const FOnOptionCompleted& OnOptionCompleted);
 
 };
 

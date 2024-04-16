@@ -211,15 +211,13 @@ void UDMSSequenceStepDefinition_Apply::ApplyChildEffect(UDMSSequenceStep* Instan
 		auto ChildNode = Seq->OriginalEffectNode->ChildEffect->GetEffectNode();
 		// follows parents data. 
 		auto NewSeq = SeqManager->RequestCreateSequence(Seq->GetSourceObject(), Seq->GetSourcePlayer(), ChildNode,
-			TArray<TScriptInterface<IDMSEffectorInterface>>(), Seq->SequenceDatas, Seq);
+			TArray<TScriptInterface<IDMSEffectorInterface>>(), true, Seq);
 
 		// Set delegates when child effect sequence completed.
 		NewSeq->AddToPreSequenceFinished_Native(
 			[=, ParentSequence = Seq](bool Succeeded) __declspec(noinline) {
 			// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
 			DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
-
-			auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(InstancedStep);
 
 			// Resume parent sequence closing
 			InstancedStep->ProgressEnd();

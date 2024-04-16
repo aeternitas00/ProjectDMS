@@ -15,7 +15,7 @@
 #include "DMSCoreIncludes.h"
 //#include "DMSCommonDelegates.generated.h"
 
-class UDMSSequence;
+class ADMSSequence;
 
 //	========================= //
 //			Delegates
@@ -26,6 +26,6 @@ class UDMSSequence;
 DECLARE_MULTICAST_DELEGATE(FSimpleMulticastEventSignature);
 
 DECLARE_DELEGATE_OneParam(FOnResolveCompleted, bool);
-DECLARE_DELEGATE_TwoParams(FResolveIteratingDelegate, UDMSSequence*, bool);
-DECLARE_DELEGATE_TwoParams(FOnApplyCompleted, UDMSSequence*, bool);
+DECLARE_DELEGATE_TwoParams(FResolveIteratingDelegate, ADMSSequence*, bool);
+DECLARE_DELEGATE_TwoParams(FOnApplyCompleted, ADMSSequence*, bool);
 

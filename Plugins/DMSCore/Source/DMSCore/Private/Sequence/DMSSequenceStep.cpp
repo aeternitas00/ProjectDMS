@@ -11,7 +11,7 @@ UDMSSequenceStep::UDMSSequenceStep()
 {
 }
 
-void UDMSSequenceStep::InitializeStepProgress(UDMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& iStepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
+void UDMSSequenceStep::InitializeStepProgress(ADMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& iStepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
 {
 	CurrentProgressIndex=0;
 	OwnerSequence=iOwnerSequence;
@@ -44,6 +44,22 @@ void UDMSSequenceStep::ExecuteNextProgress()
 {
 	auto& CurrentExec = ProgressExecutors[CurrentProgressIndex];
 	CurrentExec.ExecutorDelegate.ExecuteIfBound(this);
+}
+
+void UDMSSequenceStep::SetNextProgress(int ProgressIdx)
+{
+	CurrentProgressIndex=ProgressIdx-1;
+}
+
+void UDMSSequenceStep::SetNextProgress(const FGameplayTag& ProgressTag)
+{
+	int N = ProgressExecutors.Num();
+	for(int i=0;i<N;i++)
+	{
+		if(ProgressExecutors[i].ExactTag==ProgressTag){
+			CurrentProgressIndex=i-1;break;
+		}
+	}
 }
 
 void UDMSSequenceStep::ProgressEnd(bool bSucceeded)

@@ -5,7 +5,7 @@
 #include "Common/DMSCommons.h"
 
 
-bool UDMSSeqTimingCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSSeqTimingCondition::CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const
 {
 	//return (CurrentSequence->GetCurrentProgress() == Timing || Timing == EDMSTimingFlag::T_Null)
 	//	&& CurrentSequence->GetSequenceTags().MatchesQuery(EffectTagQuery)

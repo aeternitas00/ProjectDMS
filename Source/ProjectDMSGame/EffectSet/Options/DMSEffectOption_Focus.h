@@ -21,6 +21,6 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Instanced)
 	TObjectPtr<UDMSTargetGenerator> FocusTarget;
 
-	virtual void OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	virtual void OnExecuteOption_Implementation(ADMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
 
 };

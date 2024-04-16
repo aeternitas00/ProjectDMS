@@ -22,7 +22,7 @@
 class UDMSEffectDefinition;
 class UDMSEffectNode;
 class UDMSDataObjectSet;
-class UDMSSequence;
+class ADMSSequence;
 class UDMSEffectorInterface;
 class UDMSDecisionWidget;
 
@@ -44,7 +44,7 @@ DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObje
 //	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 //	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
 //	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	UDMSSequence* ParentSequence;
+//	ADMSSequence* ParentSequence;
 //	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 //	UDMSDataObjectSet* Datas;
 //
@@ -87,13 +87,13 @@ public:
 	 * @return	Created sequence : nullptr if request was failed.
 	 */
 	UFUNCTION(BlueprintCallable/*, Server, Reliable*/)
-	UDMSSequence* RequestCreateSequence(
+	ADMSSequence* RequestCreateSequence(
 		AActor* SourceObject, 
 		AActor* SourcePlayer,
 		UDMSEffectNode* EffectNode, 
 		const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
-		UDMSDataObjectSet* Datas = nullptr, 
-		UDMSSequence* ParentSequence = nullptr
+		bool LinkAttributeWithParent = false,
+		ADMSSequence* ParentSequence = nullptr
 	);	
 
 	// 멀티플레이 테스트용 임시 함수
@@ -112,12 +112,12 @@ public:
 		AActor* SourcePlayer,
 		UDMSEffectNode* EffectNode, 
 		const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
-		UDMSSequence* ParentSequence ,
-		UDMSDataObjectSet* Datas= nullptr
+		ADMSSequence* ParentSequence,
+		bool LinkAttributeWithParent = false
 	);	
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void RemoveSequence(UDMSSequence* Sequence);
+	void RemoveSequence(ADMSSequence* Sequence);
 
 	/**
 	 * Run param sequence.
@@ -125,14 +125,14 @@ public:
 	 * @param	WithPreview		Run sequence with previewing.  
 	 */
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void RunSequence(UDMSSequence* iSeq);
+	void RunSequence(ADMSSequence* iSeq);
 
 	/**
 	 * Complete param sequence. sort of cleanup.
 	 * @param	Sequence
 	 */
 	UFUNCTION(Server, Reliable)
-	void CompleteSequence(UDMSSequence* Sequence, bool Succeeded = true);
+	void CompleteSequence(ADMSSequence* Sequence, bool Succeeded = true);
 
 protected:
 
@@ -147,21 +147,21 @@ public:
 	 * Root of sequence tree. the first created sequence becomes root sequence.
 	 */
 	UPROPERTY(Replicated)
-	TObjectPtr<UDMSSequence> RootSequence;
+	TObjectPtr<ADMSSequence> RootSequence;
 
 	/*
 	 * Current running sequence.
 	 * Sequences created while another sequence is in progress will be set as child of that.
 	 */
 	UPROPERTY(Replicated)
-	TObjectPtr<UDMSSequence> CurrentSequence;
+	TObjectPtr<ADMSSequence> CurrentSequence;
 
 	/**
 	 * Get depth of sequence in tree.
 	 * @param	iSeq
 	 * @return	Detpth : -1 if iSeq is nullptr.
 	 */
-	int GetDepth(UDMSSequence* iSeq);
+	int GetDepth(ADMSSequence* iSeq);
 
 	/*
 	 * Delegate for resuming sequence flow from selector queue
@@ -185,10 +185,10 @@ public:
 	 * @param	StartingSequence			Starting node of sequence tree.
 	 * @param	SerachingTag				Searching target tag.
 	 */
-	UFUNCTION(BlueprintCallable)
-	UDMSDataObjectSet* SearchNearestDataObject(UDMSSequence* StartingSequence, FGameplayTag SerachingTag) const;
+	//UFUNCTION(BlueprintCallable)
+	//UDMSDataObjectSet* SearchNearestDataObject(ADMSSequence* StartingSequence, FGameplayTag SerachingTag) const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
-	friend class UDMSSequence;
+	friend class ADMSSequence;
 };

@@ -6,7 +6,7 @@ UDMSObjectConditionBase::UDMSObjectConditionBase()
 {
 }
 
-TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMSSequence* iSeq, const UDMSTargetGenerator* TargetGenerator) const
+TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, ADMSSequence* iSeq, const UDMSTargetGenerator* TargetGenerator) const
 {
 	TArray<UObject*> Rv;
 	
@@ -15,7 +15,7 @@ TArray<UObject*> UDMSObjectConditionBase::GetCompareTarget(UObject* Caller, UDMS
 	return Rv;
 }
 
-bool UDMSObjectConditionBase::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSObjectConditionBase::CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const
 {
 	auto CheckingObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, CompareTargetGenerator);
 	bool outResult = bAllObjectMustPassed;
@@ -30,7 +30,7 @@ bool UDMSObjectConditionBase::CheckOperation_Implementation(UObject* CheckingGam
 	return outResult;
 }
 
-bool UDMSObjectClassCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
+bool UDMSObjectClassCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const
 {
 	return OnlyExact ? Target->GetClass() == Class : Target->IsA(Class);
 }

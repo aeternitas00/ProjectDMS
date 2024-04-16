@@ -46,7 +46,7 @@ void UDMSEIManagerComponent::DetachActiveEffect(ADMSActiveEffect* EI)
 }
 
 // SourceTweak :: are we actually need this?
-bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
+bool UDMSEIManagerComponent::OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, ADMSSequence* Seq, AActor* SourceTweak)
 {
 	bool rv=false;
 	for (auto OwnEI : OwnEffectInstances) {

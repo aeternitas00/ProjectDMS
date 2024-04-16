@@ -16,7 +16,7 @@ ADMSPlayerControllerBase::ADMSPlayerControllerBase(const FObjectInitializer& Obj
 }
 
 
-bool ADMSPlayerControllerBase::SetupWidgetQueue(UDMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles )
+bool ADMSPlayerControllerBase::SetupWidgetQueue(ADMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles )
 {
 	return WidgetQueue->SetupQueue(SourceSequence,Handles);
 }

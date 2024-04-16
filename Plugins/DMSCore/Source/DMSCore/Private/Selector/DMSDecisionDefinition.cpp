@@ -8,9 +8,9 @@
 #include "Common/DMSTargetGenerator.h"
 #include "Library/DMSDataObjectHelperLibrary.h"
 #include "Library/DMSCoreFunctionLibrary.h"
-
+#include "Attribute/DMSAttributeComponent.h"
 // 리퀘스트 폼을 제작 
-TArray<FDMSSelectorRequestForm> UDMSSelectorRequestGenerator::GenerateRequestForm(UDMSSequence* Sequence, bool SelectForEachEI)
+TArray<FDMSSelectorRequestForm> UDMSSelectorRequestGenerator::GenerateRequestForm(ADMSSequence* Sequence, bool SelectForEachEI)
 {
 	TArray<FDMSSelectorRequestForm> Rv;
 
@@ -36,12 +36,12 @@ TArray<FDMSSelectorRequestForm> UDMSSelectorRequestGenerator::GenerateRequestFor
 }
 
 
-TArray<UDMSDataObject*> UDMSSelectorRequestGenerator::GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI)
+TArray<UObject*> UDMSSelectorRequestGenerator::GenerateCandidates(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI)
 {
-	return TArray<UDMSDataObject*>();
+	return TArray<UObject*>();
 }
 
-TArray<FDMSSelectorRequestForm> FDMSDecisionDefinition::SetupRequestForm( UDMSSequence* Sequence )
+TArray<FDMSSelectorRequestForm> FDMSDecisionDefinition::SetupRequestForm( ADMSSequence* Sequence )
 {
 	auto temp = SelectForEachEI && Sequence->IsTargetted();
 	auto Rv = Generator->GenerateRequestForm( Sequence , temp );
@@ -55,32 +55,40 @@ TArray<FDMSSelectorRequestForm> FDMSDecisionDefinition::SetupRequestForm( UDMSSe
 
 
 
-TArray<UDMSDataObject*> USelectorRequestGenerator_FromSequenceData::GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI )
+TArray<UObject*> USelectorRequestGenerator_FromSequenceData::GenerateCandidates ( ADMSSequence* Sequence , ADMSActiveEffect* TargetEI )
 {
-	TArray<UDMSDataObject*> rv;
-	Sequence->SequenceDatas->GetValidDataValue<TArray<UDMSDataObject*>>(DataTag,rv);
+	TArray<UObject*> rv;
+	auto EffectorAtt = Sequence->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Effector>(DataTag);
+	if ( EffectorAtt )
+	{
+		for(auto& i : EffectorAtt->GetValue()) rv.Add(i.GetObject());
+	}
+	return rv;
+
+}
+
+TArray<UObject*> USelectorRequestGenerator_FromEIData::GenerateCandidates ( ADMSSequence* Sequence , ADMSActiveEffect* TargetEI )
+{
+	TArray<UObject*> rv;
+	auto EffectorAtt = TargetEI->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Effector>(DataTag);
+	if ( EffectorAtt )
+	{
+		for(auto& i : EffectorAtt->GetValue()) rv.Add(i.GetObject());
+	}
 	return rv;
 }
 
-TArray<UDMSDataObject*> USelectorRequestGenerator_FromEIData::GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI )
-{
-	TArray<UDMSDataObject*> rv;
-	TargetEI->DataSet->GetValidDataValue<TArray<UDMSDataObject*>>(DataTag,rv);
-	return rv;
-}
 
-
-TArray<UDMSDataObject*> USelectorRequestGenerator_WithTG::GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI)
+TArray<UObject*> USelectorRequestGenerator_WithTG::GenerateCandidates(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI)
 {
-	auto Targets = TargetGenerator->GetTargets(Sequence->GetSourceObject(),Sequence);
-	return UDMSDataObjectHelperLibrary::RawDataToDataObjectArr(Targets,Sequence);
+	return TargetGenerator->GetTargets(Sequence->GetSourceObject(),Sequence);
 }
 
 
 
 
 
-void UDMSSelectorBehaviorDefinition_UpdateData::SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI)
+void UDMSSelectorBehaviorDefinition_UpdateData::SetupFormDelegates(ADMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI)
 {
 	if (SelectForEachEI) // FormArr.Num() == EIArr.Num()
 	{
@@ -120,7 +128,7 @@ void UDMSSelectorBehaviorDefinition_UpdateData::SetupFormDelegates(UDMSSequence*
 	}
 }
 
-void UDMSSelectorBehaviorDefinition_UpdateTarget::SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI)
+void UDMSSelectorBehaviorDefinition_UpdateTarget::SetupFormDelegates(ADMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI)
 {
 	FormArr[0].OnCompletedNative.BindLambda([=](TArray<uint8> IndexArr) {
 			auto EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(Sequence); check(EH);

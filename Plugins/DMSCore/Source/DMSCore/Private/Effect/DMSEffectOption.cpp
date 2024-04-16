@@ -3,13 +3,13 @@
 
 #include "Effect/DMSEffectOption.h"
 
-void UDMSEffectOption::OnExecuteOption_Implementation(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
+void UDMSEffectOption::OnExecuteOption_Implementation(ADMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("SIMPLE"));
 	OnOptionCompleted.Execute(this);
 }
 
-void UDMSEffectOption::ExecuteOption(UDMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
+void UDMSEffectOption::ExecuteOption(ADMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
 	//OnExecuteCompleted.BindLambda(OnOptionCompleted);
 

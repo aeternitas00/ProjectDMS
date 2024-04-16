@@ -19,7 +19,7 @@
 #include "DMSEffectHandler.generated.h"
 
 class ADMSActiveEffect;
-class UDMSSequence;
+class ADMSSequence;
 class UDMSEffectNode;
 class UDMSDataObjectSet;
 class IDMSEffectorInterface;
@@ -57,17 +57,17 @@ protected:
 	 * Store FResolveDelegateCounters for each sequences.
 	 */
 	UPROPERTY()
-	TMap<TObjectPtr<UDMSSequence>, FResolveDelegateCounter> OnResolveCompletedMap;
+	TMap<TObjectPtr<ADMSSequence>, FResolveDelegateCounter> OnResolveCompletedMap;
 
 	/**
 	 * Function for sequential execution of Resolving EI in a sequence.
 	 * Work with OnResolveCompletedMap.
 	 * @param	Sequence					Resolving sequence.
 	 */
-	void ApplyNextEffectInstance(UDMSSequence* SourceSequence, const FOnResolveCompleted& OnResolveCompleted, bool PrevSucceeded);
-	//void ApplyNextEffectInstance_Preview(UDMSSequence* SourceSequence, bool PrevSucceeded);
+	void ApplyNextEffectInstance(ADMSSequence* SourceSequence, const FOnResolveCompleted& OnResolveCompleted, bool PrevSucceeded);
+	//void ApplyNextEffectInstance_Preview(ADMSSequence* SourceSequence, bool PrevSucceeded);
 
-	ADMSActiveEffect* ApplyAEGetter(UDMSSequence* OwnerSequence);
+	ADMSActiveEffect* ApplyAEGetter(ADMSSequence* OwnerSequence);
 
 	//FResolveIteratingDelegate ResolveIteratingDelegate;
 
@@ -96,13 +96,13 @@ public:
 	 * @param	EffectNode
 	 * @return	Created effect instances.
 	 */
-	TArray<ADMSActiveEffect*> CreateApplyingActiveEffect(UDMSSequence* Sequence, UDMSEffectNode* EffectNode);
+	TArray<ADMSActiveEffect*> CreateApplyingActiveEffect(ADMSSequence* Sequence, UDMSEffectNode* EffectNode);
 
 	/**
 	 * Resolve param sequence and executed paramed lambda function when resolve completed.
 	 * @param	Sequence					Resolving sequence.
 	 * @param	OnResolveCompleted			Lambda executed when resolve completed.
 	 */
-	void Resolve(UDMSSequence* Sequence, const FOnResolveCompleted& OnResolveCompleted);
+	void Resolve(ADMSSequence* Sequence, const FOnResolveCompleted& OnResolveCompleted);
 };
 

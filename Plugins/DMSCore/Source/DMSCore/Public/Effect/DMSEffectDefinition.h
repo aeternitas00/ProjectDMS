@@ -27,7 +27,7 @@ class UDMSSequenceStep;
 class UDMSSequenceStepDefinition;
 class UDMSDecisionWidget;
 class UDMSDataObjectSet;
-class UDMSSequence;
+class ADMSSequence;
 class UDMSConditionCombiner;
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnOptionCompleted,UDMSEffectOption*,CompletedOption);
@@ -83,8 +83,8 @@ public:
 	// 이것은 카드 종류 하나에 실행부 하나만을 두기 까지 압축하는 것을 의도
 	// 성공 여부 파악, 체인 확장을 위한 핸들 리턴?
 	
-	void ExecuteEffectOptions(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
-	void ExecuteEffectDefinition(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnExecuteCompleted);
+	void ExecuteEffectOptions(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted);
+	void ExecuteEffectDefinition(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnExecuteCompleted);
 
 	/**
 	 * Execution part of the this effect.
@@ -93,8 +93,8 @@ public:
 	 * @param	OnWorkCompleted					Delegate excuted when work complete
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	void Work(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted); // temp
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(true); }
+	void Work(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted); // temp
+	virtual void Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted){ OnWorkCompleted.ExecuteIfBound(true); }
 
 	/**
 	 * Predict whether work will succeed or fail
@@ -103,8 +103,8 @@ public:
 	 * @return	true if effect activation condition check is successful
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	bool Predict(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI); // temp
-	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI) { return true; }
+	bool Predict(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI); // temp
+	virtual bool Predict_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI) { return true; }
 
 	// ====================== //
 	//		For selector
@@ -124,6 +124,7 @@ public:
  *	( ex. Deal 3 Damage and heal self that much. Then, if target HP is lower than ~ : Deal 2 Damage. )
  *	Pseudo tree architecture for sub-effect and branchs.
  *
+ *	NOTE : RENAME? ( Actually this class is sort of Sequence definition.
  *	=========================================
  *	
  */
@@ -144,29 +145,25 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	FGameplayTag NodeTag;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	FGameplayTagContainer NodeTags;
 	/**
 	 * It returns a container that consolidates all the tags associated with the node like EffectDefinition's one (e.g., tags for the target attribute in ED_ModAtt). 
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	FGameplayTagContainer GenerateTagContainer(UDMSSequence* CurrentSequence);
-	virtual FGameplayTagContainer GenerateTagContainer_Implementation(UDMSSequence* CurrentSequence);
+	FGameplayTagContainer GenerateTagContainer(ADMSSequence* CurrentSequence);
+	virtual FGameplayTagContainer GenerateTagContainer_Implementation(ADMSSequence* CurrentSequence);
 
 	/**
 	 * Execute param tag query to generated node tag container.
 	 * @param	EffectTagQuery				Executing tag query
 	 * @return	Query result.
 	 */
-	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence = nullptr);
+	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,ADMSSequence* CurrentSequence = nullptr);
 
 //=================== Main Effect ===================//
 	//== TODO :: Migrate to ApplyStep ==//
 	//=================== Conditions and timing that check before activate main effect ===================//
-
-	/**
-	 * Effect's activatable timing.
-	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Trigger Conditions" ,EditCondition = "!bIgnoreNotify", EditConditionHides))
-	TObjectPtr<UDMSConditionCombiner> Conditions;
 
 	/**
 	 * Effect's default attributes.
@@ -196,9 +193,21 @@ public:
 	bool bIgnoreNotify;
 
 	/**
+	 * Flag of "Is this effect has chainable window?".
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	bool bIsChainableEffect;
+
+	/**
+	 * Effect's activatable timing.
+	 */ 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Trigger Conditions" ,EditCondition = "!bIgnoreNotify", EditConditionHides))
+	TObjectPtr<UDMSConditionCombiner> Conditions;
+
+	/**
 	 * Effect's terminate condition.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect,meta = (EditCondition = "bIsPersistent", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (EditCondition = "bIsPersistent", EditConditionHides))
 	TObjectPtr<UDMSConditionCombiner> TerminateConditions;
 
 	//=================== Definitions ===================//
@@ -208,7 +217,7 @@ public:
 	 * Works in order to 0~n
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
-	TArray<UDMSEffectDefinition*> EffectDefinitions;
+	TArray<TObjectPtr<UDMSEffectDefinition>> EffectDefinitions;
 
 	/**
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
@@ -229,7 +238,7 @@ public:
 	 * @return	Generated targets.
 	 */
 	UFUNCTION(BlueprintCallable,Category = Effect)
-	static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
+	static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, ADMSSequence* iSequence);
 
 	/**
 	 * Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
@@ -237,7 +246,7 @@ public:
 	 * @return	Generated apply targets.
 	 */
 	UFUNCTION(BlueprintCallable, Category = Effect)
-	static TArray<FDMSSequenceEIStorage> GenerateApplyTarget(UDMSEffectNode* Node, UDMSSequence* iSequence);
+	static TArray<FDMSSequenceEIStorage> GenerateApplyTarget(UDMSEffectNode* Node, ADMSSequence* iSequence);
 
 	//=================== Child effect ===================//
 
@@ -247,11 +256,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSEffectNodeWrapper> ChildEffect;
 
-	/**
-	 * Flag of "Is this effect has chainable window?".
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	bool bIsChainableEffect;
+
 
 	//=================== Step ===================//
 
@@ -260,9 +265,9 @@ public:
 	/** 
 	 * The list of steps that this sequence will have and execute.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	TArray<TObjectPtr<UDMSSequenceStep>> StepRequirements;
-	
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	//TArray<TObjectPtr<UDMSSequenceStep>> StepRequirements;
+	//
 	// NOTE :: EDITOR EXTENSION?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TSet<TObjectPtr<UDMSSequenceStepDefinition>> StepClassRequirements;
@@ -287,7 +292,7 @@ public:
 	UFUNCTION(BlueprintPure,BlueprintCallable, Category = Effect, meta = (DisplayName = "Get Effect Node"))
 	UDMSEffectNode* GetEffectNodeBP() { return GetEffectNode(); }
 	virtual UDMSEffectNode* GetEffectNode(){return nullptr;}
-//	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){}
+//	virtual void CreateSelectors(ADMSSequence* OwnerSeq, APlayerController* WidgetOwner){}
 };
 
 /**
@@ -309,7 +314,7 @@ public:
 	TObjectPtr<UDMSEffectNode> EffectNode;
 
 	virtual UDMSEffectNode* GetEffectNode() { return EffectNode; }
-//	virtual void CreateSelectors(UDMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode->CreateSelectors(OwnerSeq,WidgetOwner); }
+//	virtual void CreateSelectors(ADMSSequence* OwnerSeq, APlayerController* WidgetOwner){ EffectNode->CreateSelectors(OwnerSeq,WidgetOwner); }
 };
 
 /**
@@ -363,6 +368,6 @@ public:
 	 * @param	EffectTagQuery				Executing tag query
 	 * @return	Query result.
 	 */
-	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence = nullptr);
+	bool ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,ADMSSequence* CurrentSequence = nullptr);
 };
 

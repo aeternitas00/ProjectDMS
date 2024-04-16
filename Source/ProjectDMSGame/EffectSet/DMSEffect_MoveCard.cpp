@@ -16,7 +16,7 @@ UDMSEffect_MoveCard::UDMSEffect_MoveCard()
 	EffectTag = TAG_DMS_Effect_MoveCard;
 }
 
-void UDMSEffect_MoveCard::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_MoveCard::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	UDMSCardContainerComponent* FromTemp;
 	UDMSCardContainerComponent* Container_Destination=nullptr;

@@ -20,7 +20,7 @@ class PROJECTDMSGAME_API UDMSObjectComparer_IsSameLocation : public UDMSObjectCo
 
 public:
 
-	virtual bool Compare_Implementation(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) override;
+	virtual bool Compare_Implementation(UObject* SourceObject, ADMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) override;
 
 };
 

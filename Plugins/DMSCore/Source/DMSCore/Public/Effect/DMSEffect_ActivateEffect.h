@@ -21,7 +21,7 @@ public:
 	virtual bool GetEffectNodeWrapper(ADMSActiveEffect* iEI, UDMSEffectNodeWrapper*& OutWrapper){return false;}
 	virtual bool GetEffectNodeWrappers(ADMSActiveEffect* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr){return false;}
 
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
+	virtual void Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
 
 };
 
@@ -99,6 +99,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffects;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI);
+	virtual TArray<UDMSDataObject*> GenerateCandidates(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI);
 	TArray<UDMSDataObject*> MakeDataArray(ADMSActiveEffect* TargetEI);
 };

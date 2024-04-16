@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "DMSTargetGenerator.generated.h"
 
-class UDMSSequence;
+class ADMSSequence;
 /**
  *	Simple target generating Functor object.
  */
@@ -17,8 +17,8 @@ class DMSCORE_API UDMSTargetGenerator : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
-	TArray<UObject*> GetTargets(UObject* Caller, UDMSSequence* CurrentSequence) const;
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+	TArray<UObject*> GetTargets(UObject* Caller, ADMSSequence* CurrentSequence) const;
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
 UCLASS()
@@ -27,7 +27,7 @@ class DMSCORE_API UDMSTargetGenerator_SourceObject : public UDMSTargetGenerator
 	GENERATED_BODY()
 
 public:
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
 UCLASS()
@@ -36,7 +36,7 @@ class DMSCORE_API UDMSTargetGenerator_SourcePlayer : public UDMSTargetGenerator
 	GENERATED_BODY()
 
 public:
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
 UCLASS()
@@ -45,7 +45,7 @@ class DMSCORE_API UDMSTargetGenerator_FollowParentSeq : public UDMSTargetGenerat
 	GENERATED_BODY()
 
 public:
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
 UCLASS()
@@ -54,7 +54,7 @@ class DMSCORE_API UDMSTargetGenerator_SequenceTarget : public UDMSTargetGenerato
 	GENERATED_BODY()
 
 public:
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
 UCLASS()
@@ -63,7 +63,7 @@ class DMSCORE_API UDMSTargetGenerator_Caller : public UDMSTargetGenerator
 	GENERATED_BODY()
 
 public:
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
 UCLASS()
@@ -72,17 +72,17 @@ class DMSCORE_API UDMSTargetGenerator_OwnerOfCaller : public UDMSTargetGenerator
 	GENERATED_BODY()
 
 public:
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
-UCLASS()
-class DMSCORE_API UDMSTargetGenerator_FromData : public UDMSTargetGenerator
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-	FGameplayTag DataTag;
-
-	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, UDMSSequence* CurrentSequence) const;
-};
+//UCLASS()
+//class DMSCORE_API UDMSTargetGenerator_FromData : public UDMSTargetGenerator
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
+//	FGameplayTag DataTag;
+//
+//	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+//};

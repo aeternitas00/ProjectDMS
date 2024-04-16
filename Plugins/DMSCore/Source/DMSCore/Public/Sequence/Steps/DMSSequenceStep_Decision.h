@@ -57,7 +57,7 @@ public:
 //{
 //	WidgetOwner->RunWidgetQueue(		
 //		Succeeded,
-//		[=](UDMSSequence* pSequence) {
+//		[=](ADMSSequence* pSequence) {
 //			// Decision canceled
 //			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
 //			ProgressComplete(false);
@@ -107,7 +107,7 @@ void UDMSSequenceStepDefinition_Decision::RunWidgetQueue(UDMSSequenceStep* Insta
 {
 	WidgetOwner->RunWidgetQueue(		
 		Succeeded,
-		[=](UDMSSequence* pSequence) {
+		[=](ADMSSequence* pSequence) {
 			// Decision canceled
 			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
 			InstancedStep->ProgressEnd(false);

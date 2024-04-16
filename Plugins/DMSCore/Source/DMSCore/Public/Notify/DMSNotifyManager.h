@@ -36,7 +36,7 @@ class DMSCORE_API UDMSNotifyRespondentSelector : public UDMSSelectorBase
 
 public:
 	//UPROPERTY(BlueprintReadOnly)
-	UDMSSequence* CurrentSequence;
+	ADMSSequence* CurrentSequence;
 
 	/**
 	 * Objects which responsed to sequence's current progress
@@ -87,8 +87,8 @@ protected:
 	/**
 	 * Delegates for chained delegates of notify step.
 	 */
-	DECLARE_DELEGATE_OneParam(FOnForcedSequenceCompleted, UDMSSequence*);
-	DECLARE_DELEGATE_OneParam(FForcedEIIteratingDelegate, UDMSSequence*);
+	DECLARE_DELEGATE_OneParam(FOnForcedSequenceCompleted, ADMSSequence*);
+	DECLARE_DELEGATE_OneParam(FForcedEIIteratingDelegate, ADMSSequence*);
 	
 	/**
 	 * Structure for implementing chained delegates to ensure synchronization in the Notify step.
@@ -104,11 +104,11 @@ protected:
 	/**
 	 * Store FForcedEICounter for each sequences.
 	 */
-	TMap<UDMSSequence*, FForcedEICounter> ForcedEIMap;
+	TMap<ADMSSequence*, FForcedEICounter> ForcedEIMap;
 
-	void ActivateNextForced(UDMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
+	void ActivateNextForced(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
 
-	void ForcedFinished(UDMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
+	void ForcedFinished(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
 
 	/**
 	 * Widget class to be used for selecting response objects in the game mode that uses this notify manager.
@@ -123,7 +123,7 @@ public:
 	* @param	NotifyData						Current sequence.
 	* @param	ResponseCompleted				
 	*/
-	void Broadcast(UDMSSequence* NotifyData, const FSimpleDelegate& ResponseCompleted);
+	void Broadcast(ADMSSequence* NotifyData, const FSimpleDelegate& ResponseCompleted);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.
@@ -138,7 +138,7 @@ public:
 	 * @param	CurrentSequence					Current sequence.
 	 * @param	ResponsedObjects				Out Responsed object.
 	 */
-	void CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects,const FSimpleDelegate& ResponseCompleted);
+	void CreateRespondentSelector(ADMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects,const FSimpleDelegate& ResponseCompleted);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.

@@ -28,13 +28,14 @@ struct FDMSSkillTestData
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, meta = (EditCondition = "!bTestToStaticValue", EditConditionHides))
 	FGameplayTagContainer TargetStatName;
 
+	// Get from decision step. or source player is Tester / sequence target test target;
 	// Get stat from who? ( only one )
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
-	TObjectPtr<UDMSTargetGenerator> TesterGenerator;
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	//TObjectPtr<UDMSTargetGenerator> TesterGenerator;
 
 	// Get stat from who? ( only one )
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, meta = (EditCondition = "!bTestToStaticValue", EditConditionHides))
-	TObjectPtr<UDMSTargetGenerator> TestTargetGenerator;
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, meta = (EditCondition = "!bTestToStaticValue", EditConditionHides))
+	//TObjectPtr<UDMSTargetGenerator> TestTargetGenerator;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	bool bTestToStaticValue;
@@ -168,13 +169,20 @@ protected:
 public: 
 	UDMSSequenceStepDefinition_SkillTest(){}
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = SkillTest)
 	FDMSSkillTestData DefaultSkillTestData;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = SkillTest)
+	//TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = SkillTest, Instanced)
+	TObjectPtr<class UDMSEffectNodeWrapper> TestFailedEffect;
 
 	void SetupTargets(UDMSSequenceStep* InstancedStep, TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
+
+	FGameplayTagContainer GetSeqAttributeTag_Tester();
+
+	FGameplayTagContainer GetSeqAttributeTag_TestTarget();
 
 	UFUNCTION()
 	void Progress_ST1(UDMSSequenceStep* InstancedStep);

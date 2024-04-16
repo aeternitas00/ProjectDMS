@@ -8,6 +8,7 @@ UDMSSpawnableComponent::UDMSSpawnableComponent():ParentComponent(nullptr)
 {
 }
 
+// DO we actually need this????
 void UDMSSpawnableComponent::UpdateParentComponent()
 {
 	ParentComponent = nullptr;

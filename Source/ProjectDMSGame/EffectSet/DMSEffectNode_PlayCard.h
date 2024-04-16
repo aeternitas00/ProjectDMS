@@ -4,17 +4,17 @@
 
 #include "ProjectDMS.h"
 #include "Effect/DMSEffectDefinition.h"
-#include "DMSEffectNode_PlayCard.generated.h"
+//#include "DMSEffectNode_PlayCard.generated.h"
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_EffectKeyword_Play_Card)
 
 /**
  * 
  */
-UCLASS()
-class PROJECTDMSGAME_API UDMSEffectNode_PlayCard : public UDMSEffectNode
-{
-	GENERATED_BODY()
-public:
-	UDMSEffectNode_PlayCard();
-};
+//UCLASS()
+//class PROJECTDMSGAME_API UDMSEffectNode_PlayCard : public UDMSEffectNode
+//{
+//	GENERATED_BODY()
+//public:
+//	UDMSEffectNode_PlayCard();
+//};

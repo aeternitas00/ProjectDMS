@@ -47,7 +47,7 @@ public:
 	TObjectPtr<UDMSWidgetQueue> WidgetQueue;
 
 	UFUNCTION(/*Client*/)
-	bool SetupWidgetQueue(UDMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);
+	bool SetupWidgetQueue(ADMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);
 
 	template<typename FuncFinished, typename FuncCanceled >
 	void RunWidgetQueue(FuncFinished&& iOnQueueFinished, FuncCanceled&& iOnQueueCanceled);

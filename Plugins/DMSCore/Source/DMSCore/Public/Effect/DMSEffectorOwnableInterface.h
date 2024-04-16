@@ -17,7 +17,7 @@
 #include "DMSEffectorOwnableInterface.generated.h"
 
 class ADMSActiveEffect;
-class UDMSSequence;
+class ADMSSequence;
 class UDMSEffectSet;
 class ADMSPlayerControllerBase;
 

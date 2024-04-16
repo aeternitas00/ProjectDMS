@@ -17,7 +17,7 @@
 #include "DMSCommons.generated.h"
 
 class UDMSAttributeComponent;
-class UDMSSequence;
+class ADMSSequence;
 
 UENUM(BlueprintType)
 enum class EDMSModifierType : uint8
@@ -83,6 +83,8 @@ enum class EDMSComparisonOperator : uint8
  *	지금 상태가 최선이 아닌거같긴 한데 다른 방법이 있을까에 대한 생각.=>
  *	좀 더 사용 가능한 타입을 제한하고 그냥 union이나 ue5에서 제공하는 비슷한것을 쓴다던지 
  *	특히 시리얼라이즈부분의 이슈가 있어서...
+ * 
+ * --> 시퀀스까지 액터로 만들어서 어트리뷰트로 통합하는 쪽으로 가는게 좋을듯.
  */
 UCLASS(BlueprintType)
 class DMSCORE_API UDMSDataObject : public UObject

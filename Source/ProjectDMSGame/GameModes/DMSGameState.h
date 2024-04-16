@@ -34,7 +34,8 @@ public:
 	void SetupDefaults();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	UDMSSequence* CreateChaosTokenDrawSeq(UDMSSequence* ParentSeq);
+	ADMSSequence* CreateChaosTokenDrawSeq(ADMSSequence* ParentSeq);
+
 	//Temp
 	void SetPlayersFocusTarget(AActor* Target);
 

@@ -46,15 +46,6 @@ void UDMSAttributeComponent::ApplyModifier(const FGameplayTagContainer& Attribut
 	GetAttribute(AttributeTag)->ApplyModifier(Modifier);
 }
 
-//bool UDMSAttributeComponent::GetAttributeValue(const FGameplayTag& AttributeName, float& outValue) const
-//{
-//	if (!ContainAttribute(AttributeName)) return false;
-//
-//	outValue = GetAttribute(AttributeName)->Value;
-//
-//	return true;
-//}
-
 //TArray<FDMSSerializedAttribute> UDMSAttributeComponent::ToSerialized()
 //{
 //	TArray<FDMSSerializedAttribute> rv;
@@ -62,6 +53,13 @@ void UDMSAttributeComponent::ApplyModifier(const FGameplayTagContainer& Attribut
 //		rv.Add(FDMSSerializedAttribute(Att->AttributeTag, Att->lue->GetValue()));
 //	return rv;
 //}
+
+UDMSAttributeValue* UDMSAttributeComponent::GetAttributeValue(const FGameplayTagContainer& AttributeName) const
+{
+	if (!ContainAttribute(AttributeName)) return nullptr;
+
+	return GetAttribute(AttributeName)->AttributeValue;
+}
 
 void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -72,15 +70,18 @@ void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer& AttributeName,const TSubclassOf<UDMSAttributeValue>& AttributeValueClass)
 {
-	if (ContainAttribute(AttributeName)) return nullptr; // log or what\
+	UDMSAttribute* Rv = GetAttribute(AttributeName);
+	if (Rv) {
+		if (Rv->AttributeValue.IsA(AttributeValueClass)) return Rv;
+		return nullptr;
+	}
+	Rv = NewObject<UDMSAttribute>(this);
+	Rv->AttributeTag = AttributeName;
+	Rv->GenerateValue(AttributeValueClass);
+	AddReplicatedSubObject(Rv);
+	Attributes.Add(Rv);
 
-	UDMSAttribute* NewAtt = NewObject<UDMSAttribute>(this);
-	NewAtt->AttributeTag = AttributeName;
-	NewAtt->GenerateValue(AttributeValueClass);
-	AddReplicatedSubObject(NewAtt);
-	Attributes.Add(NewAtt);
-
-	return NewAtt;
+	return Rv;
 }
 
 UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue)

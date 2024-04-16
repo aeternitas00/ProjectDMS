@@ -5,7 +5,7 @@ UDMSObjectCompareCondition::UDMSObjectCompareCondition() : UDMSObjectConditionBa
 
 }
 
-bool UDMSObjectCompareCondition::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSObjectCompareCondition::CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const
 {
 	auto SourceObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, SourceGenerator);
 	auto TargetObjects = GetCompareTarget(CheckingGameObject, CurrentSequence, CompareTargetGenerator);
@@ -36,7 +36,7 @@ bool UDMSObjectCompareCondition::CheckOperation_Implementation(UObject* Checking
 	return outResult;
 }
 
-bool UDMSObjectCompareCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
+bool UDMSObjectCompareCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const
 {
 	return Comparer->Compare(CheckingGameObject, CurrentSequence, Target, bNullIsTrue);
 }

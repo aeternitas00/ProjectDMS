@@ -51,7 +51,7 @@ public:
 	void AttachEffectInstance(ADMSActiveEffect* EI);
 	void DetachActiveEffect(ADMSActiveEffect* EI);
 
-	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, UDMSSequence* Seq, AActor* SourceTweak = nullptr);
+	bool OnNotifyReceived(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, ADMSSequence* Seq, AActor* SourceTweak = nullptr);
 
 	// concepts????
 	void SetupOwnEffect(UDMSEffectSet* EffectSet,const FGameplayTag& SetName);

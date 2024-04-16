@@ -27,7 +27,7 @@ struct FDMSSelectorRequestForm
 	 * Data objects what wrapped Candidate.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	TArray<TObjectPtr<UDMSDataObject>> Candidates;
+	TArray<TObjectPtr<UObject>> Candidates;
 
 	/**
 	 * The number of selections the selector to be created will choose.

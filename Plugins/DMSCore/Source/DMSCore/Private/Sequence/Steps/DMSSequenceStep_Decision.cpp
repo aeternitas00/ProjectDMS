@@ -89,7 +89,7 @@ UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
 //		ProgressComplete(false); return;
 //	}
 //
-//	RunWidgetQueue(WidgetOwner, [=](UDMSSequence* pSequence) {
+//	RunWidgetQueue(WidgetOwner, [=](ADMSSequence* pSequence) {
 //
 //		// Run sequence ( Notifying steps and apply )
 //		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequence->GetName());
@@ -156,7 +156,7 @@ void UDMSSequenceStepDefinition_Decision::MakeDecision(UDMSSequenceStep* Instanc
 		InstancedStep->ProgressEnd(false); return;
 	}
 
-	RunWidgetQueue(InstancedStep, WidgetOwner, [=](UDMSSequence* pSequence) {
+	RunWidgetQueue(InstancedStep, WidgetOwner, [=](ADMSSequence* pSequence) {
 		// Run sequence ( Notifying steps and apply )
 		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequence->GetName());
 		InstancedStep->ProgressEnd(); return;

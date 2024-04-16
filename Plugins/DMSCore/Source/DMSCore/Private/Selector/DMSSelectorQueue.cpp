@@ -28,7 +28,7 @@ UDMSWidgetQueue::UDMSWidgetQueue():CurrentIndex(-1)
 {
 }
 
-bool UDMSWidgetQueue::SetupQueue(UDMSSequence* SourceSequence,TArray<UDMSSelectorHandle*> Handles)
+bool UDMSWidgetQueue::SetupQueue(ADMSSequence* SourceSequence,TArray<UDMSSelectorHandle*> Handles)
 {
 	auto WidgetOwner = GetWidgetOwner();
 	if (WidgetOwner==nullptr) return false;

@@ -44,7 +44,7 @@ ADMSActiveEffect* UDMSEffectHandler::CreatePersistentActiveEffect(AActor* Source
 }
 
 
-TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(UDMSSequence* Sequence, UDMSEffectNode* EffectNode)
+TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(ADMSSequence* Sequence, UDMSEffectNode* EffectNode)
 {
 	// No Selected Target ( Passed or No selector for this effect node )
 	// If PARAM_TARGET is exist, it will override preset generating.
@@ -102,18 +102,18 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(UDMSSequ
 * @param	Sequence					Resolving sequence.
 * @param	OnResolveCompleted			Lambda executed when resolve completed.
 */
-void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, const FOnResolveCompleted& OnResolveCompleted)
+void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnResolveCompleted& OnResolveCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
 	if(Sequence->GetAllEIs().Num() == 0 || !Sequence->IsTargetted()) {
 		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
-		goto ResolveSkipped;
+		OnResolveCompleted.ExecuteIfBound(true);
+		return;
 	}
 	// seperate for logging
 	if(Sequence->SequenceState != EDMSSequenceState::SS_Default) {
 		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : Sequence is canceled or ignored"));
-	ResolveSkipped:
 		OnResolveCompleted.ExecuteIfBound(true);
 		return;
 	}
@@ -121,14 +121,14 @@ void UDMSEffectHandler::Resolve(UDMSSequence* Sequence, const FOnResolveComplete
 	OnResolveCompletedMap.Add(Sequence);
 	OnResolveCompletedMap[Sequence].Count = 0;
 	OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllEIs();
-	OnResolveCompletedMap[Sequence].Iterator.BindLambda([=](UDMSSequence* SourceSequence, bool PrevSucceeded){
+	OnResolveCompletedMap[Sequence].Iterator.BindLambda([=](ADMSSequence* SourceSequence, bool PrevSucceeded){
 		ApplyNextEffectInstance(SourceSequence,OnResolveCompleted,PrevSucceeded);
 	});
 	ApplyNextEffectInstance(Sequence, OnResolveCompleted, true);
 }
 
 
-void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence,const FOnResolveCompleted& OnResolveCompleted, bool PrevSucceeded)
+void UDMSEffectHandler::ApplyNextEffectInstance(ADMSSequence* SourceSequence,const FOnResolveCompleted& OnResolveCompleted, bool PrevSucceeded)
 {
 	if (!PrevSucceeded)
 	{
@@ -143,7 +143,7 @@ void UDMSEffectHandler::ApplyNextEffectInstance(UDMSSequence* SourceSequence,con
 		ApplyAEGetter(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].Iterator);
 }
 
-ADMSActiveEffect* UDMSEffectHandler::ApplyAEGetter(UDMSSequence* OwnerSequence)
+ADMSActiveEffect* UDMSEffectHandler::ApplyAEGetter(ADMSSequence* OwnerSequence)
 {
 	return OnResolveCompletedMap[OwnerSequence].ApplyingEIs[OnResolveCompletedMap[OwnerSequence].Count++];
 }

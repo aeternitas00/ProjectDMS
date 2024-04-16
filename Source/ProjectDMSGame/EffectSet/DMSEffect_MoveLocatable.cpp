@@ -4,6 +4,7 @@
 #include "EffectSet/DMSEffect_MoveLocatable.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "GameModes/DMSGameState.h"
+#include "Attribute/DMSAttributeComponent.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "Location/DMSLocatableInterface.h"
@@ -17,7 +18,7 @@ UDMSEffect_MoveLocatable::UDMSEffect_MoveLocatable()
 	EffectTag = TAG_DMS_Effect_MoveLocatable;
 }
 
-void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_MoveLocatable::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	UObject* DestLocation;
 
@@ -29,7 +30,10 @@ void UDMSEffect_MoveLocatable::Work_Implementation(UDMSSequence* SourceSequence,
 		return;
 	}
 
-	if ( !SourceSequence->SequenceDatas->GetValidDataValue<UObject*>(EffectTag, DestLocation) )
+	auto SeqAttComp = SourceSequence->GetComponentByClass<UDMSAttributeComponent>();
+	DestLocation = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Effector>(EffectTag.GetSingleTagContainer());
+	
+	if ( !DestLocation )
 	{
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;

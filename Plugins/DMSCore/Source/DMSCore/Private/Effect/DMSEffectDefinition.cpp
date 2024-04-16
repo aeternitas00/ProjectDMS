@@ -13,7 +13,7 @@
 #include "Conditions/DMSConditionObject.h"
 
 
-void UDMSEffectDefinition::ExecuteEffectOptions(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
+void UDMSEffectDefinition::ExecuteEffectOptions(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
 	if (EffectOptions.Num()== 0 ) {OnOptionCompleted.Execute(nullptr);return;}
 	for (auto& EO : EffectOptions)
@@ -22,7 +22,7 @@ void UDMSEffectDefinition::ExecuteEffectOptions(UDMSSequence* SourceSequence, AD
 	}
 }
 
-void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
+void UDMSEffectDefinition::ExecuteEffectDefinition(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
 {
 	//EffectOption->ExecuteOption(SourceSequence, iEI, [=]() {
 	//	Work(SourceSequence, iEI, OnExecuteCompleted);
@@ -31,7 +31,7 @@ void UDMSEffectDefinition::ExecuteEffectDefinition(UDMSSequence* SourceSequence,
 	Work(SourceSequence, iEI, OnExecuteCompleted);
 }
 
-TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTarget(UDMSEffectNode* Node, UDMSSequence* iSequence)
+TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTarget(UDMSEffectNode* Node, ADMSSequence* iSequence)
 {	
 	TArray<TScriptInterface<IDMSEffectorInterface>> TempTarget;
 
@@ -46,7 +46,7 @@ TArray<TScriptInterface<IDMSEffectorInterface>> UDMSEffectNode::GeneratePresetTa
 	return TempTarget;
 }
 
-TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode* Node, UDMSSequence* iSequence)
+TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode* Node, ADMSSequence* iSequence)
 {
 	TArray<FDMSSequenceEIStorage>& Storages = iSequence->GetEIStorage();
 
@@ -77,11 +77,11 @@ UDMSEffectNode::UDMSEffectNode() : bForced(false), bCanResponseMulTime(false), b
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 
-	StepRequirements.Add(CreateDefaultSubobject<UDMSSequenceStep_Decision>("DecisionStep"));
-	StepRequirements.Add(CreateDefaultSubobject<UDMSSequenceStep_Apply>("ApplyStep"));
+	//StepRequirements.Add(CreateDefaultSubobject<UDMSSequenceStep_Decision>("DecisionStep"));
+	//StepRequirements.Add(CreateDefaultSubobject<UDMSSequenceStep_Apply>("ApplyStep"));
 }
 
-FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(UDMSSequence* CurrentSequence)
+FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(ADMSSequence* CurrentSequence)
 {
 	FGameplayTagContainer ctn;
 	ctn.AddTagFast(NodeTag);
@@ -90,12 +90,12 @@ FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(UDMSSe
 	return ctn;
 }
 
-bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence)
+bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,ADMSSequence* CurrentSequence)
 {
 	return GenerateTagContainer(CurrentSequence).MatchesQuery(EffectTagQuery);
 }
 
-bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,UDMSSequence* CurrentSequence)
+bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,ADMSSequence* CurrentSequence)
 {
 	for (auto node : EffectNodes)
 	{

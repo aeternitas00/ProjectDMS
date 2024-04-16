@@ -18,7 +18,7 @@
 #include "DMSSelectorQueue.generated.h"
 
 class UDMSConfirmWidgetBase;
-class UDMSSequence;
+class ADMSSequence;
 class UDMSSelectorHandle;
 class ADMSPlayerControllerBase;
 class UDMSSelectorHandle;
@@ -40,7 +40,7 @@ public:
 	 * Reference of owner sequence.
 	 */
 	UPROPERTY()
-	TObjectPtr<UDMSSequence> CurrentSequence;
+	TObjectPtr<ADMSSequence> CurrentSequence;
 
 	/**
 	 * Current index of WidgetQueue.
@@ -53,7 +53,7 @@ public:
 	 * @param	SourceSequence			Owner sequence.
 	 * @param	Handles					Selector handles for instantiating widgets during this initialization process.
 	 */
-	bool SetupQueue(UDMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);	
+	bool SetupQueue(ADMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);	
 	
 	/**
 	 * Setup selector queue.
@@ -86,7 +86,7 @@ public:
 	 */
 	APlayerController* GetWidgetOwner() { return Cast<APlayerController>(GetOuter()); }
 
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnWidgetQueuesClosed, UDMSSequence*);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnWidgetQueuesClosed, ADMSSequence*);
 
 	/**
 	 * Delegate to be called when the Selector Queue was completed.

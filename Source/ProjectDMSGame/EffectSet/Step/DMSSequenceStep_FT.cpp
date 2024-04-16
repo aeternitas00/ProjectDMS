@@ -36,7 +36,7 @@ void UDMSSequenceStep_FT::Progress_FT(UDMSSequenceStep* InstancedStep)
 	//	InstancedStep->ProgressEnd(false); return;
 	//}
 
-	//RunWidgetQueue(InstancedStep, WidgetOwner, [=](UDMSSequence* pSequence) {
+	//RunWidgetQueue(InstancedStep, WidgetOwner, [=](ADMSSequence* pSequence) {
 	//	// Run sequence ( Notifying steps and apply )
 	//	DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequence->GetName());
 	//	InstancedStep->ProgressEnd(); return;

@@ -92,17 +92,25 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UDMSAttribute* GetAttribute(const FGameplayTagContainer& AttributeName) const;
 	TArray<UDMSAttribute*> GetAttributesByQuery(const FGameplayTagQuery & TargetQuery) const;
+
 	/**
 	 * Getter of attribute value
 	 * @param	AttributeName						Target attribute's tag
 	 * @param	outValue							returning value
 	 * @return	true if component contains AttributeName
 	 */
-	//UFUNCTION(BlueprintCallable)
-	//bool GetAttributeValue(const FGameplayTag& AttributeName, float& outValue) const;
-
+	UFUNCTION(BlueprintCallable)
+	UDMSAttributeValue* GetAttributeValue(const FGameplayTagContainer& AttributeName) const;
+	template<typename T>
+	T* GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const;
 	//UFUNCTION(BlueprintCallable)
 	//TArray<FDMSSerializedAttribute> ToSerialized();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
+
+template<typename T>
+inline T* UDMSAttributeComponent::GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const
+{
+	return Cast<T>(GetAttributeValue(AttributeName));
+}

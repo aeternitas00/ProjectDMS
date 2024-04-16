@@ -53,14 +53,14 @@ public:
 	 * Generate an attribute modifier to be applied by this effect.
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	bool GenerateModifier(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
+	bool GenerateModifier(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
 
 	void Revert(ADMSActiveEffect* iEI);
 	// vf implements
 
-	virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
-	virtual bool Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI) override;
+	virtual void Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override; // temp
+	virtual bool Predict_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI) override;
 
 	virtual FGameplayTagContainer GetEffectTags_Implementation() override;
 };
@@ -82,7 +82,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Static Value", EditCondition = "!bIsUsingSelector", EditConditionHides))
 	FDMSAttributeModifier StaticModifier;
 
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return StaticModifier.Value!=nullptr && StaticModifier.ModifierOp!=nullptr;}
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){ OutModifier=StaticModifier; return StaticModifier.Value!=nullptr && StaticModifier.ModifierOp!=nullptr;}
 
 };
 
@@ -103,7 +103,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bIsUsingSelector", EditConditionHides))
 	FDMSValueSelectionForm DataPicker;
 
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
 };
 
 /**
@@ -167,7 +167,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = Effect)
 	TArray<TObjectPtr<UDMSAttributeValueProcesser>> ValueProcessers;
 
-	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
 };
 
 

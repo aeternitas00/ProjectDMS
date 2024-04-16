@@ -4,7 +4,7 @@
 #include "Sequence/DMSSequence.h"
 #include "Effect/DMSEffectInstance.h"
 
-bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const
+bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const
 {
 	AActor* tOuter = Cast<AActor>(Target);
 	if (tOuter == nullptr) {

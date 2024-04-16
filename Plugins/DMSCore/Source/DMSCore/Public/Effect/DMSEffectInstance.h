@@ -56,7 +56,7 @@ class DMSCORE_API UDMSEffectApplyWorker : public UObject
 
 private:
 	TObjectPtr<ADMSActiveEffect> OwnerInstance;
-	TObjectPtr<UDMSSequence> SourceSequence;
+	TObjectPtr<ADMSSequence> SourceSequence;
 
 	TObjectPtr<UDMSEffectNode> ApplyingEffect;
 	uint8 CurrentEDIndex;
@@ -70,7 +70,7 @@ public:
 	FOnApplyCompleted CompletedDelegate;
 	
 public:
-	void SetupWorker(UDMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
+	void SetupWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
 	
 	UFUNCTION()
 	void ApplyNextEffectDef(bool PrevSucceeded);
@@ -165,7 +165,7 @@ public:
 	 * @return	Sequence						Current sequence.
 	 * @return	OnApplyCompleted				Delegate executed when apply completed.
 	 */
-	void Apply(UDMSSequence* Sequence, const FResolveIteratingDelegate& OnApplyCompleted);
+	void Apply(ADMSSequence* Sequence, const FResolveIteratingDelegate& OnApplyCompleted);
 
 	/**
 	 * Get apply target.
@@ -199,7 +199,7 @@ public:
 	 * @param	iNode
 	 * @param	iSeq.
 	 */
-	void InheritSequenceDatas(UDMSSequence* iSeq);
+	void InheritSequenceDatas(ADMSSequence* iSeq);
 
 	/**
 	 * Create new sequence from owning datas. ( node, datas .... )
@@ -207,7 +207,7 @@ public:
 	 * @param	ChainingSequence				Parent sequence of creating sequence.
 	 * @return	Created sequence.
 	 */
-	UDMSSequence* CreateApplyingSequence(AActor* SourceTweak, UDMSSequence* ChainingSequence);
+	ADMSSequence* CreateApplyingSequence(AActor* SourceTweak, ADMSSequence* ChainingSequence);
 
 	/**
 	 * Handle notifing data
@@ -219,7 +219,7 @@ public:
 												about which AE responsed to which game actor.
 	 * @return	true if Response success.
 	 */
-	bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,UDMSSequence* Seq, AActor* SourceTweak=nullptr);
+	bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable,ADMSSequence* Seq, AActor* SourceTweak=nullptr);
 
 	/**
 	 *	Add a param lambda expression to the native delegate to be executed after this active effect has been applied.

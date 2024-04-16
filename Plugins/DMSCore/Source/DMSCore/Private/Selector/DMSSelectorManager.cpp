@@ -70,7 +70,7 @@ void UDMSSelectorHandle::CompleteHandle(const TArray<uint8>& SelectedIdx)
 		StoredForm.OnCompletedNative.ExecuteIfBound( SelectedIdx );
 	}
 	else {
-		OwnerQueue->OnSelectorsCompleted_Handle.AddLambda ( [=](UDMSSequence* ) {
+		OwnerQueue->OnSelectorsCompleted_Handle.AddLambda ( [=](ADMSSequence* ) {
 			StoredForm.OnCompleted.Broadcast(SelectedIdx);
 			StoredForm.OnCompletedNative.ExecuteIfBound(SelectedIdx);
 		} );

@@ -23,7 +23,7 @@ class DMSCORE_API UDMSSelectorBehaviorDefinition : public UObject
 {
 	GENERATED_BODY()
 public:
-	virtual void SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI) {}
+	virtual void SetupFormDelegates(ADMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI) {}
 };
 
 // 위를 베이스로 / EI 데이터를 업데이트 한다 라는 정의
@@ -37,7 +37,7 @@ public:
 	FGameplayTag OutKey;
 
 public:
-	virtual void SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI);
+	virtual void SetupFormDelegates(ADMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI);
 };
 
 // Update target of current sequence.
@@ -46,7 +46,7 @@ class DMSCORE_API UDMSSelectorBehaviorDefinition_UpdateTarget: public UDMSSelect
 {
 	GENERATED_BODY()
 public:
-	virtual void SetupFormDelegates(UDMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI);
+	virtual void SetupFormDelegates(ADMSSequence* Sequence, TArray<FDMSSelectorRequestForm>& FormArr, bool SelectForEachEI);
 };
 
 
@@ -67,9 +67,9 @@ public:
 public:
 
 	// 리퀘스트 폼을 제작 
-	TArray<FDMSSelectorRequestForm> GenerateRequestForm(UDMSSequence* Sequence,bool SelectForEachEI);
+	TArray<FDMSSelectorRequestForm> GenerateRequestForm(ADMSSequence* Sequence,bool SelectForEachEI);
 	// 리퀘스트 폼에 들어갈 캔디데이트를 생성하는 함수 ( 사실상 이것을 위해 존재하는 클래스라고 보면 됨. )
-	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI);
+	virtual TArray<UObject*> GenerateCandidates(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI);
 };
 
 UCLASS()
@@ -78,9 +78,9 @@ class DMSCORE_API USelectorRequestGenerator_FromSequenceData : public UDMSSelect
 	GENERATED_BODY()
 public:
 	UPROPERTY( BlueprintReadWrite , EditDefaultsOnly )
-	FGameplayTag DataTag;
+	FGameplayTagContainer DataTag;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI );
+	virtual TArray<UObject*> GenerateCandidates ( ADMSSequence* Sequence , ADMSActiveEffect* TargetEI );
 
 };
 
@@ -90,9 +90,9 @@ class DMSCORE_API USelectorRequestGenerator_FromEIData : public UDMSSelectorRequ
 	GENERATED_BODY()
 public:
 	UPROPERTY( BlueprintReadWrite , EditDefaultsOnly )
-	FGameplayTag DataTag;
+	FGameplayTagContainer DataTag;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates ( UDMSSequence* Sequence , ADMSActiveEffect* TargetEI );
+	virtual TArray<UObject*> GenerateCandidates ( ADMSSequence* Sequence , ADMSActiveEffect* TargetEI );
 
 };
 UCLASS()
@@ -103,7 +103,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
 	TObjectPtr<UDMSTargetGenerator> TargetGenerator;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates(UDMSSequence* Sequence , ADMSActiveEffect* TargetEI);
+	virtual TArray<UObject*> GenerateCandidates(ADMSSequence* Sequence , ADMSActiveEffect* TargetEI);
 
 };
 // USelectorRequestGenerator_[Custom] : public UDMSSelectorRequestGenerator
@@ -122,6 +122,6 @@ struct FDMSDecisionDefinition
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	bool SelectForEachEI;
 
-	TArray<FDMSSelectorRequestForm> SetupRequestForm(UDMSSequence* Sequence);
+	TArray<FDMSSelectorRequestForm> SetupRequestForm(ADMSSequence* Sequence);
 };
 

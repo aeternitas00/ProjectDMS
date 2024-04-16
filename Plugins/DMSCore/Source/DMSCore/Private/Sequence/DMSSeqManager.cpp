@@ -12,6 +12,7 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Conditions/DMSConditionObject.h"
 #include "Notify/DMSNotifyManager.h"
+#include "Attribute/DMSAttributeComponent.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 
 
@@ -23,32 +24,29 @@ UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr), CurrentSequence(nullpt
 
 
 
-UDMSSequence* UDMSSeqManager::RequestCreateSequence(
+ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 	AActor* SourceObject,
 	AActor* SourcePlayer, 
 	UDMSEffectNode* EffectNode, 
 	const TArray<TScriptInterface<IDMSEffectorInterface>>&  Targets,
-	UDMSDataObjectSet* Datas, 
-	UDMSSequence* ParentSequence
+	bool LinkAttributeWithParent, 
+	ADMSSequence* ParentSequence
 )
 {
 	if( !IsValid(EffectNode) || !IsValid(SourceObject) || !IsValid(SourcePlayer) ){ 
 		DMS_LOG_SIMPLE(TEXT("==== Request Create Sequence Failed [Essential params not valid] ===="));
 		return nullptr;
 	}
-	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
-	//UDMSEffectHandler* EH = GS->GetEffectHandler();
 	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);	check(EH);
-	//if (EH==nullptr) { return nullptr; }
 
 	// Initialize new sequence
-	UDMSSequence* Sequence = NewObject<UDMSSequence>(this/*, FName(*SeqName)*/);
-	UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(Sequence);
-	NewData->Inherit(Datas);
+	ADMSSequence* Sequence = GetWorld()->SpawnActor<ADMSSequence>();
+	//UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(Sequence);
+	//NewData->Inherit(Datas);
 	Sequence->OriginalEffectNode = EffectNode;
 	Sequence->SourceObject = SourceObject;
 	Sequence->SourcePlayer = SourcePlayer;
-	Sequence->SequenceDatas = NewData;
+	//Sequence->SequenceDatas = NewData;
 	Sequence->SetTarget(Targets);
 	
 	// Test Feature
@@ -56,19 +54,21 @@ UDMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
 
 	// Add new seq to seq tree.
-	if (ParentSequence == nullptr) {
-		if (RootSequence == nullptr) {
+	if ( ParentSequence == nullptr ) {
+		if ( RootSequence == nullptr ) {
 			RootSequence = Sequence;
 
 			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
 			RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
 		}
-		else if (CurrentSequence != nullptr)
+		else if ( CurrentSequence != nullptr )
 			CurrentSequence->AttachChildSequence(Sequence);
 	}
 	else {
 		ParentSequence->AttachChildSequence(Sequence);
 	}
+
+	if ( LinkAttributeWithParent ) Sequence->AttributeComponent->ParentComponent = Sequence->ParentSequence->AttributeComponent;
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : Request Create Sequence [%s] of [%s] to [%d : %s] ===="),  *SourceObject->GetName(), *Sequence->GetName(), *EffectNode->NodeTag.ToString(), GetDepth(Sequence), Sequence->ParentSequence == nullptr ? TEXT("EmptySequence") : *Sequence->ParentSequence->GetName());
 
@@ -80,14 +80,14 @@ void UDMSSeqManager::RequestAppendNewSequence_Implementation(
 	AActor* SourcePlayer,
 	UDMSEffectNode* EffectNode, 
 	const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
-	UDMSSequence* ParentSequence,
-	UDMSDataObjectSet* Datas 
+	ADMSSequence* ParentSequence,
+	bool LinkAttributeWithParent
 )
 {
-	RequestCreateSequence(SourceObject,SourcePlayer,EffectNode,Targets,Datas,ParentSequence);
+	RequestCreateSequence(SourceObject,SourcePlayer,EffectNode,Targets,LinkAttributeWithParent,ParentSequence);
 }
 
-void UDMSSeqManager::RemoveSequence_Implementation(UDMSSequence* Sequence)
+void UDMSSeqManager::RemoveSequence_Implementation(ADMSSequence* Sequence)
 {
 	if (Sequence==RootSequence) {
 		RootSequence = Sequence->ChildSequence!=nullptr ? Sequence->ChildSequence : nullptr ;
@@ -103,7 +103,7 @@ void UDMSSeqManager::RemoveSequence_Implementation(UDMSSequence* Sequence)
 	}
 }
 
-void UDMSSeqManager::RunSequence_Implementation(UDMSSequence* iSeq)
+void UDMSSeqManager::RunSequence_Implementation(ADMSSequence* iSeq)
 {
 	if(!IsValid(iSeq)){
 		DMS_LOG_SIMPLE(TEXT("==== RUN SEQUENCE FAILED [iSeq not vaild] ====")); return;
@@ -124,22 +124,22 @@ void UDMSSeqManager::RunSequence_Implementation(UDMSSequence* iSeq)
 	CurrentSequence->RunStepProgressQueue();
 }
 
-int UDMSSeqManager::GetDepth(UDMSSequence* iSeq) {
+int UDMSSeqManager::GetDepth(ADMSSequence* iSeq) {
 	if (iSeq == nullptr) return -1;
 	if (iSeq == RootSequence) return 0;
 	return GetDepth(iSeq->ParentSequence)+1;
 }
 
-UDMSDataObjectSet* UDMSSeqManager::SearchNearestDataObject(UDMSSequence* StartingSequence, FGameplayTag SerachingTag) const
-{
-	UDMSSequence* It= StartingSequence;
-	while (It!=nullptr)
-	{
-		if (It->SequenceDatas->ContainData(SerachingTag)) return It->SequenceDatas;
-		It = It->ParentSequence;
-	}
-	return nullptr;
-}
+//UDMSDataObjectSet* UDMSSeqManager::SearchNearestDataObject(ADMSSequence* StartingSequence, FGameplayTag SerachingTag) const
+//{
+//	ADMSSequence* It= StartingSequence;
+//	while (It!=nullptr)
+//	{
+//		if (It->SequenceDatas->ContainData(SerachingTag)) return It->SequenceDatas;
+//		It = It->ParentSequence;
+//	}
+//	return nullptr;
+//}
 
 void UDMSSeqManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -149,7 +149,7 @@ void UDMSSeqManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(UDMSSeqManager, CurrentSequence);	
 }
 
-void UDMSSeqManager::CompleteSequence_Implementation(UDMSSequence* Sequence, bool Succeeded)
+void UDMSSeqManager::CompleteSequence_Implementation(ADMSSequence* Sequence, bool Succeeded)
 {
 	if(!IsValid(Sequence)){DMS_LOG_SIMPLE(TEXT("==== Complete Sequence failed [Sequence is not valid] ===="));}
 

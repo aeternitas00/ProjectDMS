@@ -5,6 +5,7 @@
 #include "Effect/DMSEIManagerComponent.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Effect/DMSEffectDefinition.h"
+#include "Attribute/DMSAttributeComponent.h"
 #include "GameModes/DMSGameStateBase.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Sequence/DMSSequenceStep.h"
@@ -17,7 +18,7 @@
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_Respondent, "System.Notify.Respondent");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_ActivatingEffect, "System.Notify.ActivatingEffect");
 
-void UDMSNotifyManager::ActivateNextForced(UDMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) {
+void UDMSNotifyManager::ActivateNextForced(ADMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) {
 
 	FString InTimingStr = Sequence->GetCurrentProgressTag().ToString();
 	//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
@@ -40,7 +41,7 @@ void UDMSNotifyManager::ActivateNextForced(UDMSSequence* Sequence, const FSimple
 	}
 }
 
-void UDMSNotifyManager::ForcedFinished(UDMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) 
+void UDMSNotifyManager::ForcedFinished(ADMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) 
 {
 	FString InTimingStr = Sequence->GetCurrentProgressTag().ToString();
 	//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
@@ -52,7 +53,7 @@ void UDMSNotifyManager::ForcedFinished(UDMSSequence* Sequence, const FSimpleDele
 	CreateRespondentSelector(Sequence, temp.NonForcedObjects,OnForcedFinished);
 }
 
-void UDMSNotifyManager::Broadcast(UDMSSequence* NotifyData, const FSimpleDelegate& ResponseCompleted)
+void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FSimpleDelegate& ResponseCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : BROADCASTING  ===="), *NotifyData->GetName());
 	FString TimingStr = NotifyData->GetCurrentProgressTag().ToString();
@@ -124,7 +125,7 @@ bool UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterf
 	return true;
 }
 
-void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, const FSimpleDelegate& ResponseCompleted)
+void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, const FSimpleDelegate& ResponseCompleted)
 {
 	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
 	//auto SelM = GS->GetSelectorManager();
@@ -166,10 +167,15 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 	SelHandle->SetupDelegates([=,NotifyManager=this]() {
 		// [ OK Bttn ]
-		UDMSDataObjectSet* Data = InstancedWidget->CurrentSequence->SequenceDatas;
-		TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
-		ADMSActiveEffect* EffectInstance = Cast<ADMSActiveEffect>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
+		//UDMSDataObjectSet* Data = InstancedWidget->CurrentSequence->SequenceDatas;
+		//TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
+		//ADMSActiveEffect* EffectInstance = Cast<ADMSActiveEffect>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
+		
+		auto RespondentAttribute = InstancedWidget->CurrentSequence->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Effector>(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent));
+		auto EffectInstanceAttribute = InstancedWidget->CurrentSequence->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Effector>(FGameplayTagContainer(TAG_DMS_System_Notify_ActivatingEffect));
 
+		TScriptInterface<IDMSEffectorInterface> Respondent = RespondentAttribute ? RespondentAttribute->GetValue()[0] : nullptr;
+		ADMSActiveEffect* EffectInstance = EffectInstanceAttribute ? Cast<ADMSActiveEffect>(EffectInstanceAttribute->GetValue()[0].GetObject()) : nullptr;
 		if (EffectInstance == nullptr)
 		{
 			// Widget didn't made proper data.
@@ -189,7 +195,7 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 		//TArray<TScriptInterface<IDMSEffectorInterface>> NewRespondents;
 		//InstancedWidget->ResponsedObjects.GetKeys(NewRespondents);
 
-		UDMSSequence* NewSeq = EffectInstance->CreateApplyingSequence(Respondent->GetObject(), InstancedWidget->CurrentSequence);
+		ADMSSequence* NewSeq = EffectInstance->CreateApplyingSequence(Respondent->GetObject(), InstancedWidget->CurrentSequence);
 
 		NewSeq->AddToOnSequenceFinished_Native([=, ResumingSequence= InstancedWidget->CurrentSequence](bool PreviousResult){
 
@@ -243,9 +249,22 @@ void UDMSNotifyManager::CreateRespondentSelector(UDMSSequence* CurrentSequence, 
 
 void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* EffectInstance)
 {
-	UDMSDataObjectSet* UpdatingData = CurrentSequence->SequenceDatas;
-	UpdatingData->SetData(TAG_DMS_System_Notify_Respondent, Respondent);
-	UpdatingData->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
+	auto SeqAttComp = CurrentSequence->GetComponentByClass<UDMSAttributeComponent>();
+
+	auto RespondentAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Effector::StaticClass());
+	auto AEAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Effector::StaticClass());
+
+	if(!RespondentAtt || !AEAtt)
+	{
+		DMS_LOG_SIMPLE(TEXT("UDMSNotifyRespondentSelector :: Update data Failed"));
+		return; /* LOG? */
+	}
+	Cast<UDMSAttributeValue_Effector>(RespondentAtt->AttributeValue)->AddValue(Respondent);
+	Cast<UDMSAttributeValue_Effector>(AEAtt->AttributeValue)->AddValue(EffectInstance);
+
+	//UDMSDataObjectSet* UpdatingData = CurrentSequence->SequenceDatas;
+	//UpdatingData->SetData(TAG_DMS_System_Notify_Respondent, Respondent);
+	//UpdatingData->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
 }
 
 void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray)

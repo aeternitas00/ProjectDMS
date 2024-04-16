@@ -18,11 +18,20 @@ class DMSCORE_API UDMSEffect_ProgressControl : public UDMSEffectDefinition
 public:
 	//UDMSEffect_ProgressControl();
 
-	/**
-	 * Cancel param sequence if sequence's effect node matches TargetTagQuery
-	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	//FGameplayTagQuery CancelTargetTagQuery;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	bool bTargetByIndex;
 
-	//virtual void Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
+	/**
+	 * Jump to tagged step progress which matches TargetTagQuery
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "!bTargetByIndex", EditConditionHides))
+	FGameplayTag JumpTargetTag;
+
+	/**
+	 * Jump to tagged step progress which matches TargetTagQuery
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (EditCondition = "bTargetByIndex", EditConditionHides))
+	int JumpTargetIdx;
+
+	virtual void Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
 };

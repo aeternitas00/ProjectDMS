@@ -13,7 +13,7 @@
 #include "Conditions/DMSObjectConditionBase.h"
 #include "DMSObjectAttributeCondition.generated.h"
 
-class UDMSSequence;
+class ADMSSequence;
 
 UCLASS(BlueprintType)
 class PROJECTDMSGAME_API UDMSObjectAttributeCondition : public UDMSObjectConditionBase
@@ -39,7 +39,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 	int Value; // float? 
 
-	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const;
 };
 
 
@@ -61,5 +61,5 @@ public:
 //	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
 //	int Value; // float? 
 //
-//	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
+//	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const;
 //};

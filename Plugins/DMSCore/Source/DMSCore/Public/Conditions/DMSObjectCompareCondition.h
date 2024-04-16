@@ -14,7 +14,7 @@
 #include "Common/DMSTargetGenerator.h"
 #include "DMSObjectCompareCondition.generated.h"
 
-class UDMSSequence;
+class ADMSSequence;
 
 UCLASS(BlueprintType)
 class DMSCORE_API UDMSObjectCompareCondition : public UDMSObjectConditionBase
@@ -44,8 +44,8 @@ public:
 	UDMSObjectComparer* Comparer;
 
 
-	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
-	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* CompareTarget ) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const;
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* CompareTarget ) const;
 };
 
 UCLASS(Blueprintable, Abstract, EditInlineNew)
@@ -55,9 +55,9 @@ class DMSCORE_API UDMSObjectComparer : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent, Category = Condition)
-	bool Compare(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue);
+	bool Compare(UObject* SourceObject, ADMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue);
 
-	virtual bool Compare_Implementation(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) { return NullIsTrue; }
+	virtual bool Compare_Implementation(UObject* SourceObject, ADMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) { return NullIsTrue; }
 
 };
 
@@ -68,7 +68,7 @@ class DMSCORE_API UDMSObjectComparer_IsTarget : public UDMSObjectComparer
 
 public:
 
-	virtual bool Compare_Implementation(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) override {
+	virtual bool Compare_Implementation(UObject* SourceObject, ADMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) override {
 		//DMS_LOG_SCREEN(TEXT("%s == %s"),*SourceObject->GetName(), *CompareTarget->GetName());
 		return SourceObject == TargetObject;
 	}
@@ -103,7 +103,7 @@ protected:
 public:
 	UDMSObjectComparer_IsSpecificType() : SourceType(nullptr), TargetType(nullptr) {}
 	
-	virtual bool Compare_Implementation(UObject* SourceObject, UDMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) override {
+	virtual bool Compare_Implementation(UObject* SourceObject, ADMSSequence* iSeq, UObject* TargetObject, bool NullIsTrue) override {
 		bool A = (SourceType != nullptr) ?
 			(bAllowSourceChildClass ? SourceObject->IsA(SourceType) : SourceObject->GetClass() == SourceType) : true;
 		bool B = (TargetType != nullptr) ?

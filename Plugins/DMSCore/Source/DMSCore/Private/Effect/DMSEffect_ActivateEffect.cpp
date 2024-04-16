@@ -20,7 +20,7 @@ UDMSEffect_ActivateEffect_Static::UDMSEffect_ActivateEffect_Static() : UDMSEffec
 	EffectSetName = TAG_DMS_EffectType_Effect;
 }
 
-void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_ActivateEffect::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iEI->GetName(), *EffectTag.ToString());
 
@@ -37,7 +37,7 @@ void UDMSEffect_ActivateEffect::Work_Implementation(UDMSSequence* SourceSequence
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
 
-	TArray<UDMSSequence*> Sequences;
+	TArray<ADMSSequence*> Sequences;
 
 	for ( auto& NodeWrapper : NodeWrappers )
 	{
@@ -118,7 +118,7 @@ bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(ADMSActiveEffect* i
 	return OutWrapperArr.Num() != 0;
 }
 
-TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(UDMSSequence* Sequence, ADMSActiveEffect* TargetEI)
+TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI)
 {	
 	// 프로퍼티로 스태틱중에서 고르기 or EI Outer에서 고르기 의 분기 나누기.
 

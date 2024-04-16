@@ -25,11 +25,13 @@ ADMSActiveEffect::ADMSActiveEffect() :CurrentState(EDMSAEState::AES_None),DataSe
 { 
 	bReplicates = true;
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>("AttributesComponent");
+	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
 	AttributeComponent->SetIsReplicated(true);
+	EffectManagerComponent->SetIsReplicated(true);
 }
 
 
-void ADMSActiveEffect::Apply(UDMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
+void ADMSActiveEffect::Apply(ADMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
 
@@ -87,18 +89,18 @@ void ADMSActiveEffect::SetupDatas(UDMSDataObjectSet* iSet)
 	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(this); 
 }
 
-void ADMSActiveEffect::InheritSequenceDatas(UDMSSequence* iSeq)
+void ADMSActiveEffect::InheritSequenceDatas(ADMSSequence* iSeq)
 { 
 	SourcePlayer=iSeq->GetSourcePlayer(); SourceObject = iSeq->GetSourceObject(); 
 
-	if (DataSet==nullptr) DataSet = NewObject<UDMSDataObjectSet>(this);
+	AttributeComponent->ParentComponent = iSeq->GetComponentByClass<UDMSAttributeComponent>();
+	//if (DataSet==nullptr) DataSet = NewObject<UDMSDataObjectSet>(this);
 
-	DataSet->Inherit(iSeq->SequenceDatas);
-	DataSet->ParentDataSet = iSeq->SequenceDatas;
+	//DataSet->Inherit(iSeq->SequenceDatas);
+	//DataSet->ParentDataSet = iSeq->SequenceDatas;
 }
 
-
-UDMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, UDMSSequence* ChainingSequence) 
+ADMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, ADMSSequence* ChainingSequence) 
 {
 	auto SM = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);
 	if (SM == nullptr) return nullptr;
@@ -114,7 +116,7 @@ UDMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, UDMS
 }
 
 bool ADMSActiveEffect::ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
-	bool iChainable, UDMSSequence* Seq, AActor* SourceTweak)
+	bool iChainable, ADMSSequence* Seq, AActor* SourceTweak)
 {
 	// 1. Ignore condition check
 	if ( EffectNode->bIgnoreNotify || (CurrentState & EDMSAEState::AES_Persistent) != EDMSAEState::AES_Persistent ) return false;
@@ -202,7 +204,7 @@ void ADMSActiveEffect::Serialize(FArchive& Ar)
 
 }
 
-void UDMSEffectApplyWorker::SetupWorker(UDMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted)
+void UDMSEffectApplyWorker::SetupWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted)
 {
 	SourceSequence = iSequence;
 	OwnerInstance = iEI;
@@ -244,25 +246,31 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 		// Have to think about more complicated situations.
 
 		// Check CurrentDef which is a part of EI's effect has to be ignored.
-		FGameplayTagQuery Query;
-		if (SourceSequence->SequenceDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) &&
-			SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>())
-			Query = SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
+		//FGameplayTagQuery Query;
+		//if (SourceSequence->SequenceDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) &&
+		//	SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>())
+		//	Query = SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
 
-		if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->GetEffectTags()))) {
-			
-			// Predict check moved to before than setupworkers
-			ExecutedOptionNum = 0;
-			EffectOptionCompleted.Unbind();
-			EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
-			CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
-		}
+		//if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->GetEffectTags()))) {
+		//	
+			//// Predict check moved to before than setupworkers
+			//ExecutedOptionNum = 0;
+			//EffectOptionCompleted.Unbind();
+			//EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
+			//CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
+		//}
 
-		else {
+		//else {
 
-			// Ignored effect is considered to Succeeded.
-			ApplyNextEffectDef(true);
-		}
+		//	// Ignored effect is considered to Succeeded.
+		//	ApplyNextEffectDef(true);
+		//}
+
+		ExecutedOptionNum = 0;
+		EffectOptionCompleted.Unbind();
+		EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
+		CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
+
 		DMS_LOG_SIMPLE(TEXT("==== %s : ApplyNextEffectDef closed [%s] ===="),*SourceSequence->GetName(),*DebugStr);
 	}
 	

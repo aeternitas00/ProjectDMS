@@ -14,6 +14,7 @@
  */
 
 #include "DMSCoreIncludes.h"
+#include "Effect/DMSEffectorInterface.h"
 #include "Sequence/DMSSequenceEIStorage.h"
 #include "Common/DMSCommons.h"
 #include "Common/DMSCommonDelegates.h"
@@ -24,6 +25,7 @@
 
 class UDMSSequenceStep;
 class UDMSSequenceStepDefinition;
+class UDMSEIManagerComponent;
 class ADMSActiveEffect;
 class UDMSDataObjectSet;
 class UDMSEffectorInterface;
@@ -79,22 +81,25 @@ struct DMSCORE_API FProgressExecutor
  *	========================================
  */
 UCLASS(ClassGroup = (Sequence))
-class DMSCORE_API UDMSSequence : public UObject
+class DMSCORE_API ADMSSequence : public AInfo, public IDMSEffectorInterface
 {
 	GENERATED_BODY()
 
 protected:
+	// Using object pointers instead of TScriptInterface for convenience.
 
-	// === COMMENT TO REFERENCES OF SOURCE === //
-	// Originally, IDMSEffectorInterface should be used.
-	// But due to the inconvenience of TScriptInterface, it has been implemented using pointers of UObject-based classes instead.
+	UPROPERTY(Replicated)
+	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
+
+	UPROPERTY(Replicated)
+	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 
 	/**
 	 * The player or actor that triggers the sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, BlueprintGetter = GetSourcePlayer)
 	TObjectPtr<AActor> SourcePlayer;
-	//TScriptInterface<IDMSEffectorOwnableInterface> SourcePlayer;
+	//TScriptInterface<IDMSEffectorInterface> SourcePlayer;
 
 	/**
 	 * The object that triggers the sequence.
@@ -113,7 +118,7 @@ protected:
 
 public:
 	// Default Initializer
-	UDMSSequence();
+	ADMSSequence();
 
 	/**
 	 * Current state of this sequence.
@@ -142,9 +147,9 @@ public:
 	 * ++ 상위 시퀀스와 연관된 컨디션, 이펙트 같은 것을 구현 하기 위해
 	 */
 	UPROPERTY()
-	TObjectPtr<UDMSSequence> ParentSequence;
+	TObjectPtr<ADMSSequence> ParentSequence;
 	UPROPERTY()
-	TObjectPtr<UDMSSequence> ChildSequence;
+	TObjectPtr<ADMSSequence> ChildSequence;
 
 	/**
 	 * Simple getter of SourceObject
@@ -182,7 +187,7 @@ public:
 	 * Attach child sequence.
 	 * @param	iSeq						Attaching sequence.
 	 */
-	void AttachChildSequence(UDMSSequence* iSeq);
+	void AttachChildSequence(ADMSSequence* iSeq);
 
 	/**
 	 * Setter of Targets.
@@ -283,6 +288,7 @@ public:
 	 */
 	void OnStepQueueCompleted(bool Succeeded);
 
+	FORCEINLINE UDMSSequenceStep* GetInstancedStep() {return InstancedStep;}
 protected:	
 	/**
 	 * Store instanced steps.
@@ -293,18 +299,20 @@ protected:
 private:
 
 public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	friend class UDMSSequenceStep;
 	friend class UDMSSeqManager;
 };
 
 template<typename FuncInitiated>
-void UDMSSequence::AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated)
+void ADMSSequence::AddToOnSequenceInitiated_Native(FuncInitiated&& iOnSequenceInitiated)
 {
 	OnSequenceInitiated.AddLambda(iOnSequenceInitiated);
 }
 
 template<typename FuncFinished>
-void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
+void ADMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
 
@@ -316,7 +324,7 @@ void UDMSSequence::AddToOnSequenceFinished_Native(FuncFinished&& iOnSequenceFini
 }
 
 template<typename FuncFinished>
-void UDMSSequence::AddToPreSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
+void ADMSSequence::AddToPreSequenceFinished_Native(FuncFinished&& iOnSequenceFinished)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO Pre SEQ FINISHIED ===="), *GetName());
 

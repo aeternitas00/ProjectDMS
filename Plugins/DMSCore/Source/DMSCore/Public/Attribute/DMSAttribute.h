@@ -188,6 +188,37 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
+UCLASS()
+class DMSCORE_API UDMSAttributeValue_Effector : public UDMSAttributeValue
+{
+	GENERATED_BODY()
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = Attribute) 
+	TArray<TScriptInterface<IDMSEffectorInterface>> Value;
+
+public:
+	//UDMSAttributeValue_Effector();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure , Category = Attribute)
+	TArray<TScriptInterface<IDMSEffectorInterface>> GetValue() const { return Value; }
+
+	UFUNCTION(BlueprintCallable, Category = Attribute)
+	void AppendValue(const TArray<TScriptInterface<IDMSEffectorInterface>>& Items) { Value.Append(Items); }
+
+	UFUNCTION(BlueprintCallable, Category = Attribute)
+	void AddValue(const TScriptInterface<IDMSEffectorInterface>& Item) { Value.Add(Item); }
+
+	UFUNCTION(BlueprintCallable, Category = Attribute)
+	void RemoveValue(const TArray<TScriptInterface<IDMSEffectorInterface>>& Items) { for(auto It:Items)Value.Remove(It); }
+
+	UFUNCTION(BlueprintCallable, Category = Attribute)
+	void SetValue(TArray<TScriptInterface<IDMSEffectorInterface>> i) { Value=i; }
+
+	virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+};
 
 
 /**
@@ -217,6 +248,19 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
 	float FailureConditionValue; // float? 
 
+
+public:
+	virtual void ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue) override;
+	virtual bool Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue) override;
+};
+
+/**
+*	
+*/
+UCLASS()
+class DMSCORE_API UDMSAttributeModifierOp_Effector : public UDMSAttributeModifierOp
+{
+	GENERATED_BODY()
 
 public:
 	virtual void ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue) override;

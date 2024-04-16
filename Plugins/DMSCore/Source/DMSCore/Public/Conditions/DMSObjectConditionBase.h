@@ -15,7 +15,7 @@
 #include "Common/DMSCommons.h"
 #include "DMSObjectConditionBase.generated.h"
 
-class UDMSSequence;
+class ADMSSequence;
 
 /**
  *	========================================
@@ -50,9 +50,9 @@ public:
 	 * @param	CurrentSequence
 	 * @return	Compare targets[]
 	 */
-	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, const UDMSTargetGenerator* TargetGenerator) const;
+	TArray<UObject*> GetCompareTarget(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, const UDMSTargetGenerator* TargetGenerator) const;
 
-	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const;
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const;
 
 	/** 
 	 * Checking function will be excuted for each compare targets.
@@ -62,8 +62,8 @@ public:
 	 * return	Result of check condition.
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure, Category = Condition)
-	bool SingleCheckCondition(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
-	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const {
+	bool SingleCheckCondition(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const;
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const {
 		return bNullIsTrue;
 	}
 
@@ -97,5 +97,5 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Condition)
 	bool OnlyExact;
 
-	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence, UObject* Target) const;
+	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const;
 };

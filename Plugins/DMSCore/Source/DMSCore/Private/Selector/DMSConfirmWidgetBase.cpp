@@ -35,7 +35,7 @@
 //	//return SelectionForm.ForEachTargets ? EIArray[CurrentEIIndex]->DataSet : CurrentSequence->SequenceDatas;
 //}
 
-//bool UDMSConfirmWidgetBase::InitializeWidget(FDMSValueSelectionForm InitializeData,UDMSSequence* iSequence)
+//bool UDMSConfirmWidgetBase::InitializeWidget(FDMSValueSelectionForm InitializeData,ADMSSequence* iSequence)
 //{
 ////	SelectionForm = InitializeData;
 //	CurrentSequence = iSequence;

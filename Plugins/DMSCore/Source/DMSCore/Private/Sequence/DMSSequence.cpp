@@ -3,8 +3,10 @@
 
 #include "Sequence/DMSSequence.h"
 #include "Sequence/DMSSequenceStep.h"
+#include "Effect/DMSEIManagerComponent.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
+#include "Attribute/DMSAttributeComponent.h"
 #include "Selector/DMSEffectElementSelectorWidget.h"
 #include "Effect/DMSEffectHandler.h"
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -14,39 +16,44 @@
 
 // Default Initializer
 
-UDMSSequence::UDMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr),bTargeted(false) {
+ADMSSequence::ADMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr), bTargeted(false) {
 
 	//Progress = EDMSTimingFlag::T_Decision; //EDMSTimingFlag::T_Null;
 	SequenceState = EDMSSequenceState::SS_Default;
+
+	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>("AttributesComponent");
+	EffectManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EffectManagerComponent");
+	AttributeComponent->SetIsReplicated(true);
+	EffectManagerComponent->SetIsReplicated(true);
 
 	ParentSequence = nullptr;
 	ChildSequence = nullptr;
 	InstancedStep = CreateDefaultSubobject<UDMSSequenceStep>(FName("StepInstance"));
 }
 
-FGameplayTag UDMSSequence::GetCurrentProgressTag()
+FGameplayTag ADMSSequence::GetCurrentProgressTag()
 {
 	return InstancedStep->GetCurrentProgressTag();
 }
 
-AActor* UDMSSequence::GetSourceObject() const
+AActor* ADMSSequence::GetSourceObject() const
 {
 	return SourceObject;
 }
 
-AActor* UDMSSequence::GetSourcePlayer() const
+AActor* ADMSSequence::GetSourcePlayer() const
 {
 	return SourcePlayer;
 }
 
-bool UDMSSequence::SetSourceObject(AActor* NewSourceObject)
+bool ADMSSequence::SetSourceObject(AActor* NewSourceObject)
 {
 	bool rv = NewSourceObject->Implements<UDMSEffectorInterface>();
 	SourceObject = rv ? NewSourceObject : nullptr;
 	return rv;
 }
 
-bool UDMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
+bool ADMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
 {
 	bool rv = NewSourcePlayer->Implements<UDMSEffectorInterface>();
 	SourcePlayer= rv ? NewSourcePlayer : nullptr;
@@ -54,17 +61,17 @@ bool UDMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
 }
 
 
-bool UDMSSequence::IsChainableSequence()
+bool ADMSSequence::IsChainableSequence()
 {
 	return OriginalEffectNode->bIsChainableEffect;
 }
 
-void UDMSSequence::AddToOnSequenceInitiated(const FOnSequenceInitiatedDynamic_Signature& iOnSequenceInitiated)
+void ADMSSequence::AddToOnSequenceInitiated(const FOnSequenceInitiatedDynamic_Signature& iOnSequenceInitiated)
 {
 	OnSequenceInitiated_Dynamic.Add(iOnSequenceInitiated);
 }
 
-void UDMSSequence::AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& iOnSequenceFinished)
+void ADMSSequence::AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& iOnSequenceFinished)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
 
@@ -74,18 +81,18 @@ void UDMSSequence::AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Sign
 	OnSequenceFinishedDynamic.Add(iOnSequenceFinished);
 }
 
-void UDMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
+void ADMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
 {
 	InstancedStep->InitializeStepProgress(this,StepDefinitions,ProgressOrder);
 }
 
-void UDMSSequence::RunStepProgressQueue()
+void ADMSSequence::RunStepProgressQueue()
 {
 	InstancedStep->RunStepProgressQueue();
 }
 
 
-FGameplayTagContainer UDMSSequence::GetSequenceTags()
+FGameplayTagContainer ADMSSequence::GetSequenceTags()
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
@@ -93,7 +100,7 @@ FGameplayTagContainer UDMSSequence::GetSequenceTags()
 	return rv;
 }
 
-void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq) 
+void ADMSSequence::AttachChildSequence(ADMSSequence* iSeq) 
 {
 	if ( ChildSequence != nullptr && ChildSequence->IsSequenceActive() )
 	{
@@ -103,7 +110,7 @@ void UDMSSequence::AttachChildSequence(UDMSSequence* iSeq)
 	ChildSequence = iSeq;
 }
 
-void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
+void ADMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
 {
 	for ( auto& TargetToEI : TargetAndEIs )
 	{ 
@@ -121,24 +128,24 @@ void UDMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTa
 	}
 }
 
-bool UDMSSequence::IsSequenceActive()
+bool ADMSSequence::IsSequenceActive()
 {
 	return InstancedStep->IsProgressQueueFinished();
 }
 
-TArray<TScriptInterface<IDMSEffectorInterface>> UDMSSequence::GetTargets() const
+TArray<TScriptInterface<IDMSEffectorInterface>> ADMSSequence::GetTargets() const
 {
 	TArray<TScriptInterface<IDMSEffectorInterface>> rv;
 	for (auto& Storage : TargetAndEIs) rv.Add(Storage.MainTarget);
 	return rv;
 }
 
-TArray<FDMSSequenceEIStorage>& UDMSSequence::GetEIStorage()
+TArray<FDMSSequenceEIStorage>& ADMSSequence::GetEIStorage()
 {
 	return TargetAndEIs;
 }
 
-TArray<ADMSActiveEffect*> UDMSSequence::GetAllEIs()
+TArray<ADMSActiveEffect*> ADMSSequence::GetAllEIs()
 {
 	TArray<ADMSActiveEffect*> rv;
 
@@ -150,7 +157,7 @@ TArray<ADMSActiveEffect*> UDMSSequence::GetAllEIs()
 
 
 
-void UDMSSequence::OnSequenceInitiate()
+void ADMSSequence::OnSequenceInitiate()
 {
 	OnSequenceInitiated.Broadcast();
 	OnSequenceInitiated_Dynamic.Broadcast();	
@@ -159,7 +166,7 @@ void UDMSSequence::OnSequenceInitiate()
 	OnSequenceInitiated_Dynamic.Clear();
 }
 
-void UDMSSequence::OnSequenceFinish(bool Succeeded)
+void ADMSSequence::OnSequenceFinish(bool Succeeded)
 {
 	//auto temp = OnSequenceFinished;
 	//auto temp_Dynamic = OnSequenceFinishedDynamic;
@@ -182,13 +189,21 @@ void UDMSSequence::OnSequenceFinish(bool Succeeded)
 	MarkAsGarbage();
 }
 
-void UDMSSequence::OnStepQueueCompleted(bool Succeeded)
+void ADMSSequence::OnStepQueueCompleted(bool Succeeded)
 {
 	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 
 	SeqManager->CompleteSequence(this, Succeeded); 
 
 	OnSequenceFinish(Succeeded);
+}
+
+void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADMSSequence, EffectManagerComponent);
+	DOREPLIFETIME(ADMSSequence, AttributeComponent);
 }
 
 FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) : ExactTag(ProgressTag)

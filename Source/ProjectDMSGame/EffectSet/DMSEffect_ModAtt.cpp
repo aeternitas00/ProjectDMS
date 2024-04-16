@@ -33,7 +33,7 @@ bool UDMSEffect_ModAtt::GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarg
 	return OutComp!=nullptr;
 }
 
-void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+void UDMSEffect_ModAtt::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
 	//DMS_LOG_SIMPLE(TEXT("%s : ModAtt"), *iEI->GetOuter()->GetName());	
 
@@ -83,7 +83,7 @@ void UDMSEffect_ModAtt::Work_Implementation(UDMSSequence* SourceSequence, ADMSAc
 	OnWorkCompleted.ExecuteIfBound(true);
 }
 
-bool UDMSEffect_ModAtt::Predict_Implementation(UDMSSequence* SourceSequence, ADMSActiveEffect* iEI)
+bool UDMSEffect_ModAtt::Predict_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI)
 {
 	AActor* Outer = nullptr;
 	UDMSAttributeComponent* AttComp = nullptr;
@@ -124,7 +124,7 @@ UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
 	//DataPicker.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
 }
 
-bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
+bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
 {
 	// Get Input Data ( Skip if data doesn't exist. )
 	//UDMSDataObject* ValueData = nullptr;
@@ -139,7 +139,7 @@ bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffec
 	return true;
 }
 
-bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI, UDMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
+bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
 {
 	//UDMSDataObject* ValueData = nullptr;
 	if (!ModifierOp) return false;

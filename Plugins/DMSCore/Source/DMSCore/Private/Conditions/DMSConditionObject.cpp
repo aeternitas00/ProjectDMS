@@ -1,17 +1,17 @@
 #include "Conditions/DMSConditionObject.h"
 
 
-bool UDMSConditionObject::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSConditionObject::CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const
 {
 	return bNullIsTrue;
 }
 
-bool UDMSConditionClassWrapper::CheckOperation_Implementation(UObject* CheckingGameObject, UDMSSequence* CurrentSequence) const
+bool UDMSConditionClassWrapper::CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const
 {
 	return Condition.GetDefaultObject()->CheckCondition(CheckingGameObject,  CurrentSequence);
 }
 
-bool UDMSConditionCombiner::CheckOperation_Implementation(UObject* CheckingGameObject,  UDMSSequence* CurrentSequence) const
+bool UDMSConditionCombiner::CheckOperation_Implementation(UObject* CheckingGameObject,  ADMSSequence* CurrentSequence) const
 {
 	if (Conditions.Num() == 0) 
 		return bEmptyIsTrue;
@@ -36,17 +36,17 @@ bool UDMSConditionCombiner::CheckOperation_Implementation(UObject* CheckingGameO
 
 //=============TEST===============//
 
-const UDMSConditionObjectBase* UDMSConditionClassWrapper::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
+const UDMSConditionObjectBase* UDMSConditionClassWrapper::CheckCondition_(UObject* Caller, ADMSSequence* iSeq, bool& outResult) const
 {
 	return Condition.GetDefaultObject()->CheckCondition_(Caller, iSeq, outResult);
 }
 
-const UDMSConditionObjectBase* UDMSConditionObject::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
+const UDMSConditionObjectBase* UDMSConditionObject::CheckCondition_(UObject* Caller, ADMSSequence* iSeq, bool& outResult) const
 { 
 	outResult = true; return bIsRelative ? this : nullptr; 
 }
 
-const UDMSConditionObjectBase* UDMSConditionCombiner::CheckCondition_(UObject* Caller, UDMSSequence* iSeq, bool& outResult) const
+const UDMSConditionObjectBase* UDMSConditionCombiner::CheckCondition_(UObject* Caller, ADMSSequence* iSeq, bool& outResult) const
 {
 	if (Conditions.Num() == 0) {
 		outResult = bEmptyIsTrue;

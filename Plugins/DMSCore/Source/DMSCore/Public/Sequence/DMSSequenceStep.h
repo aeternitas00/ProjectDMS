@@ -41,13 +41,16 @@ public:
 	 * Reference owner sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UDMSSequence> OwnerSequence;
+	TObjectPtr<ADMSSequence> OwnerSequence;
 
-	void InitializeStepProgress(UDMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder);
+	void InitializeStepProgress(ADMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder);
 
 	void RunStepProgressQueue();
 
 	void ExecuteNextProgress();
+
+	void SetNextProgress(int ProgressIdx);
+	void SetNextProgress(const FGameplayTag& ProgressTag);
 
 	void ProgressEnd(bool bSucceeded = true);
 
@@ -98,7 +101,7 @@ public:
 
 	// =================================== //
 
-	friend class UDMSSequence;
+	friend class ADMSSequence;
 };
 
 template<typename FuncInitiated, typename FuncFinished>
