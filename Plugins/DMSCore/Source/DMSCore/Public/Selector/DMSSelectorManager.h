@@ -12,23 +12,17 @@ DECLARE_DELEGATE_OneParam(FOnSelectorCompleted, TArray<uint8>);
 
 class UDMSSelectorBase;
 class UDMSWidgetQueue;
+class UDMSAttributeValue;
 
 /**
- * Data structure used to request selector creation.
+ * Data class used to request selector creation.
  */
-USTRUCT(BlueprintType)
-struct FDMSSelectorRequestForm
+UCLASS(BlueprintType,Blueprintable)
+class DMSCORE_API UDMSSelectorRequestForm : public UObject
 {
 	GENERATED_BODY()
 
-	FDMSSelectorRequestForm():SelectAmount(0){}
-
-	/**
-	 * Data objects what wrapped Candidate.
-	 */
-	UPROPERTY(BlueprintReadWrite)
-	TArray<TObjectPtr<UObject>> Candidates;
-
+public:
 	/**
 	 * The number of selections the selector to be created will choose.
 	 */
@@ -49,6 +43,7 @@ struct FDMSSelectorRequestForm
 	FOnSelectorCompleted OnCompletedNative;
 };
 
+
 /**
  * 
  */
@@ -61,7 +56,7 @@ public:
 	UDMSSelectorHandle();
 
 	UPROPERTY(BlueprintReadOnly)
-	FDMSSelectorRequestForm StoredForm;
+	TObjectPtr<UDMSSelectorRequestForm> StoredForm;
 
 	TObjectPtr<UDMSSelectorBase> Widget;
 
@@ -140,7 +135,7 @@ public:
 	 * @return	Created handle.
 	 */
 	UFUNCTION(BlueprintCallable/*, Server*/)
-	UDMSSelectorHandle* RequestCreateSelector(FDMSSelectorRequestForm& Form);
+	UDMSSelectorHandle* RequestCreateSelector(UDMSSelectorRequestForm* Form);
 
 	/**
 	* Create multiple selectors handle from param request form
@@ -148,5 +143,5 @@ public:
 	* @return	Created handles.
 	*/
 	UFUNCTION(BlueprintCallable)
-	TArray<UDMSSelectorHandle*> RequestCreateSelectors(TArray<FDMSSelectorRequestForm>& Form);
+	TArray<UDMSSelectorHandle*> RequestCreateSelectors(TArray<UDMSSelectorRequestForm*>& Form);
 };

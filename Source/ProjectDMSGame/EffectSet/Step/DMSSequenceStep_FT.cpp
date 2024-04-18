@@ -23,12 +23,12 @@ void UDMSSequenceStep_FT::Progress_FT(UDMSSequenceStep* InstancedStep)
 	//auto EH = GS->GetEffectHandler(); check(EH);
 	//auto SelM = GS->GetSelectorManager(); check(SelM);
 
-	//TArray<FDMSSelectorRequestForm> DecisionForms;
+	//TArray<UDMSSelectorRequestForm> DecisionForms;
 
 	//GS->PlayerArray()
 
 	//for ( auto& DD : DecisionDefinitions )
-	//	DecisionForms.Append(DD.SetupRequestForm(InstancedStep->OwnerSequence));
+	//	DecisionForms.Append(DD.CreateRequestForm(InstancedStep->OwnerSequence));
 
 	//if ( WidgetOwner == nullptr || !WidgetOwner->SetupWidgetQueue(InstancedStep->OwnerSequence, SelM->RequestCreateSelectors(DecisionForms))) {
 	//	DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Canceled  ===="), *InstancedStep->OwnerSequence->GetName());

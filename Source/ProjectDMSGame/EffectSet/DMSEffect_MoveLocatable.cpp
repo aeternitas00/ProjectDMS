@@ -5,6 +5,7 @@
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "GameModes/DMSGameState.h"
 #include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttributeValue_Object.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "Location/DMSLocatableInterface.h"
@@ -31,7 +32,7 @@ void UDMSEffect_MoveLocatable::Work_Implementation(ADMSSequence* SourceSequence,
 	}
 
 	auto SeqAttComp = SourceSequence->GetComponentByClass<UDMSAttributeComponent>();
-	DestLocation = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Effector>(EffectTag.GetSingleTagContainer());
+	DestLocation = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(EffectTag.GetSingleTagContainer());
 	
 	if ( !DestLocation )
 	{

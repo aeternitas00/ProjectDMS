@@ -7,7 +7,6 @@
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Attribute/DMSAttributeComponent.h"
-#include "Selector/DMSEffectElementSelectorWidget.h"
 #include "Effect/DMSEffectHandler.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
@@ -145,7 +144,7 @@ TArray<FDMSSequenceEIStorage>& ADMSSequence::GetEIStorage()
 	return TargetAndEIs;
 }
 
-TArray<ADMSActiveEffect*> ADMSSequence::GetAllEIs()
+TArray<ADMSActiveEffect*> ADMSSequence::GetAllActiveEffects()
 {
 	TArray<ADMSActiveEffect*> rv;
 

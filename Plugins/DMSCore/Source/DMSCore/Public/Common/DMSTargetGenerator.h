@@ -67,6 +67,15 @@ public:
 };
 
 UCLASS()
+class DMSCORE_API UDMSTargetGenerator_Sequence: public UDMSTargetGenerator
+{
+	GENERATED_BODY()
+
+public:
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};
+
+UCLASS()
 class DMSCORE_API UDMSTargetGenerator_OwnerOfCaller : public UDMSTargetGenerator
 {
 	GENERATED_BODY()
@@ -74,6 +83,9 @@ class DMSCORE_API UDMSTargetGenerator_OwnerOfCaller : public UDMSTargetGenerator
 public:
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
+
+//UCLASS()
+//class DMSCORE_API UDMSTargetGenerator_FromAttribute: public UDMSTargetGenerator
 
 //UCLASS()
 //class DMSCORE_API UDMSTargetGenerator_FromData : public UDMSTargetGenerator

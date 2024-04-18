@@ -200,7 +200,7 @@ public:
 	TArray<FDMSSequenceEIStorage>& GetEIStorage();
 
 	UFUNCTION(BlueprintCallable)
-	TArray<ADMSActiveEffect*> GetAllEIs();
+	TArray<ADMSActiveEffect*> GetAllActiveEffects();
 
 	/**
 	 * Executed when sequence is initiated.

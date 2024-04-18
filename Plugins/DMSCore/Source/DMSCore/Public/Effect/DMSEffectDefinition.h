@@ -18,7 +18,6 @@
 #include "Attribute/DMSAttribute.h"
 #include "Common/DMSCommonDelegates.h"
 #include "Common/DMSTargetGenerator.h"
-#include "Selector/DMSEffectElementSelectorWidget.h"
 #include "DMSEffectDefinition.generated.h"
 
 class UDMSAttribute;

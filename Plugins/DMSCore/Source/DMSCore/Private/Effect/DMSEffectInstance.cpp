@@ -106,7 +106,7 @@ ADMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, ADMS
 	if (SM == nullptr) return nullptr;
 	TArray<TScriptInterface<IDMSEffectorInterface>> Target;
 	Target.Add(GetOwner());
-	auto OutSeq = SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, Target, DataSet, ChainingSequence);
+	auto OutSeq = SM->RequestCreateSequence(SourceTweak, SourcePlayer, EffectNode, Target, true, ChainingSequence);
 
 	// 자기 자신의 효과의 노티파잉에 반응하여 무한루프 하는 것을 방지.
 	OutSeq->AddToOnSequenceInitiated_Native([this](){CurrentState |= EDMSAEState::AES_NotifyClosed;});

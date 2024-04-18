@@ -13,7 +13,7 @@ UDMSSelectorManager::UDMSSelectorManager()
 	// ...
 }
 
-UDMSSelectorHandle* UDMSSelectorManager::RequestCreateSelector(FDMSSelectorRequestForm& Form)
+UDMSSelectorHandle* UDMSSelectorManager::RequestCreateSelector(UDMSSelectorRequestForm* Form)
 {
 	auto rv = NewObject<UDMSSelectorHandle>(this);
 
@@ -21,7 +21,7 @@ UDMSSelectorHandle* UDMSSelectorManager::RequestCreateSelector(FDMSSelectorReque
 	return rv;
 }
 
-TArray<UDMSSelectorHandle*> UDMSSelectorManager::RequestCreateSelectors ( TArray<FDMSSelectorRequestForm>& Forms )
+TArray<UDMSSelectorHandle*> UDMSSelectorManager::RequestCreateSelectors ( TArray<UDMSSelectorRequestForm*>& Forms )
 {
 	TArray<UDMSSelectorHandle*> rv;
 	for ( auto& Form : Forms )
@@ -47,14 +47,14 @@ void UDMSSelectorHandle::HideSelector()
 void UDMSSelectorHandle::CreateSelectorWidget(APlayerController* WidgetOwner)
 {
 	if (Widget != nullptr || WidgetOwner == nullptr) return; 
-	Widget = CreateWidget<UDMSSelectorBase>(WidgetOwner, StoredForm.SelectorClass);
+	Widget = CreateWidget<UDMSSelectorBase>(WidgetOwner, StoredForm->SelectorClass);
 	Widget->OwnerHandle = this;
 }
 
 bool UDMSSelectorHandle::SetupSelector(APlayerController* WidgetOwner)
 {
 	CreateSelectorWidget(WidgetOwner);
-	return Widget != nullptr ? Widget->InitializeSelector(StoredForm.Candidates) : false;
+	return Widget != nullptr ? Widget->InitializeSelector(StoredForm) : false;
 }
 
 void UDMSSelectorHandle::CloseSelector()
@@ -66,13 +66,13 @@ void UDMSSelectorHandle::CloseSelector()
 void UDMSSelectorHandle::CompleteHandle(const TArray<uint8>& SelectedIdx)
 {
 	if ( OwnerQueue == nullptr ) {
-		StoredForm.OnCompleted.Broadcast( SelectedIdx );
-		StoredForm.OnCompletedNative.ExecuteIfBound( SelectedIdx );
+		StoredForm->OnCompleted.Broadcast( SelectedIdx );
+		StoredForm->OnCompletedNative.ExecuteIfBound( SelectedIdx );
 	}
 	else {
 		OwnerQueue->OnSelectorsCompleted_Handle.AddLambda ( [=](ADMSSequence* ) {
-			StoredForm.OnCompleted.Broadcast(SelectedIdx);
-			StoredForm.OnCompletedNative.ExecuteIfBound(SelectedIdx);
+			StoredForm->OnCompleted.Broadcast(SelectedIdx);
+			StoredForm->OnCompletedNative.ExecuteIfBound(SelectedIdx);
 		} );
 	}
 

@@ -1,6 +1,7 @@
 #include "Conditions/DMSObjectAttributeCondition.h"
 #include "Attribute/DMSAttributeComponent.h"
 #include "Attribute/DMSAttribute.h"
+#include "Attribute/DMSAttributeValue_Numeric.h"
 #include "Sequence/DMSSequence.h"
 #include "Effect/DMSEffectInstance.h"
 

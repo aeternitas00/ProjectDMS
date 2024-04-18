@@ -71,10 +71,8 @@ void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer& AttributeName,const TSubclassOf<UDMSAttributeValue>& AttributeValueClass)
 {
 	UDMSAttribute* Rv = GetAttribute(AttributeName);
-	if (Rv) {
-		if (Rv->AttributeValue.IsA(AttributeValueClass)) return Rv;
-		return nullptr;
-	}
+	if (Rv && Rv->AttributeValue.IsA(AttributeValueClass)) return Rv;
+
 	Rv = NewObject<UDMSAttribute>(this);
 	Rv->AttributeTag = AttributeName;
 	Rv->GenerateValue(AttributeValueClass);

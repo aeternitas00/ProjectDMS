@@ -4,6 +4,8 @@
 #include "EffectSet/SkillTest/DMSSequenceStep_SkillTest.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttribute.h"
+#include "Attribute/DMSAttributeValue_Numeric.h"
 #include "Library/DMSGameFunctionLibrary.h"
 #include "Player/DMSPlayerController.h"
 #include "Card/DMSCardDefinition.h"
@@ -11,10 +13,9 @@
 #include "Conditions/DMSConditionObject.h"
 #include "Library/DMSCoreFunctionLibrary.h"
 #include "Library/DMSDataObjectHelperLibrary.h"
-#include "Player/DMSPlayerController.h"
 #include "GameModes/DMSGameState.h"
 #include "Selector/DMSDecisionDefinition.h"
-#include "Attribute/DMSAttribute.h"
+
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest, "Step.SkillTest");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_SkillTest_Committable, "Step.SkillTest.Committable");
@@ -56,7 +57,7 @@ UDMSSequenceStep_SkillTest::UDMSSequenceStep_SkillTest()
 //	DMS_LOG_SCREEN(TEXT("==-- SkillTestStep_DURING [ Depth : %d ] --=="), SM->GetDepth(OwnerSequence));
 //
 //	// Select Tester 
-//	FDMSSelectorRequestForm SkillTestForm;
+//	UDMSSelectorRequestForm SkillTestForm;
 //	SkillTestForm.SelectorClass = SkillTestWidgetClass;
 //
 //	auto Handle = SelM->RequestCreateSelector(SkillTestForm);
@@ -70,9 +71,9 @@ UDMSSequenceStep_SkillTest::UDMSSequenceStep_SkillTest()
 //		SetupTargets(SkillTestWidget->TestTargetCandidates,SkillTestData.TestTargetGenerator);
 //	SkillTestWidget->EIIndexMax = 1; SkillTestWidget->CurrentEIIndex = 0; 
 //	if ( IsTestByEachApplyTarget() ){	
-//		SkillTestWidget->Updaters.Reserve(OwnerSequence->GetAllEIs().Num());
-//		SkillTestWidget->UsedBonusValues.Reserve(OwnerSequence->GetAllEIs().Num());
-//		SkillTestWidget->EIIndexMax = OwnerSequence->GetAllEIs().Num();
+//		SkillTestWidget->Updaters.Reserve(OwnerSequence->GetAllActiveEffects().Num());
+//		SkillTestWidget->UsedBonusValues.Reserve(OwnerSequence->GetAllActiveEffects().Num());
+//		SkillTestWidget->EIIndexMax = OwnerSequence->GetAllActiveEffects().Num();
 //	}
 //	
 //	SkillTestWidget->OwnerStep = this;
@@ -169,7 +170,7 @@ void UDMSSelector_SkillTest::PushResultUpdater(AActor* Tester, AActor* TestTarge
 	if (OwnerStep->IsTestByEachApplyTarget()){
 		Updaters.Push([=]() __declspec(noinline) {
 			DMS_LOG_SCREEN(TEXT("Update Data"));
-			//OwnerStep->OwnerSequence->GetAllEIs()[CurrentEIIndex]->DataSet->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
+			//OwnerStep->OwnerSequence->GetAllActiveEffects()[CurrentEIIndex]->DataSet->SetData(TAG_DMS_Step_SkillTest_Data_TestResult, SkillTestResult);
 		});
 	}
 	else{
@@ -246,20 +247,20 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 	auto SeqTestTargetValue = Cast<UDMSAttributeValue_Numeric>(AttComp->MakeAttribute(TestTargetAttribute,UDMSAttributeValue_Numeric::StaticClass()));
 
 	auto SeqAttTester = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Tester").GetSingleTagContainer());
-	UDMSAttributeValue_Effector* AttVTester = nullptr;
+	UDMSAttributeValue_Object* AttVTester = nullptr;
 	AActor* Tester = nullptr;
-	if(	SeqAttTester ) AttVTester = Cast<UDMSAttributeValue_Effector>(SeqAttTester->AttributeValue);
-	if( AttVTester ) Tester = Cast<AActor>(AttVTester->GetValue()[0].GetObject());
+	if(	SeqAttTester ) AttVTester = Cast<UDMSAttributeValue_Object>(SeqAttTester->AttributeValue);
+	if( AttVTester ) Tester = Cast<AActor>(AttVTester->GetValue()[0]);
 	if( !Tester ) Tester = InstancedStep->OwnerSequence->GetSourceObject();
 
 	UDMSAttributeValue_Numeric* TesterAttribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.StatName));
 	if ( TesterAttribute ) SeqTesterValue->SetValue(TesterAttribute->GetValue());
 	
 	auto SeqAttTestTarget = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget").GetSingleTagContainer());
-	UDMSAttributeValue_Effector* AttVTestTarget  = nullptr;
+	UDMSAttributeValue_Object* AttVTestTarget  = nullptr;
 	AActor* TestTarget  = nullptr;
-	if(	SeqAttTestTarget ) AttVTestTarget = Cast<UDMSAttributeValue_Effector>(SeqAttTestTarget->AttributeValue);
-	if( AttVTestTarget ) TestTarget = Cast<AActor>(AttVTestTarget->GetValue()[0].GetObject());
+	if(	SeqAttTestTarget ) AttVTestTarget = Cast<UDMSAttributeValue_Object>(SeqAttTestTarget->AttributeValue);
+	if( AttVTestTarget ) TestTarget = Cast<AActor>(AttVTestTarget->GetValue()[0]);
 	if( !TestTarget ) TestTarget = Cast<AActor>(InstancedStep->OwnerSequence->GetTargets()[0].GetObject());
 	
 	UDMSAttributeValue_Numeric* TestTargetAttVal  = Cast<UDMSAttributeValue_Numeric>(TestTarget->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.TargetStatName));

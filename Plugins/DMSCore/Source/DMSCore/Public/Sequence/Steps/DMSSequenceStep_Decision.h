@@ -23,50 +23,6 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_Decision)
 *	For example, if the effect can be activated on "one enemy", the widget for this would prompt the player to choose from the list of available enemies as the target.
 */
 UCLASS()
-class DMSCORE_API UDMSSequenceStep_Decision : public UDMSSequenceStep
-{
-	GENERATED_BODY()
-
-public:
-	UDMSSequenceStep_Decision();
-
-	/**
-	 * Target generator for who will handle this step.
-	 */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Decision)
-	TObjectPtr<UDMSTargetGenerator> DecisionMaker;
-
-	/**
-	 * Definitions regarding what to select and how it should be processed.
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
-	TArray<FDMSDecisionDefinition> DecisionDefinitions;
-	
-	//template<typename FuncSucceeded>
-	//void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
-	// Implementations
-	//virtual FGameplayTagContainer GetStepTag_Implementation() const;
-	//virtual void OnBefore_Implementation() override;
-	//virtual void OnDuring_Implementation() override;
-	//virtual void OnAfter_Implementation() override;
-
-};
-
-//template<typename FuncSucceeded>
-//void UDMSSequenceStep_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
-//{
-//	WidgetOwner->RunWidgetQueue(		
-//		Succeeded,
-//		[=](ADMSSequence* pSequence) {
-//			// Decision canceled
-//			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
-//			ProgressComplete(false);
-//		}
-//	);
-//}
-
-
-UCLASS()
 class DMSCORE_API UDMSSequenceStepDefinition_Decision : public UDMSSequenceStepDefinition
 {
 	GENERATED_BODY()
@@ -83,8 +39,11 @@ public:
 	/**
 	* Definitions regarding what to select and how it should be processed.
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
-	TArray<FDMSDecisionDefinition> DecisionDefinitions;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
+	//TArray<FDMSDecisionDefinition> DecisionDefinitions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Decision)
+	TArray<TObjectPtr<UDMSDecisionDefinitionBase>> DecisionDefinitions__;
 
 	UFUNCTION()
 	void Progress_Decision(UDMSSequenceStep* InstancedStep);
@@ -114,4 +73,48 @@ void UDMSSequenceStepDefinition_Decision::RunWidgetQueue(UDMSSequenceStep* Insta
 		}
 	);
 }
+
+
+//UCLASS()
+//class DMSCORE_API UDMSSequenceStep_Decision : public UDMSSequenceStep
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UDMSSequenceStep_Decision();
+//
+//	/**
+//	 * Target generator for who will handle this step.
+//	 */
+//	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Decision)
+//	TObjectPtr<UDMSTargetGenerator> DecisionMaker;
+//
+//	/**
+//	 * Definitions regarding what to select and how it should be processed.
+//	 */
+//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
+//	TArray<FDMSDecisionDefinition> DecisionDefinitions;
+//	
+//	//template<typename FuncSucceeded>
+//	//void RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
+//	// Implementations
+//	//virtual FGameplayTagContainer GetStepTag_Implementation() const;
+//	//virtual void OnBefore_Implementation() override;
+//	//virtual void OnDuring_Implementation() override;
+//	//virtual void OnAfter_Implementation() override;
+//
+//};
+//
+//template<typename FuncSucceeded>
+//void UDMSSequenceStep_Decision::RunWidgetQueue(ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
+//{
+//	WidgetOwner->RunWidgetQueue(		
+//		Succeeded,
+//		[=](ADMSSequence* pSequence) {
+//			// Decision canceled
+//			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
+//			ProgressComplete(false);
+//		}
+//	);
+//}
 

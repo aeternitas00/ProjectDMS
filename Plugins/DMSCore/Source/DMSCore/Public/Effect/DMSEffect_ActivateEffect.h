@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Effect/DMSEffectDefinition.h"
-#include "Selector/DMSDecisionDefinition.h"
+#include "Selector/DMSDecisionDefinition_Object.h"
 #include "DMSEffect_ActivateEffect.generated.h"
 
 //
@@ -62,7 +62,7 @@ public:
 };
 
 
-UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect : Using Selector"))
+UCLASS(Blueprintable, ClassGroup = (Effect), meta = (DisplayName = "Activate Effect : From AE Attribute"))
 class DMSCORE_API UDMSEffect_ActivateEffect_Variable : public UDMSEffect_ActivateEffect
 {
 	GENERATED_BODY()
@@ -73,8 +73,8 @@ public:
 	/**
 	 *
 	 */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
-	FDMSValueSelectionForm SelectorData;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	FGameplayTagContainer AEAttributeTags;
 
 	//virtual bool GetEffectNodeWrapper(ADMSActiveEffect* iEI, UDMSEffectNodeWrapper*& OutWrapper);
 	virtual bool GetEffectNodeWrappers(ADMSActiveEffect* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr);
@@ -83,7 +83,7 @@ public:
 };
 
 UCLASS()
-class DMSCORE_API UDMSSelectorRequestGenerator_AE : public UDMSSelectorRequestGenerator
+class DMSCORE_API USelReqGenerator_ObjCand_ActivateEffect : public USelReqGenerator_ObjCand
 {
 	GENERATED_BODY()
 
@@ -99,6 +99,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffects;
 
-	virtual TArray<UDMSDataObject*> GenerateCandidates(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI);
-	TArray<UDMSDataObject*> MakeDataArray(ADMSActiveEffect* TargetEI);
+	virtual TArray<UObject*> CollectObjects(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI);
+	TArray<UObject*> MakeDataArray(ADMSActiveEffect* TargetEI);
 };

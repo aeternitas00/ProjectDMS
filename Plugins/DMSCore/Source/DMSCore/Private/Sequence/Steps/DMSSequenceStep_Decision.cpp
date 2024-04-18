@@ -16,11 +16,11 @@
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Step_Decision, "Step.Decision");
 
-UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
-{
-	//StepTag = TAG_DMS_Step_Decision;
-	DecisionMaker = CreateDefaultSubobject<UDMSTargetGenerator_SourcePlayer>("DecisionMaker");
-}
+//UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
+//{
+//	//StepTag = TAG_DMS_Step_Decision;
+//	DecisionMaker = CreateDefaultSubobject<UDMSTargetGenerator_SourcePlayer>("DecisionMaker");
+//}
 
 //FGameplayTagContainer UDMSSequenceStep_Decision::GetStepTag_Implementation() const{return FGameplayTagContainer(TAG_DMS_Step_Decision);}
 //
@@ -58,7 +58,7 @@ UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
 //
 //	//if (CastedDecisionMakers.Num()>1){
 //
-//	//	FDMSSelectorRequestForm NewForm;	
+//	//	UDMSSelectorRequestForm NewForm;	
 //	//	NewForm.SelectorClass= SM->DecisionMakerSelector;
 //	//	NewForm.SelectAmount=1;
 //	//	NewForm.OnCompleted.BindUObject();
@@ -78,10 +78,10 @@ UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
 //	
 //	WidgetOwner = CastedDecisionMakers.Num() == 0 ? nullptr : CastedDecisionMakers[0];
 //	
-//	TArray<FDMSSelectorRequestForm> DecisionForms;
+//	TArray<UDMSSelectorRequestForm> DecisionForms;
 //
 //	for ( auto& DD : DecisionDefinitions )
-//		DecisionForms.Append(DD.SetupRequestForm(OwnerSequence));
+//		DecisionForms.Append(DD.CreateRequestForm(OwnerSequence));
 //
 //	if ( WidgetOwner == nullptr || !WidgetOwner->SetupWidgetQueue(OwnerSequence, SelM->RequestCreateSelectors(DecisionForms))) {
 //		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Canceled  ===="), *OwnerSequence->GetName());
@@ -95,7 +95,7 @@ UDMSSequenceStep_Decision::UDMSSequenceStep_Decision()
 //		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequence->GetName());
 //
 //		// Prevent self notifing 
-//		//for (auto EI : pSequence->GetAllEIs())
+//		//for (auto EI : pSequence->GetAllActiveEffects())
 //		//{
 //		//	EI->ToggleEIState(EDMSAEState::AES_None);
 //		//}
@@ -145,10 +145,10 @@ void UDMSSequenceStepDefinition_Decision::MakeDecision(UDMSSequenceStep* Instanc
 	// TODO :: Implementing for cases where multiple players make selections sequentially.
 	WidgetOwner = CastedDecisionMakers.Num() == 0 ? nullptr : CastedDecisionMakers[0];
 
-	TArray<FDMSSelectorRequestForm> DecisionForms;
+	TArray<UDMSSelectorRequestForm*> DecisionForms;
 
-	for ( auto& DD : DecisionDefinitions )
-		DecisionForms.Append(DD.SetupRequestForm(InstancedStep->OwnerSequence));
+	for ( auto& DD : DecisionDefinitions__ )
+		DecisionForms.Append(DD->CreateRequestForm(InstancedStep->OwnerSequence));
 
 	if ( WidgetOwner == nullptr || !WidgetOwner->SetupWidgetQueue(InstancedStep->OwnerSequence, SelM->RequestCreateSelectors(DecisionForms))) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Canceled  ===="), *InstancedStep->OwnerSequence->GetName());

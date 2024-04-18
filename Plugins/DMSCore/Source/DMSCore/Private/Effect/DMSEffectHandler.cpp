@@ -106,7 +106,7 @@ void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnResolveComplete
 {
 	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
-	if(Sequence->GetAllEIs().Num() == 0 || !Sequence->IsTargetted()) {
+	if(Sequence->GetAllActiveEffects().Num() == 0 || !Sequence->IsTargetted()) {
 		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
 		OnResolveCompleted.ExecuteIfBound(true);
 		return;
@@ -120,7 +120,7 @@ void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnResolveComplete
 	
 	OnResolveCompletedMap.Add(Sequence);
 	OnResolveCompletedMap[Sequence].Count = 0;
-	OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllEIs();
+	OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllActiveEffects();
 	OnResolveCompletedMap[Sequence].Iterator.BindLambda([=](ADMSSequence* SourceSequence, bool PrevSucceeded){
 		ApplyNextEffectInstance(SourceSequence,OnResolveCompleted,PrevSucceeded);
 	});
@@ -137,7 +137,7 @@ void UDMSEffectHandler::ApplyNextEffectInstance(ADMSSequence* SourceSequence,con
 		return;
 	}
 
-	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->GetAllEIs().Num())
+	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->GetAllActiveEffects().Num())
 		OnResolveCompleted.ExecuteIfBound(true);
 	else
 		ApplyAEGetter(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].Iterator);

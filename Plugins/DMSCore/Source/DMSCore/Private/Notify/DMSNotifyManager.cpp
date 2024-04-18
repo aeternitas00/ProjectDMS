@@ -6,6 +6,8 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttributeValue_Object.h"
+
 #include "GameModes/DMSGameStateBase.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Sequence/DMSSequenceStep.h"
@@ -13,7 +15,9 @@
 #include "GameFramework/GameState.h"
 #include "GameFramework/PlayerState.h"
 #include "Player/DMSPlayerControllerBase.h"
+
 #include "Selector/DMSSelectorManager.h"
+#include "Selector/DMSDecisionDefinition_Object.h"
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_Respondent, "System.Notify.Respondent");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_ActivatingEffect, "System.Notify.ActivatingEffect");
@@ -146,10 +150,10 @@ void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, 
 	// TODO :: 각 오너에게 뿌리는 방식으로 변경 해야함. && 리더 플레이어를 구해오는 방식을 게임 모드에 종속적이지 않게 따로 빼야할 듯.
 	ADMSPlayerControllerBase* LeaderPC = UDMSCoreFunctionLibrary::GetDMSGameState(this)->GetLeaderPlayerController();
 
-	FDMSSelectorRequestForm NewForm;		
+	UDMSSelectorRequestForm_Object* NewForm = NewObject<UDMSSelectorRequestForm_Object>(this);		
 
-	NewForm.SelectorClass= ResponsedObjectSelector;
-	NewForm.SelectAmount=1;	
+	NewForm->SelectorClass = ResponsedObjectSelector;
+	NewForm->SelectAmount=1;	
 
 	TArray<TScriptInterface<IDMSEffectorInterface>> TempCandidates;
 	ResponsedObjects.GetKeys(TempCandidates);
@@ -167,15 +171,13 @@ void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, 
 
 	SelHandle->SetupDelegates([=,NotifyManager=this]() {
 		// [ OK Bttn ]
-		//UDMSDataObjectSet* Data = InstancedWidget->CurrentSequence->SequenceDatas;
-		//TScriptInterface<IDMSEffectorInterface> Respondent = Data->GetData(TAG_DMS_System_Notify_Respondent)->Get<UObject*>();
-		//ADMSActiveEffect* EffectInstance = Cast<ADMSActiveEffect>(Data->GetData(TAG_DMS_System_Notify_ActivatingEffect)->Get<UObject*>());
-		
-		auto RespondentAttribute = InstancedWidget->CurrentSequence->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Effector>(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent));
-		auto EffectInstanceAttribute = InstancedWidget->CurrentSequence->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Effector>(FGameplayTagContainer(TAG_DMS_System_Notify_ActivatingEffect));
+		auto OwnerSequence = InstancedWidget->CurrentSequence;
+		auto SequenceAttComp = OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
+		auto RespondentAttribute = SequenceAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent));
+		auto EffectInstanceAttribute = SequenceAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTagContainer(TAG_DMS_System_Notify_ActivatingEffect));
 
 		TScriptInterface<IDMSEffectorInterface> Respondent = RespondentAttribute ? RespondentAttribute->GetValue()[0] : nullptr;
-		ADMSActiveEffect* EffectInstance = EffectInstanceAttribute ? Cast<ADMSActiveEffect>(EffectInstanceAttribute->GetValue()[0].GetObject()) : nullptr;
+		ADMSActiveEffect* EffectInstance = EffectInstanceAttribute ? Cast<ADMSActiveEffect>(EffectInstanceAttribute->GetValue()[0]) : nullptr;
 		if (EffectInstance == nullptr)
 		{
 			// Widget didn't made proper data.
@@ -251,16 +253,16 @@ void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* Effe
 {
 	auto SeqAttComp = CurrentSequence->GetComponentByClass<UDMSAttributeComponent>();
 
-	auto RespondentAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Effector::StaticClass());
-	auto AEAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Effector::StaticClass());
+	auto RespondentAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Object::StaticClass());
+	auto AEAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Object::StaticClass());
 
 	if(!RespondentAtt || !AEAtt)
 	{
 		DMS_LOG_SIMPLE(TEXT("UDMSNotifyRespondentSelector :: Update data Failed"));
 		return; /* LOG? */
 	}
-	Cast<UDMSAttributeValue_Effector>(RespondentAtt->AttributeValue)->AddValue(Respondent);
-	Cast<UDMSAttributeValue_Effector>(AEAtt->AttributeValue)->AddValue(EffectInstance);
+	Cast<UDMSAttributeValue_Object>(RespondentAtt->AttributeValue)->AddValue(Respondent);
+	Cast<UDMSAttributeValue_Object>(AEAtt->AttributeValue)->AddValue(EffectInstance);
 
 	//UDMSDataObjectSet* UpdatingData = CurrentSequence->SequenceDatas;
 	//UpdatingData->SetData(TAG_DMS_System_Notify_Respondent, Respondent);

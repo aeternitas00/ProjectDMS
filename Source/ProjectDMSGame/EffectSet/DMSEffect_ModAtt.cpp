@@ -2,6 +2,7 @@
 
 #include "EffectSet/DMSEffect_ModAtt.h"
 #include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttributeValue_Numeric.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Sequence/DMSSequence.h"
 

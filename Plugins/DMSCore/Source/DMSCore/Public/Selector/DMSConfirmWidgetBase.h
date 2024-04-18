@@ -43,7 +43,7 @@ public:
 
 
 	UFUNCTION(BlueprintImplementableEvent)
-	bool InitializeSelector(const TArray<UDMSDataObject*>& Candidates);
+	bool InitializeSelector(const UDMSSelectorRequestForm* Candidates);
 
 	UFUNCTION(BlueprintCallable)
 	void CompleteSelect(const TArray<uint8>& SelectedIdx);

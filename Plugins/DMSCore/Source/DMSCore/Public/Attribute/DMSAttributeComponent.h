@@ -37,7 +37,7 @@ public:
 	 * Storing attribute instances
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Replicated)
-	TArray<TObjectPtr<UDMSAttribute>> Attributes; // Resources
+	TArray<TObjectPtr<UDMSAttribute>> Attributes;
 	
 	/**
 	 * Check this component contians tagged attribute.
@@ -91,7 +91,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	UDMSAttribute* GetAttribute(const FGameplayTagContainer& AttributeName) const;
-	TArray<UDMSAttribute*> GetAttributesByQuery(const FGameplayTagQuery & TargetQuery) const;
+	TArray<UDMSAttribute*> GetAttributesByQuery(const FGameplayTagQuery& TargetQuery) const;
 
 	/**
 	 * Getter of attribute value
@@ -102,9 +102,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UDMSAttributeValue* GetAttributeValue(const FGameplayTagContainer& AttributeName) const;
 	template<typename T>
-	T* GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const;
+	T* GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const;	
+	template<typename T>
+	TArray<T*> GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery) const;
+
 	//UFUNCTION(BlueprintCallable)
-	//TArray<FDMSSerializedAttribute> ToSerialized();
+	//TArray<FDMSAttributeDefinition> ToDefinition();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
@@ -113,4 +116,15 @@ template<typename T>
 inline T* UDMSAttributeComponent::GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const
 {
 	return Cast<T>(GetAttributeValue(AttributeName));
+}
+
+template<typename T>
+inline TArray<T*> UDMSAttributeComponent::GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery) const
+{
+	TArray<T*> rv;
+	for (auto& Att : GetAttributesByQuery(AttributeSearchQuery))
+	{
+		rv.Add(Cast<T>(Att));
+	}
+	return rv;
 }

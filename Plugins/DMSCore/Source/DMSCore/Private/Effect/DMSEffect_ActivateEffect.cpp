@@ -3,6 +3,9 @@
 #include "Effect/DMSEffect_ActivateEffect.h"
 #include "Common/DMSCommonTags.h"
 
+#include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttributeValue_Object.h"
+
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "GameModes/DMSGameModeBase.h"
@@ -22,10 +25,10 @@ UDMSEffect_ActivateEffect_Static::UDMSEffect_ActivateEffect_Static() : UDMSEffec
 
 void UDMSEffect_ActivateEffect::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
-	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iEI->GetName(), *EffectTag.ToString());
+	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iAE->GetName(), *EffectTag.ToString());
 
 	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager(iEI);
-	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iEI->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
+	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iAE->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
 	
 	TArray<UDMSEffectNodeWrapper*> NodeWrappers;
 	
@@ -42,20 +45,20 @@ void UDMSEffect_ActivateEffect::Work_Implementation(ADMSSequence* SourceSequence
 	for ( auto& NodeWrapper : NodeWrappers )
 	{
 		auto Node = NodeWrapper->GetEffectNode();
-		auto NewSeq = SeqMan->RequestCreateSequence(iEI->GetApplyTargetInterface()->GetObject(), SourceSequence->GetSourcePlayer(), Node, {}, nullptr);
+		auto NewSeq = SeqMan->RequestCreateSequence(iEI->GetApplyTargetInterface()->GetObject(), SourceSequence->GetSourcePlayer(), Node, {});
 		Sequences.Add(NewSeq);
 	}
 
 	for ( int i=0; i<Sequences.Num() ; i++ ) 
 	{
-		if ( i < Sequences.Num()-1){
+		if ( i < Sequences.Num()-1) { // Loop for all effect 
 			Sequences[i]->AddToPreSequenceFinished_Native([=,NextIdx = i+1, NextSequence = Sequences[i+1]](bool ChildSeqSucceeded) {
 				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN NEXT EFFECT [%d] ===="),*SourceSequence->GetName(),NextIdx);
 				SeqMan->RunSequence(NextSequence);
 				DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect run sequence lambda ends ===="),*SourceSequence->GetName());
 			});
 		}
-		else {
+		else { // End of work 
 			Sequences[i]->AddToPreSequenceFinished_Native([=](bool ChildSeqSucceeded) {
 				DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
 				OnWorkCompleted.ExecuteIfBound(ChildSeqSucceeded);
@@ -72,7 +75,7 @@ UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(ADMSActiv
 {
 	// Outer Validation
 	auto tOuter = iEI->GetApplyTargetInterface();
-	if (tOuter == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName());*/ return nullptr; }
+	if (tOuter == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iAE->GetName());*/ return nullptr; }
 
 	return tOuter != nullptr ? tOuter->GetOwningEffectSet(EffectSetName) : nullptr;
 }
@@ -82,25 +85,24 @@ UDMSEffect_ActivateEffect_Variable::UDMSEffect_ActivateEffect_Variable()
 	//DataPicker.ValueSelector = CreateDefaultSubobject<UDMSValueSelectorDefinition_Effect>("ValueSelector");
 }
 
-bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(ADMSActiveEffect* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
+bool UDMSEffect_ActivateEffect_Variable::GetEffectNodeWrappers(ADMSActiveEffect* iAE, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
 { 	
-	UDMSDataObject* rData = SelectorData.Get(iEI->DataSet);
+	// Get input data ( Skip if data doesn't exist. )
 
+	auto AEAttComp = iAE->GetComponentByClass<UDMSAttributeComponent>();
+	auto rData = AEAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(AEAttributeTags);
 	if (rData == nullptr) return false;
+	auto ObjArr = rData->GetValue();
+	if (ObjArr.Num()==0) return false;
+	
+	for(auto Obj : ObjArr)
+	{
+		if(Obj->IsA<UDMSEffectNodeWrapper>())
+			OutWrapperArr.Add(Cast<UDMSEffectNodeWrapper>(Obj));
+	}
 
-	// Get Input Data ( Skip if data doesn't exist. )
-	else {
-		if (rData->TypeCheck<TArray<UDMSDataObject*>>()) {
-			for ( auto& WrapperData : rData->Get<TArray<UDMSDataObject*>>())
-			{
-				UObject* Wrapper = WrapperData->Get<UObject*>();
-				if (Wrapper->IsA<UDMSEffectNodeWrapper>()) OutWrapperArr.Add(Cast<UDMSEffectNodeWrapper>(Wrapper));
-			}
-			return OutWrapperArr.Num() != 0;
-		}
-		else	
-			return false;
-	} }
+	return true;
+}
 
 
 bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(ADMSActiveEffect* iEI, TArray<UDMSEffectNodeWrapper*>& OutWrapperArr)
@@ -118,43 +120,39 @@ bool UDMSEffect_ActivateEffect_Static::GetEffectNodeWrappers(ADMSActiveEffect* i
 	return OutWrapperArr.Num() != 0;
 }
 
-TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::GenerateCandidates(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI)
+TArray<UObject*> USelReqGenerator_ObjCand_ActivateEffect::CollectObjects(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI)
 {	
 	// 프로퍼티로 스태틱중에서 고르기 or EI Outer에서 고르기 의 분기 나누기.
 
-	TArray<UDMSDataObject*> rv;
+	TArray<UObject*> rv;
 	if (UseEffectFromOuter) {
 		if (TargetEI != nullptr)
 			rv = MakeDataArray(TargetEI);
 	
 		else {
-			for ( auto& EI :Sequence->GetAllEIs())
+			for ( auto& EI : Sequence->GetAllActiveEffects())
 				rv.Append(MakeDataArray(EI));
 		}
 	}
 	else {
-		for (auto& EN : StaticEffects)
+		for (auto EN : StaticEffects)
 		{
-			auto NewData = NewObject<UDMSDataObject>(TargetEI == nullptr ? (UObject*)Sequence : (UObject*)TargetEI);
-			NewData->Set((UObject*)EN);
-			rv.Add(NewData);
+			rv.Add(EN);
 		}
 	}
 	return rv;
 }
 
-TArray<UDMSDataObject*> UDMSSelectorRequestGenerator_AE::MakeDataArray(ADMSActiveEffect* TargetEI)
+TArray<UObject*> USelReqGenerator_ObjCand_ActivateEffect::MakeDataArray(ADMSActiveEffect* TargetEI)
 {
-	TArray<UDMSDataObject*> rv;
+	TArray<UObject*> rv;
 	auto tOuter = TargetEI->GetApplyTargetInterface();
 
-	if(tOuter == nullptr || tOuter->GetOwningEffectSet(EffectSetTag) == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iEI->GetName());*/ return rv; }
+	if(tOuter == nullptr || tOuter->GetOwningEffectSet(EffectSetTag) == nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : tOuter is Null"), *iAE->GetName());*/ return rv; }
 
-	for(auto& EN : tOuter->GetOwningEffectSet(EffectSetTag)->EffectNodes)
+	for(auto EN : tOuter->GetOwningEffectSet(EffectSetTag)->EffectNodes)
 	{
-		auto NewData = NewObject<UDMSDataObject>(TargetEI);
-		NewData->Set((UObject*)EN);
-		rv.Add(NewData);
+		rv.Add(EN);
 	}
 
 	return rv;
