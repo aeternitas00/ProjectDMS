@@ -83,7 +83,7 @@ TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()
 */
 //virtual UObject* GetObject() override {return this;} // RENAME?
 
-AActor* ADMSLevelScriptActor::GetOwningPlayer() { return UDMSCoreFunctionLibrary::GetDMSGameMode(this)->GameState; }
+AActor* ADMSLevelScriptActor::GetOwningPlayer_Implementation() { return UDMSCoreFunctionLibrary::GetDMSGameMode(this)->GameState; }
 
 UDMSEffectSet* ADMSLevelScriptActor::GetOwningEffectSet(const FGameplayTag& iSetName)
 { 

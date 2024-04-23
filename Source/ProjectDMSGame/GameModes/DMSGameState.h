@@ -9,6 +9,7 @@
 //class UDMSEIManagerComponent;
 class ADMSLocationBase;
 class ADMSPlayerState;
+class UDMSCardManagerComponent;
 /**
  * 
  */
@@ -17,7 +18,13 @@ class PROJECTDMSGAME_API ADMSGameState : public ADMSGameStateBase
 {
 	GENERATED_BODY()
 public:
+	//ADMSGameState(const FObjectInitializer& Initializer);
 
+protected:
+	//UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
+	//TObjectPtr<UDMSCardManagerComponent> CardManagerComponent;
+
+public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	int TestPlayerNum = 0;
 
@@ -39,6 +46,9 @@ public:
 	//Temp
 	void SetPlayersFocusTarget(AActor* Target);
 
+	
 public:
 	//ADMSGameState(const FObjectInitializer& Initializer);
+	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 };

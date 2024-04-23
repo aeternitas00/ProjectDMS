@@ -52,7 +52,7 @@ public:
 	void SetNextProgress(int ProgressIdx);
 	void SetNextProgress(const FGameplayTag& ProgressTag);
 
-	void ProgressEnd(bool bSucceeded = true);
+	__declspec(noinline) void ProgressEnd(bool bSucceeded = true);
 
 	FORCEINLINE bool IsProgressQueueFinished();
 

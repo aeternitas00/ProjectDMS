@@ -16,7 +16,7 @@
 #include "Attribute/DMSAttribute.h"
 #include "DMSPlayerCharacterData.generated.h"
 
-class UDMSAttribute;
+
 /**
  * SaveGame / Loading sequence 에서 플레이어 데이터를 읽고 쓸 때 사용 할 구조체.
  */
@@ -36,7 +36,7 @@ public:
 	 * Saved Attribute datas.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	TArray<TObjectPtr<UDMSAttribute>> Attributes;
+	TArray<FDMSAttributeDefinition> Attributes;
 	//...
 
 	friend FArchive& operator<<(FArchive& Ar, FDMSPlayerCharacterData& CharacterData);

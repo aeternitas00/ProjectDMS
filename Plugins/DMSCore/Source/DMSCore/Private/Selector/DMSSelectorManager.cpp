@@ -17,7 +17,7 @@ UDMSSelectorHandle* UDMSSelectorManager::RequestCreateSelector(UDMSSelectorReque
 {
 	auto rv = NewObject<UDMSSelectorHandle>(this);
 
-	rv->StoredForm = std::move(Form);
+	rv->StoredForm = Form;
 	return rv;
 }
 

@@ -26,7 +26,7 @@ UDMSEffectHandler::UDMSEffectHandler()
 }
 
 // Owned effect creating helper
-ADMSActiveEffect* UDMSEffectHandler::CreatePersistentActiveEffect(AActor* SourceObject,AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet)
+ADMSActiveEffect* UDMSEffectHandler::CreatePersistentActiveEffect(AActor* SourceObject,AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode)
 {
 	FActorSpawnParameters Param;
 	Param.Owner=Target;
@@ -36,7 +36,7 @@ ADMSActiveEffect* UDMSEffectHandler::CreatePersistentActiveEffect(AActor* Source
 	EffectInstance->SourceObject = SourceObject;
 	EffectInstance->SourcePlayer = SourcePlayer;	
 	EffectInstance->Initialize(EffectNode,EDMSAEState::AES_Persistent);
-	EffectInstance->SetupDatas(iSet);
+	//EffectInstance->SetupDatas(iSet);
 
 	EIList.Add(EffectInstance);
 
@@ -82,6 +82,7 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(ADMSSequ
 			EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect>(Param);
 			EffectInstance->AttachToActor(Target->GetObject(),FAttachmentTransformRules::SnapToTargetIncludingScale);
 			EffectInstance->Initialize(EffectNode,EDMSAEState::AES_NotifyClosed);
+			//flag?
 			EffectInstance->InheritSequenceDatas(Sequence);
 
 			Comp->AttachEffectInstance(EffectInstance);

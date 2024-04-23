@@ -25,7 +25,9 @@ TArray<UDMSSelectorRequestForm*> UDMSSelectorRequestGenerator::GenerateRequestFo
 	}
 	else {
 		UDMSSelectorRequestForm* NewForm = CreateNewRequestForm(Sequence);// NewObject<UDMSSelectorRequestForm>(Sequence,RequestFormClass);
-		CollectCandidates(Sequence, nullptr, NewForm);
+		// Main AE 없을 때 source object 사용??.. 일단 TG 사용할 때 일관성 유지를 생각해봐야할듯.
+		ADMSActiveEffect* MainAE = Sequence->GetAllActiveEffects().Num() == 0 ? nullptr : Sequence->GetAllActiveEffects()[0];		
+		CollectCandidates(Sequence, MainAE, NewForm);
 		NewForm->SelectAmount = SelectAmount;
 		NewForm->SelectorClass = SelectorClass;
 		Rv.Add(NewForm);

@@ -21,8 +21,6 @@ UDMSEffect_MoveLocatable::UDMSEffect_MoveLocatable()
 
 void UDMSEffect_MoveLocatable::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
-	UObject* DestLocation;
-
 	AActor* ApplyTarget = Cast<AActor>(iEI->GetApplyTargetInterface()->GetObject());
 
 	if (!ApplyTarget->Implements<UDMSLocatableInterface>() )
@@ -32,7 +30,8 @@ void UDMSEffect_MoveLocatable::Work_Implementation(ADMSSequence* SourceSequence,
 	}
 
 	auto SeqAttComp = SourceSequence->GetComponentByClass<UDMSAttributeComponent>();
-	DestLocation = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(EffectTag.GetSingleTagContainer());
+	auto DestAttribute = SeqAttComp ? SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(EffectTag.GetSingleTagContainer()) : nullptr;
+	auto DestLocation = DestAttribute ? DestAttribute->GetValue()[0] : nullptr;
 	
 	if ( !DestLocation )
 	{

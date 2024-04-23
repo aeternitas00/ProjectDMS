@@ -90,7 +90,6 @@ void UDMSSelBehavDefinition_Object_UpdateSeqAtt::SetupFormDelegates(ADMSSequence
 		auto Form = Cast<UDMSSelectorRequestForm_Object>(FormArr[0]);
 		Form->OnCompletedNative.BindLambda([=](TArray<uint8> IndexArr)
 		{
-
 			TArray<UObject*> SelectedItems;
 			for (auto& i : IndexArr)
 			{

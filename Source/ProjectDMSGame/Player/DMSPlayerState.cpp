@@ -52,6 +52,10 @@ void ADMSPlayerState::SetupAttributes()
 	for (auto Stat : DefaultAttributes) {
 		AttributeComponent->GenerateAndSetAttribute(Stat.DefaultTag,Stat.DefaultValue);
 	}
+
+	for (auto CharacterStat : PlayerCharacterData.Attributes){
+		AttributeComponent->GenerateAndSetAttribute(CharacterStat.DefaultTag,CharacterStat.DefaultValue);
+	}
 }
 
 void ADMSPlayerState::LoadDatasFromSave(UDMSSaveGame* SaveGame)
@@ -74,8 +78,8 @@ void ADMSPlayerState::SetCardDatas(const TArray<FDMSCardData>& InDatas)
 void ADMSPlayerState::SetupDefaults()
 {
 	//SetupCardContainers();
-	SetupAttributes();
 	LoadSaveGame("TestSlot",0);
+	SetupAttributes();
 }
 
 void ADMSPlayerState::OnLoadSaveGame_Implementation(UDMSSaveGame* LoadedItem)

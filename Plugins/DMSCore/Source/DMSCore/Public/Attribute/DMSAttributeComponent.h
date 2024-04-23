@@ -102,7 +102,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UDMSAttributeValue* GetAttributeValue(const FGameplayTagContainer& AttributeName) const;
 	template<typename T>
-	T* GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const;	
+	__declspec(noinline) T* GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const;	
 	template<typename T>
 	TArray<T*> GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery) const;
 
@@ -113,18 +113,21 @@ public:
 };
 
 template<typename T>
-inline T* UDMSAttributeComponent::GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const
+T* UDMSAttributeComponent::GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const
 {
-	return Cast<T>(GetAttributeValue(AttributeName));
+	auto AttVal = GetAttributeValue(AttributeName);
+	return AttVal ? Cast<T>(AttVal) : nullptr;
 }
 
 template<typename T>
-inline TArray<T*> UDMSAttributeComponent::GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery) const
+TArray<T*> UDMSAttributeComponent::GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery) const
 {
 	TArray<T*> rv;
 	for (auto& Att : GetAttributesByQuery(AttributeSearchQuery))
 	{
-		rv.Add(Cast<T>(Att));
+		auto CastVal = Cast<T>(Att);
+		if (CastVal)
+			rv.Add(CastVal);
 	}
 	return rv;
 }

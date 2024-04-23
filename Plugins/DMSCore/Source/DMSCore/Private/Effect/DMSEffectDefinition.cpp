@@ -84,7 +84,7 @@ UDMSEffectNode::UDMSEffectNode() : bForced(false), bCanResponseMulTime(false), b
 FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(ADMSSequence* CurrentSequence)
 {
 	FGameplayTagContainer ctn;
-	ctn.AddTagFast(NodeTag);
+	ctn.AppendTags(NodeTags);
 	for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
 
 	return ctn;

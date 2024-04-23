@@ -141,10 +141,10 @@ public:
 	 * 이펙트 노드에 대한 대표 키워드. 비워두어도 상관 없음. 
 	 * 대표 키워드를 통한 노티파이 플로우의 세부적인 쿼리옵션을 사용하고 싶을 경우 사용.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	FGameplayTag NodeTag;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	//FGameplayTag NodeTag;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Node Additional Tag"))
 	FGameplayTagContainer NodeTags;
 	/**
 	 * It returns a container that consolidates all the tags associated with the node like EffectDefinition's one (e.g., tags for the target attribute in ED_ModAtt). 

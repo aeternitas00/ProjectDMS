@@ -48,7 +48,7 @@ public:
 	// ============================= //
 	//		INTERFACE FUNCTIONS
 	// ============================= //
-	virtual AActor* GetOwningPlayer() { return this; }
+	virtual AActor* GetOwningPlayer_Implementation() { return this; }
 	virtual int32 GetID() override { /* temp */return GetPlayerId(); }
 	virtual ADMSPlayerControllerBase* GetWidgetOwner() override { return Cast<ADMSPlayerControllerBase>(GetPlayerController()); }
 };

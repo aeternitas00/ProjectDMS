@@ -53,7 +53,7 @@ TArray<UObject*> UDMSTargetGenerator_Sequence::GetTargets_Implementation(UObject
 
 TArray<UObject*> UDMSTargetGenerator_OwnerOfCaller::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
 {
-	if (Caller->Implements<UDMSEffectorInterface>()) return { Cast<IDMSEffectorInterface>(Caller)->GetOwningPlayer() };
+	if (Caller->Implements<UDMSEffectorInterface>()) return { Cast<IDMSEffectorInterface>(Caller)->Execute_GetOwningPlayer(Caller) };
 	return {};
 }
 

@@ -57,12 +57,12 @@ void ADMSCardBase::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
 
 ADMSLocationBase* ADMSCardBase::GetCurrentLocation_Implementation()
 {
-	return IDMSLocatableInterface::Execute_GetCurrentLocation(GetOwningPlayer());
+	return IDMSLocatableInterface::Execute_GetCurrentLocation(Execute_GetOwningPlayer(this));
 }
 
 int ADMSCardBase::GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject)
 {
-	return IDMSLocatableInterface::Execute_GetDistanceWith(GetOwningPlayer(), OtherObject);
+	return IDMSLocatableInterface::Execute_GetDistanceWith(Execute_GetOwningPlayer(this), OtherObject);
 }
 
 bool ADMSCardBase::LocatingTo_Implementation(ADMSLocationBase* TargetLocation)

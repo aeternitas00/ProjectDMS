@@ -9,7 +9,7 @@
 /*
  *	Class of single numeric attribute.
  */
-UCLASS()
+UCLASS(BlueprintType)
 class DMSCORE_API UDMSAttributeValue_Numeric : public UDMSAttributeValue
 {
 	GENERATED_BODY()

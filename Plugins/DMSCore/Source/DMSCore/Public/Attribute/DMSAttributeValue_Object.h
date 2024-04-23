@@ -9,7 +9,7 @@
 class UDMSAttributeModifierOp;
 class UDMSAttributeValue;
 
-UCLASS()
+UCLASS(BlueprintType)
 class DMSCORE_API UDMSAttributeValue_Object : public UDMSAttributeValue
 {
 	GENERATED_BODY()

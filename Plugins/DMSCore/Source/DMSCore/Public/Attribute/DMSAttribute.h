@@ -56,13 +56,15 @@ public:
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
 	TObjectPtr<UDMSAttributeValue> DefaultValue;
+
+	DMSCORE_API friend FArchive& operator<<(FArchive& Ar, FDMSAttributeDefinition& AttDefinition);
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAttributeModifiedSignature, UDMSAttribute*, Attribute);
 
 
-UCLASS(BlueprintType,Blueprintable,EditInlineNew,Abstract)
+UCLASS(Blueprintable,EditInlineNew,Abstract)
 class DMSCORE_API UDMSAttributeValue : public UObject
 {
 	GENERATED_BODY()

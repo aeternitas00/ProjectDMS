@@ -90,7 +90,7 @@ public:
 	 * Interfaces
 	 */
 	//virtual UObject* GetObject() override {return this;} // RENAME?
-	virtual AActor* GetOwningPlayer() override; // RENAME?
+	virtual AActor* GetOwningPlayer_Implementation() override; // RENAME?
 	//virtual IDMSEffectorInterface* GetPreviewObject() {return PreviewDummy;}
 	//virtual void AttachEffectInstance(ADMSActiveEffect* EI) override;
 	//virtual bool ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, bool iChainable, ADMSSequence* Seq, UObject* SourceTweak = nullptr) override;

@@ -51,10 +51,12 @@ public:
 	 */
 	virtual AActor* GetObject();
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	AActor* GetOwningPlayer();
 	/**
 	 * Get owner of this object ( Usally PlayerState or GameState if it controlled by game.
 	 */
-	virtual AActor* GetOwningPlayer(); // RENAME?
+	virtual AActor* GetOwningPlayer_Implementation(); // RENAME?
 	
 	/**
 	 * 

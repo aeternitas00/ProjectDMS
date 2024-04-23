@@ -99,7 +99,7 @@ public:
 
 	void NotifyNeedToCleanup(){	bNeedToCleanup = true; }
 	// Interface implements
-	virtual AActor* GetOwningPlayer() override { return this; }
+	virtual AActor* GetOwningPlayer_Implementation() override { return this; }
 	virtual int32 GetID() override { /* temp */return -1; }
 	virtual ADMSPlayerControllerBase* GetWidgetOwner() override { return GetLeaderPlayerController(); }
 };

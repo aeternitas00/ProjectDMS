@@ -88,7 +88,7 @@ public:
 	 * @param	iSet
 	 * @return	Created effect instances.
 	 */
-	ADMSActiveEffect* CreatePersistentActiveEffect(AActor* SourceObject, AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode, UDMSDataObjectSet* iSet = nullptr);
+	ADMSActiveEffect* CreatePersistentActiveEffect(AActor* SourceObject, AActor* SourcePlayer, AActor* Target, UDMSEffectNode* EffectNode);
 	
 	/**
 	 * Creating method for general purpose.

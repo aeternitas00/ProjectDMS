@@ -41,12 +41,9 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 
 	// Initialize new sequence
 	ADMSSequence* Sequence = GetWorld()->SpawnActor<ADMSSequence>();
-	//UDMSDataObjectSet* NewData = NewObject<UDMSDataObjectSet>(Sequence);
-	//NewData->Inherit(Datas);
 	Sequence->OriginalEffectNode = EffectNode;
 	Sequence->SourceObject = SourceObject;
 	Sequence->SourcePlayer = SourcePlayer;
-	//Sequence->SequenceDatas = NewData;
 	Sequence->SetTarget(Targets);
 	
 	// Test Feature
@@ -70,7 +67,7 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 
 	if ( LinkAttributeWithParent ) Sequence->AttributeComponent->ParentComponent = Sequence->ParentSequence->AttributeComponent;
 
-	DMS_LOG_SIMPLE(TEXT("==== %s : Request Create Sequence [%s] of [%s] to [%d : %s] ===="),  *SourceObject->GetName(), *Sequence->GetName(), *EffectNode->NodeTag.ToString(), GetDepth(Sequence), Sequence->ParentSequence == nullptr ? TEXT("EmptySequence") : *Sequence->ParentSequence->GetName());
+	DMS_LOG_SIMPLE(TEXT("==== %s : Request Create Sequence [%s] of [%s] to [%d : %s] ===="),  *SourceObject->GetName(), *Sequence->GetName(), *EffectNode->NodeTags.ToString(), GetDepth(Sequence), Sequence->ParentSequence == nullptr ? TEXT("EmptySequence") : *Sequence->ParentSequence->GetName());
 
 	return Sequence;
 }

@@ -57,5 +57,17 @@ void UDMSAttributeValue::GetDeltaAfterModify(const FDMSAttributeModifier& Modifi
 	//OutValue->Value = Modifier.Value->Value;
 }
 
-
-
+FArchive& operator<<(FArchive& Ar, FDMSAttributeDefinition& AttDefinition)
+{
+	TArray<FGameplayTag> TagArr;
+	if (Ar.IsSaving()){
+		TagArr = AttDefinition.DefaultTag.GetGameplayTagArray();
+		Ar << TagArr;
+	}
+	else {
+		Ar << TagArr;
+		AttDefinition.DefaultTag = FGameplayTagContainer::CreateFromArray(TagArr);
+	}
+	Ar << AttDefinition.DefaultValue;
+	return Ar;
+}

@@ -16,7 +16,7 @@ UDMSEffectOption_Focus::UDMSEffectOption_Focus()
 void UDMSEffectOption_Focus::OnExecuteOption_Implementation(ADMSSequence* iSourceSeq, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("FOCUS"));
-	AActor* Target = Cast<AActor>(FocusTarget->GetTargets(iEI, iSourceSeq)[0]);
+	AActor* Target = FocusTarget ? Cast<AActor>(FocusTarget->GetTargets(iEI, iSourceSeq)[0]) : nullptr;
 	if (Target == nullptr) { OnOptionCompleted.Execute(this); return;}
 	Cast<ADMSGameState>(UDMSCoreFunctionLibrary::GetDMSGameState(iEI))->SetPlayersFocusTarget(Target);
 	OnOptionCompleted.Execute(this);

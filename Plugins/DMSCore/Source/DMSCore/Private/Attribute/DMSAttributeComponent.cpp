@@ -56,9 +56,8 @@ void UDMSAttributeComponent::ApplyModifier(const FGameplayTagContainer& Attribut
 
 UDMSAttributeValue* UDMSAttributeComponent::GetAttributeValue(const FGameplayTagContainer& AttributeName) const
 {
-	if (!ContainAttribute(AttributeName)) return nullptr;
-
-	return GetAttribute(AttributeName)->AttributeValue;
+	auto Att = GetAttribute(AttributeName);
+	return Att ? Att->AttributeValue : nullptr;
 }
 
 void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -125,12 +124,13 @@ void UDMSAttributeComponent::BindOnModifiedToAttribute(const FGameplayTagContain
 
 UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTagContainer& AttributeTag) const
 {
-	if (!ContainAttribute(AttributeTag)) return nullptr; // log or what\
+	//if (!ContainAttribute(AttributeTag)) return nullptr; // log or what\
 
 	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
 	auto Pred = [AttributeTag](UDMSAttribute* Item){ return Item->AttributeTag == AttributeTag;};
-	UDMSAttribute* ThisFound = Attributes.IndexOfByPredicate(Pred) >= 0 ? Attributes[Attributes.IndexOfByPredicate(Pred)] : nullptr;
-	if ( ThisFound == nullptr ) return ParentAtt==nullptr ? ParentAtt->GetAttribute(AttributeTag) : nullptr;
+	int ItemIdx = Attributes.IndexOfByPredicate(Pred);
+	UDMSAttribute* ThisFound = ItemIdx != INDEX_NONE ? Attributes[ItemIdx] : nullptr;
+	if ( ThisFound == nullptr ) return ParentAtt ? ParentAtt->GetAttribute(AttributeTag) : nullptr;
 	return ThisFound;
 }
 
@@ -146,6 +146,6 @@ TArray<UDMSAttribute*> UDMSAttributeComponent::GetAttributesByQuery(const FGamep
 		if (TargetQuery.Matches(Attribute->AttributeTag))
 			ThisFound.Add(Attribute);
 	}
-	if ( ThisFound.Num() == 0 ) return ParentAtt==nullptr ? ParentAtt->GetAttributesByQuery(TargetQuery) : ThisFound;
+	if ( ThisFound.Num() == 0 ) return ParentAtt ? ParentAtt->GetAttributesByQuery(TargetQuery) : ThisFound;
 	return ThisFound;
 }

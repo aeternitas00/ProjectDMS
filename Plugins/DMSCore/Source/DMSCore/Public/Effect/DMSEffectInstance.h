@@ -242,7 +242,7 @@ public:
 
 	// =========== INTERFACE FUNCTION =========== // 
 	
-	virtual AActor* GetOwningPlayer() { return SourcePlayer; }
+	virtual AActor* GetOwningPlayer_Implementation() { return SourcePlayer; }
 	
 	virtual void Serialize(FArchive& Ar) override;
 

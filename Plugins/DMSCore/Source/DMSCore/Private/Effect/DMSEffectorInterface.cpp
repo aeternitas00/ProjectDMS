@@ -21,7 +21,7 @@ AActor* IDMSEffectorInterface::GetObject()
 	return Cast<AActor>(this);
 }
 
-AActor* IDMSEffectorInterface::GetOwningPlayer() 
+AActor* IDMSEffectorInterface::GetOwningPlayer_Implementation() 
 { 
 	auto Spawnable = Cast<ADMSSpawnableBase>(this);
 	auto GS = UDMSCoreFunctionLibrary::GetDMSGameMode(Cast<UObject>(this))->GetDMSGameState();
@@ -34,7 +34,7 @@ AActor* IDMSEffectorInterface::GetOwningPlayer()
 
 int32 IDMSEffectorInterface::GetOwnerPlayerID()
 {
-	auto Owner = Cast<IDMSEffectorOwnableInterface>(GetOwningPlayer());
+	auto Owner = Cast<IDMSEffectorOwnableInterface>(Execute_GetOwningPlayer(Cast<UObject>(this)));
 	if (Owner == nullptr) return -1;
 	//
 	return Owner->GetID();
@@ -42,7 +42,7 @@ int32 IDMSEffectorInterface::GetOwnerPlayerID()
 
 ADMSPlayerControllerBase* IDMSEffectorInterface::GetOwningPlayerController()
 {
-	auto Owner = Cast<IDMSEffectorOwnableInterface>(GetOwningPlayer());
+	auto Owner = Cast<IDMSEffectorOwnableInterface>(Execute_GetOwningPlayer(Cast<UObject>(this)));
 	if (Owner==nullptr) return nullptr;
 	//
 	return Owner->GetWidgetOwner();

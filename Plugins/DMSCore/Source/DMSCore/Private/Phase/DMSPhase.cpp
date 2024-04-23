@@ -11,7 +11,7 @@
 UDMSPhase::UDMSPhase()
 {
 	PhaseNode = CreateDefaultSubobject<UDMSEffectNode>("PhaseNode");
-	PhaseNode->NodeTag = PhaseTag;
+	PhaseNode->NodeTags = PhaseTag.GetSingleTagContainer();
 }
 
 void UDMSPhase::StartPhase()
