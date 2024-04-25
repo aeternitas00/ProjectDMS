@@ -59,8 +59,8 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 
 	auto AttComp = InstancedStep->OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
 
-	auto SeqAttTesterValue = AttComp->MakeAttribute(SkillTestAttribute,UDMSAttributeValue_Numeric::StaticClass());
-	auto SeqAttTestTargetValue = AttComp->MakeAttribute(TestTargetAttribute,UDMSAttributeValue_Numeric::StaticClass());
+	auto SeqAttTesterValue = AttComp->MakeAttribute(SkillTestAttribute,UDMSAttributeValue_Numeric::StaticClass(), true);
+	auto SeqAttTestTargetValue = AttComp->MakeAttribute(TestTargetAttribute,UDMSAttributeValue_Numeric::StaticClass(), true);
 	auto SeqTesterValue = SeqAttTesterValue ? Cast<UDMSAttributeValue_Numeric>(SeqAttTesterValue->AttributeValue) : nullptr;	
 	auto SeqTestTargetValue = SeqAttTestTargetValue ? Cast<UDMSAttributeValue_Numeric>(SeqAttTestTargetValue->AttributeValue) : nullptr;
 	SeqTestTargetValue->SetValue(DefaultSkillTestData.DefaultTargetValue);
@@ -68,7 +68,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 		InstancedStep->ProgressEnd(false);
 		return;
 	}
-	auto SeqAttTester = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Tester").GetSingleTagContainer());
+	auto SeqAttTester = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Tester").GetSingleTagContainer(), true);
 	UDMSAttributeValue_Object* AttVTester = nullptr;
 	AActor* Tester = nullptr;
 	if(	SeqAttTester ) AttVTester = Cast<UDMSAttributeValue_Object>(SeqAttTester->AttributeValue);
@@ -79,7 +79,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 	UDMSAttributeValue_Numeric* TesterAttribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.StatName));
 	if ( TesterAttribute ) SeqTesterValue->SetValue(TesterAttribute->GetValue());
 	
-	auto SeqAttTestTarget = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget").GetSingleTagContainer());
+	auto SeqAttTestTarget = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget").GetSingleTagContainer(), true);
 	UDMSAttributeValue_Object* AttVTestTarget  = nullptr;
 	AActor* TestTarget  = nullptr;
 	if(	SeqAttTestTarget ) AttVTestTarget = Cast<UDMSAttributeValue_Object>(SeqAttTestTarget->AttributeValue);
@@ -90,6 +90,8 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 	UDMSAttributeValue_Numeric* TestTargetAttVal  = Cast<UDMSAttributeValue_Numeric>(TestTarget->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.TargetStatName));
 	if ( TestTargetAttVal ) SeqTestTargetValue->SetValue(TestTargetAttVal->GetValue());
 	
+	AttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),UDMSAttributeValue_Numeric::StaticClass(), true);
+
 	BroadcastProgress(InstancedStep,FName(NAME_None));
 	// FT WINDOW
 }
@@ -103,6 +105,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST2(UDMSSequenceStep* Instan
 	BroadcastProgress(InstancedStep,FName(NAME_None));
 
 	// FT WINDOW
+	// 오토 석세스 계열 효과는 여기서 ST7까지 점프하는 형태로.
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST3(UDMSSequenceStep* InstancedStep)
@@ -138,10 +141,10 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST6(UDMSSequenceStep* Instan
 	// Determine success/failure of skill test.
 	auto SeqAttComp = InstancedStep->OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
 
-	auto ResultAttribute = Cast<UDMSAttributeValue_Numeric>(SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),UDMSAttributeValue_Numeric::StaticClass())->AttributeValue);
+	auto ResultAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),true);
 
-	auto TesterAttribute = Cast<UDMSAttributeValue_Numeric>(SeqAttComp->GetAttribute(GetSeqAttributeTag_Tester())->AttributeValue);
-	auto TestTargetAttribute = Cast<UDMSAttributeValue_Numeric>(SeqAttComp->GetAttribute(GetSeqAttributeTag_TestTarget())->AttributeValue);
+	auto TesterAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(GetSeqAttributeTag_Tester(), true);
+	auto TestTargetAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(GetSeqAttributeTag_TestTarget(), true);
 
 	if(!TesterAttribute || !TestTargetAttribute)
 		ResultAttribute->SetValue(0);
@@ -154,6 +157,8 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST6(UDMSSequenceStep* Instan
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST7(UDMSSequenceStep* InstancedStep)
 {
 	// Apply skill test results.
+
+	// 시퀀스가 리절트 밸류를 가진 상태로 브로드캐스팅 되므로 성공/실패 값을 알 수 있음.
 	BroadcastProgress(InstancedStep,FName(NAME_None));
 }
 

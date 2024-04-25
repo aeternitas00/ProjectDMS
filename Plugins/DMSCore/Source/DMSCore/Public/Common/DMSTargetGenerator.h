@@ -9,6 +9,7 @@
 class ADMSSequence;
 /**
  *	Simple target generating Functor object.
+ *	RENAME? :: Object finder, searcher .... whatever.
  */
 UCLASS(Blueprintable, BlueprintType, Abstract, EditInlineNew, meta=(DisplayName="Target Finder Base"))
 class DMSCORE_API UDMSTargetGenerator : public UObject
@@ -19,6 +20,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	TArray<UObject*> GetTargets(UObject* Caller, ADMSSequence* CurrentSequence) const;
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};
+
+// Expose to Editor as instanced member of BP classes.
+USTRUCT(BlueprintType)
+struct DMSCORE_API FDMSInstancedTargetGenerator
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	TObjectPtr<UDMSTargetGenerator> TargetGenerator;
 };
 
 UCLASS()
@@ -57,8 +68,19 @@ public:
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
+// Return caller directly
 UCLASS()
 class DMSCORE_API UDMSTargetGenerator_Caller : public UDMSTargetGenerator
+{
+	GENERATED_BODY()
+
+public:
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};
+
+// Return caller if it is actor, if caller is AE, return applying target of AE.
+UCLASS()
+class DMSCORE_API UDMSTargetGenerator_CallerAsActor : public UDMSTargetGenerator
 {
 	GENERATED_BODY()
 
@@ -84,17 +106,17 @@ public:
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
-//UCLASS()
-//class DMSCORE_API UDMSTargetGenerator_FromAttribute: public UDMSTargetGenerator
+UCLASS()
+class DMSCORE_API UDMSTargetGenerator_FromAttribute: public UDMSTargetGenerator
+{
+	GENERATED_BODY()
 
-//UCLASS()
-//class DMSCORE_API UDMSTargetGenerator_FromData : public UDMSTargetGenerator
-//{
-//	GENERATED_BODY()
-//
-//public:
-//	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-//	FGameplayTag DataTag;
-//
-//	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
-//};
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	TObjectPtr<UDMSTargetGenerator> AttributeSource;
+
+	UPROPERTY(BlueprintReadWrite , EditDefaultsOnly)
+	FGameplayTagQuery AttributeTagQuery;
+public:
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};

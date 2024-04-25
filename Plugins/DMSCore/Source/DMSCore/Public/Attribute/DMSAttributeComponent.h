@@ -43,8 +43,8 @@ public:
 	 * Check this component contians tagged attribute.
 	 */
 	UFUNCTION(BlueprintCallable)
-	bool ContainAttribute(const FGameplayTagContainer& Tag) const;
-	bool ContainAttributeByQuery(const FGameplayTagQuery & Query) const;
+	bool ContainAttribute(const FGameplayTagContainer& Tag, bool Exact = false) const;
+	bool ContainAttributeByQuery(const FGameplayTagQuery & Query, bool Exact = false) const;
 	/**
 	 * Trying modify attribute with param Modifier
 	 * @param	Modifier							In modifier
@@ -62,20 +62,20 @@ public:
 	 * @param	DefValue							Default value of creating attribute
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSAttribute* MakeAttribute(const FGameplayTagContainer& AttributeName, const TSubclassOf<UDMSAttributeValue>& AttributeValueClass);
+	UDMSAttribute* MakeAttribute(const FGameplayTagContainer& AttributeName, const TSubclassOf<UDMSAttributeValue>& AttributeValueClass, bool Exact = false);
 
 	UFUNCTION(BlueprintCallable)
-	UDMSAttribute* GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue);
+	UDMSAttribute* GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue, bool Exact = false);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveAttribute(const FGameplayTagContainer& AttributeName);
+	void RemoveAttribute(const FGameplayTagContainer& AttributeName, bool Exact = false);
 	/**
 	* Make named attribute if component doesn't contain param name.
 	* @param	AttributeName						key of Attributes
 	* @param	DefValue							Default value of creating attribute
 	*/
 	UFUNCTION(BlueprintCallable)
-	UDMSAttribute* DuplicateAttribute(UDMSAttribute* Attribute);
+	UDMSAttribute* DuplicateAttribute(UDMSAttribute* Attribute, bool Exact = false);
 
 	/**
 	 * Bind param OnModified deletegate to named attribute instance.
@@ -90,8 +90,8 @@ public:
 	 * @param	AttributeName						Target attribute's tag
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSAttribute* GetAttribute(const FGameplayTagContainer& AttributeName) const;
-	TArray<UDMSAttribute*> GetAttributesByQuery(const FGameplayTagQuery& TargetQuery) const;
+	UDMSAttribute* GetAttribute(const FGameplayTagContainer& AttributeName, bool Exact = false) const;
+	TArray<UDMSAttribute*> GetAttributesByQuery(const FGameplayTagQuery& TargetQuery, bool Exact = false) const;
 
 	/**
 	 * Getter of attribute value
@@ -100,11 +100,11 @@ public:
 	 * @return	true if component contains AttributeName
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSAttributeValue* GetAttributeValue(const FGameplayTagContainer& AttributeName) const;
+	UDMSAttributeValue* GetAttributeValue(const FGameplayTagContainer& AttributeName, bool Exact = false) const;
 	template<typename T>
-	__declspec(noinline) T* GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const;	
+	T* GetTypedAttributeValue(const FGameplayTagContainer& AttributeName, bool Exact = false) const;	
 	template<typename T>
-	TArray<T*> GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery) const;
+	TArray<T*> GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery, bool Exact = false) const;
 
 	//UFUNCTION(BlueprintCallable)
 	//TArray<FDMSAttributeDefinition> ToDefinition();
@@ -113,19 +113,19 @@ public:
 };
 
 template<typename T>
-T* UDMSAttributeComponent::GetTypedAttributeValue(const FGameplayTagContainer& AttributeName) const
+T* UDMSAttributeComponent::GetTypedAttributeValue(const FGameplayTagContainer& AttributeName, bool Exact) const
 {
-	auto AttVal = GetAttributeValue(AttributeName);
+	auto AttVal = GetAttributeValue(AttributeName,Exact);
 	return AttVal ? Cast<T>(AttVal) : nullptr;
 }
 
 template<typename T>
-TArray<T*> UDMSAttributeComponent::GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery) const
+TArray<T*> UDMSAttributeComponent::GetTypedAttributeValuesByQuery(const FGameplayTagQuery& AttributeSearchQuery, bool Exact) const
 {
 	TArray<T*> rv;
-	for (auto& Att : GetAttributesByQuery(AttributeSearchQuery))
+	for (auto& Att : GetAttributesByQuery(AttributeSearchQuery,Exact))
 	{
-		auto CastVal = Cast<T>(Att);
+		auto CastVal = Cast<T>(Att->AttributeValue);
 		if (CastVal)
 			rv.Add(CastVal);
 	}

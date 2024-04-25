@@ -53,31 +53,6 @@ enum class EDMSComparisonOperator : uint8
 };
 
 /**
- *	Attibute Modifier struct. Using in ModAtt Effect. 
- */
-//USTRUCT(BlueprintType)
-//struct DMSCORE_API FDMSValueModifier
-//{
-//	GENERATED_BODY()
-//
-//public:
-//
-//	/**
-//	* 
-//	*/
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-//	EDMSModifierType ModifierType;
-//
-//	/**
-//	* 
-//	*/
-//	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-//	float Value;
-//};
-
-
-
-/**
  *	std::any 를 BP에 올려서 사용하기 위한 일종의 래퍼.
  *	게임내에 돌아다니는 데이터들의 타입 제한을 조금 더 느슨하게 해보고자 해서 도입
  *	지금 상태가 최선이 아닌거같긴 한데 다른 방법이 있을까에 대한 생각.=>

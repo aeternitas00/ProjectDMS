@@ -25,16 +25,16 @@ public:
 	TArray<UObject*> GetValue() const { return Value; }
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
-	void AppendValue(const TArray<UObject*>& Items) { Value.Append(Items); }
+	void AppendValue(const TArray<UObject*>& Items) { for(auto& Item : Items) Value.AddUnique(Item); }
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
-	void AddValue(UObject* Item) { Value.Add(Item); }
+	void AddValue(UObject* Item) { Value.AddUnique(Item); }
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void RemoveValue(UObject* Item) { Value.Remove(Item); }
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
-	void RemoveValues(const TArray<UObject*>& Items) { for(auto It:Items)Value.Remove(It); }
+	void RemoveValues(const TArray<UObject*>& Items) { for(auto& Item : Items) Value.Remove(Item); }
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void SetValue(const TArray<UObject*>& i) { Value=i; }
@@ -44,6 +44,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
+//UCLASS(BlueprintType)
+//class DMSCORE_API UDMSAttributeValue_MultiObject : public UDMSAttributeValue
+
+
 /**
 *	
 */
@@ -51,6 +55,7 @@ UCLASS()
 class DMSCORE_API UDMSAttributeModifierOp_Object : public UDMSAttributeModifierOp
 {
 	GENERATED_BODY()
+protected:
 
 public:
 	virtual void ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue) override;

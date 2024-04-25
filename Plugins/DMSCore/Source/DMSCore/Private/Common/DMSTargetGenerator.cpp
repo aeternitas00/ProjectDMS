@@ -4,6 +4,9 @@
 #include "Common/DMSTargetGenerator.h"
 #include "Sequence/DMSSequence.h"
 #include "Effect/DMSEffectorInterface.h"
+#include "Effect/DMSEffectInstance.h"
+#include "Attribute/DMSAttributeValue_Object.h"
+#include "Attribute/DMSAttributeComponent.h"
 
 TArray<UObject*> UDMSTargetGenerator::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
 {
@@ -46,6 +49,14 @@ TArray<UObject*> UDMSTargetGenerator_Caller::GetTargets_Implementation(UObject* 
 	return { Caller };
 }
 
+TArray<UObject*> UDMSTargetGenerator_CallerAsActor::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
+{
+	if(Caller->IsA<ADMSActiveEffect>())
+		return { Cast<ADMSActiveEffect>(Caller)->GetApplyTarget() };
+	else 
+		return { Caller };
+}
+
 TArray<UObject*> UDMSTargetGenerator_Sequence::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
 {
 	return { CurrentSequence };
@@ -58,36 +69,18 @@ TArray<UObject*> UDMSTargetGenerator_OwnerOfCaller::GetTargets_Implementation(UO
 }
 
 
-//TArray<UObject*> UDMSTargetGenerator_FromData::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
-//{
-//	UDMSDataObject* TempData=nullptr;
-//	TArray<UDMSDataObject*> TempDataArr;
-//	TArray<UObject*> TempArr;
-//
-//	if (CurrentSequence->SequenceDatas->GetValidDataValue<UDMSDataObject*>(DataTag, TempData))
-//	{
-//		if (TempData->TypeCheck<UObject*>())
-//			return { TempData->Get<UObject*>() };
-//		else if (TempData->TypeCheck<TArray<UObject*>>())
-//			return TempData->Get<TArray<UObject*>>();
-//	}
-//	else if (CurrentSequence->SequenceDatas->GetValidDataValue<TArray<UDMSDataObject*>>(DataTag, TempDataArr))
-//	{
-//		for (auto& tData : TempDataArr)
-//		{
-//			if (tData->TypeCheck<UObject*>())
-//				TempArr.Add(tData->Get<UObject*>());
-//		}
-//		return TempArr;
-//	}
-//	else { // temp
-//		UObject* TempObject=nullptr;
-//	
-//
-//		if (CurrentSequence->SequenceDatas->GetValidDataValue<UObject*>(DataTag, TempObject))
-//			return { TempObject };
-//		else if (CurrentSequence->SequenceDatas->GetValidDataValue<TArray<UObject*>>(DataTag, TempArr))
-//			return TempArr;
-//	}
-//	return {};
-//}
+TArray<UObject*> UDMSTargetGenerator_FromAttribute::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
+{
+	TArray<UObject*> rv;
+	auto lAttributeOwners = AttributeSource->GetTargets(Caller,CurrentSequence);
+
+	for(auto& Owner : lAttributeOwners)
+	{
+		auto AOwner = Cast<AActor>(Owner);
+		auto OwnerComp = AOwner ? AOwner->GetComponentByClass<UDMSAttributeComponent>() : nullptr;
+		TArray<UDMSAttributeValue_Object*> ObjAtts = OwnerComp ? OwnerComp->GetTypedAttributeValuesByQuery<UDMSAttributeValue_Object>(AttributeTagQuery) : TArray<UDMSAttributeValue_Object*>();
+		for(auto& ObjAtt : ObjAtts) rv.Append(ObjAtt->GetValue());
+	}
+
+	return rv;
+}

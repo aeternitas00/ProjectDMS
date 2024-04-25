@@ -38,6 +38,30 @@ void UDMSAttributeModifierOp_Object::ExecuteOp_Implementation(UDMSAttributeValue
 
 bool UDMSAttributeModifierOp_Object::Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue)
 {
-	// false if remove failed?
-	return true;
+	auto CastedValue = Cast<UDMSAttributeValue_Object>(Target->AttributeValue);
+	auto CastedRightValue = Cast<UDMSAttributeValue_Object>(ModifierValue);
+	if(!CastedValue || !CastedRightValue) return false;
+	bool rv=false;
+	switch(AttributeModifierType)
+	{
+		case EDMSModifierType::MT_Additive:
+			if(CastedValue->GetValue().Num()==0) {rv=true; break;}
+			for(auto& SearchItem : CastedValue->GetValue())
+			{
+				if( !CastedRightValue->GetValue().Contains(SearchItem) )
+				{ rv=true; break; }
+			}
+			break;
+		case EDMSModifierType::MT_Subtractive:
+			if(CastedRightValue->GetValue().Num()==0) {rv=true; break;}
+			for(auto& SearchItem : CastedRightValue->GetValue())
+			{
+				if( CastedValue->GetValue().Contains(SearchItem) )
+				{ rv=true; break; }
+			}
+			break;
+		default:
+			rv=true; break;
+	}
+	return rv;
 }

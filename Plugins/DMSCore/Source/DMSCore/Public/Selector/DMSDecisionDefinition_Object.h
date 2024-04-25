@@ -92,6 +92,7 @@ public:
 	virtual TArray<UObject*> CollectObjects(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI) {return {};}
 };
 
+// Merge to WithTG->FromAttribute
 UCLASS()
 class DMSCORE_API USelReqGenerator_ObjCand_FromAtt : public USelReqGenerator_ObjCand
 {

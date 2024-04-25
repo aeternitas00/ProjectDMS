@@ -12,64 +12,61 @@ UDMSAttributeComponent::UDMSAttributeComponent():UDMSSpawnableComponent()
 }
 
 
-bool UDMSAttributeComponent::ContainAttribute(const FGameplayTagContainer& Tag) const
+bool UDMSAttributeComponent::ContainAttribute(const FGameplayTagContainer& Tag, bool Exact) const
 {
 	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
 	auto Pred = [Tag](UDMSAttribute* Item){ return Item->AttributeTag == Tag;};
 	if (Attributes.IndexOfByPredicate(Pred)!=INDEX_NONE) return true;
-	return ParentAtt == nullptr ? false : ParentAtt->ContainAttribute(Tag);
+	return ParentAtt == nullptr || Exact ? false : ParentAtt->ContainAttribute(Tag);
 }
 
-bool UDMSAttributeComponent::ContainAttributeByQuery(const FGameplayTagQuery& Query) const
+bool UDMSAttributeComponent::ContainAttributeByQuery(const FGameplayTagQuery& Query, bool Exact) const
 {
 	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
 	for (auto& Attribute : Attributes){
 		if (Query.Matches(Attribute->AttributeTag)) return true;
 	}
-	return ParentAtt == nullptr ? false : ParentAtt->ContainAttributeByQuery(Query);
+	return ParentAtt == nullptr || Exact ? false : ParentAtt->ContainAttributeByQuery(Query);
 }
 
-bool UDMSAttributeComponent::PredictModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) const
+UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTagContainer& AttributeTag, bool Exact) const
 {
-	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
-	if (!ContainAttribute(AttributeTag)) return false; // log or what
+	//if (!ContainAttribute(AttributeTag)) return nullptr; // log or what\
 
-	return Modifier.ModifierOp->Predict(GetAttribute(AttributeTag),Modifier.Value);
+	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
+	auto Pred = [AttributeTag](UDMSAttribute* Item){ return Item->AttributeTag == AttributeTag;};
+	int ItemIdx = Attributes.IndexOfByPredicate(Pred);
+	UDMSAttribute* ThisFound = ItemIdx != INDEX_NONE ? Attributes[ItemIdx] : nullptr;
+	if ( ThisFound == nullptr ) return ParentAtt && !Exact ? ParentAtt->GetAttribute(AttributeTag) : nullptr;
+	return ThisFound;
+}
+
+TArray<UDMSAttribute*> UDMSAttributeComponent::GetAttributesByQuery(const FGameplayTagQuery& TargetQuery, bool Exact) const
+{
+	TArray<UDMSAttribute*> ThisFound;
+
+	if (!ContainAttributeByQuery(TargetQuery, Exact)) return ThisFound; // log or what
+
+	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
+
+	for (auto& Attribute : Attributes){
+		if (TargetQuery.Matches(Attribute->AttributeTag))
+			ThisFound.Add(Attribute);
+	}
+	if ( ThisFound.Num() == 0 ) return ParentAtt && !Exact ? ParentAtt->GetAttributesByQuery(TargetQuery) : ThisFound;
+	return ThisFound;
 }
 
 
-void UDMSAttributeComponent::ApplyModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) 
+UDMSAttributeValue* UDMSAttributeComponent::GetAttributeValue(const FGameplayTagContainer& AttributeName, bool Exact) const
 {
-	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
-	if (!PredictModifier(AttributeTag, Modifier)) return; // log or what
-
-	GetAttribute(AttributeTag)->ApplyModifier(Modifier);
-}
-
-//TArray<FDMSSerializedAttribute> UDMSAttributeComponent::ToSerialized()
-//{
-//	TArray<FDMSSerializedAttribute> rv;
-//	for (auto& Att : Attributes)
-//		rv.Add(FDMSSerializedAttribute(Att->AttributeTag, Att->lue->GetValue()));
-//	return rv;
-//}
-
-UDMSAttributeValue* UDMSAttributeComponent::GetAttributeValue(const FGameplayTagContainer& AttributeName) const
-{
-	auto Att = GetAttribute(AttributeName);
+	auto Att = GetAttribute(AttributeName,Exact);
 	return Att ? Att->AttributeValue : nullptr;
 }
 
-void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer& AttributeName,const TSubclassOf<UDMSAttributeValue>& AttributeValueClass, bool Exact)
 {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UDMSAttributeComponent, Attributes);
-}
-
-UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer& AttributeName,const TSubclassOf<UDMSAttributeValue>& AttributeValueClass)
-{
-	UDMSAttribute* Rv = GetAttribute(AttributeName);
+	UDMSAttribute* Rv = GetAttribute(AttributeName,Exact);
 	if (Rv && Rv->AttributeValue.IsA(AttributeValueClass)) return Rv;
 
 	Rv = NewObject<UDMSAttribute>(this);
@@ -81,9 +78,9 @@ UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer
 	return Rv;
 }
 
-UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue)
+UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTagContainer& AttributeName, UDMSAttributeValue* AttributeValue, bool Exact)
 {
-	UDMSAttribute* NewAtt = GetAttribute(AttributeName);
+	UDMSAttribute* NewAtt = GetAttribute(AttributeName,Exact);
 	if (NewAtt == nullptr) {
 		NewAtt = NewObject<UDMSAttribute>(this);
 		NewAtt->AttributeTag = AttributeName;
@@ -94,17 +91,17 @@ UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTa
 	return NewAtt;
 }
 
-void UDMSAttributeComponent::RemoveAttribute(const FGameplayTagContainer& AttributeName)
+void UDMSAttributeComponent::RemoveAttribute(const FGameplayTagContainer& AttributeName, bool Exact)
 {
-	UDMSAttribute* Att = GetAttribute(AttributeName);
+	UDMSAttribute* Att = GetAttribute(AttributeName, Exact);
 	if (Att == nullptr) return;
 	Attributes.Remove(Att);
 	Att->MarkAsGarbage();
 }
 
-UDMSAttribute* UDMSAttributeComponent::DuplicateAttribute(UDMSAttribute* Attribute)
+UDMSAttribute* UDMSAttributeComponent::DuplicateAttribute(UDMSAttribute* Attribute, bool Exact)
 {
-	if (!Attribute || ContainAttribute(Attribute->AttributeTag)) return nullptr; // log or what\
+	if (!Attribute || ContainAttribute(Attribute->AttributeTag,Exact)) return nullptr; // log or what\
 
 	UDMSAttribute* NewAtt = DuplicateObject(Attribute,this);
 	NewAtt->AttributeTag = Attribute->AttributeTag;
@@ -114,6 +111,21 @@ UDMSAttribute* UDMSAttributeComponent::DuplicateAttribute(UDMSAttribute* Attribu
 	return NewAtt;
 }
 
+bool UDMSAttributeComponent::PredictModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) const
+{
+	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
+	if (!ContainAttribute(AttributeTag)) return false; // log or what
+
+	return Modifier.ModifierOp->Predict(GetAttribute(AttributeTag),Modifier.Value);
+}
+
+void UDMSAttributeComponent::ApplyModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) 
+{
+	//DMS_LOG_SCREEN(TEXT("%s : TryModAttribute"), *GetName());
+	if (!PredictModifier(AttributeTag, Modifier)) return; // log or what
+
+	GetAttribute(AttributeTag)->ApplyModifier(Modifier);
+}
 
 void UDMSAttributeComponent::BindOnModifiedToAttribute(const FGameplayTagContainer& AttributeTag, const FOnAttributeModifiedSignature& iDelegate)
 {
@@ -122,30 +134,9 @@ void UDMSAttributeComponent::BindOnModifiedToAttribute(const FGameplayTagContain
 	GetAttribute(AttributeTag)->BindOnModified(iDelegate);
 }
 
-UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTagContainer& AttributeTag) const
+void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	//if (!ContainAttribute(AttributeTag)) return nullptr; // log or what\
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
-	auto Pred = [AttributeTag](UDMSAttribute* Item){ return Item->AttributeTag == AttributeTag;};
-	int ItemIdx = Attributes.IndexOfByPredicate(Pred);
-	UDMSAttribute* ThisFound = ItemIdx != INDEX_NONE ? Attributes[ItemIdx] : nullptr;
-	if ( ThisFound == nullptr ) return ParentAtt ? ParentAtt->GetAttribute(AttributeTag) : nullptr;
-	return ThisFound;
-}
-
-TArray<UDMSAttribute*> UDMSAttributeComponent::GetAttributesByQuery(const FGameplayTagQuery& TargetQuery) const
-{
-	TArray<UDMSAttribute*> ThisFound;
-
-	if (!ContainAttributeByQuery(TargetQuery)) return ThisFound; // log or what\
-
-	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
-	
-	for (auto& Attribute : Attributes){
-		if (TargetQuery.Matches(Attribute->AttributeTag))
-			ThisFound.Add(Attribute);
-	}
-	if ( ThisFound.Num() == 0 ) return ParentAtt ? ParentAtt->GetAttributesByQuery(TargetQuery) : ThisFound;
-	return ThisFound;
+	DOREPLIFETIME(UDMSAttributeComponent, Attributes);
 }

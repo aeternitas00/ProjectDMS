@@ -120,40 +120,27 @@ FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
 }
 
 
-UDMSEffect_ModAtt_Variable::UDMSEffect_ModAtt_Variable()
-{
-	//DataPicker.ValueSelector = CreateDefaultSubobject<UDMSValueSelector_Attribute>("ValueSelector");
-}
-
-bool UDMSEffect_ModAtt_Variable::GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
-{
-	// Get Input Data ( Skip if data doesn't exist. )
-	//UDMSDataObject* ValueData = nullptr;
-	UDMSDataObject* ValueData = DataPicker.Get(EI->DataSet);
-
-	if (ValueData == nullptr || !ValueData->TypeCheck<FDMSAttributeModifier>()) 
-		return false;
-
-	else
-		OutModifier = ValueData->Get<FDMSAttributeModifier>();
-	
-	return true;
-}
-
 bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
 {
 	//UDMSDataObject* ValueData = nullptr;
 	if (!ModifierOp) return false;
 
-	UDMSAttributeComponent* AttComp=nullptr;
+	UDMSAttributeComponent* AttComp = nullptr;
 	
 	switch (ValueAttributeSource) {
 		case EDMSAttributeSourceFlag::AE: 
-			AttComp= EI->GetComponentByClass<UDMSAttributeComponent>(); break;
+			AttComp = EI->GetComponentByClass<UDMSAttributeComponent>(); break;
 		case EDMSAttributeSourceFlag::SourcePlayer: 
-			AttComp= SourceSequence->GetSourcePlayer()->GetComponentByClass<UDMSAttributeComponent>(); break;
+			AttComp = SourceSequence->GetSourcePlayer()->GetComponentByClass<UDMSAttributeComponent>(); break;
 		case EDMSAttributeSourceFlag::SourceObject: 
-			AttComp= SourceSequence->GetSourceObject()->GetComponentByClass<UDMSAttributeComponent>(); break;
+			AttComp = SourceSequence->GetSourceObject()->GetComponentByClass<UDMSAttributeComponent>(); break;
+		case EDMSAttributeSourceFlag::TG:
+			 for(auto& Owner : ValueAttributeOwner->GetTargets(EI,SourceSequence))
+			 {
+				 AttComp = Owner->IsA<AActor>() ? Cast<AActor>(Owner)->GetComponentByClass<UDMSAttributeComponent>() : nullptr;
+				 break;
+			 }
+			break;
 		default: break;
 	}
 	if(AttComp == nullptr) return false;
@@ -162,18 +149,11 @@ bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActive
 
 	if (Att == nullptr) return false;
 
-	// 이거 값 바꿔야하므로 사본구해오기 정도로 해야함.
-	auto ModifierValue = Cast<UDMSAttributeValue_Numeric>(Att->AttributeValue);
-
-	if (!ModifierValue) return false;
-	
-	ModifierValue = DuplicateObject<UDMSAttributeValue_Numeric>(ModifierValue,EI);
-
 	for (auto& Prc : ValueProcessers)
-		Prc->Process(ModifierValue);	
+		Prc->Process(Att->AttributeValue);	
 	
 	OutModifier.ModifierOp = ModifierOp;
-	OutModifier.Value = ModifierValue;
+	OutModifier.Value = Att->AttributeValue;
 	return true;
 }
 

@@ -161,3 +161,13 @@ public:
 	bool Predict(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue);
 	virtual bool Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue) {return false;}
 };
+
+// Expose to Editor as instanced member of BP classes.
+USTRUCT(BlueprintType)
+struct DMSCORE_API FDMSInstancedModifierOp
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
+};
