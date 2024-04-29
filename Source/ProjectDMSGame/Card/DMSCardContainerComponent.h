@@ -35,19 +35,19 @@
 
  */
 
-USTRUCT(BlueprintType)
-struct FDMSCardList //; public FFastArraySerializer
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(VisibleInstanceOnly)
-	TArray<ADMSCardBase*> Cards; // or Actor?
-
-	// Etc..
-
-	const int Num() const {return Cards.Num();}
-};
+//USTRUCT(BlueprintType)
+//struct FDMSCardList //; public FFastArraySerializer
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	UPROPERTY(VisibleInstanceOnly)
+//	TArray<ADMSCardBase*> Cards; // or Actor?
+//
+//	// Etc..
+//
+//	const int Num() const {return Cards.Num();}
+//};
 
 /**
  * 	========================================
@@ -58,66 +58,51 @@ public:
  *	========================================
  */
 UCLASS(Blueprintable, ClassGroup = (Card), meta = (BlueprintSpawnableComponent))
-class PROJECTDMSGAME_API UDMSCardContainerComponent : public UActorComponent
+class PROJECTDMSGAME_API UDMSCardContainerComponent : public UDMSSpawnableContainerComponent
 {
 	GENERATED_BODY()
 
 public:
-	UDMSCardContainerComponent();
-	/**
-	 * Name of container 
-	 * NOTE :: TO TAG?
-	 */
-	UPROPERTY(VisibleInstanceOnly)
-	FGameplayTag ContainerName;
-
-	/**
-	 * Wrapper of card array. 
-	 */
-	UPROPERTY(VisibleInstanceOnly)
-	FDMSCardList CardList;
-
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
-	bool bIsPublicContainer = false;
-
+	//UDMSCardContainerComponent();
 protected:
-	virtual void BeginPlay() override;
+	//virtual void BeginPlay() override;
 public:
-
-	//Generic card pile actions
-	TArray<ADMSCardBase*> PopAt(uint16 Idx);
-	TArray<ADMSCardBase*> PopAt(uint16 Idx,uint16 Num);
-	void Insert(TArray<ADMSCardBase*> iContainer, uint16 Idx);
-	void Insert(ADMSCardBase* iCard, uint16 Idx);
-	uint16 Find(ADMSCardBase* iCard);
-	void Remove(ADMSCardBase* iCard);
-	void Remove(TArray<ADMSCardBase*> iCards);
-
-
-	UFUNCTION(BlueprintCallable,BlueprintPure, meta = (CompactNodeTitle = "Cards Amount"))
-	const int GetNum() const {return CardList.Num(); }
-
-	// Get Copy of cards array
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (CompactNodeTitle = "Cards"))
-	TArray<ADMSCardBase*> GetCards() {return CardList.Cards;}
+	TArray<ADMSCardBase*> GetCards();
+	//Generic card pile actions
+	//TArray<ADMSCardBase*> PopAt(uint16 Idx);
+	//TArray<ADMSCardBase*> PopAt(uint16 Idx,uint16 Num);
+	//void Insert(TArray<ADMSCardBase*> iContainer, uint16 Idx);
+	//void Insert(ADMSCardBase* iCard, uint16 Idx);
+	//uint16 Find(ADMSCardBase* iCard);
+	//void Remove(ADMSCardBase* iCard);
+	//void Remove(TArray<ADMSCardBase*> iCards);
+
+
+	//UFUNCTION(BlueprintCallable,BlueprintPure, meta = (CompactNodeTitle = "Cards Amount"))
+	//const int GetNum() const {return CardList.Num(); }
+
+	//// Get Copy of cards array
+	//UFUNCTION(BlueprintCallable, BlueprintPure, meta = (CompactNodeTitle = "Cards"))
+	//TArray<ADMSCardBase*> GetCards() {return CardList.Cards;}
 	
 	// Get [Num] cards from container. if [Num] is greater than container's size, returns entire container.
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	TArray<ADMSCardBase*> GetTopNCards(int Num);
+	//UFUNCTION(BlueprintCallable, BlueprintPure)
+	//TArray<ADMSCardBase*> GetTopNCards(int Num);
 
-	UFUNCTION(BlueprintCallable)
-	void ShuffleTopNCards(int Num=0);
+	//UFUNCTION(BlueprintCallable)
+	//void ShuffleTopNCards(int Num=0);
 
-	UFUNCTION(BlueprintPure,BlueprintCallable)
-	FGameplayTag GetContainerName() const { return ContainerName; }
+	//UFUNCTION(BlueprintPure,BlueprintCallable)
+	//FGameplayTag GetContainerName() const { return ContainerName; }
 
-	UFUNCTION(BlueprintNativeEvent)
-	void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);
+	//UFUNCTION(BlueprintNativeEvent)
+	//void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);
 	void OnContainerAdded_Implementation(const TArray<ADMSCardBase*>& AddedCards){}
 
 
-	UFUNCTION(BlueprintNativeEvent)
-	void OnContainerRemoved(const TArray<ADMSCardBase*>& RemovedCards);
+	//UFUNCTION(BlueprintNativeEvent)
+	//void OnContainerRemoved(const TArray<ADMSCardBase*>& RemovedCards);
 	void OnContainerRemoved_Implementation(const TArray<ADMSCardBase*>& RemovedCards){}
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void OnContainerUpdated();

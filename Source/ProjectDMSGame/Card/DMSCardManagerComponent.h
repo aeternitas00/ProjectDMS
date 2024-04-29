@@ -18,7 +18,7 @@
 #include "DMSCardManagerComponent.generated.h"
 
 
-class UDMSCardContainerComponent;
+class UDMSSpawnableContainerComponent;
 class ADMSCardBase;
 /**
  *	========================================
@@ -30,41 +30,41 @@ class ADMSCardBase;
  *	========================================
  */
 UCLASS(ClassGroup = (Card), meta = (BlueprintSpawnableComponent))
-class PROJECTDMSGAME_API UDMSCardManagerComponent : public UActorComponent
+class PROJECTDMSGAME_API UDMSContainerManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UDMSCardManagerComponent();
+	UDMSContainerManagerComponent();
 
 protected:
 	// Set replicated in constructor
 	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly)
-	TMap<FGameplayTag, TObjectPtr<UDMSCardContainerComponent>> Containers;
+	TMap<FGameplayTag, TObjectPtr<UDMSSpawnableContainerComponent>> Containers;
 
 	/**
 	* Player's default card containers list and intancing class.
 	*/
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<FGameplayTag, TSubclassOf<UDMSCardContainerComponent>> CardContainerTypes;
+	TMap<FGameplayTag, TSubclassOf<UDMSSpawnableContainerComponent>> ContainerTypes;
 public:
 	// Post Init 이후 생성된 카드 컨테이너들에 대해 레플리케이션 실행.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	UFUNCTION(BlueprintCallable)
-	UDMSCardContainerComponent* SearchContainer(const FGameplayTag& ContainerName);
+	UDMSSpawnableContainerComponent* SearchContainer(const FGameplayTag& ContainerName);
 		
-	void ConstructContainer(const FGameplayTag& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass);
+	void ConstructContainer(const FGameplayTag& ContainerName, TSubclassOf<UDMSSpawnableContainerComponent> ContainerClass);
 
-	static void MigrateCard(UDMSCardContainerComponent* Origin, uint16 OrgIdx, uint16 Num, UDMSCardContainerComponent* Dest, uint16 DestIdx);
-	static void MigrateCard(ADMSCardBase* Card, UDMSCardContainerComponent* Dest, uint16 DestIdx);
-	static void MigrateCard(TArray<ADMSCardBase*> Cards, UDMSCardContainerComponent* Dest, uint16 DestIdx);
-
-	UFUNCTION(BlueprintCallable)
-	void AddCardtoContainer(TArray<ADMSCardBase*> Cards,const FGameplayTag& ContainerName);
+	static void MigrateObjects(UDMSSpawnableContainerComponent* Origin, uint16 OrgIdx, uint16 Num, UDMSSpawnableContainerComponent* Dest, uint16 DestIdx);
+	static void MigrateObjects(ADMSSpawnableBase* Card, UDMSSpawnableContainerComponent* Dest, uint16 DestIdx);
+	static void MigrateObjects(TArray<ADMSSpawnableBase*> Cards, UDMSSpawnableContainerComponent* Dest, uint16 DestIdx);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<ADMSCardBase*> GetAllCards();
+	void AddObjectsToContainer(TArray<ADMSSpawnableBase*> Objects,const FGameplayTag& ContainerName);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<ADMSSpawnableBase*> GetAllObjects();
 
 	virtual void InitializeComponent();
 };

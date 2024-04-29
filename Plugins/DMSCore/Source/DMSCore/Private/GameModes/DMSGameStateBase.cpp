@@ -17,7 +17,7 @@ ADMSGameStateBase::ADMSGameStateBase(const FObjectInitializer& Initializer) /*: 
 	PrimaryActorTick.bTickEvenWhenPaused = true;
 	PrimaryActorTick.TickGroup = TG_PostUpdateWork;
 
-	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
+	//CardManagerComponent = CreateDefaultSubobject<UDMSContainerManagerComponent>(TEXT("CardManagerComponent"));
 	EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 	EffectHandler = CreateDefaultSubobject<UDMSEffectHandler>(TEXT("EffectHandler"));	
 	NotifyManager = CreateDefaultSubobject<UDMSNotifyManager>(TEXT("NotifyManager"));

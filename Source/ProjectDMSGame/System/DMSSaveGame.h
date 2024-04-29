@@ -26,7 +26,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FDMSPlayerCharacterData	SavedCharacterData;
 
-
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TArray<FPrimaryAssetId> SavedChaosTokenDatas;
 	// Scenario datas ( campain progress, ~~ )
 
 	/**

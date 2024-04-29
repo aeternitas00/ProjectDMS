@@ -163,7 +163,8 @@ void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, 
 	UDMSNotifyRespondentSelector* InstancedWidget = Cast<UDMSNotifyRespondentSelector>(SelHandle->Widget);
 
 	InstancedWidget->ResponsedObjects = ResponsedObjects; 
-	ResponsedObjects.GetKeys(InstancedWidget->Respondents);
+	InstancedWidget->ResponsedObjects.GenerateKeyArray(InstancedWidget->Respondents);
+	//InstancedWidget->ResponsedObjects.GetKeys(InstancedWidget->Respondents);
 	InstancedWidget->CurrentSequence = CurrentSequence;
 
 	// 노티파이 셀렉터는 특수한 케이스로 델리게이트 수행이 아닌
@@ -241,7 +242,7 @@ void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* Effe
 	auto SeqAttComp = CurrentSequence->GetComponentByClass<UDMSAttributeComponent>();
 
 	auto RespondentAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Object::StaticClass());
-	auto AEAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent),UDMSAttributeValue_Object::StaticClass());
+	auto AEAtt = SeqAttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_System_Notify_ActivatingEffect),UDMSAttributeValue_Object::StaticClass());
 
 	if(!RespondentAtt || !AEAtt)
 	{
@@ -258,7 +259,11 @@ void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* Effe
 
 void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray)
 {
-	ResponsedObjects.MultiFind(iObject, outArray,true);
-	//(*ForcedObjects.Find(iObject))->CreateApplyingSequence(iObject.GetObject(), CurrentSequence);
-	//return;
+	for(auto Pair : ResponsedObjects)
+	{
+		if(Pair.Key == iObject) outArray.Add(Pair.Value);
+	}
+
+	// Can't use multifind somehow ( Maybe key must be OBJECT? )
+	//ResponsedObjects.MultiFind(iObject, outArray,true);
 }

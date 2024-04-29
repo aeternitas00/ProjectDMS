@@ -8,24 +8,25 @@
 #include "Card/DMSCardManagerComponent.h"
 //#include "Effect/DMSEIManagerComponent.h"
 
-//ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) /*: Super(Initializer)*/
-//{
-//	//CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
-//	//EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
-//
-//}
-// 
-//void ADMSGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-//{
-//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-//
-//	DOREPLIFETIME(ADMSGameState, CardManagerComponent);
-//}
-//
+ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) : Super(Initializer)
+{
+	ContainerManagerComponent = CreateDefaultSubobject<UDMSContainerManagerComponent>(TEXT("ContainerManagerComponent"));
+	//EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
 
-void ADMSGameState::SetupDefaults()
+}
+ 
+void ADMSGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADMSGameState, ContainerManagerComponent);
+}
+
+
+void ADMSGameState::SetupDefaults_Implementation()
 {
 	
+	//ContainerManagerComponent;
 }
 
 void ADMSGameState::SetPlayersFocusTarget(AActor* Target)

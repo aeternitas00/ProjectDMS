@@ -23,7 +23,7 @@
 #include "Effect/DMSEffectorOwnableInterface.h"
 #include "DMSPlayerState.generated.h"
 
-class UDMSCardManagerComponent;
+class UDMSContainerManagerComponent;
 class UDMSCardContainerComponent;
 class UDMSAttributeComponent;
 class UDMSEIManagerComponent;
@@ -52,7 +52,7 @@ protected:
 	 * Manage player's card containers like deck, hand, discard pile...
 	 */
 	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
-	TObjectPtr<UDMSCardManagerComponent> CardManagerComponent;
+	TObjectPtr<UDMSContainerManagerComponent> ContainerManagerComponent;
 
 	/**
 	 * Attribute component.
@@ -146,7 +146,7 @@ public:
 	 * Search for named card container from CardManagerComponent.
 	 */
 	UFUNCTION(BlueprintCallable)
-	UDMSCardContainerComponent* SearchContainer(const FGameplayTag& ContainerName);
+	UDMSSpawnableContainerComponent* SearchContainer(const FGameplayTag& ContainerName);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnLoadSaveGame(UDMSSaveGame* LoadedItem);

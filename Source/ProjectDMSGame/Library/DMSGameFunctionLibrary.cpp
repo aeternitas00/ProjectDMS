@@ -24,14 +24,6 @@ UDMSAttribute* UDMSGameFunctionLibrary::GetAttributeFromActor(AActor* iActor, co
 	return AttComp->GetAttribute(AttributeTag);
 }
 
-//bool UDMSGameFunctionLibrary::CheckCardIsCommitable(ADMSCardBase* iCard)
-//{
-//	//bool rv = iCard->GetCardDefinition()->CardEffectSets.Contains(TAG_DMS_EffectType_Commit);
-//	//return rv;
-//	return false;
-//}
-
-
 void UDMSGameFunctionLibrary::SetCardDataOwner(const FDMSCardData& Data, UObject* Owner)
 {
 	for (auto EI : Data.AttachedEffect)

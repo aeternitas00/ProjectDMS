@@ -18,10 +18,10 @@ UDMSEffect_MoveCard::UDMSEffect_MoveCard()
 
 void UDMSEffect_MoveCard::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
 {
-	UDMSCardContainerComponent* FromTemp;
-	UDMSCardContainerComponent* Container_Destination=nullptr;
+	UDMSSpawnableContainerComponent* FromTemp;
+	UDMSSpawnableContainerComponent* Container_Destination=nullptr;
 	//UDMSEIManagerComponent* CardEffector = Cast<UDMSEIManagerComponent>(iEI->GetOuter());
-	ADMSCardBase* Card = Cast<ADMSCardBase>(iEI->GetApplyTarget());
+	ADMSSpawnableBase* Card = Cast<ADMSSpawnableBase>(iEI->GetApplyTarget());
 
 	if (Card==nullptr)
 	{	
@@ -32,12 +32,12 @@ void UDMSEffect_MoveCard::Work_Implementation(ADMSSequence* SourceSequence, ADMS
 	FromTemp = Card->GetOwningContainer();
 
 	// 시전한 플레이어의 (Name) 컨테이너 / AI가 사용했다던가 했을땐 카드가 원래 있던 컨테이너의 주인 기준으로 (Name)컨테이너 찾아서
-	UDMSCardManagerComponent* Manager = Cast<UDMSCardManagerComponent>(iEI->SourcePlayer->GetComponentByClass(UDMSCardManagerComponent::StaticClass()));
+	UDMSContainerManagerComponent* Manager = Cast<UDMSContainerManagerComponent>(iEI->SourcePlayer->GetComponentByClass(UDMSContainerManagerComponent::StaticClass()));
 	if (Manager) {
 		Container_Destination = Manager->SearchContainer(TagDestination); 
 	}
 	if (Container_Destination==nullptr&& FromTemp!=nullptr) {
-		Container_Destination = Cast<UDMSCardManagerComponent>(FromTemp->GetOuter())->SearchContainer(TagDestination);
+		Container_Destination = Cast<UDMSContainerManagerComponent>(FromTemp->GetOuter())->SearchContainer(TagDestination);
 	}
 
 	if (Container_Destination == nullptr)
@@ -50,7 +50,7 @@ void UDMSEffect_MoveCard::Work_Implementation(ADMSSequence* SourceSequence, ADMS
 	else 
 	{
 		DMS_LOG_SCREEN(TEXT("%s : Move Card to %s"), *iEI->GetName(), *Container_Destination->GetName());
-		UDMSCardManagerComponent::MigrateCard(Card, Container_Destination, 0);
+		UDMSContainerManagerComponent::MigrateObjects(Card, Container_Destination, 0);
 	}
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : MOVE CARD WORK COMPLETED ===="), *SourceSequence->GetName());

@@ -23,11 +23,11 @@
 
 ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPlayerStateBase(Initializer)
 {
-	CardManagerComponent = CreateDefaultSubobject<UDMSCardManagerComponent>(TEXT("CardManagerComponent"));
+	ContainerManagerComponent = CreateDefaultSubobject<UDMSContainerManagerComponent>(TEXT("ContainerManagerComponent"));
 	//AttributesComponent=nullptr;
 	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributesComponent"));
 
-	CardManagerComponent->SetIsReplicated(true);
+	ContainerManagerComponent->SetIsReplicated(true);
 	AttributeComponent->SetIsReplicated(true);
 
 
@@ -42,7 +42,7 @@ ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPl
 
 //void ADMSPlayerState::SetupCardContainers()
 //{
-	//for (auto ContainerDef : CardContainerTypes) {
+	//for (auto ContainerDef : ContainerTypes) {
 	//	CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
 	//}
 //}
@@ -97,9 +97,9 @@ void ADMSPlayerState::LoadSaveGame(const FString& SlotName, const int32 UserInde
 }
 
 
-UDMSCardContainerComponent* ADMSPlayerState::SearchContainer(const FGameplayTag& ContainerName)
+UDMSSpawnableContainerComponent* ADMSPlayerState::SearchContainer(const FGameplayTag& ContainerName)
 {
-	return CardManagerComponent ? CardManagerComponent->SearchContainer(ContainerName) : nullptr;
+	return ContainerManagerComponent ? ContainerManagerComponent->SearchContainer(ContainerName) : nullptr;
 }
 
 //void ADMSPlayerState::RegisterPlayerWithSession(bool bWasFromInvite)
@@ -156,7 +156,7 @@ void ADMSPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ADMSPlayerState, CardManagerComponent);	
+	DOREPLIFETIME(ADMSPlayerState, ContainerManagerComponent);	
 	DOREPLIFETIME(ADMSPlayerState, AttributeComponent);	
 }
 

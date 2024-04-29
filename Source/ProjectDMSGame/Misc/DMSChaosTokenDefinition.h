@@ -17,7 +17,8 @@
 #include "Common/DMSCommons.h"
 #include "Attribute/DMSAttribute.h"
 #include "Effect/DMSEffectDefinition.h"
-#include "DMSCardDefinition.generated.h"
+#include "DMSChaosTokenDefinition.generated.h"
+
 
 class UDMSAttribute;
 
@@ -30,8 +31,8 @@ class UDMSAttribute;
  * =========================================
  *
  */
-UCLASS(Blueprintable, BlueprintType, Const, ClassGroup = (Card))
-class PROJECTDMSGAME_API UDMSCardDefinition : public UDMSSpawnableDataBase
+UCLASS(Blueprintable, BlueprintType, Const, ClassGroup = (Misc))
+class PROJECTDMSGAME_API UDMSChaosTokenDefinition : public UDMSSpawnableDataBase
 {
 	GENERATED_BODY()
 	
@@ -44,35 +45,17 @@ public:
 	 * Display name of card.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	FText CardName;
+	FText DisplayName;
 
-	/**
-	 * Container of traits.
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	FGameplayTagContainer DefaultCardTraits;
-
-	/**
-	 * Description text of card effect.
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	FText EffectText;
-
-	/**
-	 * Flavor text of card effect.
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
-	FText FlavorText;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = CardEffect)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	TArray<FDMSAttributeDefinition> DefaultAttributes;
 
 	/**
 	 * Effect sets of Card.
 	 * ex) <"Cost",CostEffectSet>
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = CardEffect)
-	TMap<FGameplayTag, TObjectPtr<UDMSEffectSet>> CardEffectSets;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TObjectPtr<UDMSEffectSet> EffectSet;
 
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;

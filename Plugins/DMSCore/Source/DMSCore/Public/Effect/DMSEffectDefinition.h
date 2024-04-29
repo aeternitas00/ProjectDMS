@@ -294,6 +294,16 @@ public:
 //	virtual void CreateSelectors(ADMSSequence* OwnerSeq, APlayerController* WidgetOwner){}
 };
 
+USTRUCT(BlueprintType)
+struct DMSCORE_API FDMSInstancedEffectNode
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TObjectPtr<UDMSEffectNodeWrapper> EffectNode;
+};
+
 /**
  * 	========================================
  *

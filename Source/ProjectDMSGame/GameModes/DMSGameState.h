@@ -9,7 +9,7 @@
 //class UDMSEIManagerComponent;
 class ADMSLocationBase;
 class ADMSPlayerState;
-class UDMSCardManagerComponent;
+class UDMSContainerManagerComponent;
 /**
  * 
  */
@@ -18,11 +18,11 @@ class PROJECTDMSGAME_API ADMSGameState : public ADMSGameStateBase
 {
 	GENERATED_BODY()
 public:
-	//ADMSGameState(const FObjectInitializer& Initializer);
+	ADMSGameState(const FObjectInitializer& Initializer);
 
 protected:
-	//UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
-	//TObjectPtr<UDMSCardManagerComponent> CardManagerComponent;
+	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
+	TObjectPtr<UDMSContainerManagerComponent> ContainerManagerComponent;
 
 public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
@@ -37,8 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSPlayerController*> GetDMSPlayerControllers();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetupDefaults();
+	virtual void SetupDefaults_Implementation();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	ADMSSequence* CreateChaosTokenDrawSeq(ADMSSequence* ParentSeq);
@@ -48,7 +49,6 @@ public:
 
 	
 public:
-	//ADMSGameState(const FObjectInitializer& Initializer);
-	//virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 };

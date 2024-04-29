@@ -38,8 +38,8 @@ public:
 	/**
 	 * 'Before / During / After' What happens
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
-	EDMSTimingFlag Timing;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
+	//EDMSTimingFlag Timing;
 
 	/**
 	 * 'What'

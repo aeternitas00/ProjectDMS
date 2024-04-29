@@ -18,6 +18,7 @@ public:
 	UDMSAssetManager() {}
 
 	static const FPrimaryAssetType CardAssetType;
+	static const FPrimaryAssetType ChaosTokenAssetType;
 	static const FPrimaryAssetType PlayerCharacterAssetType;
 	static const FPrimaryAssetType EnemyCharacterAssetType;
 	static const FPrimaryAssetType LocationAssetType;

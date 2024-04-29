@@ -6,75 +6,75 @@
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
-UDMSCardManagerComponent::UDMSCardManagerComponent()
+UDMSContainerManagerComponent::UDMSContainerManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
-	Containers.Add(FGameplayTag::EmptyTag, CreateDefaultSubobject<UDMSCardContainerComponent>(TEXT("NoneContainer")));
+	Containers.Add(FGameplayTag::EmptyTag, CreateDefaultSubobject<UDMSSpawnableContainerComponent>(TEXT("NoneContainer")));
 }
 
 
-void UDMSCardManagerComponent::MigrateCard(UDMSCardContainerComponent* Origin, uint16 OrgIdx, uint16 Num, UDMSCardContainerComponent* Dest, uint16 DestIdx)
+void UDMSContainerManagerComponent::MigrateObjects(UDMSSpawnableContainerComponent* Origin, uint16 OrgIdx, uint16 Num, UDMSSpawnableContainerComponent* Dest, uint16 DestIdx)
 {
 	Dest->Insert(Origin->PopAt(OrgIdx,Num),DestIdx);
 }
 
-void UDMSCardManagerComponent::MigrateCard(ADMSCardBase* Card, UDMSCardContainerComponent* Dest, uint16 DestIdx)
+void UDMSContainerManagerComponent::MigrateObjects(ADMSSpawnableBase* Card, UDMSSpawnableContainerComponent* Dest, uint16 DestIdx)
 {
 	Card->GetOwningContainer()->Remove(Card);
 	Dest->Insert({Card}, DestIdx);
 }
 
-void UDMSCardManagerComponent::MigrateCard(TArray<ADMSCardBase*> Cards, UDMSCardContainerComponent* Dest, uint16 DestIdx)
+void UDMSContainerManagerComponent::MigrateObjects(TArray<ADMSSpawnableBase*> Cards, UDMSSpawnableContainerComponent* Dest, uint16 DestIdx)
 {
 	for (auto Card:Cards) Card->GetOwningContainer()->Remove(Card);
 	Dest->Insert(Cards, DestIdx);
 }
 
-void UDMSCardManagerComponent::AddCardtoContainer(TArray<ADMSCardBase*> Cards, const FGameplayTag& ContainerName)
+void UDMSContainerManagerComponent::AddObjectsToContainer(TArray<ADMSSpawnableBase*> Objects, const FGameplayTag& ContainerName)
 {
-	if(!Containers.Contains(ContainerName)) Containers[FGameplayTag::EmptyTag]->Insert(Cards,0);
-	else Containers[ContainerName]->Insert(Cards,0);
+	if(!Containers.Contains(ContainerName)) Containers[FGameplayTag::EmptyTag]->Insert(Objects,0);
+	else Containers[ContainerName]->Insert(Objects,0);
 }
 
-TArray<ADMSCardBase*> UDMSCardManagerComponent::GetAllCards()
+TArray<ADMSSpawnableBase*> UDMSContainerManagerComponent::GetAllObjects()
 {
-	TArray<ADMSCardBase*> rv;
+	TArray<ADMSSpawnableBase*> rv;
 
 	for (auto& Container : Containers)
 	{
-		rv.Append(Container.Value->GetCards());
+		rv.Append(Container.Value->GetObjects());
 	}
 	return rv;
 }
 
-void UDMSCardManagerComponent::InitializeComponent()
+void UDMSContainerManagerComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	for (auto& ContainerDef : CardContainerTypes) {
+	for (auto& ContainerDef : ContainerTypes) {
 		ConstructContainer(ContainerDef.Key, ContainerDef.Value);
 	}
 }
 
 
-void UDMSCardManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UDMSContainerManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-UDMSCardContainerComponent* UDMSCardManagerComponent::SearchContainer(const FGameplayTag& ContainerName)
+UDMSSpawnableContainerComponent* UDMSContainerManagerComponent::SearchContainer(const FGameplayTag& ContainerName)
 {
 	return Containers.Contains(ContainerName) ? Containers[ContainerName] : nullptr;
 }
 
-void UDMSCardManagerComponent::ConstructContainer(const FGameplayTag& ContainerName, TSubclassOf<UDMSCardContainerComponent> ContainerClass)
+void UDMSContainerManagerComponent::ConstructContainer(const FGameplayTag& ContainerName, TSubclassOf<UDMSSpawnableContainerComponent> ContainerClass)
 {
 	if (Containers.Contains(ContainerName)) return;
 
 	//DMS_LOG_SCREEN(TEXT("%s"), *ContainerClass->GetName());
 
-	UDMSCardContainerComponent* NewContainer = NewObject<UDMSCardContainerComponent>(this, ContainerClass, ContainerName.GetTagName());
+	UDMSSpawnableContainerComponent* NewContainer = NewObject<UDMSSpawnableContainerComponent>(this, ContainerClass, ContainerName.GetTagName());
 	
 	Containers.Add(ContainerName, NewContainer);
 	NewContainer->ContainerName = ContainerName;

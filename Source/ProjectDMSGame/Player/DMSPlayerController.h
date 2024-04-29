@@ -21,7 +21,7 @@
 
 struct FDMSAttributeModifier;
 class ADMSCameraPawn;
-class UDMSCardManagerComponent;
+class UDMSContainerManagerComponent;
 class UDMSCardContainerComponent;
 class ADMSCardBase;
 class UDMSEIManagerComponent;

@@ -55,11 +55,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<const UDMSCardDefinition> CardDefinition;
 
-	/**
-	 * Card container that owning this card.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UDMSCardContainerComponent> OwningContainer;
+
 
 public:	
 
@@ -69,15 +65,12 @@ public:
 	const UDMSCardDefinition* GetCardDefinition();
 	void SetCardDefinition(const UDMSCardDefinition* iCardDefinition); // Init
 
-	UDMSCardContainerComponent* GetOwningContainer() {return OwningContainer;}
-	void SetOwningContainer(UDMSCardContainerComponent* Container) { OwningContainer = Container;}
 
 
 	// == Virtual functions == //
 
 	// IDMSEffectorInterface Implements.
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
-
 	virtual void OnInitialized_Implementation() override;
 	//virtual void PostInitialize_Implementation() override;
 

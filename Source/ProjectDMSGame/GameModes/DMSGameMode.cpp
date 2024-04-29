@@ -56,10 +56,10 @@ ADMSCardBase* ADMSGameMode::SpawnCard_Implementation(const FDMSCardData& CardDat
 	{
 		SpawnedCard->GetEffectorManagerComponent()->AttachEffectInstance(EI);
 	}
-	auto CM = GetGameState<ADMSGameState>()->FindPlayerFromId(OwnerID)->FindComponentByClass<UDMSCardManagerComponent>();
+	auto CM = GetGameState<ADMSGameState>()->FindPlayerFromId(OwnerID)->FindComponentByClass<UDMSContainerManagerComponent>();
 	if (CM != nullptr)
 	{
-		CM->AddCardtoContainer({ SpawnedCard }, DefaultContainerName );
+		CM->AddObjectsToContainer({ SpawnedCard }, DefaultContainerName );
 	}
 	return SpawnedCard;
 }
@@ -114,7 +114,7 @@ void ADMSGameMode::PlayerReady()
 				SpawnCard(CardData, PlayerID, DefaultCardSpawnContainer);
 
 			if (PS->SearchContainer(DefaultCardSpawnContainer))
-				PS->SearchContainer(DefaultCardSpawnContainer)->ShuffleTopNCards();
+				PS->SearchContainer(DefaultCardSpawnContainer)->ShuffleTopNObjects();
 		}
 
 		OnAllPlayerReady();
