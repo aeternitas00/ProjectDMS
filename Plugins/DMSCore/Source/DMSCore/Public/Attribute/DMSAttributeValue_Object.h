@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void SetValue(const TArray<UObject*>& i) { Value=i; }
 
+	UFUNCTION(BlueprintCallable, Category = Attribute)
+	void ClearValue() { Value.Empty(); }
+
 	virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

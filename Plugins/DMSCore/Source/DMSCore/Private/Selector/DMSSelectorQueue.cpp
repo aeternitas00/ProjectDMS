@@ -42,7 +42,7 @@ bool UDMSWidgetQueue::SetupQueue(ADMSSequence* SourceSequence,TArray<UDMSSelecto
 		Handle->OwnerQueue=this;
 		Handle->SetupDelegates(
 			[this, Handle](){	Handle->Widget->CloseSelector();	PopupNextWidget(); } ,
-			[this](){ClearQueue(); OnSelectorsCanceled.Broadcast(CurrentSequence); }
+			[this](){ OnSelectorsCanceled.Broadcast(CurrentSequence);ClearQueue(); }
 		);
 	}
 
@@ -57,6 +57,7 @@ void UDMSWidgetQueue::ClearQueue()
 	}
 	OnSelectorsCompleted.Clear();
 	OnSelectorsCompleted_Handle.Clear();
+	OnSelectorsCanceled.Clear();
 	SelectorHandles.Empty(); CurrentIndex = -1;
 	
 }

@@ -249,8 +249,8 @@ void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* Effe
 		DMS_LOG_SIMPLE(TEXT("UDMSNotifyRespondentSelector :: Update data Failed"));
 		return; /* LOG? */
 	}
-	Cast<UDMSAttributeValue_Object>(RespondentAtt->AttributeValue)->AddValue(Respondent);
-	Cast<UDMSAttributeValue_Object>(AEAtt->AttributeValue)->AddValue(EffectInstance);
+	Cast<UDMSAttributeValue_Object>(RespondentAtt->AttributeValue)->SetValue({Respondent});
+	Cast<UDMSAttributeValue_Object>(AEAtt->AttributeValue)->SetValue({EffectInstance});
 
 	//UDMSDataObjectSet* UpdatingData = CurrentSequence->SequenceDatas;
 	//UpdatingData->SetData(TAG_DMS_System_Notify_Respondent, Respondent);

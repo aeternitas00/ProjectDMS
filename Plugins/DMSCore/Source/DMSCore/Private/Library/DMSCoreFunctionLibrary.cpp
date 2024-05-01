@@ -23,7 +23,7 @@ FString UDMSCoreFunctionLibrary::GetTimingString(const EDMSTimingFlag& Flag)
 
 ADMSGameModeBase* UDMSCoreFunctionLibrary::GetDMSGameMode(UObject* WorldContext)
 {
-	UWorld* tWorld = WorldContext==nullptr ? GEngine->GameViewport->GetWorld() : WorldContext->GetWorld();
+	UWorld* tWorld = !WorldContext->IsValidLowLevel() ? GEngine->GameViewport->GetWorld() : WorldContext->GetWorld();
 
 	return tWorld->GetAuthGameMode<ADMSGameModeBase>();
 }
