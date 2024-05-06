@@ -206,7 +206,7 @@ public:
 	/**
 	 * Effect's terminate condition.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (EditCondition = "bIsPersistent", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSConditionCombiner> TerminateConditions;
 
 	//=================== Definitions ===================//

@@ -47,7 +47,7 @@ public:
 	FText CardName;
 
 	/**
-	 * Container of traits.
+	 * Container of traits. [TO ATTRIBUTE]
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
 	FGameplayTagContainer DefaultCardTraits;

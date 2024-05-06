@@ -30,7 +30,7 @@ protected:
 	 * Attribute component.
 	 * Manage mana, resource, etc... of character.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TObjectPtr<UDMSAttributeComponent> AttributesComponent;
 
 	/**

@@ -47,7 +47,7 @@ protected:
 	* Attribute component.
 	* Manage mana, resource, etc... of character.
 	*/
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly)
 	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 	/**
 	 * Card's data.

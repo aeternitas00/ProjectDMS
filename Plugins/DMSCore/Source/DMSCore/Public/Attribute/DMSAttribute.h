@@ -19,7 +19,7 @@
 
 class UDMSAttributeModifierOp;
 class UDMSAttributeValue;
-
+class ADMSActiveEffect;
 USTRUCT(BlueprintType)
 struct FDMSAttributeModifier
 {
@@ -75,7 +75,8 @@ public:
 	virtual void ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier);
 
 	//UFUNCTION(BlueprintNativeEvent, Category = Attribute)
-	virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+	//virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+	virtual void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
 	//virtual void GetDeltaAfterModify_Implementation(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
 
 	virtual bool IsSupportedForNetworking() const override {return true;}
@@ -124,6 +125,7 @@ public:
 
 	//UFUNCTION(BlueprintCallable, Category = Attribute)
 	void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+	void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
 
 	void GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass);
 	void DuplicateValue(UDMSAttributeValue* Value);

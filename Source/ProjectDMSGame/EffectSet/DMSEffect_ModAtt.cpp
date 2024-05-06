@@ -60,23 +60,26 @@ void UDMSEffect_ModAtt::Work_Implementation(ADMSSequence* SourceSequence, ADMSAc
 
 	// 일반적인 로직으로 구현?? // ED_Revertable?
 	if (bTemporal){
-		auto AEAtt = iEI->GetComponentByClass<UDMSAttributeComponent>();
 		// 일반화 구현을 위한 테스트. (Value만 따로 생성해도 무방)
-		FGameplayTagContainer AEAttTag(TargetAttributeTags);
-		AEAttTag.AddTag(TAG_DMS_Effect_ModAttribute_Revert);
-		auto NewAEAtt = AEAtt->MakeAttribute(AEAttTag,TargetAtt->AttributeValue->GetClass());
-		TargetAtt->GetDeltaAfterModify(Modifier,NewAEAtt->AttributeValue);
+		//auto AEAtt = iEI->GetComponentByClass<UDMSAttributeComponent>();
+		//FGameplayTagContainer AEAttTag(TargetAttributeTags);
+		//AEAttTag.AddTag(TAG_DMS_Effect_ModAttribute_Revert);
+		//auto NewAEAtt = AEAtt->MakeAttribute(AEAttTag,TargetAtt->AttributeValue->GetClass());
+		//TargetAtt->GetDeltaAfterModify(Modifier,NewAEAtt->AttributeValue);
+
+		TArray<FDMSAttributeModifier> RevertMods;
+		TargetAtt->GetDeltasAfterModify(Modifier,iEI,RevertMods);
 
 		iEI->OnDetach.AddLambda([=](){
-			FDMSAttributeModifier RevertMod;
+			//FDMSAttributeModifier RevertMod;
 
-			RevertMod.ModifierOp = DuplicateObject(Modifier.ModifierOp,iEI);
-			RevertMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Subtractive;
-			RevertMod.Value=NewAEAtt->AttributeValue;
+			//RevertMod.ModifierOp = DuplicateObject(Modifier.ModifierOp,iEI);
+			//RevertMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Subtractive;
+			//RevertMod.Value=NewAEAtt->AttributeValue;
+			for (auto& RevertMod : RevertMods)
+				TargetAtt->ApplyModifier(RevertMod);
 
-			TargetAtt->ApplyModifier(RevertMod);
-
-			AEAtt->RemoveAttribute(NewAEAtt->AttributeTag);
+			//AEAtt->RemoveAttribute(NewAEAtt->AttributeTag);
 		});
 	}
 	TargetAtt->ApplyModifier(Modifier);

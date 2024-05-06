@@ -2,6 +2,7 @@
 
 
 #include "Attribute/DMSAttribute.h"
+#include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
 
 UDMSAttribute::UDMSAttribute():AttributeValue(nullptr)
@@ -33,7 +34,12 @@ void UDMSAttribute::ApplyModifier(const FDMSAttributeModifier& Modifier)
 
 void UDMSAttribute::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
 {
-	AttributeValue->GetDeltaAfterModify(Modifier,OutValue);
+	//AttributeValue->GetDeltaAfterModify(Modifier,OutValue);
+}
+
+void UDMSAttribute::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
+{
+	AttributeValue->GetDeltasAfterModify(OriginalModifier,OriginalActiveEffect,OutModifiers);
 }
 
 void UDMSAttribute::GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass)
@@ -52,9 +58,14 @@ void UDMSAttribute::DuplicateValue(UDMSAttributeValue* Value)
 
 void UDMSAttributeValue::ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier) { Modifier.ModifierOp->ExecuteOp(this, Modifier.Value); }
 
-void UDMSAttributeValue::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
+//void UDMSAttributeValue::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
+//{
+//	//OutValue->Value = Modifier.Value->Value;
+//}
+
+void UDMSAttributeValue::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
 {
-	//OutValue->Value = Modifier.Value->Value;
+	//OutModifiers.Add(NewModifier);
 }
 
 FArchive& operator<<(FArchive& Ar, FDMSAttributeDefinition& AttDefinition)
