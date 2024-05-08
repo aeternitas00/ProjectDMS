@@ -13,7 +13,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute_Revert, "Effect.ModAttribute.
 // 자손임을 표현하기 위해 파생 키워드들은 + ".~~" 하는 형태? ex) ModifyAttribute.Deal 
 // ( 일종의 포함 관계에 속하는 이펙트들의 구분 위함. --> HP가 변화했을 때 > { HP 피해를 입었을 때 , HP 회복을 했을 때 } )
 
-UDMSEffect_ModAtt::UDMSEffect_ModAtt() :bCreateIfNull(false)
+UDMSEffect_ModAtt::UDMSEffect_ModAtt() //:bCreateIfNull(false)
 { 
 	EffectTag = TAG_DMS_Effect_ModAttribute;
 	
@@ -60,26 +60,12 @@ void UDMSEffect_ModAtt::Work_Implementation(ADMSSequence* SourceSequence, ADMSAc
 
 	// 일반적인 로직으로 구현?? // ED_Revertable?
 	if (bTemporal){
-		// 일반화 구현을 위한 테스트. (Value만 따로 생성해도 무방)
-		//auto AEAtt = iEI->GetComponentByClass<UDMSAttributeComponent>();
-		//FGameplayTagContainer AEAttTag(TargetAttributeTags);
-		//AEAttTag.AddTag(TAG_DMS_Effect_ModAttribute_Revert);
-		//auto NewAEAtt = AEAtt->MakeAttribute(AEAttTag,TargetAtt->AttributeValue->GetClass());
-		//TargetAtt->GetDeltaAfterModify(Modifier,NewAEAtt->AttributeValue);
-
 		TArray<FDMSAttributeModifier> RevertMods;
 		TargetAtt->GetDeltasAfterModify(Modifier,iEI,RevertMods);
 
 		iEI->OnDetach.AddLambda([=](){
-			//FDMSAttributeModifier RevertMod;
-
-			//RevertMod.ModifierOp = DuplicateObject(Modifier.ModifierOp,iEI);
-			//RevertMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Subtractive;
-			//RevertMod.Value=NewAEAtt->AttributeValue;
 			for (auto& RevertMod : RevertMods)
 				TargetAtt->ApplyModifier(RevertMod);
-
-			//AEAtt->RemoveAttribute(NewAEAtt->AttributeTag);
 		});
 	}
 	TargetAtt->ApplyModifier(Modifier);

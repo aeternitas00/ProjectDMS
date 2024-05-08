@@ -86,7 +86,6 @@ void ADMSCardBase::OnInitialized_Implementation()
 	TArray<FGameplayTag> Keys;
 	CardDefinition->CardEffectSets.GetKeys(Keys);
 
-
 	for(auto& Key : Keys)
 		EIManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
 

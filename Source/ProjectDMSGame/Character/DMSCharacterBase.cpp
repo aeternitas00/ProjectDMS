@@ -5,6 +5,8 @@
 #include "Character/DMSCharacterDefinition.h"
 #include "Attribute/DMSAttributeComponent.h"
 #include "Location/DMSLocationBase.h"
+#include "Effect/DMSEIManagerComponent.h"
+
 // Sets default values
 ADMSCharacterBase::ADMSCharacterBase(const FObjectInitializer& ObjectInitializer) : ADMSEffectorActorBase(ObjectInitializer)
 {
@@ -26,6 +28,12 @@ void ADMSCharacterBase::OnInitialized_Implementation()
 	CharacterDefinition = Cast<UDMSCharacterDefinition>(OriginalData);
 
 	check(CharacterDefinition != nullptr);
+
+	TArray<FGameplayTag> Keys;
+	CharacterDefinition->CharacterEffectSets.GetKeys(Keys);
+
+	for(auto& Key : Keys)
+		EIManagerComponent->SetupOwnEffect(CharacterDefinition->CharacterEffectSets[Key], Key);
 
 	SetupAttributes(CharacterDefinition->DefaultAttributes);
 

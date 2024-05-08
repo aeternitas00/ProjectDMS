@@ -34,6 +34,19 @@ TArray<UObject*> UDMSTargetGenerator_FollowParentSeq::GetTargets_Implementation(
 	return rv;
 }
 
+TArray<UObject*> UDMSTargetGenerator_FollowParentSeqApply::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
+{
+	TArray<UObject*> rv;
+	if (CurrentSequence->ParentSequence == nullptr) return rv;
+
+	for (auto& Storage : CurrentSequence->ParentSequence->GetEIStorage()){
+		for(auto& _Interface : Storage.ApplyTargets)
+			rv.Add(_Interface.GetObject());
+	}
+	return rv;
+}
+
+
 TArray<UObject*> UDMSTargetGenerator_SequenceTarget::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
 {
 	TArray<UObject*> rv;

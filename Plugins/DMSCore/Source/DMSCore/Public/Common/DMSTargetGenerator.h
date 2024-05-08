@@ -60,6 +60,15 @@ public:
 };
 
 UCLASS()
+class DMSCORE_API UDMSTargetGenerator_FollowParentSeqApply : public UDMSTargetGenerator
+{
+	GENERATED_BODY()
+
+public:
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};
+
+UCLASS()
 class DMSCORE_API UDMSTargetGenerator_SequenceTarget : public UDMSTargetGenerator
 {
 	GENERATED_BODY()

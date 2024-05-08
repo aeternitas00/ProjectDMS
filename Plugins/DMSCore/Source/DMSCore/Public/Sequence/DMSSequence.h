@@ -94,6 +94,8 @@ protected:
 	UPROPERTY(Replicated)
 	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 
+	// 이하의 모든 사양들을 Attribute로 구현할 수 있지만 일단은 편의를 위해 독립적으로 두는 형태로.
+
 	/**
 	 * The player or actor that triggers the sequence.
 	 */
