@@ -37,6 +37,8 @@ public:
 	*/
 	int CurrentProgressIndex;
 
+	bool bFTFlag;
+
 	/**
 	 * Reference owner sequence.
 	 */
@@ -123,7 +125,7 @@ public:
 	UDMSSequenceStepDefinition(){}
 
 	UFUNCTION(BlueprintCallable)
-	void BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName);
+	void BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName, bool bFT = false);
 
 	UFUNCTION(BlueprintNativeEvent)
 	bool GetProgressOps(const FGameplayTag& ProgressTag,UPARAM(ref) TArray<FProgressExecutor>& OutExecutors);

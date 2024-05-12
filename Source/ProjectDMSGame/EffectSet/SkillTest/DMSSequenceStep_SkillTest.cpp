@@ -92,7 +92,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 	
 	AttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),UDMSAttributeValue_Numeric::StaticClass(), true);
 
-	BroadcastProgress(InstancedStep,FName(NAME_None));
+	BroadcastProgress(InstancedStep,FName(NAME_None),1);
 	// FT WINDOW
 }
 
@@ -102,7 +102,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST2(UDMSSequenceStep* Instan
 
 	// SELECTOR OR JUST BROADCASTING?
 	// 일단은 그냥 브로드캐스팅으로.
-	BroadcastProgress(InstancedStep,FName(NAME_None));
+	BroadcastProgress(InstancedStep,FName(NAME_None),1);
 
 	// FT WINDOW
 	// 오토 석세스 계열 효과는 여기서 ST7까지 점프하는 형태로.

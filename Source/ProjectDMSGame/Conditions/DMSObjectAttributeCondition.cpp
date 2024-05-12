@@ -21,23 +21,25 @@ bool UDMSObjectAttributeCondition::SingleCheckCondition_Implementation(UObject* 
 
 	UDMSAttributeValue_Numeric* AttVal = Cast<UDMSAttributeValue_Numeric>(Att->AttributeValue);
 	if (AttVal == nullptr) { return bNullIsTrue; }
+	
+	UDMSAttribute* CAtt = AttComp->GetAttribute(ConditionAttributeTag);
+	UDMSAttributeValue_Numeric* CAttVal = CAtt ? Cast<UDMSAttributeValue_Numeric>(Att->AttributeValue) : nullptr;
+	float fCVal = CAttVal ? CAttVal->GetValue() : Value;
 
-	bool rv;
 	switch (Operator)
 	{
 		case EDMSComparisonOperator::BO_Equal:
-			rv = AttVal->GetValue() == Value; break;			
+			return AttVal->GetValue() == fCVal;	
 		case EDMSComparisonOperator::BO_Greater:
-			rv = AttVal->GetValue() > Value; break;
+			return AttVal->GetValue() > fCVal;
 		case EDMSComparisonOperator::BO_Less:
-			rv = AttVal->GetValue() < Value; break;
+			return AttVal->GetValue() < fCVal;
 		case EDMSComparisonOperator::BO_GreaterEqual:
-			rv = AttVal->GetValue() >= Value; break;
+			return AttVal->GetValue() >= fCVal;
 		case EDMSComparisonOperator::BO_LessEqual:
-			rv = AttVal->GetValue() <= Value; break;
-		default: return bNullIsTrue;
+			return AttVal->GetValue() <= fCVal;
+		default: 
+			return bNullIsTrue;
 	}
-
-	return rv;
 }
 

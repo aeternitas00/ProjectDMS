@@ -10,7 +10,9 @@ class UDMSCardContainerComponent;
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_MoveLocatable)
 
-UCLASS(Blueprintable , ClassGroup = (Effect), meta = (DisplayName = "Move Locatable Effect Base"))
+// Simplified move effect for dms spawnable which implements Locatable interface.
+// Get destination only from attribute tagged "Effect.MoveLocatable" of sequence.
+UCLASS(Blueprintable , ClassGroup = (Effect), meta = (DisplayName = "ED Move Locatable Base"))
 class PROJECTDMSGAME_API UDMSEffect_MoveLocatable : public UDMSEffectDefinition
 {
 	GENERATED_BODY()

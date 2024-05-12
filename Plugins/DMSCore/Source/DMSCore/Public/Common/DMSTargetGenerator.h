@@ -87,8 +87,8 @@ public:
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
-// Return caller if it is actor, if caller is AE, return applying target of AE.
-UCLASS()
+// Return caller if it is DMS Spawnable, if caller is AE, return applying target of AE.
+UCLASS(meta=(DisplayName="DMSTarget Generator Caller as Spawnable"))
 class DMSCORE_API UDMSTargetGenerator_CallerAsActor : public UDMSTargetGenerator
 {
 	GENERATED_BODY()
@@ -114,6 +114,24 @@ class DMSCORE_API UDMSTargetGenerator_OwnerOfCaller : public UDMSTargetGenerator
 public:
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
+
+// Sort of nesting?
+UCLASS()
+class DMSCORE_API UDMSTargetGenerator_UseTGAsCaller: public UDMSTargetGenerator
+{
+	GENERATED_BODY()
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	TObjectPtr<UDMSTargetGenerator> CallerTG;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	TObjectPtr<UDMSTargetGenerator> ResultTG;
+
+public:
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};
+
 
 UCLASS()
 class DMSCORE_API UDMSTargetGenerator_FromAttribute: public UDMSTargetGenerator

@@ -97,3 +97,14 @@ TArray<UObject*> UDMSTargetGenerator_FromAttribute::GetTargets_Implementation(UO
 
 	return rv;
 }
+
+TArray<UObject*> UDMSTargetGenerator_UseTGAsCaller::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
+{
+	TArray<UObject*> rv;
+	auto NewCallers= CallerTG->GetTargets(Caller,CurrentSequence);
+
+	for(auto& NewCaller : NewCallers){
+		rv.Append(ResultTG->GetTargets(NewCaller,CurrentSequence));
+	}
+	return rv;
+}

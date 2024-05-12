@@ -88,10 +88,9 @@ void UDMSEIManagerComponent::SetupOwnEffect(UDMSEffectSet* EffectSet,const FGame
 
 	for (auto& EffectWrapper : EffectNodes)
 	{
-		auto Effect = EffectWrapper->GetEffectNode();
-
-		if (Effect->Conditions == nullptr)
-			{DMS_LOG_SIMPLE(TEXT("NO CONDITION"));continue;}
+		auto Effect = EffectWrapper ? EffectWrapper->GetEffectNode() : nullptr;
+		if (!Effect || Effect->Conditions == nullptr)
+			{DMS_LOG_SIMPLE(TEXT("Invalid Effect or NO CONDITION"));continue;}
 
 		auto AE = EH->CreatePersistentActiveEffect(GetOwner(), GetOwnerAsInterface()->Execute_GetOwningPlayer(GetOwner()), GetOwner(), Effect);
 

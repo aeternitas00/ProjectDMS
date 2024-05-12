@@ -14,7 +14,7 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute_Revert);
  *	Base for effects that change value of attributes.
  *	Implementing the GenerateModifier function allows implementing 'how to adjust attributes' in various ways."
  */
-UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect Base"))
+UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, ClassGroup = (Effect), meta = (DisplayName = "ED Mod Attribute Base"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt: public UDMSEffectDefinition
 {
 	GENERATED_BODY()
@@ -68,7 +68,7 @@ public:
 /**
  *  Generate modifier with static value. ( it will never change )
  */
-UCLASS(ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Static"))
+UCLASS(ClassGroup = (Effect), meta = (DisplayName = "ED Mod Attribute : Static"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_Static : public UDMSEffect_ModAtt
 {
 	GENERATED_BODY()
@@ -118,7 +118,7 @@ enum class EDMSAttributeSourceFlag : uint8
 /** 
  * Creating modifiers with some other attribute as value ( most common method )
  */
-UCLASS(ClassGroup = (Effect), meta = (DisplayName = "Mod Attribute Effect : Value From Attribute"))
+UCLASS(ClassGroup = (Effect), meta = (DisplayName = "ED Mod Attribute : Value From Attribute"))
 class PROJECTDMSGAME_API UDMSEffect_ModAtt_FromAttribute : public UDMSEffect_ModAtt
 {
 	GENERATED_BODY()

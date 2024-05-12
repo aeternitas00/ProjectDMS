@@ -4,13 +4,17 @@
 #include "Location/DMSLocationBase.h"
 #include "Scenario/DMSScenarioData.h"
 #include "Location/DMSLocationData.h"
+#include "Card/DMSCardManagerComponent.h"
 #include "Common/DMSGameTags.h"
 #include "Effect/DMSEIManagerComponent.h"
 
 ADMSLocationBase::ADMSLocationBase(const FObjectInitializer& ObjectInitializer):ADMSEffectorActorBase(ObjectInitializer)
 {
+	ContainerManagerComponent = CreateDefaultSubobject<UDMSContainerManagerComponent>(TEXT("ContainerManagerComponent"));
+
 	//ChildSlot=CreateDefaultSubobject< USceneComponent>("ChildSlot");
 }
+
 
 bool ADMSLocationBase::CanPlayerLeave() const
 {
@@ -25,20 +29,34 @@ bool ADMSLocationBase::CanPlayerEnter() const
 
 bool ADMSLocationBase::MoveActorToDMSLocation(ADMSLocationBase* Dest,const TScriptInterface<IDMSLocatableInterface>& Locatable)
 {
-	UObject* Obj = Locatable.GetObject();
-	
-	auto CurrentLocation = Locatable->Execute_GetCurrentLocation(Obj);
+	//UObject* Obj = Locatable.GetObject();
+	//
+	//auto CurrentLocation = Locatable->Execute_GetCurrentLocation(Obj);
 
-	if (CurrentLocation != nullptr)
-	{
-		CurrentLocation->ActorsOnLocation.Remove(Locatable);
-		CurrentLocation->OnActorLeaved(Locatable);
-	}
+	//if (CurrentLocation != nullptr)
+	//{
+	//	CurrentLocation->ActorsOnLocation.Remove(Locatable);
+	//	CurrentLocation->OnActorLeaved(Locatable);
+	//}
 
-	Locatable->Execute_SetCurrentLocation(Obj, Dest);
+	//Locatable->Execute_SetCurrentLocation(Obj, Dest);
 
-	Dest->OnActorEntered(Locatable);
-	Dest->ActorsOnLocation.Add(Locatable);
+	//Dest->OnActorEntered(Locatable);
+	//Dest->ActorsOnLocation.Add(Locatable);
+
+	//return true;
+
+	// New
+
+	auto DestContainer = Dest->GetComponentByClass<UDMSContainerManagerComponent>()->SearchContainer(FGameplayTag::RequestGameplayTag("Field.Arkham.Location"));
+
+	check(DestContainer);
+
+	auto Spawnable = Cast<ADMSSpawnableBase>(Locatable.GetObject());
+
+	if (!Spawnable) return false;
+
+	UDMSContainerManagerComponent::MigrateObjects(Spawnable, DestContainer, 0);
 
 	return true;
 }
@@ -47,6 +65,13 @@ void ADMSLocationBase::ConnectLocations(ADMSLocationBase* Start, ADMSLocationBas
 {
 	Start->ConnectingLocations.Add(Dest);
 	if (!IsOneWay)Dest->ConnectingLocations.Add(Start);	
+}
+
+void ADMSLocationBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	ContainerManagerComponent->ConstructContainer(FGameplayTag::RequestGameplayTag("Field.Arkham.Location"),LocContainerClass);
 }
 
 void ADMSLocationBase::OnInitialized_Implementation()

@@ -39,8 +39,8 @@ void UDMSEffect_MoveLocatable::Work_Implementation(ADMSSequence* SourceSequence,
 		return;
 	}
 
-	IDMSLocatableInterface::Execute_LocatingTo(ApplyTarget, Cast<ADMSLocationBase>(DestLocation));
+	bool retval = IDMSLocatableInterface::Execute_LocatingTo(ApplyTarget, Cast<ADMSLocationBase>(DestLocation));
 
-	OnWorkCompleted.ExecuteIfBound(true);
+	OnWorkCompleted.ExecuteIfBound(retval);
 }
 

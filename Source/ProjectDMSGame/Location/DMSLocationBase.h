@@ -7,6 +7,7 @@
 #include "Location/DMSLocatableInterface.h"
 #include "DMSLocationBase.generated.h"
 
+class UDMSContainerManagerComponent;
 class UDMSLocationData;
 
 UENUM(BlueprintType)
@@ -55,6 +56,11 @@ protected:
 	//TObjectPtr<USceneComponent> ChildSlot;
 	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	//TObjectPtr<const UDMSLocationData> LocationData;
+	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
+	TObjectPtr<UDMSContainerManagerComponent> ContainerManagerComponent;
+
+	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+	TSubclassOf<UDMSCardContainerComponent> LocContainerClass;
 
 public:
 	/**
@@ -125,6 +131,7 @@ public:
 
 public:
 	ADMSLocationBase* GetCurrentLocation_Implementation(){return this;}
+	virtual void PostInitializeComponents() override;
 	virtual void OnInitialized_Implementation();
 	bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation){return false;}
 };

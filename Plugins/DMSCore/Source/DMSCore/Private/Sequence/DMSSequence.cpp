@@ -96,6 +96,7 @@ FGameplayTagContainer ADMSSequence::GetSequenceTags()
 	FGameplayTagContainer rv;
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
 	rv.AddTag(GetCurrentProgressTag());
+	if(InstancedStep->bFTFlag) rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger"));
 	return rv;
 }
 

@@ -34,9 +34,15 @@ public:
 	EDMSComparisonOperator Operator;
 
 	/**
+	* Checking attribute's tag.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Condition)
+	FGameplayTagContainer ConditionAttributeTag;
+
+	/**
 	 * Operating value.
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Condition, meta=(DisplayName="Default condition value"))
 	int Value; // float? 
 
 	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const;
