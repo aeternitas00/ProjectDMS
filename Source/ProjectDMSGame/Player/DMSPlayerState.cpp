@@ -132,10 +132,10 @@ UDMSSpawnableContainerComponent* ADMSPlayerState::SearchContainer(const FGamepla
 //}
 
 
-void ADMSPlayerState::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
-{
-	IDMSLocatableInterface::Execute_SetCurrentLocation(CharacterRef, iLoc);
-}
+//void ADMSPlayerState::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
+//{
+//	IDMSLocatableInterface::Execute_SetCurrentLocation(CharacterRef, iLoc);
+//}
 
 ADMSLocationBase* ADMSPlayerState::GetCurrentLocation_Implementation()
 {

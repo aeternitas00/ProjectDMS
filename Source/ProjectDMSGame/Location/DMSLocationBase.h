@@ -60,7 +60,7 @@ protected:
 	TObjectPtr<UDMSContainerManagerComponent> ContainerManagerComponent;
 
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
-	TSubclassOf<UDMSCardContainerComponent> LocContainerClass;
+	TSubclassOf<UDMSSpawnableContainerComponent> LocContainerClass;
 
 public:
 	/**
@@ -84,8 +84,8 @@ public:
 	/**
 	 * Array of locatable actors on this location.
 	 */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TArray<TScriptInterface<IDMSLocatableInterface>> ActorsOnLocation;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere,meta=(DisplayName="Default spawnables on location"))
+	//TArray<TScriptInterface<IDMSLocatableInterface>> ActorsOnLocation;
 
 public:
 	ADMSLocationBase(const FObjectInitializer& ObjectInitializer);
@@ -93,7 +93,9 @@ public:
 	//UFUNCTION(BlueprintCallable)
 	//EDMSLocationState BitOperateWithLocationFlag(const EBitOperatorType& Operator, const EDMSLocationState& inFlag);
 	
-	// Simple state checking functions
+	// Fast get locatable actors on this location.
+	UFUNCTION(BlueprintCallable)
+	TArray<TScriptInterface<IDMSLocatableInterface>> GetActorsOnLocation();
 
 	// return true if player's locatable can enter
 	UFUNCTION(BlueprintCallable,BlueprintPure)
@@ -104,11 +106,11 @@ public:
 	bool CanPlayerLeave() const;
 	
 	// Function that will be executed when an actor enter this location.
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, meta=(DisplayName="On Locatable Enter Loation Container"))
 	void OnActorEntered(const TScriptInterface<IDMSLocatableInterface>& Locatable);
 
 	// Function that will be executed when an actor leave this location.
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, meta=(DisplayName="On Locatable Leave Loation Container"))
 	void OnActorLeaved(const TScriptInterface<IDMSLocatableInterface>& Locatable);
 
 	/**
@@ -133,5 +135,6 @@ public:
 	ADMSLocationBase* GetCurrentLocation_Implementation(){return this;}
 	virtual void PostInitializeComponents() override;
 	virtual void OnInitialized_Implementation();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation){return false;}
 };

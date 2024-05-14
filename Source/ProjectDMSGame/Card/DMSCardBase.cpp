@@ -50,28 +50,28 @@ void ADMSCardBase::SetCardDefinition(const UDMSCardDefinition* iCardDefinition)
 
 
 
-void ADMSCardBase::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
-{
-	//LocationRef = iLoc;
-}
+//void ADMSCardBase::SetCurrentLocation_Implementation(ADMSLocationBase* iLoc)
+//{
+//	//LocationRef = iLoc;
+//}
 
-ADMSLocationBase* ADMSCardBase::GetCurrentLocation_Implementation()
-{
-	return IDMSLocatableInterface::Execute_GetCurrentLocation(Execute_GetOwningPlayer(this));
-}
+//ADMSLocationBase* ADMSCardBase::GetCurrentLocation_Implementation()
+//{
+//	return IDMSLocatableInterface::Execute_GetCurrentLocation(Execute_GetOwningPlayer(this));
+//}
+//
+//int ADMSCardBase::GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject)
+//{
+//	return IDMSLocatableInterface::Execute_GetDistanceWith(Execute_GetOwningPlayer(this), OtherObject);
+//}
 
-int ADMSCardBase::GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject)
-{
-	return IDMSLocatableInterface::Execute_GetDistanceWith(Execute_GetOwningPlayer(this), OtherObject);
-}
-
-bool ADMSCardBase::LocatingTo_Implementation(ADMSLocationBase* TargetLocation)
-{
-	// Add card container component to location?
-	//AttachCardToLocation(iLoc,this);
-
-	return false;
-}
+//bool ADMSCardBase::LocatingTo_Implementation(ADMSLocationBase* TargetLocation)
+//{
+//	// Add card container component to location?
+//	//AttachCardToLocation(iLoc,this);
+//
+//	return false;
+//}
 
 void ADMSCardBase::OnInitialized_Implementation()
 {

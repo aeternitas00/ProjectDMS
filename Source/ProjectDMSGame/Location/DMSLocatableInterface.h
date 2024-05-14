@@ -16,7 +16,9 @@ class UDMSLocatableInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for convinience of using specialized effect that moves spawnable to container "Field.Location".
+ * also can be used to connect spawnable to non-containable but conceptually "locatable" game object. 
+ * ( The player's location will follow that of their character, but the 'query to find the current location' must also be able to be executed by the player. In this case, playerstate class can implement the LocatableInterface.)
  */
 class PROJECTDMSGAME_API IDMSLocatableInterface
 {
@@ -24,11 +26,12 @@ class PROJECTDMSGAME_API IDMSLocatableInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void SetCurrentLocation(ADMSLocationBase* iLoc);
+	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	//void SetCurrentLocation(ADMSLocationBase* iLoc);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	ADMSLocationBase* GetCurrentLocation();
+	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	int GetDistanceWith(const TScriptInterface<IDMSLocatableInterface>& OtherObject);

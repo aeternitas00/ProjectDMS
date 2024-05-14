@@ -47,8 +47,8 @@ public:
 	void SetupAttributes(const TArray<FDMSAttributeDefinition>& Attributes);
 
 	virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override;
-	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc) { CurrentLocationRef = iLoc; }
-	virtual ADMSLocationBase* GetCurrentLocation_Implementation() { return CurrentLocationRef; }
+	//virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc) { CurrentLocationRef = iLoc; }
+	//virtual ADMSLocationBase* GetCurrentLocation_Implementation() { return CurrentLocationRef; }
 	virtual void OnInitialized_Implementation();
 };
 

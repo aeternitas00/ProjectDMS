@@ -162,7 +162,7 @@ public:
 	// TODO :: Match with BA ?
 	//virtual UDMSEffectSet* GetOwningEffectSet(const FGameplayTag& iSetName) override { return nullptr; }
 
-	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc);
+	//virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc);
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
 	virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);
 	virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);

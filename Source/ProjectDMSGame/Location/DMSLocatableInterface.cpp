@@ -3,7 +3,18 @@
 
 #include "Location/DMSLocatableInterface.h"
 #include "Location/DMSLocationBase.h"
+#include "Common/DMSSpawnableDataBase.h"
 // Add default functionality here for any IDMSLocatableInterface functions that are not pure virtual.
+
+ADMSLocationBase* IDMSLocatableInterface::GetCurrentLocation_Implementation()
+{
+    auto ThisActor = Cast<ADMSSpawnableBase>(this);
+    if (!ThisActor) return nullptr; // Custom implement required
+    if(ThisActor->IsA<ADMSLocationBase>()) return Cast<ADMSLocationBase>(ThisActor);
+    auto Container = ThisActor->GetOwningContainer();
+    auto ContainerOwnerActor = Container? Container->GetTypedOuter<ADMSSpawnableBase>() : nullptr;
+    return ContainerOwnerActor ? Execute_GetCurrentLocation(ContainerOwnerActor) : nullptr;
+}
 
 int IDMSLocatableInterface::GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject)
 {
@@ -17,7 +28,8 @@ int IDMSLocatableInterface::GetDistanceWith_Implementation(const TScriptInterfac
     if(CurrentLoc==nullptr || TargetLoc == nullptr) return -1;
 
     if (CurrentLoc == TargetLoc) return 0;
-    // 거리 구하기
+
+    // 거리 구하기 BFS
     int Distance = 0;
 
     TArray<ADMSLocationBase*> VisitedNodes;
@@ -75,10 +87,5 @@ bool IDMSLocatableInterface::LocatingTo_Implementation(ADMSLocationBase* TargetL
 
     TScriptInterface<IDMSLocatableInterface> Interface(ThisObj);
 
-    if ( INDEX_NONE != TargetLocation->ActorsOnLocation.Find(Interface))
-        return false;
-
-    ADMSLocationBase::MoveActorToDMSLocation(TargetLocation,Interface);
-
-    return true;
+    return ADMSLocationBase::MoveActorToDMSLocation(TargetLocation,Interface);
 }

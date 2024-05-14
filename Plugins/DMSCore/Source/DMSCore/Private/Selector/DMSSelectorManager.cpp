@@ -48,7 +48,7 @@ void UDMSSelectorHandle::CreateSelectorWidget(APlayerController* WidgetOwner)
 {
 	if (Widget != nullptr || WidgetOwner == nullptr) return; 
 	Widget = CreateWidget<UDMSSelectorBase>(WidgetOwner, StoredForm->SelectorClass);
-	Widget->OwnerHandle = this;
+	if (Widget) Widget->OwnerHandle = this;
 }
 
 bool UDMSSelectorHandle::SetupSelector(APlayerController* WidgetOwner)

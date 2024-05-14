@@ -21,7 +21,8 @@ void UDMSContainerManagerComponent::MigrateObjects(UDMSSpawnableContainerCompone
 
 void UDMSContainerManagerComponent::MigrateObjects(ADMSSpawnableBase* Card, UDMSSpawnableContainerComponent* Dest, uint16 DestIdx)
 {
-	Card->GetOwningContainer()->Remove(Card);
+	auto SourceCont = Card->GetOwningContainer();
+	if(SourceCont)SourceCont->Remove(Card);
 	Dest->Insert({Card}, DestIdx);
 }
 

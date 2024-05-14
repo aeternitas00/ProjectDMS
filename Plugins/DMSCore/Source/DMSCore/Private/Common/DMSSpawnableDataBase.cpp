@@ -72,7 +72,7 @@ void UDMSSpawnableContainerComponent::Insert(TArray<ADMSSpawnableBase*> iContain
 {
 	uint16 Dest = Idx;
 	if (SpawnableList.Actors.Num() < Dest) Dest= SpawnableList.Actors.Num();
-	for (auto Card : iContainer) Card->SetOwningContainer(this);
+	for (auto Spawnable : iContainer) Spawnable->SetOwningContainer(this);
 	SpawnableList.Actors.Insert(iContainer,Dest);
 	OnContainerAdded(iContainer);
 }

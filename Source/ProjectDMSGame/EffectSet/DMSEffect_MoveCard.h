@@ -10,7 +10,7 @@ class UDMSCardContainerComponent;
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_MoveCard)
 
-UCLASS(Blueprintable , ClassGroup = (Effect), meta = (DisplayName = "ED Move Spawnablet to container"))
+UCLASS(Blueprintable , ClassGroup = (Effect), meta = (DisplayName = "ED Move Spawnable to container"))
 class PROJECTDMSGAME_API UDMSEffect_MoveCard : public UDMSEffectDefinition
 {
 	GENERATED_BODY()

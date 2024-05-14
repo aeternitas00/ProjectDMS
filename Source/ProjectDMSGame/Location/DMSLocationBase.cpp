@@ -11,7 +11,7 @@
 ADMSLocationBase::ADMSLocationBase(const FObjectInitializer& ObjectInitializer):ADMSEffectorActorBase(ObjectInitializer)
 {
 	ContainerManagerComponent = CreateDefaultSubobject<UDMSContainerManagerComponent>(TEXT("ContainerManagerComponent"));
-
+	//LocContainerClass=Card
 	//ChildSlot=CreateDefaultSubobject< USceneComponent>("ChildSlot");
 }
 
@@ -22,7 +22,17 @@ bool ADMSLocationBase::CanPlayerLeave() const
 
 }
 
-bool ADMSLocationBase::CanPlayerEnter() const 
+TArray<TScriptInterface<IDMSLocatableInterface>> ADMSLocationBase::GetActorsOnLocation()
+{
+	TArray<TScriptInterface<IDMSLocatableInterface>> rv;
+	auto Cont = ContainerManagerComponent->SearchContainer(FGameplayTag::RequestGameplayTag("Field.Arkham.Location"));
+	if(Cont)
+		for(auto& Loctb : Cont->GetObjectsRef())
+			if(Loctb->Implements<UDMSLocatableInterface>()) rv.Add(Loctb);		
+	return rv;
+}
+
+bool ADMSLocationBase::CanPlayerEnter() const
 {
 	return (LocationStateFlag & EDMSLocationState::LS_BlockPlayerEnter) == EDMSLocationState::LS_Default;
 }
@@ -53,11 +63,16 @@ bool ADMSLocationBase::MoveActorToDMSLocation(ADMSLocationBase* Dest,const TScri
 	check(DestContainer);
 
 	auto Spawnable = Cast<ADMSSpawnableBase>(Locatable.GetObject());
-
 	if (!Spawnable) return false;
-
 	UDMSContainerManagerComponent::MigrateObjects(Spawnable, DestContainer, 0);
-
+	// 컨테이너의 이벤트로 옮겨짐
+	//auto CurrentContainer = Spawnable->GetOwningContainer();
+	//ADMSLocationBase* CurrentLocation = CurrentContainer ? CurrentContainer->GetTypedOuter<ADMSLocationBase>() : nullptr;
+	//if(CurrentLocation != Dest) 
+	//{
+	//	if(CurrentLocation) CurrentLocation->OnActorLeaved(Locatable);
+	//	Dest->OnActorEntered(Locatable);
+	//}
 	return true;
 }
 
@@ -70,7 +85,7 @@ void ADMSLocationBase::ConnectLocations(ADMSLocationBase* Start, ADMSLocationBas
 void ADMSLocationBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
+	if(LocContainerClass)
 	ContainerManagerComponent->ConstructContainer(FGameplayTag::RequestGameplayTag("Field.Arkham.Location"),LocContainerClass);
 }
 
@@ -83,4 +98,11 @@ void ADMSLocationBase::OnInitialized_Implementation()
 	auto LocData = Cast<UDMSLocationData>(OriginalData);
 	
 	EIManagerComponent->SetupOwnEffect(LocData->LocationEffect, TAG_DMS_EffectType_Effect);
+}
+
+void ADMSLocationBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADMSLocationBase, ContainerManagerComponent);
 }

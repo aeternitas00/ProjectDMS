@@ -74,9 +74,9 @@ public:
 	virtual void OnInitialized_Implementation() override;
 	//virtual void PostInitialize_Implementation() override;
 
-	virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc);
-	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
-	virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);
-	virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);
+	//virtual void SetCurrentLocation_Implementation(ADMSLocationBase* iLoc);
+	//virtual bool LocatingTo_Implementation(ADMSLocationBase* TargetLocation);
+	//virtual ADMSLocationBase* GetCurrentLocation_Implementation();
+	//virtual int GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject);	
 	//virtual void ResetPreviewObject() override;
 };

@@ -47,7 +47,7 @@ protected:
 	/**
 	* Card container that owning this card.
 	*/
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 	TObjectPtr<UDMSSpawnableContainerComponent> OwningContainer;
 public:
 	/**
@@ -180,6 +180,7 @@ public:
 	// Get Copy of cards array
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (CompactNodeTitle = "Objects"))
 	TArray<ADMSSpawnableBase*> GetObjects() {return SpawnableList.Actors;}
+	TArray<ADMSSpawnableBase*>& GetObjectsRef() {return SpawnableList.Actors;}
 
 	// Get [Num] cards from container. if [Num] is greater than container's size, returns entire container.
 	UFUNCTION(BlueprintCallable, BlueprintPure)
