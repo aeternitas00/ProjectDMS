@@ -12,8 +12,8 @@ ADMSLocationBase* IDMSLocatableInterface::GetCurrentLocation_Implementation()
     if (!ThisActor) return nullptr; // Custom implement required
     if(ThisActor->IsA<ADMSLocationBase>()) return Cast<ADMSLocationBase>(ThisActor);
     auto Container = ThisActor->GetOwningContainer();
-    auto ContainerOwnerActor = Container? Container->GetTypedOuter<ADMSSpawnableBase>() : nullptr;
-    return ContainerOwnerActor ? Execute_GetCurrentLocation(ContainerOwnerActor) : nullptr;
+    auto ContainerOwnerActor = Container ? Container->GetOwner() : nullptr;
+    return ContainerOwnerActor && ContainerOwnerActor->Implements<UDMSLocatableInterface>() ? Execute_GetCurrentLocation(ContainerOwnerActor) : nullptr;
 }
 
 int IDMSLocatableInterface::GetDistanceWith_Implementation(const TScriptInterface<IDMSLocatableInterface>& OtherObject)

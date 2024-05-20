@@ -23,12 +23,13 @@ class UDMSLocatableInterface : public UInterface
 class PROJECTDMSGAME_API IDMSLocatableInterface
 {
 	GENERATED_BODY()
-
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	//void SetCurrentLocation(ADMSLocationBase* iLoc);
 
+	// Get current location of locatable with chained container.
+	// if owner of the current located container implements the LocatableInterface, return container owner's current location.
+	// Current location of the DMSLocationBase is itself.
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	ADMSLocationBase* GetCurrentLocation();
 	virtual ADMSLocationBase* GetCurrentLocation_Implementation();
