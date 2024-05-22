@@ -22,7 +22,6 @@ UDMSAssetManager& UDMSAssetManager::Get()
 	return *NewObject<UDMSAssetManager>();
 }
 
-
 UDMSCardDefinition* UDMSAssetManager::ForceLoadCard(const FPrimaryAssetId& PrimaryAssetId, bool bLogWarning)
 {
 	FSoftObjectPath Path = GetPrimaryAssetPath(PrimaryAssetId);

@@ -37,18 +37,12 @@ void UDMSSequenceStepDefinition_SkillTest::SetupTargets(UDMSSequenceStep* Instan
 
 FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetSeqAttributeTag_Tester()
 {
-	FGameplayTagContainer rv = DefaultSkillTestData.StatName;	
-	rv.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Tester"));
-
-	return rv;
+	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.SkillValue").GetSingleTagContainer();
 }
 
 FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetSeqAttributeTag_TestTarget()
 {
-	FGameplayTagContainer rv = DefaultSkillTestData.TargetStatName.IsEmpty() ? DefaultSkillTestData.StatName : DefaultSkillTestData.TargetStatName;
-	rv.AddTagFast(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget"));
-
-	return rv;
+	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Difficulty").GetSingleTagContainer();
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* InstancedStep)
@@ -74,9 +68,9 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 	if(	SeqAttTester ) AttVTester = Cast<UDMSAttributeValue_Object>(SeqAttTester->AttributeValue);
 	if( AttVTester ) Tester = Cast<AActor>(AttVTester->GetValue()[0]);
 	// No specific tester ==> Use source object as tester.
-	if( !Tester ) Tester = InstancedStep->OwnerSequence->GetSourceObject();
+	if( !Tester ) Tester = InstancedStep->OwnerSequence->GetSourcePlayer();
 
-	UDMSAttributeValue_Numeric* TesterAttribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.StatName));
+	UDMSAttributeValue_Numeric* TesterAttribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.StatName)->AttributeValue);
 	if ( TesterAttribute ) SeqTesterValue->SetValue(TesterAttribute->GetValue());
 	
 	auto SeqAttTestTarget = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget").GetSingleTagContainer(), true);
@@ -87,7 +81,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 	// No specific test target ==> Use first sequence's main target as test target.
 	if( !TestTarget ) TestTarget = Cast<AActor>(InstancedStep->OwnerSequence->GetTargets()[0].GetObject());
 	
-	UDMSAttributeValue_Numeric* TestTargetAttVal  = Cast<UDMSAttributeValue_Numeric>(TestTarget->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.TargetStatName));
+	UDMSAttributeValue_Numeric* TestTargetAttVal  = Cast<UDMSAttributeValue_Numeric>(TestTarget->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.TargetStatName)->AttributeValue);
 	if ( TestTargetAttVal ) SeqTestTargetValue->SetValue(TestTargetAttVal->GetValue());
 	
 	AttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),UDMSAttributeValue_Numeric::StaticClass(), true);
@@ -105,7 +99,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST2(UDMSSequenceStep* Instan
 	BroadcastProgress(InstancedStep,FName(NAME_None),1);
 
 	// FT WINDOW
-	// 오토 석세스 계열 효과는 여기서 ST7까지 점프하는 형태로.
+
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST3(UDMSSequenceStep* InstancedStep)
@@ -128,6 +122,8 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST4(UDMSSequenceStep* Instan
 {
 	// Resolve chaos syombol effects.
 	BroadcastProgress(InstancedStep,FName(NAME_None));
+
+	// 오토 석세스 / 페일 효과는 여기서 난이도 / 스킬 밸류 0으로 고정해버리고 ST6까지 점프하는 형태로.
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST5(UDMSSequenceStep* InstancedStep)
@@ -148,9 +144,10 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST6(UDMSSequenceStep* Instan
 
 	if(!TesterAttribute || !TestTargetAttribute)
 		ResultAttribute->SetValue(0);
-	else 
-		ResultAttribute->SetValue(TestTargetAttribute->GetValue()-TesterAttribute->GetValue());
-
+	else {
+		float Result = TesterAttribute->GetValue() - TestTargetAttribute->GetValue();
+		ResultAttribute->SetValue(Result);
+	}
 	BroadcastProgress(InstancedStep,FName(NAME_None));
 }
 

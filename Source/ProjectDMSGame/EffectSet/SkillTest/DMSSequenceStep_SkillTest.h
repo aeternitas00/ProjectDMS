@@ -22,6 +22,7 @@ struct FDMSSkillTestData
 {
 	GENERATED_BODY()
 
+	// NOTE :: OR ARRAY of tag cont?
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FGameplayTagContainer StatName;
 	
