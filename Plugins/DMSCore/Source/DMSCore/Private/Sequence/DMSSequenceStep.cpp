@@ -74,10 +74,22 @@ bool UDMSSequenceStep::IsProgressQueueFinished()
 	return (CurrentProgressIndex+1)==ProgressExecutors.Num();
 }
 
-FGameplayTag UDMSSequenceStep::GetCurrentProgressTag()
+FGameplayTag UDMSSequenceStep::GetCurrentProgressExactTag()
 {
 	return ProgressExecutors[CurrentProgressIndex].ExactTag;
 }
+
+FGameplayTagContainer UDMSSequenceStep::GetCurrentProgressTags()
+{
+	FGameplayTagContainer rv = ProgressExecutors[CurrentProgressIndex].ExactTag.GetSingleTagContainer();
+	rv.AppendTags(ProgressExecutors[CurrentProgressIndex].ExecutingStep->GetStepTag(this));
+	return rv;
+}
+
+//TArray<UDMSEffectDefinition*> UDMSSequenceStep::GetCurrentResolveContext(ADMSActiveEffect* CurrentAE)
+//{
+//	return ProgressExecutors[CurrentProgressIndex].ExecutingStep->GetStepResolvingContext(CurrentAE, this);
+//}
 
 void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName, bool bFT)
 {
@@ -89,7 +101,7 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	FSimpleDelegate AfterBroadcast;
 	if( AfterFunctionName.IsNone() ) {
 		AfterBroadcast.BindLambda( [=](){ 
-			FGameplayTag seqtag = InstancedStep->OwnerSequence->GetCurrentProgressTag();
+			FGameplayTag seqtag = InstancedStep->GetCurrentProgressExactTag();
 			InstancedStep->bFTFlag=0;
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
 			InstancedStep->ProgressEnd(true);
@@ -98,7 +110,7 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	}
 	else{
 		AfterBroadcast.BindLambda( [=](){
-			FGameplayTag seqtag = InstancedStep->OwnerSequence->GetCurrentProgressTag();
+			FGameplayTag seqtag = InstancedStep->GetCurrentProgressExactTag();
 			InstancedStep->bFTFlag=0;
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
 			UDMSSequenceStep* Param = InstancedStep;

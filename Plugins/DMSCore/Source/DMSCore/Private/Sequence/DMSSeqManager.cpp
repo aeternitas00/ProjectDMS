@@ -59,10 +59,12 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 			RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
 		}
 		else if ( CurrentSequence != nullptr )
-			CurrentSequence->AttachChildSequence(Sequence);
+			Sequence->ParentSequence = CurrentSequence;
+			//CurrentSequence->AttachChildSequence(Sequence);
 	}
 	else {
-		ParentSequence->AttachChildSequence(Sequence);
+		Sequence->ParentSequence = ParentSequence;
+		//ParentSequence->AttachChildSequence(Sequence);
 	}
 
 	if ( LinkAttributeWithParent ) Sequence->AttributeComponent->ParentComponent = Sequence->ParentSequence->AttributeComponent;
@@ -87,16 +89,16 @@ void UDMSSeqManager::RequestAppendNewSequence_Implementation(
 void UDMSSeqManager::RemoveSequence_Implementation(ADMSSequence* Sequence)
 {
 	if (Sequence==RootSequence) {
-		RootSequence = Sequence->ChildSequence!=nullptr ? Sequence->ChildSequence : nullptr ;
+		RootSequence = Sequence->ActiveChildSequence!=nullptr ? Sequence->ActiveChildSequence : nullptr ;
 		return;
 	}
 	
 	if (Sequence->ParentSequence != nullptr){
-		Sequence->ParentSequence->ChildSequence = Sequence->ChildSequence != nullptr ? Sequence->ChildSequence : nullptr;
+		Sequence->ParentSequence->ActiveChildSequence = Sequence->ActiveChildSequence != nullptr ? Sequence->ActiveChildSequence : nullptr;
 	}
 
-	if (Sequence->ChildSequence != nullptr) {
-		Sequence->ChildSequence->ParentSequence = Sequence->ParentSequence != nullptr ? Sequence->ParentSequence : nullptr;
+	if (Sequence->ActiveChildSequence != nullptr) {
+		Sequence->ActiveChildSequence->ParentSequence = Sequence->ParentSequence != nullptr ? Sequence->ParentSequence : nullptr;
 	}
 }
 
@@ -117,7 +119,7 @@ void UDMSSeqManager::RunSequence_Implementation(ADMSSequence* iSeq)
 	// 미리 시퀀스 타겟을 지정하지 않았고, 타겟 제너레이터까지 없으면 따로 AE를 만들지 않음. 스텝 진행중에 별도로 타겟을 정하는 과정이 없으면 타겟 미지정인 상태로 시퀀스 진행.
 	if(iSeq->OriginalEffectNode->TargetGenerator != nullptr || iSeq->GetTargets().Num() > 0)
 		EH->CreateApplyingActiveEffect(iSeq, iSeq->OriginalEffectNode);
-	//CurrentSequence->RunStepQueue();
+
 	CurrentSequence->RunStepProgressQueue();
 }
 
@@ -158,7 +160,7 @@ void UDMSSeqManager::CompleteSequence_Implementation(ADMSSequence* Sequence, boo
 	}
 	else{
 		CurrentSequence = Sequence->ParentSequence;
-		CurrentSequence->ChildSequence=nullptr;
+		CurrentSequence->ActiveChildSequence=nullptr;
 	}
 }
 

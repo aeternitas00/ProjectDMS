@@ -34,7 +34,6 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnExecuteCompleted, bool, Succeeded);
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExecuteCompleted, bool, Succeeded);
 
 
-
 /**
  * 	========================================
  *
@@ -112,7 +111,21 @@ public:
 	//virtual void Serialize(FArchive& Ar) override;
 };
 
-
+//USTRUCT(BlueprintType)
+//struct DMSCORE_API FDMSConditionedApplyDefinitions
+//{
+//	GENERATED_BODY()
+//
+//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
+//	TObjectPtr<UDMSConditionCombiner> ApplyConditions;
+//
+//	/**
+//	* Actual effects that activatable in that timing
+//	* Works in order to 0~n
+//	*/
+//	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
+//	TArray<TObjectPtr<UDMSEffectDefinition>> EffectDefinitions;
+//};
 
 /**
  *
@@ -218,6 +231,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
 	TArray<TObjectPtr<UDMSEffectDefinition>> EffectDefinitions;
 
+	//UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = Effect)
+	//TArray<FDMSConditionedApplyDefinitions> ConditionedEffectDefinitions;
+
 	/**
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
 	 * The EffectNode uses this target generator to set the target of sequence by itself.
@@ -255,6 +271,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSEffectNodeWrapper> ChildEffect;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TArray<TObjectPtr<UDMSEffectNodeWrapper>> ChildEffects;
 
 
 	//=================== Step ===================//

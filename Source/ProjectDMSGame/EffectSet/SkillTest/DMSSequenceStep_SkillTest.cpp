@@ -62,26 +62,24 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 		InstancedStep->ProgressEnd(false);
 		return;
 	}
-	auto SeqAttTester = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Tester").GetSingleTagContainer(), true);
+	auto SeqAttTester = AttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Tester").GetSingleTagContainer(), true);
 	UDMSAttributeValue_Object* AttVTester = nullptr;
 	AActor* Tester = nullptr;
-	if(	SeqAttTester ) AttVTester = Cast<UDMSAttributeValue_Object>(SeqAttTester->AttributeValue);
-	if( AttVTester ) Tester = Cast<AActor>(AttVTester->GetValue()[0]);
+	if( SeqAttTester ) Tester = Cast<AActor>(SeqAttTester->GetValue()[0]);
 	// No specific tester ==> Use source object as tester.
 	if( !Tester ) Tester = InstancedStep->OwnerSequence->GetSourcePlayer();
 
-	UDMSAttributeValue_Numeric* TesterAttribute = Cast<UDMSAttributeValue_Numeric>(Tester->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.StatName)->AttributeValue);
+	UDMSAttributeValue_Numeric* TesterAttribute = Tester->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(DefaultSkillTestData.StatName);
 	if ( TesterAttribute ) SeqTesterValue->SetValue(TesterAttribute->GetValue());
 	
-	auto SeqAttTestTarget = AttComp->GetAttribute(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget").GetSingleTagContainer(), true);
+	auto SeqAttTestTarget = AttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.TestTarget").GetSingleTagContainer(), true);
 	UDMSAttributeValue_Object* AttVTestTarget  = nullptr;
 	AActor* TestTarget  = nullptr;
-	if(	SeqAttTestTarget ) AttVTestTarget = Cast<UDMSAttributeValue_Object>(SeqAttTestTarget->AttributeValue);
-	if( AttVTestTarget ) TestTarget = Cast<AActor>(AttVTestTarget->GetValue()[0]);
+	if( SeqAttTestTarget ) TestTarget = Cast<AActor>(SeqAttTestTarget->GetValue()[0]);
 	// No specific test target ==> Use first sequence's main target as test target.
 	if( !TestTarget ) TestTarget = Cast<AActor>(InstancedStep->OwnerSequence->GetTargets()[0].GetObject());
 	
-	UDMSAttributeValue_Numeric* TestTargetAttVal  = Cast<UDMSAttributeValue_Numeric>(TestTarget->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(DefaultSkillTestData.TargetStatName)->AttributeValue);
+	UDMSAttributeValue_Numeric* TestTargetAttVal  = TestTarget->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(DefaultSkillTestData.TargetStatName);
 	if ( TestTargetAttVal ) SeqTestTargetValue->SetValue(TestTargetAttVal->GetValue());
 	
 	AttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),UDMSAttributeValue_Numeric::StaticClass(), true);
@@ -162,7 +160,19 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST7(UDMSSequenceStep* Instan
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST8(UDMSSequenceStep* InstancedStep)
 {
 	// skill test ends.
-	BroadcastProgress(InstancedStep,FName(NAME_None));
+
+	BroadcastProgress(InstancedStep,FName("PostSkillTest"));
+}
+
+void UDMSSequenceStepDefinition_SkillTest::PostSkillTest(UDMSSequenceStep* InstancedStep)
+{
+	auto SeqAttComp = InstancedStep->OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
+	auto ResultAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),true);
+
+	if(ResultAttribute->GetValue() >= DefaultSkillTestData.MinResultForTestSuccess)
+		InstancedStep->ProgressEnd(true);
+	else
+		InstancedStep->ProgressEnd(!DefaultSkillTestData.bStopSequenceIfTestFailed);
 }
 
 FGameplayTag UDMSSequenceStepDefinition_SkillTest::GetPureStepTag_Implementation() const
@@ -170,7 +180,7 @@ FGameplayTag UDMSSequenceStepDefinition_SkillTest::GetPureStepTag_Implementation
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest");
 }
 
-FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetStepTag_Implementation() const
+FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(DefaultSkillTestData.StatName);

@@ -50,4 +50,18 @@ public:
 	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const;
 };
 
+UCLASS(Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "CO Sequence State Condition"))
+class DMSCORE_API UDMSSeqStateCondition : public UDMSConditionObject
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
+	TSet<EDMSSequenceState> SuccessCondition;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Condition)
+	bool CheckParent;
+
+	virtual bool CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const;
+};
 

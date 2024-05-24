@@ -99,3 +99,4 @@ public:
 
 	virtual bool SingleCheckCondition_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence, UObject* Target) const;
 };
+

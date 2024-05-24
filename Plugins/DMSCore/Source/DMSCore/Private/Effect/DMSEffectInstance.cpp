@@ -35,13 +35,14 @@ void ADMSActiveEffect::Apply(ADMSSequence* SourceSequence, const FResolveIterati
 {
 	//DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
 
+	//if (EffectNode->ConditionedEffectDefinitions.Num() == 0) {
 	if (EffectNode->EffectDefinitions.Num() == 0) {
 		OnApplyCompleted.ExecuteIfBound(SourceSequence,true);
 		return;
 	}
 
 	// If any of the Effects is predicted to fail, the sequence is handled as a failure.
-	for (auto CurrentDef : EffectNode->EffectDefinitions)
+	for (auto& CurrentDef : EffectNode->EffectDefinitions)
 	{
 		if (!CurrentDef->Predict(SourceSequence, this)){
 			OnApplyCompleted.ExecuteIfBound(SourceSequence,false);
@@ -51,9 +52,8 @@ void ADMSActiveEffect::Apply(ADMSSequence* SourceSequence, const FResolveIterati
 
 	UDMSEffectApplyWorker* NewWorker = NewObject<UDMSEffectApplyWorker>(this);
 	ApplyWorkers.Add(NewWorker);
-	NewWorker->SetupWorker(SourceSequence,this, OnApplyCompleted);
+	NewWorker->SetupWorker(SourceSequence,this,OnApplyCompleted);
 	NewWorker->ApplyNextEffectDef(true);
-
 }
 
 IDMSEffectorInterface* ADMSActiveEffect::GetApplyTargetInterface()
@@ -94,10 +94,6 @@ void ADMSActiveEffect::InheritSequenceDatas(ADMSSequence* iSeq)
 	SourcePlayer=iSeq->GetSourcePlayer(); SourceObject = iSeq->GetSourceObject(); 
 
 	AttributeComponent->ParentComponent = iSeq->GetComponentByClass<UDMSAttributeComponent>();
-	//if (DataSet==nullptr) DataSet = NewObject<UDMSDataObjectSet>(this);
-
-	//DataSet->Inherit(iSeq->SequenceDatas);
-	//DataSet->ParentDataSet = iSeq->SequenceDatas;
 }
 
 ADMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, ADMSSequence* ChainingSequence) 
@@ -204,11 +200,12 @@ void ADMSActiveEffect::Serialize(FArchive& Ar)
 
 }
 
-void UDMSEffectApplyWorker::SetupWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted)
+void UDMSEffectApplyWorker::SetupWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI,const FOnApplyCompleted& iOnApplyCompleted)
 {
 	SourceSequence = iSequence;
 	OwnerInstance = iEI;
 	ApplyingEffect = iEI->EffectNode;
+	//ApplyingEffectDefinitions = iEDs;
 	CurrentEDIndex = 0;
 	CompletedDelegate = iOnApplyCompleted;
 	IteratingDelegate.BindDynamic(this, &UDMSEffectApplyWorker::ApplyNextEffectDef);
@@ -227,6 +224,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 		return;
 	}
 
+	//if (CurrentEDIndex == ApplyingEffectDefinitions.Num()) {
 	if (CurrentEDIndex == ApplyingEffect->EffectDefinitions.Num()) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate ===="),*SourceSequence->GetName());
 		// 여기서 AEState를 원상복구 할시 During notify부터 부착된 이펙트들이 다시 노티파이 콜을 받을 수 있는 상태가 되므로 조정이 필요함.
@@ -236,6 +234,7 @@ void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
 		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate closed ===="),*SourceSequence->GetName());
 	}
 	else {
+		//CurrentDef = ApplyingEffectDefinitions[CurrentEDIndex++];
 		CurrentDef = ApplyingEffect->EffectDefinitions[CurrentEDIndex++];
 		FString DebugStr = CurrentDef->GetEffectTags().ToString();
 		DMS_LOG_SIMPLE(TEXT("==== %s : ApplyNextEffectDef [%s] ===="),*SourceSequence->GetName(),*DebugStr);

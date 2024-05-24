@@ -3,8 +3,10 @@
 
 #include "Sequence/DMSSequence.h"
 #include "Sequence/DMSSequenceStep.h"
+#include "Conditions/DMSConditionObject.h"
 #include "Effect/DMSEIManagerComponent.h"
 #include "Effect/DMSEffectInstance.h"
+#include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Attribute/DMSAttributeComponent.h"
 #include "Effect/DMSEffectHandler.h"
@@ -26,14 +28,24 @@ ADMSSequence::ADMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr), bTa
 	EffectManagerComponent->SetIsReplicated(true);
 
 	ParentSequence = nullptr;
-	ChildSequence = nullptr;
+	ActiveChildSequence = nullptr;
 	InstancedStep = CreateDefaultSubobject<UDMSSequenceStep>(FName("StepInstance"));
 }
 
-FGameplayTag ADMSSequence::GetCurrentProgressTag()
+FGameplayTag ADMSSequence::GetCurrentProgressExactTag()
 {
-	return InstancedStep->GetCurrentProgressTag();
+	return InstancedStep->GetCurrentProgressExactTag();
 }
+
+FGameplayTagContainer ADMSSequence::GetCurrentProgressTags()
+{
+	return InstancedStep->GetCurrentProgressTags();
+}
+
+//TArray<UDMSEffectDefinition*> ADMSSequence::GetCurrentResolveContext(ADMSActiveEffect* CurrentAE)
+//{
+//	return InstancedStep->GetCurrentResolveContext(CurrentAE);
+//}
 
 AActor* ADMSSequence::GetSourceObject() const
 {
@@ -59,25 +71,9 @@ bool ADMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
 	return rv;
 }
 
-
 bool ADMSSequence::IsChainableSequence()
 {
 	return OriginalEffectNode->bIsChainableEffect;
-}
-
-void ADMSSequence::AddToOnSequenceInitiated(const FOnSequenceInitiatedDynamic_Signature& iOnSequenceInitiated)
-{
-	OnSequenceInitiated_Dynamic.Add(iOnSequenceInitiated);
-}
-
-void ADMSSequence::AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& iOnSequenceFinished)
-{
-	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
-
-	if (OnSequenceFinishedDynamic.IsBound()) {
-		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
-	}
-	OnSequenceFinishedDynamic.Add(iOnSequenceFinished);
 }
 
 void ADMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
@@ -90,47 +86,19 @@ void ADMSSequence::RunStepProgressQueue()
 	InstancedStep->RunStepProgressQueue();
 }
 
+bool ADMSSequence::IsSequenceActive()
+{
+	return InstancedStep->IsProgressQueueFinished();
+}
 
 FGameplayTagContainer ADMSSequence::GetSequenceTags()
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
-	rv.AddTag(GetCurrentProgressTag());
+	rv.AddTag(GetCurrentProgressExactTag());
+	//rv.AppendTags(GetCurrentProgressTags());
 	if(InstancedStep->bFTFlag) rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger"));
 	return rv;
-}
-
-void ADMSSequence::AttachChildSequence(ADMSSequence* iSeq) 
-{
-	if ( ChildSequence != nullptr && ChildSequence->IsSequenceActive() )
-	{
-		DMS_LOG_DETAIL(Warning,TEXT("==== Attempted to attach a child to sequence that already has children.  ===="))
-	}
-	iSeq->ParentSequence = this;
-	ChildSequence = iSeq;
-}
-
-void ADMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
-{
-	for ( auto& TargetToEI : TargetAndEIs )
-	{ 
-		for (auto& EI : TargetToEI.EIs) EI->DetachFromOwner();
-	}
-	TargetAndEIs.Reset();
-
-	for (auto& Target : iTargets) 
-	{
-		if ( Target.GetInterface() == nullptr ) {
-			DMS_LOG_SIMPLE(TEXT("Sequence::SetTarget _ iTarget Is Not Effector [Name : %s]"),*Target.GetObject()->GetName());
-			continue;
-		}
-		TargetAndEIs.Add(FDMSSequenceEIStorage(Target));
-	}
-}
-
-bool ADMSSequence::IsSequenceActive()
-{
-	return InstancedStep->IsProgressQueueFinished();
 }
 
 TArray<TScriptInterface<IDMSEffectorInterface>> ADMSSequence::GetTargets() const
@@ -155,10 +123,54 @@ TArray<ADMSActiveEffect*> ADMSSequence::GetAllActiveEffects()
 	return rv;
 }
 
+void ADMSSequence::AttachChildSequence(ADMSSequence* iSeq) 
+{
+	if ( ActiveChildSequence != nullptr && ActiveChildSequence->IsSequenceActive() )
+	{
+		DMS_LOG_DETAIL(Warning,TEXT("==== Attempted to attach a child to sequence that already has children.  ===="))
+	}
+	//iSeq->ParentSequence = this;
+	ActiveChildSequence = iSeq;
+}
 
+void ADMSSequence::SetTarget(TArray<TScriptInterface<IDMSEffectorInterface>> iTargets)
+{
+	for ( auto& TargetToEI : TargetAndEIs )
+	{ 
+		for (auto& EI : TargetToEI.EIs) EI->DetachFromOwner();
+	}
+	TargetAndEIs.Reset();
+
+	for (auto& Target : iTargets) 
+	{
+		if ( Target.GetInterface() == nullptr ) {
+			DMS_LOG_SIMPLE(TEXT("Sequence::SetTarget _ iTarget Is Not Effector [Name : %s]"),*Target.GetObject()->GetName());
+			continue;
+		}
+		TargetAndEIs.Add(FDMSSequenceEIStorage(Target));
+	}
+}
+
+void ADMSSequence::AddToOnSequenceInitiated(const FOnSequenceInitiatedDynamic_Signature& iOnSequenceInitiated)
+{
+	OnSequenceInitiated_Dynamic.Add(iOnSequenceInitiated);
+}
+
+void ADMSSequence::AddToOnSequenceFinished(const FOnSequenceFinishedDynamic_Signature& iOnSequenceFinished)
+{
+	DMS_LOG_SIMPLE(TEXT("==== %s : ADD TO SEQ FINISHIED ===="), *GetName());
+
+	if (OnSequenceFinishedDynamic.IsBound()) {
+		DMS_LOG_SIMPLE(TEXT("==== %s : SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
+	}
+	OnSequenceFinishedDynamic.Add(iOnSequenceFinished);
+}
 
 void ADMSSequence::OnSequenceInitiate()
 {
+	if(ParentSequence)
+		ParentSequence->AttachChildSequence(this);
+
 	OnSequenceInitiated.Broadcast();
 	OnSequenceInitiated_Dynamic.Broadcast();	
 	
@@ -189,13 +201,86 @@ void ADMSSequence::OnSequenceFinish(bool Succeeded)
 	MarkAsGarbage();
 }
 
-void ADMSSequence::OnStepQueueCompleted(bool Succeeded)
+void ADMSSequence::AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences, const FSimpleDelegate& iOnChildQueueFinished)
+{
+	for(auto& ChildSeq : iChildSequences)
+		ChildEffectQueue.Enqueue(ChildSeq);
+
+	OnChildEffectQueueCompleted = iOnChildQueueFinished;
+}
+
+void ADMSSequence::AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects, const FSimpleDelegate& iOnChildQueueFinished)
 {
 	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
+	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager(this); 		check(NotifyManager);
+	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);		check(EffectHandler);
 
-	SeqManager->CompleteSequence(this, Succeeded); 
+	// Run child effect if exist and condition check succeeded.
+	for(auto& lChildEffect : iChildEffects)
+	{
+		if (lChildEffect != nullptr && lChildEffect->GetEffectNode() != nullptr &&
+			lChildEffect->GetEffectNode()->Conditions->CheckCondition(GetSourceObject(), this)) {
 
-	OnSequenceFinish(Succeeded);
+			// Proceed to run child effect sequence.
+			auto ChildNode = lChildEffect->GetEffectNode();
+			// follows parents data. 
+			ADMSSequence* NewSeq = SeqManager->RequestCreateSequence(GetSourceObject(), GetSourcePlayer(), ChildNode,
+				TArray<TScriptInterface<IDMSEffectorInterface>>(), true, this);
+
+			// Set delegates when child effect sequence completed.
+			NewSeq->AddToPreSequenceFinished_Native(
+				[=, ParentSequence = this](bool Succeeded) __declspec(noinline) {
+				// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
+				DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
+
+				ParentSequence->RunNextQueuedEffect();
+
+				DMS_LOG_SIMPLE(TEXT("==== %s : after activate child effect lambda ends ===="),*ParentSequence->GetName());
+			});
+
+			ChildEffectQueue.Enqueue(NewSeq);
+		}
+	}
+
+	OnChildEffectQueueCompleted = iOnChildQueueFinished;
+}
+
+void ADMSSequence::OnStepQueueCompleted(bool Succeeded)
+{
+	SequenceState = Succeeded ? EDMSSequenceState::SS_Succeed : EDMSSequenceState::SS_Failed;
+
+	FSimpleDelegate NewOnChildQueueFinished;
+	NewOnChildQueueFinished.BindLambda([this,Succeeded](){
+		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
+		SeqManager->CompleteSequence(this, Succeeded);
+		OnSequenceFinish(Succeeded);
+	});
+
+	AddEffectsToChildQueue(OriginalEffectNode->ChildEffects, NewOnChildQueueFinished);
+	RunChildEffectQueue();	
+}
+
+void ADMSSequence::RunNextQueuedEffect()
+{	
+	if(ChildEffectQueue.IsEmpty())
+	{
+		OnChildEffectQueueCompleted.ExecuteIfBound();
+		OnChildEffectQueueCompleted.Unbind();
+	}
+	else
+	{
+		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
+		auto NewSeq = *ChildEffectQueue.Peek();
+		ChildEffectQueue.Pop();
+	
+		SeqManager->RunSequence(NewSeq);
+	}
+}
+
+void ADMSSequence::RunChildEffectQueue()
+{
+	// works
+	RunNextQueuedEffect();
 }
 
 void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -206,7 +291,7 @@ void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ADMSSequence, AttributeComponent);
 }
 
-FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) : ExactTag(ProgressTag)
+FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) :  ExecutingStep(Definition), ExactTag(ProgressTag)
 {
 	ExecutorDelegate.BindUFunction(Definition, FunctionName); 
 }

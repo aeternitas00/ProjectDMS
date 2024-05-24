@@ -18,9 +18,6 @@ class DMSCORE_API UDMSSequenceStep : public UObject
 public:
 	UDMSSequenceStep();
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//TObjectPtr<UDMSSequenceStepDefinition> StepDefinition;
-
 	/**
 	 *
 	 */
@@ -70,38 +67,10 @@ public:
 	 * Current timing of this step.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FGameplayTag GetCurrentProgressTag();
+	FGameplayTag GetCurrentProgressExactTag();
 
-
-	// ======== MIGRATE TO DEF and Progress ======== //
-
-	//UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	//FGameplayTagContainer GetStepTag() const;
-	//virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer::EmptyContainer;}
-	//virtual void OnStepInitiated(){}
-	//virtual void OnStepFinished(bool bSucceeded = true){}
-	//virtual void Progress_Before(){}
-	//virtual void Progress_During(){}
-	//virtual void Progress_After(){}
-	//void ProgressComplete(bool bSucceeded = true){}
-	//// Actual step's behavior, Must call ProgressComplete while progress ending.
-	//UFUNCTION(BlueprintNativeEvent)
-	//void OnBefore();
-	//virtual void OnBefore_Implementation(){}
-	//UFUNCTION(BlueprintNativeEvent)
-	//void OnDuring();
-	//virtual void OnDuring_Implementation(){}
-	//UFUNCTION(BlueprintNativeEvent)
-	//void OnAfter();
-	//virtual void OnAfter_Implementation(){}
-	//void RunStep();
-	//void CloseStep(bool bSucceeded = true);
-	//DECLARE_MULTICAST_DELEGATE(FOnStepInitiated);
-	//DECLARE_MULTICAST_DELEGATE_OneParam(FOnStepFinished, bool);
-	//FOnStepInitiated OnStepInitiated_Delegate;
-	//FOnStepFinished OnStepFinished_Delegate;
-
-	// =================================== //
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FGameplayTagContainer GetCurrentProgressTags();
 
 	friend class ADMSSequence;
 };
@@ -145,8 +114,11 @@ public:
 	 * Get tags of step ( with additional datas ).
 	 */
 	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	FGameplayTagContainer GetStepTag() const;
-	virtual FGameplayTagContainer GetStepTag_Implementation() const {return FGameplayTagContainer(GetPureStepTag());}
+	FGameplayTagContainer GetStepTag(UDMSSequenceStep* InstancedStep) const;
+	virtual FGameplayTagContainer GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const {return FGameplayTagContainer(GetPureStepTag());}
 
+	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	TArray<UDMSEffectDefinition*> GetStepResolvingContext(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) const;
+	virtual TArray<UDMSEffectDefinition*> GetStepResolvingContext_Implementation(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) {return {};}
 };
 

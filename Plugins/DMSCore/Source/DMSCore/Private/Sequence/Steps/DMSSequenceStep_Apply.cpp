@@ -115,10 +115,12 @@ FGameplayTag UDMSSequenceStepDefinition_Apply::GetPureStepTag_Implementation() c
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.Apply");
 }
 
-FGameplayTagContainer UDMSSequenceStepDefinition_Apply::GetStepTag_Implementation() const
+FGameplayTagContainer UDMSSequenceStepDefinition_Apply::GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const
 {
 	// combine tag with applying context?
-	return Super::GetStepTag_Implementation();
+	FGameplayTagContainer rv = GetPureStepTag().GetSingleTagContainer();
+	
+	return rv;
 	//return FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Step.Arkham.Apply"));
 }
 
@@ -144,6 +146,24 @@ bool UDMSSequenceStepDefinition_Apply::GetProgressOps_Implementation(const FGame
 
 	return false;
 }
+
+//TArray<UDMSEffectDefinition*> UDMSSequenceStepDefinition_Apply::GetStepResolvingContext_Implementation(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep)
+//{	
+//	TArray<UDMSEffectDefinition*> rv;
+//	for (auto& CondDef : ConditionedEffectDefinitions)
+//	{
+//		if ( CondDef.ApplyConditions && !CondDef.ApplyConditions->CheckCondition(CurrentAE, InstancedStep->OwnerSequence) ) continue;
+//		bool Check = true;
+//		for(auto& CurrentDef : CondDef.EffectDefinitions ){
+//			if(!CurrentDef->Predict(InstancedStep->OwnerSequence, CurrentAE))
+//			{
+//				Check = false; break;
+//			}
+//		}
+//		if(Check) rv.Append(CondDef.EffectDefinitions);
+//	}
+//	return rv;
+//}
 
 
 // LEGACY

@@ -3,14 +3,22 @@
 #pragma once
 
 #include "Sequence/DMSSequenceStep.h"
+#include "Effect/DMSEffectDefinition.h"
 #include "DMSSequenceStep_Apply.generated.h"
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Step_Apply)
+
+class UDMSActiveEffect;
 
 UCLASS()
 class DMSCORE_API UDMSSequenceStepDefinition_Apply : public UDMSSequenceStepDefinition
 {
 	GENERATED_BODY()
+
+//protected:
+//
+//	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = Effect)
+//	TArray<FDMSConditionedApplyDefinitions> ConditionedEffectDefinitions;
 
 public:
 	UDMSSequenceStepDefinition_Apply();
@@ -29,31 +37,8 @@ public:
 
 	// Implementations
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
-	virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	virtual FGameplayTagContainer GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const;
 
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 
-// LEGACY
-
-/**
-* Smallest unit of a sequence that execute effect definition.
-* TODO :: Effect Node에서 ED부분을 이쪽으로 빼오는게 의미적으로 옳지 않은가?
-*/
-//UCLASS()
-//class DMSCORE_API UDMSSequenceStep_Apply : public UDMSSequenceStep
-//{
-//	GENERATED_BODY()
-//
-//public:
-//	UDMSSequenceStep_Apply();
-//
-//	// Implementations
-//
-//	//virtual void OnStepInitiated() override;
-//	//virtual void Progress_During() override;
-//	//virtual FGameplayTagContainer GetStepTag_Implementation() const;
-//	//virtual void OnBefore_Implementation() override;
-//	//virtual void OnDuring_Implementation() override;
-//	//virtual void OnAfter_Implementation() override;
-//};

@@ -59,6 +59,7 @@ private:
 	TObjectPtr<ADMSSequence> SourceSequence;
 
 	TObjectPtr<UDMSEffectNode> ApplyingEffect;
+	//TArray<TObjectPtr<UDMSEffectDefinition>> ApplyingEffectDefinitions;
 	uint8 CurrentEDIndex;
 
 	uint8 ExecutedOptionNum;
@@ -92,7 +93,7 @@ public:
  */
 
 UCLASS(BlueprintType)
-class DMSCORE_API ADMSActiveEffect : /*public ADMSSpawnableBase*/public AInfo, public IDMSEffectorInterface
+class DMSCORE_API ADMSActiveEffect : public AInfo, public IDMSEffectorInterface
 {
 	GENERATED_BODY()
 	
@@ -254,3 +255,19 @@ void ADMSActiveEffect::AddToOnApplyComplete_Native(FuncFinished&& iOnSequenceFin
 {
 	OnApplyComplete_Native.AddLambda(iOnSequenceFinished);
 }
+
+
+//UCLASS(BlueprintType)
+//class DMSCORE_API ADMSTriggerableAE : public ADMSActiveEffect
+//{
+//	GENERATED_BODY()
+//
+//	
+//};
+//
+//UCLASS(BlueprintType)
+//class DMSCORE_API ADMSInstantAE : public ADMSActiveEffect
+//{
+//	GENERATED_BODY()
+//
+//};

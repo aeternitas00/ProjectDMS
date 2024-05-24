@@ -167,7 +167,7 @@ FGameplayTag UDMSSequenceStepDefinition_Decision::GetPureStepTag_Implementation(
 {
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.Decision");
 }
-FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementation() const
+FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const
 {
 	FGameplayTagContainer rv;
 	rv.AddTag(GetPureStepTag());
@@ -177,7 +177,7 @@ FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementa
 
 bool UDMSSequenceStepDefinition_Decision::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutDelegates)
 {
-	if(!GetStepTag().HasTagExact(ProgressTag)) return false;
+	if(!GetPureStepTag().MatchesTagExact(ProgressTag)) return false;
 
 	OutDelegates.Add({this,ProgressTag,"Progress_Decision"}); return true;
 }

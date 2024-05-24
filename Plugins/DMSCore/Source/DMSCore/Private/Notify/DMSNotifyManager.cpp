@@ -24,7 +24,7 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_ActivatingEffect, "System.Notify.Ac
 
 void UDMSNotifyManager::ActivateNextForced(ADMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) {
 
-	FString InTimingStr = Sequence->GetCurrentProgressTag().ToString();
+	FString InTimingStr = Sequence->GetCurrentProgressExactTag().ToString();
 	//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
 	if(ForcedEIMap[Sequence].Count == ForcedEIMap[Sequence].ForcedObjects.Num()) {
 		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *InTimingStr);
@@ -47,7 +47,7 @@ void UDMSNotifyManager::ActivateNextForced(ADMSSequence* Sequence, const FSimple
 
 void UDMSNotifyManager::ForcedFinished(ADMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) 
 {
-	FString InTimingStr = Sequence->GetCurrentProgressTag().ToString();
+	FString InTimingStr = Sequence->GetCurrentProgressExactTag().ToString();
 	//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *InTimingStr);
 	// Cleanup Forced queue.
@@ -60,7 +60,7 @@ void UDMSNotifyManager::ForcedFinished(ADMSSequence* Sequence, const FSimpleDele
 void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FSimpleDelegate& ResponseCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : BROADCASTING  ===="), *NotifyData->GetName());
-	FString TimingStr = NotifyData->GetCurrentProgressTag().ToString();
+	FString TimingStr = NotifyData->GetCurrentProgressExactTag().ToString();
 	//FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress());
 
 	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled) {
@@ -137,7 +137,7 @@ void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, 
 	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
 	//auto SelM = GS->GetSelectorManager();
 	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(this); check(SelM);
-	FString TimingStr = CurrentSequence->GetCurrentProgressTag().ToString();
+	FString TimingStr = CurrentSequence->GetCurrentProgressExactTag().ToString();
 	//FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->GetCurrentProgress());
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : Create Respondent Selector  ===="), *CurrentSequence->GetName(), *TimingStr);
 

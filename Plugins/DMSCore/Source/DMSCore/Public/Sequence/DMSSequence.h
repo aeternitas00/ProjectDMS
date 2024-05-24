@@ -30,14 +30,20 @@ class ADMSActiveEffect;
 class UDMSDataObjectSet;
 class UDMSEffectorInterface;
 class UDMSEffectNode;
+class UDMSEffectNodeWrapper;
 class UDMSConfirmWidgetBase;
 
 UENUM(/*BlueprintType*/)
 enum class EDMSSequenceState : uint8
 {
+	// Running
 	SS_Default UMETA(DisplayName = "Default"),
 	SS_Canceled UMETA(DisplayName = "Canceled"),
-	SS_Ignored UMETA(DisplayName = "Ignored")
+	SS_Ignored UMETA(DisplayName = "Ignored"),
+
+	// After run
+	SS_Succeed UMETA(DisplayName = "Succeed"),
+	SS_Failed UMETA(DisplayName = "Failed")
 };
 
 
@@ -60,14 +66,14 @@ struct DMSCORE_API FProgressExecutor
 	GENERATED_BODY()
 
 	FProgressExecutor(){}
-	FProgressExecutor(const FProgressExecutor_Signature& iExecutor,const FGameplayTag& ProgressTag):ExecutorDelegate(iExecutor),ExactTag(ProgressTag){};
-	FProgressExecutor(UDMSSequenceStepDefinition* Definition,const FGameplayTag& ProgressTag, const FName& FunctionName);
+	//FProgressExecutor(const FProgressExecutor_Signature& iExecutor,const FGameplayTag& ProgressTag):ExecutorDelegate(iExecutor),ExactTag(ProgressTag){};
+	FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName);
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	FProgressExecutor_Signature ExecutorDelegate;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UDMSSequenceStep> ExecutingStep;
+	TObjectPtr<UDMSSequenceStepDefinition> ExecutingStep;
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	FGameplayTag ExactTag;
@@ -118,6 +124,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FDMSSequenceEIStorage> TargetAndEIs;
 
+	//void ExecuteChildEffects();
 public:
 	// Default Initializer
 	ADMSSequence();
@@ -150,8 +157,9 @@ public:
 	 */
 	UPROPERTY()
 	TObjectPtr<ADMSSequence> ParentSequence;
+
 	UPROPERTY()
-	TObjectPtr<ADMSSequence> ChildSequence;
+	TObjectPtr<ADMSSequence> ActiveChildSequence;
 
 	/**
 	 * Simple getter of SourceObject
@@ -214,7 +222,6 @@ public:
 	 * @param	Succeeded				Whether the sequence was successful or not.
 	 */
 	void OnSequenceFinish(bool Succeeded);
-
 public:
 	// ======================== //
 	//		Sequence query
@@ -228,15 +235,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsSequenceActive();
 
-	// DEPRECATED
-	//UFUNCTION(BlueprintCallable)
-	//EDMSTimingFlag GetCurrentProgress();
-
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool IsTargetted() const {return bTargeted;}
 
 	UFUNCTION(BlueprintCallable)
-	FGameplayTag GetCurrentProgressTag();
+	FGameplayTag GetCurrentProgressExactTag();
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayTagContainer GetCurrentProgressTags();
 
 	/**
 	 * Generate tag container for context description.
@@ -299,6 +305,18 @@ protected:
 	TObjectPtr<UDMSSequenceStep> InstancedStep;
 
 private:
+	TQueue<ADMSSequence*> ChildEffectQueue;
+
+	void RunNextQueuedEffect();
+
+	FSimpleDelegate OnChildEffectQueueCompleted;
+public:
+
+	void AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences,const FSimpleDelegate& iOnChildQueueFinished);
+	void AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
+	//void AddEffectsToChildQueue(TArray<TObjectPtr<UDMSEffectNodeWrapper>>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
+
+	void RunChildEffectQueue();
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -336,3 +354,4 @@ void ADMSSequence::AddToPreSequenceFinished_Native(FuncFinished&& iOnSequenceFin
 	PreSequenceFinished.AddLambda(iOnSequenceFinished);
 
 }
+

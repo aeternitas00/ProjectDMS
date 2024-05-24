@@ -25,7 +25,7 @@
  *	========================================
  */
 
-// Sort of interface but we need type specifier.
+// Abstract base class of conditioner objects.
 UCLASS(Abstract, Const, EditInlineNew, ClassGroup = (Condition))
 class DMSCORE_API UDMSConditionObjectBase : public UObject
 {

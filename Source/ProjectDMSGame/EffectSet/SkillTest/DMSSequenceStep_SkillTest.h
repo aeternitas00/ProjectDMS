@@ -34,6 +34,12 @@ struct FDMSSkillTestData
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float DefaultTargetValue;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool bStopSequenceIfTestFailed = 1;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	float MinResultForTestSuccess = 0.0f;
+
 	// Get from decision step. or source player is Tester / sequence target test target;
 	// Get stat from who? ( only one )
 	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
@@ -88,8 +94,8 @@ public:
 	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = SkillTest)
 	//TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = SkillTest, Instanced)
-	TObjectPtr<class UDMSEffectNodeWrapper> TestFailedEffect;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = SkillTest, Instanced)
+	//TObjectPtr<class UDMSEffectNodeWrapper> TestFailedEffect;
 
 	void SetupTargets(UDMSSequenceStep* InstancedStep, TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
 
@@ -113,9 +119,11 @@ public:
 	void Progress_ST7(UDMSSequenceStep* InstancedStep);
 	UFUNCTION()
 	void Progress_ST8(UDMSSequenceStep* InstancedStep);
+	UFUNCTION()
+	void PostSkillTest(UDMSSequenceStep* InstancedStep);
 
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
-	virtual FGameplayTagContainer GetStepTag_Implementation() const;
+	virtual FGameplayTagContainer GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const;
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 

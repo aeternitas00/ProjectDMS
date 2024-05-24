@@ -85,7 +85,7 @@ FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(ADMSSe
 {
 	FGameplayTagContainer ctn;
 	ctn.AppendTags(NodeTags);
-	for (auto fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
+	for (auto& fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
 
 	return ctn;
 }
@@ -97,9 +97,9 @@ bool UDMSEffectNode::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,ADM
 
 bool UDMSEffectSet::ExecuteTagQuery(const FGameplayTagQuery& EffectTagQuery,ADMSSequence* CurrentSequence)
 {
-	for (auto node : EffectNodes)
+	for (auto& Node : EffectNodes)
 	{
-		if (node->GetEffectNode()->ExecuteTagQuery(EffectTagQuery,CurrentSequence)) return true;
+		if (Node->GetEffectNode()->ExecuteTagQuery(EffectTagQuery,CurrentSequence)) return true;
 	}
 
 	return false;

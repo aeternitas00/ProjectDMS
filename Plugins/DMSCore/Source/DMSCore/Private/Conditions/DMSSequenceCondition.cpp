@@ -15,4 +15,9 @@ bool UDMSSeqTimingCondition::CheckOperation_Implementation(UObject* CheckingGame
 	return CurrentSequence->GetSequenceTags().MatchesQuery(EffectTagQuery);
 }
 
+bool UDMSSeqStateCondition::CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const
+{
+	ADMSSequence* CheckingSeq = CheckParent ? CurrentSequence->ParentSequence.Get() : CurrentSequence;
 
+	return SuccessCondition.Contains(CheckingSeq->SequenceState);
+}
