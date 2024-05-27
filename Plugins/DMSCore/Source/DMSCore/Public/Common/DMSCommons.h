@@ -53,183 +53,8 @@ enum class EDMSComparisonOperator : uint8
 };
 
 /**
- *	std::any 를 BP에 올려서 사용하기 위한 일종의 래퍼.
- *	게임내에 돌아다니는 데이터들의 타입 제한을 조금 더 느슨하게 해보고자 해서 도입
- *	지금 상태가 최선이 아닌거같긴 한데 다른 방법이 있을까에 대한 생각.=>
- *	좀 더 사용 가능한 타입을 제한하고 그냥 union이나 ue5에서 제공하는 비슷한것을 쓴다던지 
- *	특히 시리얼라이즈부분의 이슈가 있어서...
- * 
- * --> 시퀀스까지 액터로 만들어서 어트리뷰트로 통합하는 쪽으로 가는게 좋을듯.
- */
-UCLASS(BlueprintType)
-class DMSCORE_API UDMSDataObject : public UObject
-{
-	GENERATED_BODY()
-
-protected:
-	/**
-	 * Store Real value.
-	 */
-	std::any AnyValue;
-
-	/**
-	 * Inheriting option. see UDMSDataObjectSet::Inherit
-	 */
-	bool Inheriting;
-public:
-	UDMSDataObject():Inheriting(false) {}
-
-
-	// For UObject derived classes 
-	//template <
-	//	typename U,
-	//	decltype(ImplicitConv<UObject*>(std::declval<U>()))* = nullptr
-	//> 
-	//void Set(U&& iValue){}
-
-	/**
-	* Setter of AnyValue.
-	* Using std::forward???
-	*/
-	void Set(const std::any& iValue) { AnyValue = iValue;/*emplace*/ }
-	void Set(std::any&& iValue) { AnyValue = std::move(iValue); }
-
-	/**
-	 * Getter of AnyValue with template type.
-	 */
-	template<typename T>
-	T Get() { return std::any_cast<T>(AnyValue); }
-
-	/**
-	 * Check AnyValue is storing template type.
-	 */
-	template<typename T>
-	bool TypeCheck() { return std::any_cast<T>(&AnyValue) != nullptr; }
-
-	/**
-	 * Getter of Inheriting.
-	 */
-	bool IsInheriting() {return Inheriting;}
-
-	/**
-	 * Setter of Inheriting.
-	 */
-	void SetInheriting(const bool& i) { Inheriting=i; }
-
-	/**
-	 * Copy Value only function.
-	 */
-	void CopyValue(UDMSDataObject* iObj) {this->AnyValue = iObj->AnyValue;}
-};
-
-//	위의 DataObject 를 모아서 관리하는 오브젝트
-UCLASS(BlueprintType)
-class DMSCORE_API UDMSDataObjectSet : public UObject
-{
-	GENERATED_BODY()
-
-protected:
-	/**
-	 * <Tag, data object> map. stores datas.
-	 */
-	UPROPERTY()
-	TMap<FGameplayTag, UDMSDataObject*> DataMap;
-
-public:
-	UPROPERTY()
-	UDMSDataObjectSet* ParentDataSet;
-	/**
-	 * Add data with std::any param. Instancing UDMSDataObject automatically.
-	 * @param	Tag							Key.
-	 * @param	Data						Value.
-	 * @param	Inheriting					New data's inheriting option.
-	 */
-	FORCEINLINE void SetData(const FGameplayTag& Tag, const std::any& Data, const bool& Inheriting = false) {
-		UDMSDataObject* DataObject = NewObject<UDMSDataObject>(this);
-		DataObject->Set(Data);
-		DataObject->SetInheriting(Inheriting);
-		DataMap.Add(Tag, DataObject);
-	}
-
-	/**
-	 * Add data with std::any param. Instancing UDMSDataObject automatically.
-	 * @param	Tag							Key.
-	 * @param	Data						Value.
-	 * @param	Inheriting					New data's inheriting option.
-	 */
-	FORCEINLINE void SetData(const FGameplayTag& Tag, std::any&& Data, const bool& Inheriting = false) {
-		UDMSDataObject* DataObject = NewObject<UDMSDataObject>(this);
-		DataObject->Set(std::move(Data));
-		DataObject->SetInheriting(Inheriting);
-		DataMap.Add(Tag, DataObject);
-	}
-
-	/**
-	 * Add data directly.
-	 * @param	Tag							Key.
-	 * @param	Data						Value.
-	 * @param	Inheriting					New data's inheriting option.
-	 */
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AddData(const FGameplayTag& Tag, UDMSDataObject* Data, bool Inheriting = false) {
-		if (Data == nullptr) return;
-		Data->SetInheriting(Inheriting);
-		DataMap.Add(Tag, Data);
-	}
-
-	/**
-	 * Check DataMap contains param key.
-	 * @param	Tag							Searching key.
-	 * @return	true if DataMap contains Tag.
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE bool ContainData(const FGameplayTag& Tag) const {
-		return DataMap.Contains(Tag);
-	}
-
-	/**
-	 * Get data from DataMap
-	 * @param	Tag							Searching key.
-	 * @return	DataMap[Tag] : null ptr if No such key.
-	 */
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE UDMSDataObject* GetData(const FGameplayTag& Tag) {
-		return ContainData(Tag) ? DataMap[Tag] : nullptr;
-	}
-
-	/**
-	 * Templated Get validated data from DataMap 
-	 * @param	Tag							Searching key.
-	 * @return	true if DataMap contains Tag.
-	 * @return	DataMap[Tag] : null ptr if No such key.
-	 */
-	template<typename T>
-	bool GetValidDataValue(const FGameplayTag& Tag, T& outValue ) {
-		bool rv = ContainData(Tag);
-		if (rv) rv = rv && DataMap[Tag]->TypeCheck<T>();
-		if (rv) outValue = DataMap[Tag]->Get<T>();
-		return rv;
-	}
-	/**
-	 * Inherit datas from param data set.
-	 * @param	Parent						Parent data set. Data set will be copied from this.
-	 * @param	InheritAgain				true if inherited data will be inherited again.
-	 */
-	void Inherit(UDMSDataObjectSet* Parent);
-
-
-	/**
-	 * Merge with param data set. temp) It's override for soon.
-	 * @param	iSet						Merging data set. 
-	 * ... some conflict option will be added.
-	 */
-	void Merge(UDMSDataObjectSet* iSet);
-
-};
-
-/**
- *	Class for defining preprocessing steps before the actual logic is used when using data from other definitions.
- */
+*	Class for defining preprocessing steps before the actual logic is used when using data from other definitions.
+*/
 UCLASS(Abstract,Blueprintable,BlueprintType,EditInlineNew)
 class DMSCORE_API UDMSDataProcesser : public UObject
 {
@@ -239,37 +64,215 @@ public:
 	UDMSDataProcesser(){}
 
 	/**
-	 *	Implement how processer works.
-	 */
+	*	Implement how processer works.
+	*/
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void Process(UObject* iObject);
 	virtual void Process_Implementation(UObject* iObject){}
 };
 
+
+
 /**
- *	Structure for organizing and defining a series of steps to get necessary data from AE datasets and preprocess it.
+ *	std::any 를 BP에 올려서 사용하기 위한 일종의 래퍼.
+ *	게임내에 돌아다니는 데이터들의 타입 제한을 조금 더 느슨하게 해보고자 해서 도입
+ *	지금 상태가 최선이 아닌거같긴 한데 다른 방법이 있을까에 대한 생각.=>
+ *	좀 더 사용 가능한 타입을 제한하고 그냥 union이나 ue5에서 제공하는 비슷한것을 쓴다던지 
+ *	특히 시리얼라이즈부분의 이슈가 있어서...
+ * 
+ * --> 시퀀스까지 액터로 만들어서 어트리뷰트로 통합하는 쪽으로 가는게 좋을듯.
  */
-USTRUCT(BlueprintType)
-struct DMSCORE_API FDMSValueSelectionForm
-{
-	GENERATED_BODY()
+//UCLASS(BlueprintType)
+//class DMSCORE_API UDMSDataObject : public UObject
+//{
+//	GENERATED_BODY()
+//
+//protected:
+//	/**
+//	 * Store Real value.
+//	 */
+//	std::any AnyValue;
+//
+//	/**
+//	 * Inheriting option. see UDMSDataObjectSet::Inherit
+//	 */
+//	bool Inheriting;
+//public:
+//	UDMSDataObject():Inheriting(false) {}
+//
+//
+//	// For UObject derived classes 
+//	//template <
+//	//	typename U,
+//	//	decltype(ImplicitConv<UObject*>(std::declval<U>()))* = nullptr
+//	//> 
+//	//void Set(U&& iValue){}
+//
+//	/**
+//	* Setter of AnyValue.
+//	* Using std::forward???
+//	*/
+//	void Set(const std::any& iValue) { AnyValue = iValue;/*emplace*/ }
+//	void Set(std::any&& iValue) { AnyValue = std::move(iValue); }
+//
+//	/**
+//	 * Getter of AnyValue with template type.
+//	 */
+//	template<typename T>
+//	T Get() { return std::any_cast<T>(AnyValue); }
+//
+//	/**
+//	 * Check AnyValue is storing template type.
+//	 */
+//	template<typename T>
+//	bool TypeCheck() { return std::any_cast<T>(&AnyValue) != nullptr; }
+//
+//	/**
+//	 * Getter of Inheriting.
+//	 */
+//	bool IsInheriting() {return Inheriting;}
+//
+//	/**
+//	 * Setter of Inheriting.
+//	 */
+//	void SetInheriting(const bool& i) { Inheriting=i; }
+//
+//	/**
+//	 * Copy Value only function.
+//	 */
+//	void CopyValue(UDMSDataObject* iObj) {this->AnyValue = iObj->AnyValue;}
+//};
+//
+////	위의 DataObject 를 모아서 관리하는 오브젝트
+//UCLASS(BlueprintType)
+//class DMSCORE_API UDMSDataObjectSet : public UObject
+//{
+//	GENERATED_BODY()
+//
+//protected:
+//	/**
+//	 * <Tag, data object> map. stores datas.
+//	 */
+//	UPROPERTY()
+//	TMap<FGameplayTag, UDMSDataObject*> DataMap;
+//
+//public:
+//	UPROPERTY()
+//	UDMSDataObjectSet* ParentDataSet;
+//	/**
+//	 * Add data with std::any param. Instancing UDMSDataObject automatically.
+//	 * @param	Tag							Key.
+//	 * @param	Data						Value.
+//	 * @param	Inheriting					New data's inheriting option.
+//	 */
+//	FORCEINLINE void SetData(const FGameplayTag& Tag, const std::any& Data, const bool& Inheriting = false) {
+//		UDMSDataObject* DataObject = NewObject<UDMSDataObject>(this);
+//		DataObject->Set(Data);
+//		DataObject->SetInheriting(Inheriting);
+//		DataMap.Add(Tag, DataObject);
+//	}
+//
+//	/**
+//	 * Add data with std::any param. Instancing UDMSDataObject automatically.
+//	 * @param	Tag							Key.
+//	 * @param	Data						Value.
+//	 * @param	Inheriting					New data's inheriting option.
+//	 */
+//	FORCEINLINE void SetData(const FGameplayTag& Tag, std::any&& Data, const bool& Inheriting = false) {
+//		UDMSDataObject* DataObject = NewObject<UDMSDataObject>(this);
+//		DataObject->Set(std::move(Data));
+//		DataObject->SetInheriting(Inheriting);
+//		DataMap.Add(Tag, DataObject);
+//	}
+//
+//	/**
+//	 * Add data directly.
+//	 * @param	Tag							Key.
+//	 * @param	Data						Value.
+//	 * @param	Inheriting					New data's inheriting option.
+//	 */
+//	UFUNCTION(BlueprintCallable)
+//	FORCEINLINE void AddData(const FGameplayTag& Tag, UDMSDataObject* Data, bool Inheriting = false) {
+//		if (Data == nullptr) return;
+//		Data->SetInheriting(Inheriting);
+//		DataMap.Add(Tag, Data);
+//	}
+//
+//	/**
+//	 * Check DataMap contains param key.
+//	 * @param	Tag							Searching key.
+//	 * @return	true if DataMap contains Tag.
+//	 */
+//	UFUNCTION(BlueprintCallable, BlueprintPure)
+//	FORCEINLINE bool ContainData(const FGameplayTag& Tag) const {
+//		return DataMap.Contains(Tag);
+//	}
+//
+//	/**
+//	 * Get data from DataMap
+//	 * @param	Tag							Searching key.
+//	 * @return	DataMap[Tag] : null ptr if No such key.
+//	 */
+//	UFUNCTION(BlueprintCallable)
+//	FORCEINLINE UDMSDataObject* GetData(const FGameplayTag& Tag) {
+//		return ContainData(Tag) ? DataMap[Tag] : nullptr;
+//	}
+//
+//	/**
+//	 * Templated Get validated data from DataMap 
+//	 * @param	Tag							Searching key.
+//	 * @return	true if DataMap contains Tag.
+//	 * @return	DataMap[Tag] : null ptr if No such key.
+//	 */
+//	template<typename T>
+//	bool GetValidDataValue(const FGameplayTag& Tag, T& outValue ) {
+//		bool rv = ContainData(Tag);
+//		if (rv) rv = rv && DataMap[Tag]->TypeCheck<T>();
+//		if (rv) outValue = DataMap[Tag]->Get<T>();
+//		return rv;
+//	}
+//	/**
+//	 * Inherit datas from param data set.
+//	 * @param	Parent						Parent data set. Data set will be copied from this.
+//	 * @param	InheritAgain				true if inherited data will be inherited again.
+//	 */
+//	void Inherit(UDMSDataObjectSet* Parent);
+//
+//
+//	/**
+//	 * Merge with param data set. temp) It's override for soon.
+//	 * @param	iSet						Merging data set. 
+//	 * ... some conflict option will be added.
+//	 */
+//	void Merge(UDMSDataObjectSet* iSet);
+//
+//};
 
-public:
-	/**
-	 * Key (tag) of the data to be explored in UDMSDataObjectSet.
-	 */
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
-	FGameplayTag DataKey;
+/**
+*	Structure for organizing and defining a series of steps to get necessary data from AE datasets and preprocess it.
+*/
+//USTRUCT(BlueprintType)
+//struct DMSCORE_API FDMSValueSelectionForm
+//{
+//	GENERATED_BODY()
+//
+//public:
+//	/**
+//	 * Key (tag) of the data to be explored in UDMSDataObjectSet.
+//	 */
+//	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
+//	FGameplayTag DataKey;
+//
+//	/** Defines the method of processing the received data for practical use.
+//	 * Executed in the order of the array
+//	 * ex) 선택한 숫자의 *3 만큼 데미지를 준다 -> Modifier나 float를 받아서 *3 한다음 리턴하는 Processer를 추가.
+//	 */
+//	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced)
+//	TArray<TObjectPtr<UDMSDataProcesser>> ValueProcessers;
+//
+//	/**
+//	 * Extracts values from the dataset received as an argument in a specified method. ( with DataKey and ValueProcesser )
+//	 */
+//	UDMSDataObject* Get(UDMSDataObjectSet* DataSet);
+//};
 
-	/** Defines the method of processing the received data for practical use.
-	 * Executed in the order of the array
-	 * ex) 선택한 숫자의 *3 만큼 데미지를 준다 -> Modifier나 float를 받아서 *3 한다음 리턴하는 Processer를 추가.
-	 */
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly,Instanced)
-	TArray<TObjectPtr<UDMSDataProcesser>> ValueProcessers;
-
-	/**
-	 * Extracts values from the dataset received as an argument in a specified method. ( with DataKey and ValueProcesser )
-	 */
-	UDMSDataObject* Get(UDMSDataObjectSet* DataSet);
-};

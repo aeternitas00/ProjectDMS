@@ -51,7 +51,8 @@ public:
 	void SetNextProgress(int ProgressIdx);
 	void SetNextProgress(const FGameplayTag& ProgressTag);
 
-	__declspec(noinline) void ProgressEnd(bool bSucceeded = true);
+	UFUNCTION()
+	void ProgressEnd(bool bSucceeded = true);
 
 	FORCEINLINE bool IsProgressQueueFinished();
 
@@ -117,8 +118,8 @@ public:
 	FGameplayTagContainer GetStepTag(UDMSSequenceStep* InstancedStep) const;
 	virtual FGameplayTagContainer GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const {return FGameplayTagContainer(GetPureStepTag());}
 
-	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	TArray<UDMSEffectDefinition*> GetStepResolvingContext(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) const;
-	virtual TArray<UDMSEffectDefinition*> GetStepResolvingContext_Implementation(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) {return {};}
+	//UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	//TArray<UDMSEffectDefinition*> GetStepResolvingContext(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) const;
+	//virtual TArray<UDMSEffectDefinition*> GetStepResolvingContext_Implementation(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) {return {};}
 };
 

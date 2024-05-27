@@ -104,7 +104,7 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(ADMSSequ
 * @param	Sequence					Resolving sequence.
 * @param	OnResolveCompleted			Lambda executed when resolve completed.
 */
-void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnResolveCompleted& OnResolveCompleted)
+void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnTaskCompleted& OnResolveCompleted)
 {
 	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
 
@@ -120,42 +120,67 @@ void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnResolveComplete
 		return;
 	}
 	
-	OnResolveCompletedMap.Add(Sequence);
-	OnResolveCompletedMap[Sequence].Count = 0;
-	OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllActiveEffects();
-	OnResolveCompletedMap[Sequence].Iterator.BindLambda([=](ADMSSequence* SourceSequence, bool PrevSucceeded){
-		ApplyNextEffectInstance(SourceSequence,OnResolveCompleted,PrevSucceeded);
-	});
-	ApplyNextEffectInstance(Sequence, OnResolveCompleted, true);
+	UDMSEffectResolveWorker* NewWorker = NewObject<UDMSEffectResolveWorker>(this);
+
+	TArray<UObject*> Contexts;
+	for(auto& AE : Sequence->GetAllActiveEffects()) Contexts.Add(AE);
+	NewWorker->SetupTaskWorkerDelegate(Contexts, OnResolveCompleted);	
+	NewWorker->SetupResolveWorker(Sequence);
+	NewWorker->RunTaskWorker(true);
+
+	//OnResolveCompletedMap.Add(Sequence);
+	//OnResolveCompletedMap[Sequence].Count = 0;
+	//OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllActiveEffects();
+	//OnResolveCompletedMap[Sequence].Iterator.BindLambda([=](ADMSSequence* SourceSequence, bool PrevSucceeded){
+	//	ApplyNextEffectInstance(SourceSequence,OnResolveCompleted,PrevSucceeded);
+	//});
+	//ApplyNextEffectInstance(Sequence, OnResolveCompleted, true);
 }
 
 
-void UDMSEffectHandler::ApplyNextEffectInstance(ADMSSequence* SourceSequence,const FOnResolveCompleted& OnResolveCompleted, bool PrevSucceeded)
-{
-	if (!PrevSucceeded)
-	{
-		// DISCUSSION :: Stopping immediately when failed is FINE?
-		OnResolveCompleted.ExecuteIfBound(false);
-		return;
-	}
+//void UDMSEffectHandler::ApplyNextEffectInstance(ADMSSequence* SourceSequence,const FOnTaskCompleted& OnResolveCompleted, bool PrevSucceeded)
+//{
+//	if (!PrevSucceeded)
+//	{
+//		// DISCUSSION :: Stopping immediately when failed is FINE?
+//		OnResolveCompleted.ExecuteIfBound(false);
+//		return;
+//	}
+//
+//	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->GetAllActiveEffects().Num())
+//		OnResolveCompleted.ExecuteIfBound(true);
+//	else
+//		ApplyAEGetter(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].Iterator);
+//}
 
-	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->GetAllActiveEffects().Num())
-		OnResolveCompleted.ExecuteIfBound(true);
-	else
-		ApplyAEGetter(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].Iterator);
-}
-
-ADMSActiveEffect* UDMSEffectHandler::ApplyAEGetter(ADMSSequence* OwnerSequence)
-{
-	return OnResolveCompletedMap[OwnerSequence].ApplyingEIs[OnResolveCompletedMap[OwnerSequence].Count++];
-}
+//ADMSActiveEffect* UDMSEffectHandler::ApplyAEGetter(ADMSSequence* OwnerSequence)
+//{
+//	return OnResolveCompletedMap[OwnerSequence].ApplyingEIs[OnResolveCompletedMap[OwnerSequence].Count++];
+//}
 
 void UDMSEffectHandler::CleanupNonPersistent()
 {
-	OnResolveCompletedMap.Empty();
+	//OnResolveCompletedMap.Empty();
 	EIList.RemoveAllSwap([](ADMSActiveEffect* EI) {
 		bool rv = (EI->GetCurrentState() & EDMSAEState::AES_Persistent) != EDMSAEState::AES_Persistent;
 		if (rv){ EI->DetachFromOwner(); EI->Destroy(); }
 		return rv;
 	});
 }
+
+void UDMSEffectResolveWorker::SetupResolveWorker(ADMSSequence* iSequence)
+{
+	SourceSequence=iSequence; 
+	IteratingDelegate.BindDynamic(this, &UDMSSynchronousTaskWorker::CompleteSingleTask);
+}
+
+void UDMSEffectResolveWorker::Work_Implementation()
+{
+	ADMSActiveEffect* CurrentAE = Cast<ADMSActiveEffect>(GetCurrentContext());
+
+	CurrentAE->Apply(SourceSequence, IteratingDelegate);
+}
+
+//void UDMSEffectResolveWorker::OnAllTaskCompleted_Implementation(bool WorkerSucceeded)
+//{
+//}

@@ -64,9 +64,18 @@ void UDMSSequenceStep::SetNextProgress(const FGameplayTag& ProgressTag)
 
 void UDMSSequenceStep::ProgressEnd(bool bSucceeded)
 {
+	if (bSucceeded) {
+		//DMS_LOG_SIMPLE(TEXT("==== %s : ON Progress COMPLETED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
+	}
+	else {
+		//DMS_LOG_SIMPLE(TEXT("==== %s : ON Progress FAILED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
+	}
+
 	if(!bSucceeded){OwnerSequence->OnStepQueueCompleted(false); return;}
 	if(IsProgressQueueFinished()) {OwnerSequence->OnStepQueueCompleted(true); return;}
 	CurrentProgressIndex++; ExecuteNextProgress();
+	
+	//DMS_LOG_SIMPLE(TEXT("==== %s : after progress end ===="),*Seq->GetName());
 }
 
 bool UDMSSequenceStep::IsProgressQueueFinished()

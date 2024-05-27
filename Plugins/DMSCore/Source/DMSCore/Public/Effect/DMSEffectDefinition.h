@@ -136,7 +136,7 @@ public:
  *	( ex. Deal 3 Damage and heal self that much. Then, if target HP is lower than ~ : Deal 2 Damage. )
  *	Pseudo tree architecture for sub-effect and branchs.
  *
- *	NOTE : RENAME? ( Actually this class is sort of Sequence definition.
+ *	NOTE : RENAME? ( Actually this class is sort of Sequence definition. )
  *	=========================================
  *	
  */
@@ -282,8 +282,6 @@ public:
 	/** 
 	 * The list of steps that this sequence will have and execute.
 	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	//TArray<TObjectPtr<UDMSSequenceStep>> StepRequirements;
 	//
 	// NOTE :: EDITOR EXTENSION?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)

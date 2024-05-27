@@ -21,12 +21,12 @@
 
 class UDMSEffectDefinition;
 class UDMSEffectNode;
-class UDMSDataObjectSet;
+//class UDMSDataObjectSet;
 class ADMSSequence;
 class UDMSEffectorInterface;
 class UDMSDecisionWidget;
 
-DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
+//DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 
 //USTRUCT(BlueprintType)
 //struct DMSCORE_API FDMSSequenceSpawnParameters
@@ -166,7 +166,7 @@ public:
 	/*
 	 * Delegate for resuming sequence flow from selector queue
 	 */
-	FOnSelectorFinished OnSelectorFinished;
+	//FOnSelectorFinished OnSelectorFinished;
 
 	/**
 	 * Executed when sequence tree is initiated.

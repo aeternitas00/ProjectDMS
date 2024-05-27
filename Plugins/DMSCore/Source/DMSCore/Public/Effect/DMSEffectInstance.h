@@ -16,6 +16,7 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Common/DMSCommonDelegates.h"
 #include "Common/DMSCommons.h"
+#include "Common/DMSSynchronousTaskWorker.h"
 #include "Effect/DMSEffectDefinition.h"
 #include "UObject/NoExportTypes.h"
 #include "DMSEffectInstance.generated.h"
@@ -34,7 +35,7 @@ enum class EDMSAEState : uint8
 	AES_None			= 0x00			UMETA(Hidden),
 	AES_NotifyClosed	= 0x01			UMETA(DisplayName = "Don't receive notify"), 
 	AES_Persistent		= 0x01 << 1		UMETA(DisplayName = "Persistent"),
-	//EIS_PendingKill		= 0x01 << 2		UMETA(DisplayName = "Pending to kill"),
+	//AES_PendingKill		= 0x01 << 2		UMETA(DisplayName = "Pending to kill"),
 	AES_MAX				= MAX_uint8		UMETA(Hidden),
 	//...
 };
@@ -71,7 +72,7 @@ public:
 	FOnApplyCompleted CompletedDelegate;
 	
 public:
-	void SetupWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
+	void SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
 	
 	UFUNCTION()
 	void ApplyNextEffectDef(bool PrevSucceeded);
@@ -80,6 +81,29 @@ public:
 	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
 };
 
+UCLASS()
+class DMSCORE_API UDMSEffectApplyWorker__ : public UDMSSynchronousTaskWorker
+{
+	GENERATED_BODY()
+
+private:
+	TObjectPtr<ADMSActiveEffect> OwnerInstance;
+	TObjectPtr<ADMSSequence> SourceSequence;
+	TObjectPtr<UDMSEffectDefinition> CurrentDef;
+	uint8 ExecutedOptionNum;
+	FOnOptionCompleted EffectOptionCompleted;
+
+public:
+	FOnExecuteCompleted IteratingDelegate;
+
+	void SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI);
+
+	UFUNCTION()
+	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
+
+	virtual void Work_Implementation();
+	virtual void OnAllTaskCompleted_Implementation(bool WorkerSucceeded);
+};
 /**
  * 	========================================
  *
@@ -99,6 +123,8 @@ class DMSCORE_API ADMSActiveEffect : public AInfo, public IDMSEffectorInterface
 	
 public:
 	ADMSActiveEffect();
+
+
 		
 protected:
 
@@ -157,8 +183,8 @@ public:
 	/**
 	 * Data needs to running effect node.
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TObjectPtr<UDMSDataObjectSet> DataSet;
+	//UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	//TObjectPtr<UDMSDataObjectSet> DataSet;
 
 public:
 	/**
@@ -166,8 +192,8 @@ public:
 	 * @return	Sequence						Current sequence.
 	 * @return	OnApplyCompleted				Delegate executed when apply completed.
 	 */
-	void Apply(ADMSSequence* Sequence, const FResolveIteratingDelegate& OnApplyCompleted);
-
+	//void Apply(ADMSSequence* Sequence, const FResolveIteratingDelegate& OnApplyCompleted);
+	void Apply(ADMSSequence* SourceSequence, const FOnTaskCompleted& OnApplyCompleted);
 	/**
 	 * Get apply target.
 	 * Will be used in ED->Work function.
@@ -189,11 +215,12 @@ public:
 	//void OnSequenceComplete();
 
 	virtual void Initialize(UDMSEffectNode* iNode,const EDMSAEState& InitialState);
+
 	/** 
 	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)
 	 * @param	iSet.
 	 */
-	void SetupDatas(UDMSDataObjectSet* iSet=nullptr);
+	//void SetupDatas(UDMSDataObjectSet* iSet=nullptr);
 	
 	/**
 	 * Sort of setup. Getting data from sequence or other source. (ex.Setting up Owning effect.)

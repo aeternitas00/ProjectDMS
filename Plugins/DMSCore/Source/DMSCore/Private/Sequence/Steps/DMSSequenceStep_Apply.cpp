@@ -37,20 +37,22 @@ void UDMSSequenceStepDefinition_Apply::Progress_During(UDMSSequenceStep* Instanc
 	// Resolve 
 	DMS_LOG_SIMPLE(TEXT("==== %s : RESOLVE START ===="), *Seq->GetName());
 
-	FOnResolveCompleted OnResolveCompleted;
+	FOnTaskCompleted OnResolveCompleted;
 
-	OnResolveCompleted.BindLambda([=](bool ResolveSucceeded) {
-		// ==== ON RESOLVE COMPLETED ====
-		if (ResolveSucceeded) {
-			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
-			InstancedStep->ProgressEnd(true);
-		}
-		else {
-			DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE FAILED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
-			InstancedStep->ProgressEnd(false);
-		}
-		DMS_LOG_SIMPLE(TEXT("==== %s : after resolve effect lambda ends ===="),*Seq->GetName());
-	});
+	OnResolveCompleted.BindDynamic(InstancedStep, &UDMSSequenceStep::ProgressEnd);
+
+	//OnResolveCompleted.BindLambda([=](bool ResolveSucceeded) {
+	//	// ==== ON RESOLVE COMPLETED ====
+	//	if (ResolveSucceeded) {
+	//		DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE COMPLETED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
+	//		InstancedStep->ProgressEnd(true);
+	//	}
+	//	else {
+	//		DMS_LOG_SIMPLE(TEXT("==== %s : ON RESOLVE FAILED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
+	//		InstancedStep->ProgressEnd(false);
+	//	}
+	//	DMS_LOG_SIMPLE(TEXT("==== %s : after resolve effect lambda ends ===="),*Seq->GetName());
+	//});
 
 	EffectHandler->Resolve(Seq, OnResolveCompleted);
 }

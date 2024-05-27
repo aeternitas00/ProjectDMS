@@ -27,7 +27,7 @@ class UDMSSequenceStep;
 class UDMSSequenceStepDefinition;
 class UDMSEIManagerComponent;
 class ADMSActiveEffect;
-class UDMSDataObjectSet;
+//class UDMSDataObjectSet;
 class UDMSEffectorInterface;
 class UDMSEffectNode;
 class UDMSEffectNodeWrapper;
@@ -148,8 +148,8 @@ public:
 	/** 
 	 * Data needed for sequence flow, such as 'Damage' by numerical values.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UDMSDataObjectSet> SequenceDatas;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	//TObjectPtr<UDMSDataObjectSet> SequenceDatas;
 
 	/** 
 	 * 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도
@@ -352,6 +352,5 @@ void ADMSSequence::AddToPreSequenceFinished_Native(FuncFinished&& iOnSequenceFin
 		DMS_LOG_SIMPLE(TEXT("==== %s : Pre SEQ FINISHIED HAS MUILTIPLE DELEGATES ===="), *GetName());
 	}
 	PreSequenceFinished.AddLambda(iOnSequenceFinished);
-
 }
 

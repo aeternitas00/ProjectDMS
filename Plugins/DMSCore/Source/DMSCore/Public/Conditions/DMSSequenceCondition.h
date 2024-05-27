@@ -13,6 +13,7 @@
  */
 
 #include "Conditions/DMSConditionObject.h"
+#include "Sequence/DMSSequence.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/DataAsset.h"
 #include "DMSSequenceCondition.generated.h"
