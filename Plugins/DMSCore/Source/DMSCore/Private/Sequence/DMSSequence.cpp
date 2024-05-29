@@ -203,9 +203,11 @@ void ADMSSequence::OnSequenceFinish(bool Succeeded)
 
 void ADMSSequence::AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences, const FSimpleDelegate& iOnChildQueueFinished)
 {
-	for(auto& ChildSeq : iChildSequences)
+	for(auto& ChildSeq : iChildSequences){
+		ChildSeq->AddToPreSequenceFinished_Native(
+			[=, ParentSequence = this](bool Succeeded){ParentSequence->RunNextQueuedEffect();});
 		ChildEffectQueue.Enqueue(ChildSeq);
-
+	}
 	OnChildEffectQueueCompleted = iOnChildQueueFinished;
 }
 
@@ -264,8 +266,9 @@ void ADMSSequence::RunNextQueuedEffect()
 {	
 	if(ChildEffectQueue.IsEmpty())
 	{
-		OnChildEffectQueueCompleted.ExecuteIfBound();
+		auto LocalCopy = OnChildEffectQueueCompleted;
 		OnChildEffectQueueCompleted.Unbind();
+		LocalCopy.ExecuteIfBound();
 	}
 	else
 	{

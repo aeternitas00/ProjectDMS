@@ -30,7 +30,7 @@ TArray<UDMSSelectorHandle*> UDMSSelectorManager::RequestCreateSelectors ( TArray
 	return rv;
 }
 
-UDMSSelectorHandle::UDMSSelectorHandle():Widget(nullptr),OwnerQueue(nullptr)
+UDMSSelectorHandle::UDMSSelectorHandle():Widget(nullptr),bAutoExecuteForm(true)
 {
 }
 
@@ -63,23 +63,27 @@ void UDMSSelectorHandle::CloseSelector()
 	Widget->CloseSelector();
 }
 
+void UDMSSelectorHandle::SetupDelegate(const FOnSelectCompletedNative& iOnCompleted)
+{
+	OnSelectionCompleted = iOnCompleted;
+}
+
 void UDMSSelectorHandle::CompleteHandle(const TArray<uint8>& SelectedIdx)
 {
-	if ( OwnerQueue == nullptr ) {
+	if ( bAutoExecuteForm ) {
 		StoredForm->OnCompleted.Broadcast( SelectedIdx );
 		StoredForm->OnCompletedNative.ExecuteIfBound( SelectedIdx );
 	}
-	else {
-		OwnerQueue->OnSelectorsCompleted_Handle.AddLambda ( [=](ADMSSequence* ) {
-			StoredForm->OnCompleted.Broadcast(SelectedIdx);
-			StoredForm->OnCompletedNative.ExecuteIfBound(SelectedIdx);
-		} );
-	}
 
-	OnSelectCompleted.Broadcast();
+	OnSelectionCompleted.ExecuteIfBound(true, SelectedIdx);
 }
 
 void UDMSSelectorHandle::CancelHandle()
 {
-	OnSelectCanceled.Broadcast();
+	OnSelectionCompleted.ExecuteIfBound(false,{});
 }
+
+/**
+* Setup this selector widget's OnCompleted and OnCanceled delegates.
+*/
+

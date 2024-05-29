@@ -66,7 +66,7 @@ public:
 	/**
 	* Close this widget.
 	*/
-	//UFUNCTION ( BlueprintCallable )
+	UFUNCTION ( BlueprintCallable )
 	void CloseSelector();
 
 	/**

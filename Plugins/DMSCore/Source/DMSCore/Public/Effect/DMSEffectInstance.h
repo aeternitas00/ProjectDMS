@@ -50,39 +50,39 @@ ENUM_CLASS_FLAGS(EDMSAEState)
  *	========================================
  *	
  */
+//UCLASS()
+//class DMSCORE_API UDMSEffectApplyWorker : public UObject
+//{
+//	GENERATED_BODY()
+//
+//private:
+//	TObjectPtr<ADMSActiveEffect> OwnerInstance;
+//	TObjectPtr<ADMSSequence> SourceSequence;
+//
+//	TObjectPtr<UDMSEffectNode> ApplyingEffect;
+//	//TArray<TObjectPtr<UDMSEffectDefinition>> ApplyingEffectDefinitions;
+//	uint8 CurrentEDIndex;
+//
+//	uint8 ExecutedOptionNum;
+//	FOnOptionCompleted EffectOptionCompleted;
+//	TObjectPtr<UDMSEffectDefinition> CurrentDef;
+//
+//public:
+//	FOnExecuteCompleted IteratingDelegate;
+//	FOnApplyCompleted CompletedDelegate;
+//	
+//public:
+//	void SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
+//	
+//	UFUNCTION()
+//	void ApplyNextEffectDef(bool PrevSucceeded);
+//
+//	UFUNCTION()
+//	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
+//};
+
 UCLASS()
-class DMSCORE_API UDMSEffectApplyWorker : public UObject
-{
-	GENERATED_BODY()
-
-private:
-	TObjectPtr<ADMSActiveEffect> OwnerInstance;
-	TObjectPtr<ADMSSequence> SourceSequence;
-
-	TObjectPtr<UDMSEffectNode> ApplyingEffect;
-	//TArray<TObjectPtr<UDMSEffectDefinition>> ApplyingEffectDefinitions;
-	uint8 CurrentEDIndex;
-
-	uint8 ExecutedOptionNum;
-	FOnOptionCompleted EffectOptionCompleted;
-	TObjectPtr<UDMSEffectDefinition> CurrentDef;
-
-public:
-	FOnExecuteCompleted IteratingDelegate;
-	FOnApplyCompleted CompletedDelegate;
-	
-public:
-	void SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
-	
-	UFUNCTION()
-	void ApplyNextEffectDef(bool PrevSucceeded);
-
-	UFUNCTION()
-	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
-};
-
-UCLASS()
-class DMSCORE_API UDMSEffectApplyWorker__ : public UDMSSynchronousTaskWorker
+class DMSCORE_API UDMSEffectApplyWorker : public UDMSSynchronousTaskWorker
 {
 	GENERATED_BODY()
 
@@ -124,10 +124,7 @@ class DMSCORE_API ADMSActiveEffect : public AInfo, public IDMSEffectorInterface
 public:
 	ADMSActiveEffect();
 
-
-		
 protected:
-
 	/** 
 	 * State flag of Active Effect.For preview or persistant things.
 	 * [replicates for clients' ui]
@@ -150,7 +147,7 @@ protected:
 	TObjectPtr<UDMSEIManagerComponent> EffectManagerComponent;
 
 	// Hard ref for workers
-	TArray<TObjectPtr<UDMSEffectApplyWorker>> ApplyWorkers;
+	//TArray<TObjectPtr<UDMSEffectApplyWorker>> ApplyWorkers;
 
 	FSimpleMulticastDelegate OnApplyComplete_Native;
 
@@ -266,7 +263,7 @@ public:
 	/**
 	 *	Safely clean up the workers used in AE applying.
 	 */
-	void CleanupWorker(UDMSEffectApplyWorker* Worker);
+	//void CleanupWorker(UDMSEffectApplyWorker* Worker);
 
 	// =========== INTERFACE FUNCTION =========== // 
 	

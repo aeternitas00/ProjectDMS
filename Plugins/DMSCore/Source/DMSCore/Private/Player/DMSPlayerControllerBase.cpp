@@ -12,11 +12,11 @@
 ADMSPlayerControllerBase::ADMSPlayerControllerBase(const FObjectInitializer& ObjectInitializer)
 	/*: Super(ObjectInitializer)*//*, InteractionMode(EDMSCardInteractionMode::PIM_Play)*/
 {
-	WidgetQueue = CreateDefaultSubobject<UDMSWidgetQueue>("WidgetQueue");
+	//WidgetQueue = CreateDefaultSubobject<UDMSWidgetQueue>("WidgetQueue");
 }
 
 
-bool ADMSPlayerControllerBase::SetupWidgetQueue(ADMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles )
-{
-	return WidgetQueue->SetupQueue(SourceSequence,Handles);
-}
+//bool ADMSPlayerControllerBase::SetupWidgetQueue(ADMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles )
+//{
+//	//return WidgetQueue->SetupQueue(SourceSequence,Handles);
+//}

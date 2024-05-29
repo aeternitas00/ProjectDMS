@@ -25,7 +25,6 @@ class ADMSSequence;
 
 DECLARE_MULTICAST_DELEGATE(FSimpleMulticastEventSignature);
 
-
 DECLARE_DELEGATE_TwoParams(FResolveIteratingDelegate, ADMSSequence*, bool);
 DECLARE_DELEGATE_TwoParams(FOnApplyCompleted, ADMSSequence*, bool);
 

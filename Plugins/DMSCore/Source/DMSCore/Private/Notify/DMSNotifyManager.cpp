@@ -22,42 +22,24 @@
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_Respondent, "System.Notify.Respondent");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_System_Notify_ActivatingEffect, "System.Notify.ActivatingEffect");
 
-void UDMSNotifyManager::ActivateNextForced(ADMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) {
-
-	FString InTimingStr = Sequence->GetCurrentProgressExactTag().ToString();
-	//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
-	if(ForcedEIMap[Sequence].Count == ForcedEIMap[Sequence].ForcedObjects.Num()) {
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO MORE FORCED EFFECT  ===="), *Sequence->GetName(), *InTimingStr);
-		ForcedFinished(Sequence, OnForcedFinished);
-	}
-	else {
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATE NEXT FORCED EFFECT  ===="), *Sequence->GetName(), *InTimingStr);
-
-		// Create Applying AE from Responsed Pesistent AE.
-		auto& CurrentForcedPair = ForcedEIMap[Sequence].ForcedObjects[ForcedEIMap[Sequence].Count];
-		auto NewSeq = CurrentForcedPair.Value->CreateApplyingSequence(CurrentForcedPair.Key, Sequence);
-		NewSeq->AddToOnSequenceFinished_Native([this, Sequence, OnForcedFinished](bool) {
-			ActivateNextForced(Sequence,OnForcedFinished); // :: RECURSIVE ::
-			DMS_LOG_SIMPLE(TEXT("==== %s : after forced EI lambda ===="), *Sequence->GetName());
-			});
-		ForcedEIMap[Sequence].Count++;
-		UDMSCoreFunctionLibrary::GetDMSSequenceManager()->RunSequence(NewSeq);
-	}
-}
-
-void UDMSNotifyManager::ForcedFinished(ADMSSequence* Sequence, const FSimpleDelegate& OnForcedFinished) 
+void UDMSForcedEffectWorker::SetupForcedWorker(ADMSSequence* iSequence)
 {
-	FString InTimingStr = Sequence->GetCurrentProgressExactTag().ToString();
-	//FString InTimingStr = UDMSCoreFunctionLibrary::GetTimingString(Sequence->GetCurrentProgress());
-	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : FORCED EFFECT FINISHED ===="), *Sequence->GetName(), *InTimingStr);
-	// Cleanup Forced queue.
-	auto temp = std::move(ForcedEIMap[Sequence]);
-	ForcedEIMap.Remove(Sequence);
-	// Continue to user selectable effects.
-	CreateRespondentSelector(Sequence, temp.NonForcedObjects,OnForcedFinished);
+	SourceSequence = iSequence;
 }
 
-void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FSimpleDelegate& ResponseCompleted)
+void UDMSForcedEffectWorker::Work_Implementation()
+{		
+	auto CurrentForcedPair = Cast<UDMSForcedEffectContext>(GetCurrentContext());
+	auto ActiveEffect = CurrentForcedPair->ActiveEffect;
+	auto Respondent = CurrentForcedPair->Respondent;
+	auto NewSeq = ActiveEffect->CreateApplyingSequence(Respondent->GetObject(), SourceSequence);
+	NewSeq->AddToOnSequenceFinished_Native([this](bool) {
+		this->CompleteSingleTask(true); // :: RECURSIVE ::
+	});
+	UDMSCoreFunctionLibrary::GetDMSSequenceManager(this)->RunSequence(NewSeq);
+}
+
+void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FOnTaskCompletedNative& ResponseCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : BROADCASTING  ===="), *NotifyData->GetName());
 	FString TimingStr = NotifyData->GetCurrentProgressExactTag().ToString();
@@ -65,7 +47,7 @@ void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FSimpleDelegat
 
 	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled) {
 		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
-		ResponseCompleted.ExecuteIfBound();
+		ResponseCompleted.ExecuteIfBound(true);
 		return;
 	}
 
@@ -79,60 +61,44 @@ void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FSimpleDelegat
 			Object->GetEffectorManagerComponent()->OnNotifyReceived(ResponsedObjects, NotifyData->IsChainableSequence(), NotifyData);
 	}
 
-	ForcedEIMap.Add(NotifyData);
-
 	// Search forced effects
 	TArray<TScriptInterface<IDMSEffectorInterface>> Keys;
 	ResponsedObjects.GetKeys(Keys);
+
+	TArray<UObject*> ForcedContexts;
+
 	for (auto& ResponsedObject : Keys) 
 	{
-		TArray<ADMSActiveEffect*> EffectInstances;
-		ResponsedObjects.MultiFind(ResponsedObject, EffectInstances, true);
+		TArray<ADMSActiveEffect*> ActiveEffects;
+		ResponsedObjects.MultiFind(ResponsedObject, ActiveEffects, true);
 
-		for (auto EI : EffectInstances) 
+		for (auto AE : ActiveEffects) 
 		{
-			if (EI->EffectNode->bForced) 
+			if(AE->EffectNode->bForced)
 			{
-				TPair<AActor*, ADMSActiveEffect*> NewValue;
-				NewValue.Key = ResponsedObject->GetObject(); NewValue.Value = EI;
-				ForcedEIMap[NotifyData].ForcedObjects.Add(std::move(NewValue));
-				ResponsedObjects.Remove(ResponsedObject, EI);
+				UDMSForcedEffectContext* NewContext = NewObject<UDMSForcedEffectContext>(this);
+				NewContext->ActiveEffect = AE;
+				NewContext->Respondent = ResponsedObject;
+				ForcedContexts.Add(NewContext);
+				ResponsedObjects.Remove(ResponsedObject,AE);
 			}
 		}
 	}
 
-	// Process forced effect first, followed by processing the selectable.
-	if (ForcedEIMap[NotifyData].ForcedObjects.Num() != 0)
-	{
-		// Resolve forced effect
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : ACTIVATING FORCED EFFECT START  ===="), *NotifyData->GetName(), *TimingStr);
+	UDMSForcedEffectWorker* ForcedWorker = NewObject<UDMSForcedEffectWorker>(this);
+	FOnTaskCompletedNative OnForcedEffectCompleted;
 
-		ForcedEIMap[NotifyData].NonForcedObjects = ResponsedObjects;
-		ActivateNextForced(NotifyData, ResponseCompleted);
-	}
-	else 
-	{
-		// No remaining forced effect
-		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO FORCED EFFECT  ===="), *NotifyData->GetName(), *TimingStr);
+	OnForcedEffectCompleted.BindLambda([=](bool){
+		auto CapturedRO = ResponsedObjects;
+		CreateRespondentSelector(NotifyData, CapturedRO, ResponseCompleted);
+	});
 
-		ForcedEIMap.Remove(NotifyData);
-
-		// Selectable effects.
-		CreateRespondentSelector(NotifyData, ResponsedObjects, ResponseCompleted);
-	}
+	ForcedWorker->SetupForcedWorker(NotifyData);
+	ForcedWorker->SetupTaskWorkerDelegate_Native(ForcedContexts, OnForcedEffectCompleted);
+	ForcedWorker->RunTaskWorker(false);
 }
 
-bool UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object)
-{
-	// Validation
-	if(Object.GetObject() == nullptr || !Object.GetObject()->Implements<UDMSEffectorInterface>() ) {DMS_LOG_SIMPLE(TEXT("NotifyManager : Register invalid item")); return false; }
-	if(NotifyObjects.Find(Object)!=INDEX_NONE) { DMS_LOG_SIMPLE(TEXT("NotifyManager : Register duplicate item")); return false;}
-	
-	NotifyObjects.Add(Object);
-	return true;
-}
-
-void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, const FSimpleDelegate& ResponseCompleted)
+void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, const FOnTaskCompletedNative& ResponseCompleted)
 {
 	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
 	//auto SelM = GS->GetSelectorManager();
@@ -144,7 +110,7 @@ void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, 
 	if (ResponsedObjects.Num() == 0) 
 	{
 		DMS_LOG_SIMPLE(TEXT("==== %s [%s] : NO Respondent / EXE OnResponseCompleted ===="), *CurrentSequence->GetName(), *TimingStr);
-		ResponseCompleted.ExecuteIfBound();
+		ResponseCompleted.ExecuteIfBound(true);
 		return;
 	}
 
@@ -162,80 +128,94 @@ void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, 
 	SelHandle->CreateSelectorWidget(LeaderPC);
 	UDMSNotifyRespondentSelector* InstancedWidget = Cast<UDMSNotifyRespondentSelector>(SelHandle->Widget);
 
-	InstancedWidget->ResponsedObjects = ResponsedObjects; 
-	InstancedWidget->ResponsedObjects.GenerateKeyArray(InstancedWidget->Respondents);
-	//InstancedWidget->ResponsedObjects.GetKeys(InstancedWidget->Respondents);
-	InstancedWidget->CurrentSequence = CurrentSequence;
+	InstancedWidget->InitRespondentSelector(CurrentSequence, ResponsedObjects); 
 
 	// 노티파이 셀렉터는 특수한 케이스로 델리게이트 수행이 아닌
 	// 자체적으로 위젯이 업데이트 데이터 (UDMSNotifyRespondentSelector::UpdateData)를 실행하는 것으로
+	FOnSelectCompletedNative RespondentSelectCompleted;
+	RespondentSelectCompleted.BindLambda([=,NotifyManager=this](bool Succeed, const TArray<uint8>& Indexes){
 
-	SelHandle->SetupDelegates([=,NotifyManager=this]() {
-		// [ OK Bttn ]
-		auto OwnerSequence = InstancedWidget->CurrentSequence;
-		auto SequenceAttComp = OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
-		auto RespondentAttribute = SequenceAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent));
-		auto EffectInstanceAttribute = SequenceAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTagContainer(TAG_DMS_System_Notify_ActivatingEffect));
+		if(Succeed){
+			// [ OK Bttn ]
 
-		TScriptInterface<IDMSEffectorInterface> Respondent = RespondentAttribute ? RespondentAttribute->GetValue()[0] : nullptr;
-		ADMSActiveEffect* EffectInstance = EffectInstanceAttribute ? Cast<ADMSActiveEffect>(EffectInstanceAttribute->GetValue()[0]) : nullptr;
-		if (EffectInstance == nullptr)
-		{
-			// Widget didn't made proper data.
-			ResponseCompleted.ExecuteIfBound();
-			InstancedWidget->CloseSelector();
-			return;
-		}
+			auto OwnerSequence = InstancedWidget->CurrentSequence;
+			auto SequenceAttComp = OwnerSequence->GetComponentByClass<UDMSAttributeComponent>();
+			auto RespondentAttribute = SequenceAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTagContainer(TAG_DMS_System_Notify_Respondent));
+			auto EffectInstanceAttribute = SequenceAttComp->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTagContainer(TAG_DMS_System_Notify_ActivatingEffect));
 
-		// prepare for resume. ( we'll check again but except responded one.)
-
-		// change this to per active effect.
-		if(!EffectInstance->EffectNode->bCanResponseMulTime)
-			InstancedWidget->ResponsedObjects.Remove(Respondent,EffectInstance);
-		TArray<ADMSActiveEffect*> NewRespondents;
-		InstancedWidget->ResponsedObjects.GenerateValueArray(NewRespondents);
-
-		ADMSSequence* NewSeq = EffectInstance->CreateApplyingSequence(Respondent->GetObject(), InstancedWidget->CurrentSequence);
-
-		NewSeq->AddToOnSequenceFinished_Native([=, ResumingSequence= InstancedWidget->CurrentSequence](bool PreviousResult){
-			// Replay response 
-			// NOTE :: What can we do with the Result of previous response? ( PreviousResult )
-			TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> LocalNRO;
-
-			if (ResumingSequence->SequenceState == EDMSSequenceState::SS_Canceled) 
+			TScriptInterface<IDMSEffectorInterface> Respondent = RespondentAttribute ? RespondentAttribute->GetValue()[0] : nullptr;
+			ADMSActiveEffect* EffectInstance = EffectInstanceAttribute ? Cast<ADMSActiveEffect>(EffectInstanceAttribute->GetValue()[0]) : nullptr;
+			if (EffectInstance == nullptr)
 			{
-				DMS_LOG_SIMPLE(TEXT("Resumed sequence was canceled"));
-				ResponseCompleted.ExecuteIfBound();
+				// Widget didn't made proper data.
+				ResponseCompleted.ExecuteIfBound(true);
+				InstancedWidget->CloseSelector();
 				return;
 			}
 
-			for (auto AE : NewRespondents)
-			{
-				AE->ReceiveNotify(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
-			}
+			// prepare for resume. ( we'll check again but except responded one.)
 
-			DMS_LOG_SIMPLE(TEXT("==== %s : RESUME RESPONSE ===="), *ResumingSequence->GetName());
+			// change this to per active effect.
+			if(!EffectInstance->EffectNode->bCanResponseMulTime)
+				InstancedWidget->ResponsedObjects.Remove(Respondent,EffectInstance);
+			TArray<ADMSActiveEffect*> NewRespondents;
+			InstancedWidget->ResponsedObjects.GenerateValueArray(NewRespondents);
 
-			NotifyManager->CreateRespondentSelector(ResumingSequence, LocalNRO,ResponseCompleted);
-		});		
+			ADMSSequence* NewSeq = EffectInstance->CreateApplyingSequence(Respondent->GetObject(), InstancedWidget->CurrentSequence);
 
-		UDMSCoreFunctionLibrary::GetDMSSequenceManager(NotifyManager)->RunSequence(NewSeq);
+			NewSeq->AddToOnSequenceFinished_Native([=, ResumingSequence= InstancedWidget->CurrentSequence](bool PreviousResult){
+				// Replay response 
+				// NOTE :: What can we do with the Result of previous response? ( PreviousResult )
+				TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> LocalNRO;
 
-		InstancedWidget->CloseSelector();
-		//...
-	}, [=, NotifyManager=this]() {
-		// [ X Bttn ]
+				if (ResumingSequence->SequenceState == EDMSSequenceState::SS_Canceled) 
+				{
+					DMS_LOG_SIMPLE(TEXT("Resumed sequence was canceled"));
+					ResponseCompleted.ExecuteIfBound(true);
+					return;
+				}
 
-		// Player choose to not run EI
-		ResponseCompleted.ExecuteIfBound();
-		//InstancedWidget->CurrentSequence->OnSequenceFinish();
-		InstancedWidget->CloseSelector();
+				for (auto AE : NewRespondents)
+				{
+					AE->ReceiveNotify(LocalNRO, ResumingSequence->OriginalEffectNode->bIsChainableEffect, ResumingSequence);
+				}
 
+				DMS_LOG_SIMPLE(TEXT("==== %s : RESUME RESPONSE ===="), *ResumingSequence->GetName());
+
+				NotifyManager->CreateRespondentSelector(ResumingSequence, LocalNRO,ResponseCompleted);
+				});		
+
+			UDMSCoreFunctionLibrary::GetDMSSequenceManager(NotifyManager)->RunSequence(NewSeq);
+
+			InstancedWidget->CloseSelector();
+			//...
+		}
+		else 
+		{
+			// [ X Bttn ]
+
+			// Player choose to not run EI
+			ResponseCompleted.ExecuteIfBound(true);
+			//InstancedWidget->CurrentSequence->OnSequenceFinish();
+			InstancedWidget->CloseSelector();
+
+		}	
 	});
+
+	SelHandle->SetupDelegate(RespondentSelectCompleted);
 	SelHandle->SetupSelector();
 	SelHandle->RunSelector();
 }
 
+bool UDMSNotifyManager::RegisterNotifyObject(TScriptInterface<IDMSEffectorInterface> Object)
+{
+	// Validation
+	if(Object.GetObject() == nullptr || !Object.GetObject()->Implements<UDMSEffectorInterface>() ) {DMS_LOG_SIMPLE(TEXT("NotifyManager : Register invalid item")); return false; }
+	if(NotifyObjects.Find(Object)!=INDEX_NONE) { DMS_LOG_SIMPLE(TEXT("NotifyManager : Register duplicate item")); return false;}
+
+	NotifyObjects.Add(Object);
+	return true;
+}
 
 void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* EffectInstance)
 {
@@ -251,10 +231,6 @@ void UDMSNotifyRespondentSelector::UpdateData(UObject* Respondent, UObject* Effe
 	}
 	Cast<UDMSAttributeValue_Object>(RespondentAtt->AttributeValue)->SetValue({Respondent});
 	Cast<UDMSAttributeValue_Object>(AEAtt->AttributeValue)->SetValue({EffectInstance});
-
-	//UDMSDataObjectSet* UpdatingData = CurrentSequence->SequenceDatas;
-	//UpdatingData->SetData(TAG_DMS_System_Notify_Respondent, Respondent);
-	//UpdatingData->SetData(TAG_DMS_System_Notify_ActivatingEffect, EffectInstance);
 }
 
 void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray)
@@ -266,4 +242,12 @@ void UDMSNotifyRespondentSelector::GetEffectInstancesFromObject(TScriptInterface
 
 	// Can't use multifind somehow ( Maybe key must be OBJECT? )
 	//ResponsedObjects.MultiFind(iObject, outArray,true);
+}
+
+void UDMSNotifyRespondentSelector::InitRespondentSelector(ADMSSequence* iCurrentSequence, const TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& iResponsedObjects)
+{
+	ResponsedObjects=iResponsedObjects;
+	ResponsedObjects.GenerateKeyArray(Respondents);
+	//InstancedWidget->ResponsedObjects.GetKeys(InstancedWidget->Respondents);
+	CurrentSequence = iCurrentSequence;
 }

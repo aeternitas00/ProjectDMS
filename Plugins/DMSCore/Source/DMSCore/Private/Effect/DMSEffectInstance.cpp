@@ -51,42 +51,11 @@ void ADMSActiveEffect::Apply(ADMSSequence* SourceSequence, const FOnTaskComplete
 		Contexts.Add(CurrentDef);
 	}
 
-	UDMSEffectApplyWorker__* NewWorker__ = NewObject<UDMSEffectApplyWorker__>(this);
-	NewWorker__->SetupApplyWorker(SourceSequence, this);
-	NewWorker__->SetupTaskWorkerDelegate(Contexts, OnApplyCompleted);
-	NewWorker__->RunTaskWorker(true);
-
-
-	//UDMSEffectApplyWorker* NewWorker = NewObject<UDMSEffectApplyWorker>(this);
-	//ApplyWorkers.Add(NewWorker);
-	//NewWorker->SetupWorker(SourceSequence,this,OnApplyCompleted);
-	//NewWorker->ApplyNextEffectDef(true);
+	UDMSEffectApplyWorker* NewWorker = NewObject<UDMSEffectApplyWorker>(this);
+	NewWorker->SetupApplyWorker(SourceSequence, this);
+	NewWorker->SetupTaskWorkerDelegate(Contexts, OnApplyCompleted);
+	NewWorker->RunTaskWorker(true);
 }
-
-//void ADMSActiveEffect::Apply(ADMSSequence* SourceSequence, const FResolveIteratingDelegate& OnApplyCompleted)
-//{
-//	//DMS_LOG_SCREEN(TEXT("%s : EI Apply [%s]"), *GetName(), *EffectNode->GenerateTagContainer().ToString());
-//
-//	//if (EffectNode->ConditionedEffectDefinitions.Num() == 0) {
-//	if (EffectNode->EffectDefinitions.Num() == 0) {
-//		OnApplyCompleted.ExecuteIfBound(SourceSequence,true);
-//		return;
-//	}
-//
-//	// If any of the Effects is predicted to fail, the sequence is handled as a failure.
-//	for (auto& CurrentDef : EffectNode->EffectDefinitions)
-//	{
-//		if (!CurrentDef->Predict(SourceSequence, this)){
-//			OnApplyCompleted.ExecuteIfBound(SourceSequence,false);
-//			return;
-//		}
-//	}
-//
-//	UDMSEffectApplyWorker* NewWorker = NewObject<UDMSEffectApplyWorker>(this);
-//	ApplyWorkers.Add(NewWorker);
-//	NewWorker->SetupWorker(SourceSequence,this,OnApplyCompleted);
-//	NewWorker->ApplyNextEffectDef(true);
-//}
 
 IDMSEffectorInterface* ADMSActiveEffect::GetApplyTargetInterface()
 {
@@ -115,11 +84,6 @@ void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode,const EDMSAEState& Initi
 		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag,Attribute.DefaultValue);
 	CurrentState = InitialState;
 }
-
-//void ADMSActiveEffect::SetupDatas(UDMSDataObjectSet* iSet) 
-//{ 
-//	DataSet = iSet != nullptr ? iSet : NewObject<UDMSDataObjectSet>(this); 
-//}
 
 void ADMSActiveEffect::InheritSequenceDatas(ADMSSequence* iSeq)
 { 
@@ -179,13 +143,6 @@ void ADMSActiveEffect::DetachFromOwner()
 	Comp->DetachActiveEffect(this);
 }
 
-void ADMSActiveEffect::CleanupWorker(UDMSEffectApplyWorker* Worker)
-{
-	DMS_LOG_C(Warning);
-	ApplyWorkers.Remove(Worker);
-	Worker->MarkAsGarbage();
-}
-
 void ADMSActiveEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -195,7 +152,6 @@ void ADMSActiveEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ADMSActiveEffect, AttributeComponent);
 
 }
-
 
 void ADMSActiveEffect::Serialize(FArchive& Ar)
 {
@@ -232,103 +188,15 @@ void ADMSActiveEffect::Serialize(FArchive& Ar)
 
 }
 
-void UDMSEffectApplyWorker::SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI,const FOnApplyCompleted& iOnApplyCompleted)
+void UDMSEffectApplyWorker::SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI)
 {
 	SourceSequence = iSequence;
 	OwnerInstance = iEI;
-	ApplyingEffect = iEI->EffectNode;
-	//ApplyingEffectDefinitions = iEDs;
-	CurrentEDIndex = 0;
-	CompletedDelegate = iOnApplyCompleted;
-	IteratingDelegate.BindDynamic(this, &UDMSEffectApplyWorker::ApplyNextEffectDef);
+	IteratingDelegate.BindDynamic(this, &UDMSEffectApplyWorker::CompleteSingleTask);
+	EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
 }
 
-void UDMSEffectApplyWorker::ApplyNextEffectDef(bool PrevSucceeded)
-{
-	if (!PrevSucceeded)
-	{
-		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate ===="),*SourceSequence->GetName());
-		// DISCUSSION :: Stopping immediately when failed is FINE?
-		OwnerInstance->OnApplyComplete();
-		//OwnerInstance->CleanupWorker(this);
-		CompletedDelegate.ExecuteIfBound(SourceSequence, false);
-		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate closed ===="),*SourceSequence->GetName());
-		return;
-	}
-
-	//if (CurrentEDIndex == ApplyingEffectDefinitions.Num()) {
-	if (CurrentEDIndex == ApplyingEffect->EffectDefinitions.Num()) {
-		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate ===="),*SourceSequence->GetName());
-		// 여기서 AEState를 원상복구 할시 During notify부터 부착된 이펙트들이 다시 노티파이 콜을 받을 수 있는 상태가 되므로 조정이 필요함.
-		OwnerInstance->OnApplyComplete();
-		OwnerInstance->CleanupWorker(this);
-		CompletedDelegate.ExecuteIfBound(SourceSequence, true);
-		DMS_LOG_SIMPLE(TEXT("==== %s : ON Apply CompletedDelegate closed ===="),*SourceSequence->GetName());
-	}
-	else {
-		//CurrentDef = ApplyingEffectDefinitions[CurrentEDIndex++];
-		CurrentDef = ApplyingEffect->EffectDefinitions[CurrentEDIndex++];
-		FString DebugStr = CurrentDef->GetEffectTags().ToString();
-		DMS_LOG_SIMPLE(TEXT("==== %s : ApplyNextEffectDef [%s] ===="),*SourceSequence->GetName(),*DebugStr);
-
-		// ====================== //
-		//    Effect Canceling    //
-		// ====================== // 
-		// Have to think about more complicated situations.
-
-		// Check CurrentDef which is a part of EI's effect has to be ignored.
-		//FGameplayTagQuery Query;
-		//if (SourceSequence->SequenceDatas->ContainData(TAG_DMS_Effect_IgnoreEffect) &&
-		//	SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->TypeCheck<FGameplayTagQuery>())
-		//	Query = SourceSequence->SequenceDatas->GetData(TAG_DMS_Effect_IgnoreEffect)->Get<FGameplayTagQuery>();
-
-		//if (Query.IsEmpty() || !Query.Matches(FGameplayTagContainer(CurrentDef->GetEffectTags()))) {
-		//	
-			//// Predict check moved to before than setupworkers
-			//ExecutedOptionNum = 0;
-			//EffectOptionCompleted.Unbind();
-			//EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
-			//CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
-		//}
-
-		//else {
-
-		//	// Ignored effect is considered to Succeeded.
-		//	ApplyNextEffectDef(true);
-		//}
-
-		ExecutedOptionNum = 0;
-		EffectOptionCompleted.Unbind();
-		EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker::OnEffectOptionCompleted);
-		CurrentDef->ExecuteEffectOptions(SourceSequence, OwnerInstance, EffectOptionCompleted);
-
-		DMS_LOG_SIMPLE(TEXT("==== %s : ApplyNextEffectDef closed [%s] ===="),*SourceSequence->GetName(),*DebugStr);
-	}
-	
-}
-
-void UDMSEffectApplyWorker::OnEffectOptionCompleted(UDMSEffectOption* CompletedOption)
-{
-	if (CompletedOption!=nullptr && CompletedOption->NextOption != nullptr)
-	{
-		CompletedOption->NextOption->ExecuteOption(SourceSequence, OwnerInstance, EffectOptionCompleted);
-		return;
-	}
-	if (CurrentDef->EffectOptions.Num() <= ++ExecutedOptionNum)
-	{
-		CurrentDef->ExecuteEffectDefinition(SourceSequence, OwnerInstance, IteratingDelegate);
-	}
-}
-
-void UDMSEffectApplyWorker__::SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI)
-{
-	SourceSequence = iSequence;
-	OwnerInstance = iEI;
-	IteratingDelegate.BindDynamic(this, &UDMSEffectApplyWorker__::CompleteSingleTask);
-	EffectOptionCompleted.BindDynamic(this, &UDMSEffectApplyWorker__::OnEffectOptionCompleted);
-}
-
-void UDMSEffectApplyWorker__::Work_Implementation()
+void UDMSEffectApplyWorker::Work_Implementation()
 {
 	// ====================== //
 	//    Effect Canceling    //
@@ -364,7 +232,7 @@ void UDMSEffectApplyWorker__::Work_Implementation()
 	DMS_LOG_SIMPLE(TEXT("==== %s : ApplyNextEffectDef closed [%s] ===="),*SourceSequence->GetName(),*DebugStr);
 }
 
-void UDMSEffectApplyWorker__::OnEffectOptionCompleted(UDMSEffectOption* CompletedOption)
+void UDMSEffectApplyWorker::OnEffectOptionCompleted(UDMSEffectOption* CompletedOption)
 {
 	if (CompletedOption!=nullptr && CompletedOption->NextOption != nullptr)
 	{
@@ -377,7 +245,7 @@ void UDMSEffectApplyWorker__::OnEffectOptionCompleted(UDMSEffectOption* Complete
 	}
 }
 
-void UDMSEffectApplyWorker__::OnAllTaskCompleted_Implementation(bool WorkerSucceeded)
+void UDMSEffectApplyWorker::OnAllTaskCompleted_Implementation(bool WorkerSucceeded)
 {
 	OwnerInstance->OnApplyComplete();
 	//OwnerInstance->CleanupWorker(this);

@@ -59,25 +59,6 @@ void UDMSEffect_ActivateEffect::Work_Implementation(ADMSSequence* SourceSequence
 	SourceSequence->AddEffectsToChildQueue(Sequences,ResumeDelegate);
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN FIRST EFFECT ===="),*SourceSequence->GetName());
 	SourceSequence->RunChildEffectQueue();
-
-	//for ( int i=0; i<Sequences.Num() ; i++ ) 
-	//{
-	//	if ( i < Sequences.Num()-1) { // Loop for all effect 
-	//		Sequences[i]->AddToPreSequenceFinished_Native([=,NextIdx = i+1, NextSequence = Sequences[i+1]](bool ChildSeqSucceeded) {
-	//			DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN NEXT EFFECT [%d] ===="),*SourceSequence->GetName(),NextIdx);
-	//			SeqMan->RunSequence(NextSequence);
-	//			DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect run sequence lambda ends ===="),*SourceSequence->GetName());
-	//		});
-	//	}
-	//	else { // End of work 
-	//		Sequences[i]->AddToPreSequenceFinished_Native([=](bool ChildSeqSucceeded) {
-	//			DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
-	//			OnWorkCompleted.ExecuteIfBound(ChildSeqSucceeded);
-	//			DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect completed lambda ends ===="),*SourceSequence->GetName());
-	//		});
-	//	}
-	//}
-	//SeqMan->RunSequence(Sequences[0]);
 }
 
 UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(ADMSActiveEffect* iEI)

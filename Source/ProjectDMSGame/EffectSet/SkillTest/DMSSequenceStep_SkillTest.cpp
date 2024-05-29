@@ -270,7 +270,7 @@ bool UDMSSequenceStepDefinition_SkillTest::GetProgressOps_Implementation(const F
 //	
 //	SkillTestWidget->OwnerStep = this;
 //
-//	Handle->SetupDelegates([this,SkillTestWidget](){
+//	Handle->SetupDelegate([this,SkillTestWidget](){
 //		// WidgetCompleted
 //		SkillTestWidget->CloseSelector();
 //		UDMSDataObjectSet* DataSet = OwnerSequence->SequenceDatas;

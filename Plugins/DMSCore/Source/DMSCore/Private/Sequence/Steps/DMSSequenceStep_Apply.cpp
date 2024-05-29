@@ -60,7 +60,8 @@ void UDMSSequenceStepDefinition_Apply::Progress_During(UDMSSequenceStep* Instanc
 void UDMSSequenceStepDefinition_Apply::Progress_After(UDMSSequenceStep* InstancedStep)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Step progress After ===="), *GetClass()->GetName());
-	BroadcastProgress(InstancedStep,FName("ApplyChildEffect"));
+	BroadcastProgress(InstancedStep,FName(NAME_None));
+	//BroadcastProgress(InstancedStep,FName("ApplyChildEffect"));
 }
 
 void UDMSSequenceStepDefinition_Apply::ApplyChildEffect(UDMSSequenceStep* InstancedStep)

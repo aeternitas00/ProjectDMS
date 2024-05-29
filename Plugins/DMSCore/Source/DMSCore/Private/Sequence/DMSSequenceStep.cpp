@@ -70,7 +70,7 @@ void UDMSSequenceStep::ProgressEnd(bool bSucceeded)
 	else {
 		//DMS_LOG_SIMPLE(TEXT("==== %s : ON Progress FAILED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
 	}
-
+	bFTFlag=0;
 	if(!bSucceeded){OwnerSequence->OnStepQueueCompleted(false); return;}
 	if(IsProgressQueueFinished()) {OwnerSequence->OnStepQueueCompleted(true); return;}
 	CurrentProgressIndex++; ExecuteNextProgress();
@@ -95,11 +95,6 @@ FGameplayTagContainer UDMSSequenceStep::GetCurrentProgressTags()
 	return rv;
 }
 
-//TArray<UDMSEffectDefinition*> UDMSSequenceStep::GetCurrentResolveContext(ADMSActiveEffect* CurrentAE)
-//{
-//	return ProgressExecutors[CurrentProgressIndex].ExecutingStep->GetStepResolvingContext(CurrentAE, this);
-//}
-
 void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName, bool bFT)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : Broadcast Step progress [%s] ===="), *InstancedStep->OwnerSequence->GetName(), *GetClass()->GetName());
@@ -107,27 +102,28 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	auto NotifyManager = UDMSCoreFunctionLibrary::GetDMSNotifyManager(InstancedStep);
 	check(NotifyManager);
 	InstancedStep->bFTFlag=bFT;
-	FSimpleDelegate AfterBroadcast;
+	FOnTaskCompletedNative AfterBroadcast;
 	if( AfterFunctionName.IsNone() ) {
-		AfterBroadcast.BindLambda( [=](){ 
+		AfterBroadcast.BindLambda( [=](bool){
 			FGameplayTag seqtag = InstancedStep->GetCurrentProgressExactTag();
-			InstancedStep->bFTFlag=0;
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
 			InstancedStep->ProgressEnd(true);
 			DMS_LOG_SIMPLE(TEXT("==== %s : after broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
-		});
+			});	
 	}
-	else{
-		AfterBroadcast.BindLambda( [=](){
-			FGameplayTag seqtag = InstancedStep->GetCurrentProgressExactTag();
+	else
+	{
+		AfterBroadcast.BindLambda( [=](bool){
 			InstancedStep->bFTFlag=0;
+			FGameplayTag seqtag = InstancedStep->GetCurrentProgressExactTag();
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
 			UDMSSequenceStep* Param = InstancedStep;
 			this->ProcessEvent(this->FindFunction(AfterFunctionName),&Param);
 			DMS_LOG_SIMPLE(TEXT("==== %s : after broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
-		});
+		});	
 	}
-	NotifyManager->Broadcast(InstancedStep->OwnerSequence,AfterBroadcast);
+	NotifyManager->Broadcast(InstancedStep->OwnerSequence, AfterBroadcast);
+
 	DMS_LOG_SIMPLE(TEXT("==== %s : Broadcast Step progress end [%s] ===="), *InstancedStep->OwnerSequence->GetName(), *GetClass()->GetName());
 }
 

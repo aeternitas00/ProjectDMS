@@ -9,9 +9,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectorCompletedDynamic, TArray<uint8>, SelectedIndex);
 DECLARE_DELEGATE_OneParam(FOnSelectorCompleted, TArray<uint8>);
+DECLARE_DELEGATE_TwoParams(FOnSelectCompletedNative, bool, TArray<uint8>);
 
 class UDMSSelectorBase;
-class UDMSWidgetQueue;
 class UDMSAttributeValue;
 
 /**
@@ -60,7 +60,8 @@ public:
 
 	TObjectPtr<UDMSSelectorBase> Widget;
 
-	TObjectPtr<UDMSWidgetQueue> OwnerQueue;
+	bool bAutoExecuteForm;
+	//TObjectPtr<UDMSWidgetQueue> OwnerQueue;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -87,31 +88,11 @@ public:
 
 	/**
 	 * Setup this selector widget's OnCompleted and OnCanceled delegates.
-	 * @param	iOnCompleted				Lambda parameter binded to OnSelectCompleted.
-	 * @param	iOnCanceled					Lambda parameter binded to OnSelectCanceled.
 	 */
-	template<typename FuncCompleted , typename FuncCanceled > // 나중에 universal reference 읽어보기
-	void SetupDelegates ( FuncCompleted&& iOnCompleted , FuncCanceled&& iOnCanceled );
+	void SetupDelegate(const FOnSelectCompletedNative& iOnCompleted);
 
-
-	//UDELEGATE(BlueprintAuthorityOnly)
-
-	DECLARE_MULTICAST_DELEGATE (FOnSelectorHandleCompleted);
-	DECLARE_MULTICAST_DELEGATE (FOnSelectorHandleCanceled);
-
-	FOnSelectorHandleCompleted OnSelectCompleted;
-	FOnSelectorHandleCanceled OnSelectCanceled;
+	FOnSelectCompletedNative OnSelectionCompleted;
 };
-
-template<typename FuncCompleted , typename FuncCanceled>
-void UDMSSelectorHandle::SetupDelegates( FuncCompleted&& iOnCompleted , FuncCanceled&& iOnCanceled )
-{
-	OnSelectCompleted.Clear();
-	OnSelectCanceled.Clear();
-
-	OnSelectCompleted.AddLambda( std::forward<FuncCompleted&&> ( iOnCompleted ) );
-	OnSelectCanceled.AddLambda( std::forward<FuncCanceled&&> ( iOnCanceled ) );
-}
 
 /**
  *	Management class that sends queries to the client side during game event processing on the server side, 

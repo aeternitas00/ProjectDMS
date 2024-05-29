@@ -43,23 +43,23 @@ public:
 	/**
 	 * Container for widgets used by the player to make decisions during the progress of a sequence.
 	 */
-	UPROPERTY()
-	TObjectPtr<UDMSWidgetQueue> WidgetQueue;
+	//UPROPERTY()
+	//TObjectPtr<UDMSWidgetQueue> WidgetQueue;
 
-	UFUNCTION(/*Client*/)
-	bool SetupWidgetQueue(ADMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);
+	//UFUNCTION(/*Client*/)
+	//bool SetupWidgetQueue(ADMSSequence* SourceSequence, TArray<UDMSSelectorHandle*> Handles);
 
-	template<typename FuncFinished, typename FuncCanceled >
-	void RunWidgetQueue(FuncFinished&& iOnQueueFinished, FuncCanceled&& iOnQueueCanceled);
+	//template<typename FuncFinished, typename FuncCanceled >
+	//void RunWidgetQueue(FuncFinished&& iOnQueueFinished, FuncCanceled&& iOnQueueCanceled);
 
 };
 
 
-template<typename FuncFinished, typename FuncCanceled >
-void ADMSPlayerControllerBase::RunWidgetQueue(FuncFinished&& iOnQueueFinished, FuncCanceled&& iOnQueueCanceled)
-{
-	WidgetQueue->RunWidgetQueue(
-		std::forward<FuncFinished&&>(iOnQueueFinished),
-		std::forward<FuncCanceled&&>(iOnQueueCanceled)
-	);
-}
+//template<typename FuncFinished, typename FuncCanceled >
+//void ADMSPlayerControllerBase::RunWidgetQueue(FuncFinished&& iOnQueueFinished, FuncCanceled&& iOnQueueCanceled)
+//{
+//	WidgetQueue->RunWidgetQueue(
+//		std::forward<FuncFinished&&>(iOnQueueFinished),
+//		std::forward<FuncCanceled&&>(iOnQueueCanceled)
+//	);
+//}

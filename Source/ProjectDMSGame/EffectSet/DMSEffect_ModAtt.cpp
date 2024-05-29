@@ -138,11 +138,13 @@ bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActive
 
 	if (Att == nullptr) return false;
 
+	UDMSAttributeValue* TempValue = DuplicateObject<UDMSAttributeValue>(Att->AttributeValue,EI);
+
 	for (auto& Prc : ValueProcessers)
-		Prc->Process(Att->AttributeValue);	
+		Prc->Process(TempValue);	
 	
 	OutModifier.ModifierOp = ModifierOp;
-	OutModifier.Value = Att->AttributeValue;
+	OutModifier.Value = TempValue;
 	return true;
 }
 

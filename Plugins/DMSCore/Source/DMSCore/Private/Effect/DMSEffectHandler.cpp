@@ -171,7 +171,7 @@ void UDMSEffectHandler::CleanupNonPersistent()
 void UDMSEffectResolveWorker::SetupResolveWorker(ADMSSequence* iSequence)
 {
 	SourceSequence=iSequence; 
-	IteratingDelegate.BindDynamic(this, &UDMSSynchronousTaskWorker::CompleteSingleTask);
+	IteratingDelegate.BindDynamic(this, &UDMSEffectResolveWorker::CompleteSingleTask);
 }
 
 void UDMSEffectResolveWorker::Work_Implementation()

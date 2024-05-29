@@ -17,6 +17,7 @@
 
 #include "DMSCoreIncludes.h"
 #include "Components/ActorComponent.h"
+#include "Common/DMSSynchronousTaskWorker.h"
 #include "Sequence/DMSSequence.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Effect/DMSEffectorInterface.h"
@@ -25,6 +26,35 @@
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_Respondent)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_System_Notify_ActivatingEffect)
+
+UCLASS()
+class DMSCORE_API UDMSForcedEffectContext : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	TScriptInterface<IDMSEffectorInterface> Respondent;
+	UPROPERTY()
+	TObjectPtr<ADMSActiveEffect> ActiveEffect;
+};
+	
+UCLASS()
+class DMSCORE_API UDMSForcedEffectWorker : public UDMSSynchronousTaskWorker
+{
+	GENERATED_BODY()
+
+private:
+	TObjectPtr<ADMSSequence> SourceSequence;
+
+public:
+	FOnExecuteCompleted IteratingDelegate;
+
+	void SetupForcedWorker(ADMSSequence* iSequence);
+
+	virtual void Work_Implementation();
+	//virtual void OnAllTaskCompleted_Implementation(bool WorkerSucceeded);
+};
 
 
 
@@ -63,6 +93,8 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray);
+
+	void InitRespondentSelector(ADMSSequence* iCurrentSequence, const TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& iResponsedObjects);
 };
 /**
  *	========================================
@@ -93,22 +125,22 @@ protected:
 	/**
 	 * Structure for implementing chained delegates to ensure synchronization in the Notify step.
 	 */
-	struct FForcedEICounter {
-		//FOnForcedSequenceCompleted ClosingDelegate;
-		uint8 Count = 0;
-		TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> NonForcedObjects;
-		TArray<TPair<AActor*, ADMSActiveEffect*>> ForcedObjects;	
-		//FForcedEIIteratingDelegate IteratingDelegate;
-	};
+	//struct FForcedEICounter {
+	//	//FOnForcedSequenceCompleted ClosingDelegate;
+	//	uint8 Count = 0;
+	//	TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> NonForcedObjects;
+	//	TArray<TPair<AActor*, ADMSActiveEffect*>> ForcedObjects;	
+	//	//FForcedEIIteratingDelegate IteratingDelegate;
+	//};
 
 	/**
 	 * Store FForcedEICounter for each sequences.
 	 */
-	TMap<ADMSSequence*, FForcedEICounter> ForcedEIMap;
+	//TMap<ADMSSequence*, FForcedEICounter> ForcedEIMap;
 
-	void ActivateNextForced(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
+	//void ActivateNextForced(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
 
-	void ForcedFinished(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
+	//void ForcedFinished(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
 
 	/**
 	 * Widget class to be used for selecting response objects in the game mode that uses this notify manager.
@@ -123,7 +155,7 @@ public:
 	* @param	NotifyData						Current sequence.
 	* @param	ResponseCompleted				
 	*/
-	void Broadcast(ADMSSequence* NotifyData, const FSimpleDelegate& ResponseCompleted);
+	void Broadcast(ADMSSequence* NotifyData, const FOnTaskCompletedNative& ResponseCompleted);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.
@@ -138,7 +170,7 @@ public:
 	 * @param	CurrentSequence					Current sequence.
 	 * @param	ResponsedObjects				Out Responsed object.
 	 */
-	void CreateRespondentSelector(ADMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects,const FSimpleDelegate& ResponseCompleted);
+	void CreateRespondentSelector(ADMSSequence* CurrentSequence, TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& ResponsedObjects, const FOnTaskCompletedNative& ResponseCompleted);
 
 	/**
 	 * Broadcast sequence for NotifyObjects.
