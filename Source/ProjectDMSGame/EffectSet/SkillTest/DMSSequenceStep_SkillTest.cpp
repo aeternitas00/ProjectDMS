@@ -37,12 +37,28 @@ void UDMSSequenceStepDefinition_SkillTest::SetupTargets(UDMSSequenceStep* Instan
 
 FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetSeqAttributeTag_Tester()
 {
-	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.SkillValue").GetSingleTagContainer();
+	FGameplayTagContainer rv;
+	rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.SkillValue"));
+	rv.AppendTags(DefaultSkillTestData.StatName);
+	return rv;
+	//return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.SkillValue").GetSingleTagContainer();
 }
 
 FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetSeqAttributeTag_TestTarget()
 {
-	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Difficulty").GetSingleTagContainer();
+	FGameplayTagContainer rv;
+	rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Difficulty"));
+	rv.AppendTags(DefaultSkillTestData.TargetStatName);
+	return rv;
+	//return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.Difficulty").GetSingleTagContainer();
+}
+
+FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetSeqAttributeTag_Wild()
+{
+	FGameplayTagContainer rv;
+	rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.SkillValue"));
+	rv.AddTag(FGameplayTag::RequestGameplayTag("Attribute.Arkham.Skill.Wild"));
+	return rv;
 }
 
 void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* InstancedStep)
@@ -138,12 +154,14 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST6(UDMSSequenceStep* Instan
 	auto ResultAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),true);
 
 	auto TesterAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(GetSeqAttributeTag_Tester(), true);
+	auto WildAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(GetSeqAttributeTag_Wild(), true);
 	auto TestTargetAttribute = SeqAttComp->GetTypedAttributeValue<UDMSAttributeValue_Numeric>(GetSeqAttributeTag_TestTarget(), true);
 
 	if(!TesterAttribute || !TestTargetAttribute)
 		ResultAttribute->SetValue(0);
 	else {
 		float Result = TesterAttribute->GetValue() - TestTargetAttribute->GetValue();
+		if(WildAttribute) Result += WildAttribute->GetValue();
 		ResultAttribute->SetValue(Result);
 	}
 	BroadcastProgress(InstancedStep,FName(NAME_None));

@@ -23,6 +23,23 @@ TArray<UObject*> UDMSTargetGenerator_SourcePlayer::GetTargets_Implementation(UOb
 	return { CurrentSequence->GetSourcePlayer() };
 }
 
+TArray<UObject*> UDMSTargetGenerator_UseParentSequence::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
+{
+	ADMSSequence* UsingSequence = CurrentSequence->ParentSequence;
+
+	if(!SequenceTagQuery.IsEmpty())
+	{
+		while(UsingSequence)
+		{
+			if (UsingSequence->GetSequenceTags().MatchesQuery(SequenceTagQuery)) break;
+			UsingSequence = UsingSequence->ParentSequence;
+		}
+	}
+
+	return UsingSequence ? ParentTargetGenerator->GetTargets(Caller,UsingSequence) : TArray<UObject*>();
+}
+
+
 TArray<UObject*> UDMSTargetGenerator_FollowParentSeq::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
 {
 	TArray<UObject*> rv;
@@ -75,6 +92,14 @@ TArray<UObject*> UDMSTargetGenerator_Sequence::GetTargets_Implementation(UObject
 	return { CurrentSequence };
 }
 
+TArray<UObject*> UDMSTargetGenerator_SequenceAEs::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
+{
+	TArray<UObject*> rv;
+	for(auto& AE : CurrentSequence->GetAllActiveEffects()) rv.Add(AE);
+	return rv;
+}
+
+
 TArray<UObject*> UDMSTargetGenerator_OwnerOfCaller::GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const
 {
 	if (Caller->Implements<UDMSEffectorInterface>()) return { Cast<IDMSEffectorInterface>(Caller)->Execute_GetOwningPlayer(Caller) };
@@ -108,3 +133,4 @@ TArray<UObject*> UDMSTargetGenerator_UseTGAsCaller::GetTargets_Implementation(UO
 	}
 	return rv;
 }
+

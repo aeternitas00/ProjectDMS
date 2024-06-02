@@ -91,17 +91,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = SkillTest)
 	FDMSSkillTestData DefaultSkillTestData;
 
-	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = SkillTest)
-	//TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
-
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = SkillTest, Instanced)
-	//TObjectPtr<class UDMSEffectNodeWrapper> TestFailedEffect;
 
 	void SetupTargets(UDMSSequenceStep* InstancedStep, TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
 
 	FGameplayTagContainer GetSeqAttributeTag_Tester();
 
 	FGameplayTagContainer GetSeqAttributeTag_TestTarget();
+
+	FGameplayTagContainer GetSeqAttributeTag_Wild();
 
 	UFUNCTION()
 	void Progress_ST1(UDMSSequenceStep* InstancedStep);
@@ -127,92 +124,3 @@ public:
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 
-
-// LEGACY
-
-
-/**
-* Skill test is for one tester : one test target 
-*/
-//UCLASS()
-//class PROJECTDMSGAME_API UDMSSequenceStep_SkillTest : public UDMSSequenceStep
-//{
-//	GENERATED_BODY()
-//
-//protected: 
-//
-//public: 
-//	UDMSSequenceStep_SkillTest();
-//
-//	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-//	FDMSSkillTestData SkillTestData;
-//
-//	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-//	TSubclassOf<UDMSSelector_SkillTest> SkillTestWidgetClass;
-//
-//	static const FGameplayTag SkillBonusTag;
-//
-//	void SetupTargets(TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
-//	//virtual void OnStepInitiated() override;
-//
-//	//virtual void OnBefore_Implementation() override;
-//	//virtual void OnDuring_Implementation() override;
-//	//virtual void OnAfter_Implementation() override;
-//
-//	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-//	float CalculateSkillTestResult(AActor* Tester, AActor* TestTarget,float BonusValue);
-//	virtual float CalculateSkillTestResult_Implementation(AActor* Tester, AActor* TestTarget,float BonusValue);
-//	//...
-//	// Branch for failed Skill test?
-//	UFUNCTION(BlueprintNativeEvent)
-//	void OnSkillTestCompleted();
-//	virtual void OnSkillTestCompleted_Implementation();
-//
-//	UFUNCTION(BlueprintNativeEvent)
-//	void OnSkillTestFailed();
-//	virtual void OnSkillTestFailed_Implementation();
-//
-//	UFUNCTION(BlueprintCallable,BlueprintPure)
-//	bool IsTestByEachApplyTarget() const;
-//
-//	virtual FGameplayTagContainer GetStepTag_Implementation() const;
-//};
-
-// 변종 테스트의 경우는 상속 받아서 변경하는 것으로 구현하는게 맞을듯.
-//UCLASS(Blueprintable, Abstract)
-//class PROJECTDMSGAME_API UDMSSelector_SkillTest : public UDMSSelectorBase
-//{
-//	GENERATED_BODY()
-//
-//public:
-//	UPROPERTY(BlueprintReadOnly)
-//	TObjectPtr<UDMSSequenceStep_SkillTest> OwnerStep;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	int CurrentEIIndex;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	int EIIndexMax;
-//
-//	TArray<std::function<void()>> Updaters;
-//	TArray<float> UsedBonusValues;
-//
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	TArray<TObjectPtr<AActor>> TesterCandidates;
-//
-//	UPROPERTY(BlueprintReadOnly)
-//	TArray<TObjectPtr<AActor>> TestTargetCandidates;
-//
-//	UFUNCTION(BlueprintCallable)
-//	void PushResultUpdater(AActor* Tester, AActor* TestTarget = nullptr, float BonusValue = 0.0f);
-//
-//	UFUNCTION(BlueprintCallable)
-//	void PopResultUpdater();
-//
-//	UFUNCTION(BlueprintCallable)
-//	void UpdateSkillTestResult();
-//
-//	UFUNCTION(BlueprintCallable)
-//	float GetUsableBonus(AActor* Tester);
-//};

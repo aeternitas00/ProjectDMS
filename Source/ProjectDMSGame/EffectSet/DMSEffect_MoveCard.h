@@ -30,6 +30,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Effect, meta = (DisplayName = "Owner of Container ( Use first of found )"))
 	TObjectPtr<UDMSTargetGenerator> ContainerOwner;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	bool ShuffleAfterMove;
+
 	virtual void Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted) override;
 	virtual bool Predict_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI) override;
 };

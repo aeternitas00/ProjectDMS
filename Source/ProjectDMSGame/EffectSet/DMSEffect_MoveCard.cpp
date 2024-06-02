@@ -55,6 +55,7 @@ void UDMSEffect_MoveCard::Work_Implementation(ADMSSequence* SourceSequence, ADMS
 	{
 		DMS_LOG_SCREEN(TEXT("%s : Move Spawnable to %s"), *iEI->GetName(), *Container_Destination->GetName());
 		UDMSContainerManagerComponent::MigrateObjects(Spawnable, Container_Destination, 0);
+		if(ShuffleAfterMove) Container_Destination->ShuffleTopNObjects();
 	}
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : MOVE CARD WORK COMPLETED ===="), *SourceSequence->GetName());

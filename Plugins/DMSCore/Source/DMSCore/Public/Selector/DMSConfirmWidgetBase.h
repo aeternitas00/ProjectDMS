@@ -36,7 +36,8 @@ public:
 	/**
 	 * Ref of owner handle.
 	 */
-	UDMSSelectorHandle* OwnerHandle;
+	UPROPERTY()
+	TObjectPtr<UDMSSelectorHandle> OwnerHandle;
 
 	UFUNCTION(BlueprintCallable,BlueprintPure,meta = (CompactNodeTitle = "SelectAmount"))
 	uint8 GetSelectAmount() const;

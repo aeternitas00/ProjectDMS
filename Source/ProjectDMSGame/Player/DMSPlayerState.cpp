@@ -29,23 +29,7 @@ ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPl
 
 	ContainerManagerComponent->SetIsReplicated(true);
 	AttributeComponent->SetIsReplicated(true);
-
-
-	//DefaultStats.Add(TAG_DMS_Attribute_Resource, 10);
-	//DefaultStats.Add(TAG_DMS_Attribute_ActionPoint, 10);
-	//DefaultStats.Add(TAG_DMS_Attribute_HP, 10);
-	//DefaultStats.Add(TAG_DMS_Attribute_STR, 5);
-	//DefaultStats.Add(TAG_DMS_Attribute_INT, 5);
-	//DefaultStats.Add(TAG_DMS_Attribute_DEX, 5);
-	//DefaultStats.Add(TAG_DMS_Attribute_SavedSkillBonus, 0);
 }
-
-//void ADMSPlayerState::SetupCardContainers()
-//{
-	//for (auto ContainerDef : ContainerTypes) {
-	//	CardManagerComponent->ConstructContainer(ContainerDef.Key, ContainerDef.Value);
-	//}
-//}
 
 void ADMSPlayerState::SetupAttributes()
 {

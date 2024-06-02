@@ -107,6 +107,15 @@ public:
 };
 
 UCLASS()
+class DMSCORE_API UDMSTargetGenerator_SequenceAEs: public UDMSTargetGenerator
+{
+	GENERATED_BODY()
+
+public:
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};
+
+UCLASS()
 class DMSCORE_API UDMSTargetGenerator_OwnerOfCaller : public UDMSTargetGenerator
 {
 	GENERATED_BODY()
@@ -132,6 +141,21 @@ public:
 	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
 };
 
+UCLASS()
+class DMSCORE_API UDMSTargetGenerator_UseParentSequence: public UDMSTargetGenerator
+{
+	GENERATED_BODY()
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
+	TObjectPtr<UDMSTargetGenerator> ParentTargetGenerator;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	FGameplayTagQuery SequenceTagQuery;
+
+public:
+	virtual TArray<UObject*> GetTargets_Implementation(UObject* Caller, ADMSSequence* CurrentSequence) const;
+};
 
 UCLASS()
 class DMSCORE_API UDMSTargetGenerator_FromAttribute: public UDMSTargetGenerator
