@@ -63,8 +63,9 @@ void UDMSEffect_ModAtt::Work_Implementation(ADMSSequence* SourceSequence, ADMSAc
 		TArray<FDMSAttributeModifier> RevertMods;
 		TargetAtt->GetDeltasAfterModify(Modifier,iEI,RevertMods);
 
-		iEI->OnDetach.AddLambda([=](){
-			for (auto& RevertMod : RevertMods)
+		iEI->OnDetach.AddLambda([=,CaptureMods = RevertMods]()__declspec(noinline){
+			auto LocalMods = CaptureMods;
+			for (auto& RevertMod : LocalMods)
 				TargetAtt->ApplyModifier(RevertMod);
 		});
 	}

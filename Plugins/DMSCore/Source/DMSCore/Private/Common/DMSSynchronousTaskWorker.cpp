@@ -56,5 +56,7 @@ void UDMSSynchronousTaskWorker::CloseTaskWorker(bool WorkerSucceeded)
 {
 	OnAllTaskCompleted(WorkerSucceeded);
 	CompletedDelegate.ExecuteIfBound(WorkerSucceeded);
+	// TODO :: Improved GC Preventing
+	//RemoveFromRoot();
 	MarkAsGarbage();
 }

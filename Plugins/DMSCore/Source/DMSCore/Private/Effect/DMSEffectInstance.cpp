@@ -110,6 +110,23 @@ ADMSSequence* ADMSActiveEffect::CreateApplyingSequence(AActor* SourceTweak, ADMS
 bool ADMSActiveEffect::ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*>& outResponsedObjects, 
 	bool iChainable, ADMSSequence* Seq, AActor* SourceTweak)
 {
+	// Terminate condition check
+	if((CurrentState & EDMSAEState::AES_PendingTerminate) == EDMSAEState::AES_PendingTerminate){
+		if(!EffectNode->TerminateConditions)
+		{
+			// SOMETHING WRONG HAPPENED
+			//DMS_LOG_CALLINFO();
+			CurrentState &= ~EDMSAEState::AES_Persistent;
+			CurrentState |= EDMSAEState::AES_NotifyClosed;
+		}
+		if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) )
+		{
+			CurrentState &= ~EDMSAEState::AES_Persistent;
+			CurrentState |= EDMSAEState::AES_NotifyClosed;
+		}
+		return false;
+	}	
+	
 	// 1. Ignore condition check
 	if ( EffectNode->bIgnoreNotify || (CurrentState & EDMSAEState::AES_Persistent) != EDMSAEState::AES_Persistent ) return false;
 
@@ -121,10 +138,7 @@ bool ADMSActiveEffect::ReceiveNotify(TMultiMap<TScriptInterface<IDMSEffectorInte
 
 	// FURTHER CHECKS
 	SourceTweak = SourceTweak==nullptr? GetOwner() : SourceTweak;
-	// Terminate condition check
-	if ( EffectNode->TerminateConditions && EffectNode->TerminateConditions->CheckCondition(SourceTweak, Seq) ){
-		CurrentState &= ~EDMSAEState::AES_Persistent;
-	}
+
 	// Activate condition check
 	if ( EffectNode->Conditions->CheckCondition(SourceTweak, Seq) )
 	{

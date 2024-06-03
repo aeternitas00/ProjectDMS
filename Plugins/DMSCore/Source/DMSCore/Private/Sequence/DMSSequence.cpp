@@ -95,8 +95,8 @@ FGameplayTagContainer ADMSSequence::GetSequenceTags()
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
-	rv.AddTag(GetCurrentProgressExactTag());
-	//rv.AppendTags(GetCurrentProgressTags());
+	//rv.AddTag(GetCurrentProgressExactTag());
+	rv.AppendTags(GetCurrentProgressTags());
 	if(InstancedStep->bFTFlag) rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger"));
 	return rv;
 }
@@ -195,6 +195,11 @@ void ADMSSequence::OnSequenceFinish(bool Succeeded)
 	OnSequenceFinished.Broadcast(Succeeded);
 	OnSequenceFinishedDynamic.Broadcast(Succeeded);
 	
+	if(OriginalEffectNode->TerminateConditions){
+		for(auto& EIStorage : TargetAndEIs)		
+			for(auto& AE : EIStorage.EIs)
+				AE->ToggleEIState(EDMSAEState::AES_NotifyClosed);
+	}
 	OnSequenceFinished.Clear();
 	OnSequenceFinishedDynamic.Clear();
 

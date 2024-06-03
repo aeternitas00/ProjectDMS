@@ -32,10 +32,10 @@ class UDMSEIManagerComponent;
 UENUM(BlueprintType, Meta = (Bitflags,UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EDMSAEState : uint8
 {
-	AES_None			= 0x00			UMETA(Hidden),
-	AES_NotifyClosed	= 0x01			UMETA(DisplayName = "Don't receive notify"), 
-	AES_Persistent		= 0x01 << 1		UMETA(DisplayName = "Persistent"),
-	//AES_PendingKill		= 0x01 << 2		UMETA(DisplayName = "Pending to kill"),
+	AES_None				= 0x00			UMETA(Hidden),
+	AES_NotifyClosed		= 0x01			UMETA(DisplayName = "Don't receive notify"), 
+	AES_Persistent			= 0x01 << 1		UMETA(DisplayName = "Persistent"),
+	AES_PendingTerminate	= 0x01 << 2		UMETA(DisplayName = "Pending to terminate"),
 	AES_MAX				= MAX_uint8		UMETA(Hidden),
 	//...
 };

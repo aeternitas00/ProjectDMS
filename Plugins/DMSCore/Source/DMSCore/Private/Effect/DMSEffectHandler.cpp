@@ -79,7 +79,10 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(ADMSSequ
 			//if (EffectNode->bIsPersistent)	EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect_Persistent>(Param);
 			//else							EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect_Applying>(Param);
 			EDMSAEState InitialState = EDMSAEState::AES_NotifyClosed;
-			if(EffectNode->TerminateConditions) InitialState |= EDMSAEState::AES_Persistent; 
+			if(EffectNode->TerminateConditions){
+				InitialState |= EDMSAEState::AES_Persistent; 
+				InitialState |= EDMSAEState::AES_PendingTerminate;
+			}
 			EffectInstance = GetWorld()->SpawnActor<ADMSActiveEffect>(Param);
 			EffectInstance->AttachToActor(Target->GetObject(),FAttachmentTransformRules::SnapToTargetIncludingScale);
 			EffectInstance->Initialize(EffectNode,InitialState);

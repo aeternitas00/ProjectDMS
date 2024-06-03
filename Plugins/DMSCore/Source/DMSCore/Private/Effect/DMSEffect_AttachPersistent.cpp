@@ -32,22 +32,6 @@ void UDMSEffect_AttachPersistent::Work_Implementation(ADMSSequence* SourceSequen
 	for (auto Node : AttachingEffects){
 		EH->CreatePersistentActiveEffect(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Target->GetObject(), Node->GetEffectNode());
 	}
-	//if(bIsUsingSelector){
-	//	auto Data = iEI->DataSet->GetData(TAG_DMS_Effect_AttachPersistent);
-	//	if (Data!=nullptr && Data->TypeCheck<TArray<uint8>>()){
-	//		auto IndexArr = Data->Get<TArray<uint8>>();
-	//			
-	//		for (auto i : IndexArr) 
-	//			EH->CreatePersistentActiveEffect(SourceSequence->GetSourceObject(), SourceSequence->GetSourcePlayer(), Target->GetObject(), AttachingEffects[i]->GetEffectNode());
-	//	}
-	//}
-	//else{
-	//	
-	//}
-	//
-	//SourceSequence->AddToOnSequenceFinished_Native([AddedEIs](bool){
-	//	for (auto& EI : AddedEIs)	{EI->ToggleEIState(EDMSAEState::AES_Persistent);}
-	//});
 
 	OnWorkCompleted.ExecuteIfBound(true);
 }

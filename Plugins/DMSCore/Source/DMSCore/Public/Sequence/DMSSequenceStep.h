@@ -15,6 +15,8 @@ class DMSCORE_API UDMSSequenceStep : public UObject
 {
 	GENERATED_BODY()
 
+
+
 public:
 	UDMSSequenceStep();
 

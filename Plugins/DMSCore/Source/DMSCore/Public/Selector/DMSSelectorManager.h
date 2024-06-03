@@ -52,6 +52,7 @@ class DMSCORE_API UDMSSelectorHandle : public UObject
 {
 	GENERATED_BODY()
 
+
 public:
 	UDMSSelectorHandle();
 
@@ -61,7 +62,6 @@ public:
 	TObjectPtr<UDMSSelectorBase> Widget;
 
 	bool bAutoExecuteForm;
-	//TObjectPtr<UDMSWidgetQueue> OwnerQueue;
 
 public:
 	UFUNCTION(BlueprintCallable)

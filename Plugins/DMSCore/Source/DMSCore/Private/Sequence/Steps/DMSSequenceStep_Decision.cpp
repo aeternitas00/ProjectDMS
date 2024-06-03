@@ -55,7 +55,9 @@ void UDMSSequenceStepDefinition_Decision::MakeDecision(UDMSSequenceStep* Instanc
 
 	if ( WidgetOwner == nullptr ){ InstancedStep->ProgressEnd(false); return;}
 
-	UDMSSelectorWorker* NewWorker = NewObject<UDMSSelectorWorker>(WidgetOwner);
+	UDMSSelectorWorker* NewWorker = NewObject<UDMSSelectorWorker>(GS);	
+	//NewWorker->AddToRoot();
+	
 	TArray<UObject*> Contexts;
 
 	for(auto Handle : SelM->RequestCreateSelectors(DecisionForms))
@@ -69,11 +71,6 @@ void UDMSSequenceStepDefinition_Decision::MakeDecision(UDMSSequenceStep* Instanc
 	NewWorker->SetupSelectorWorker(InstancedStep->OwnerSequence, WidgetOwner);
 	NewWorker->SetupTaskWorkerDelegate(Contexts, OnDecisionsCompleted);
 	NewWorker->RunTaskWorker(true);
-	//RunWidgetQueue(InstancedStep, WidgetOwner, [=](ADMSSequence* pSequence) {
-	//	// Run sequence ( Notifying steps and apply )
-	//	DMS_LOG_SIMPLE(TEXT("==== %s : EI Data Selection Completed  ===="), *pSequence->GetName());
-	//	InstancedStep->ProgressEnd(); return;
-	//});
 }
 
 FGameplayTag UDMSSequenceStepDefinition_Decision::GetPureStepTag_Implementation() const
