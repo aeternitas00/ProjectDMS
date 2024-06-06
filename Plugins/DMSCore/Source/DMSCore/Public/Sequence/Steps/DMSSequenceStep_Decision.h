@@ -39,11 +39,11 @@ public:
 	/**
 	* Definitions regarding what to select and how it should be processed.
 	*/
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Decision)
-	//TArray<FDMSDecisionDefinition> DecisionDefinitions;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Decision)
 	TArray<TObjectPtr<UDMSDecisionDefinitionBase>> DecisionDefinitions__;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	EDMSBroadCastFlag BroadcastFlag_Decision;
 
 	UFUNCTION()
 	void Progress_Decision(UDMSSequenceStep* InstancedStep);
@@ -51,25 +51,47 @@ public:
 	UFUNCTION()
 	void MakeDecision(UDMSSequenceStep* InstancedStep);
 
-	template<typename FuncSucceeded>
-	void RunWidgetQueue(UDMSSequenceStep* InstancedStep, ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded);
-
 	// Implementations
+
+	virtual TArray<FName> GetDefaultProgressOrder_Implementation() const {return {"Progress_Decision"};}
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
-	virtual FGameplayTagContainer GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const;
+	virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const;
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 
 };
 
-template<typename FuncSucceeded>
-void UDMSSequenceStepDefinition_Decision::RunWidgetQueue(UDMSSequenceStep* InstancedStep, ADMSPlayerControllerBase* WidgetOwner, FuncSucceeded&& Succeeded)
+class USelReqGenerator_ObjCand;
+
+UCLASS()
+class DMSCORE_API UDMSSequenceStepDefinition_TargetSelect : public UDMSSequenceStepDefinition
 {
-	WidgetOwner->RunWidgetQueue(		
-		Succeeded,
-		[=](ADMSSequence* pSequence) {
-			// Decision canceled
-			DMS_LOG_SIMPLE(TEXT("Decision canceled"));
-			InstancedStep->ProgressEnd(false);
-		}
-	);
-}
+	GENERATED_BODY()
+
+public:
+	UDMSSequenceStepDefinition_TargetSelect(){ EnableExecuteByEach=false; bExecuteStepByEachMainTarget=false; }
+
+	/**
+	* Target generator for who will handle this step.
+	*/
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Decision)
+	TObjectPtr<UDMSTargetGenerator> DecisionMaker;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Decision)
+	TObjectPtr<USelReqGenerator_ObjCand> SelectorRequest;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	EDMSBroadCastFlag BroadcastFlag_TargetSelect;
+
+	UFUNCTION()
+	void Progress_TargetSelect(UDMSSequenceStep* InstancedStep);
+
+	UFUNCTION()
+	void TargetSelect(UDMSSequenceStep* InstancedStep);
+	 
+	virtual TArray<FName> GetDefaultProgressOrder_Implementation() const {return {"Progress_TargetSelect"};}
+
+	// Implementations
+	virtual FGameplayTag GetPureStepTag_Implementation() const;
+	//virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const;
+	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
+};

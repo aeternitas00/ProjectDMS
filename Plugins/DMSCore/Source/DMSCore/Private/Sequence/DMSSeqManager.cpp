@@ -46,17 +46,14 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->SourcePlayer = SourcePlayer;
 	Sequence->SetTarget(Targets);
 	
-	// Test Feature
-	//Sequence->InitializeSteps(EffectNode->StepRequirements);
 	Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
+	//Sequence->InitializeStepProgress(EffectNode->StepDefinitions,EffectNode->ProgressOrder);
 
 	// Add new seq to seq tree.
 	if ( ParentSequence == nullptr ) {
 		if ( RootSequence == nullptr ) {
 			RootSequence = Sequence;
-
-			RootSequence->OnSequenceInitiated.AddUObject(this, &UDMSSeqManager::OnSequenceTreeInitiated);
-			RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
+			//RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
 		}
 		else if ( CurrentSequence != nullptr )
 			Sequence->ParentSequence = CurrentSequence;
@@ -109,11 +106,13 @@ void UDMSSeqManager::RunSequence_Implementation(ADMSSequence* iSeq)
 	}
 	DMS_LOG_SIMPLE(TEXT("==== %s : RUN SEQUENCE ===="), *iSeq->GetName());
 
-	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
-	//UDMSEffectHandler* EH = GS->GetEffectHandler();
 	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);	check(EH);
 
 	CurrentSequence = iSeq;
+
+	if(CurrentSequence==RootSequence)	
+		OnSequenceTreeInitiated();
+	
 	CurrentSequence->OnSequenceInitiate();
 
 	// 미리 시퀀스 타겟을 지정하지 않았고, 타겟 제너레이터까지 없으면 따로 AE를 만들지 않음. 스텝 진행중에 별도로 타겟을 정하는 과정이 없으면 타겟 미지정인 상태로 시퀀스 진행.
@@ -129,17 +128,6 @@ int UDMSSeqManager::GetDepth(ADMSSequence* iSeq) {
 	return GetDepth(iSeq->ParentSequence)+1;
 }
 
-//UDMSDataObjectSet* UDMSSeqManager::SearchNearestDataObject(ADMSSequence* StartingSequence, FGameplayTag SerachingTag) const
-//{
-//	ADMSSequence* It= StartingSequence;
-//	while (It!=nullptr)
-//	{
-//		if (It->SequenceDatas->ContainData(SerachingTag)) return It->SequenceDatas;
-//		It = It->ParentSequence;
-//	}
-//	return nullptr;
-//}
-
 void UDMSSeqManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -154,7 +142,14 @@ void UDMSSeqManager::CompleteSequence_Implementation(ADMSSequence* Sequence, boo
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : SM -> Complete Sequence ===="), *Sequence->GetName());
 
+	if(CurrentSequence != Sequence)
+	{
+		DMS_LOG_SIMPLE(TEXT("==== %s : SM -> Attempt to close other sequence than current. ===="), *Sequence->GetName());
+	}
+
 	if (CurrentSequence == RootSequence) {
+		OnSequenceTreeCompleted();
+		UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();
 		CurrentSequence = nullptr;
 		RootSequence = nullptr;
 	}
@@ -162,6 +157,8 @@ void UDMSSeqManager::CompleteSequence_Implementation(ADMSSequence* Sequence, boo
 		CurrentSequence = Sequence->ParentSequence;
 		CurrentSequence->ActiveChildSequence=nullptr;
 	}
+
+	Sequence->OnSequenceFinish(Succeeded);
 }
 
 

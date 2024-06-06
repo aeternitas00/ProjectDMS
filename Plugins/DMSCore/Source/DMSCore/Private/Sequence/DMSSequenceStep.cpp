@@ -34,16 +34,96 @@ void UDMSSequenceStep::InitializeStepProgress(ADMSSequence* iOwnerSequence,const
 	}
 }
 
+void UDMSSequenceStep::InitializeStepProgress(ADMSSequence* iOwnerSequence,const TArray<TObjectPtr<UDMSSequenceStepDefinition>>& iStepDefinitions)
+{
+	CurrentStepIndex=0;
+	
+	OwnerSequence=iOwnerSequence;
+	if(iStepDefinitions.Num()==0) return;
+
+	StepDefinitions=iStepDefinitions;
+}
+
+
 void UDMSSequenceStep::RunStepProgressQueue()
 {
 	if(ProgressExecutors.Num()==0) { OwnerSequence->OnStepQueueCompleted(true); return; }
 	ExecuteNextProgress();
 }
 
+void UDMSSequenceStep::RunStepProgressQueue_Alter()
+{
+	if(StepDefinitions.Num()==0) { OwnerSequence->OnStepQueueCompleted(true); return; }
+	ExecuteNextProgress_Alter();
+}
+
 void UDMSSequenceStep::ExecuteNextProgress()
 {
 	auto& CurrentExec = ProgressExecutors[CurrentProgressIndex];
 	CurrentExec.ExecutorDelegate.ExecuteIfBound(this);
+}
+
+void UDMSSequenceStep::ExecuteNextStep_Alter()
+{
+	if(IsProgressQueueFinished_Alter()) {OwnerSequence->OnStepQueueCompleted(true); return;}
+
+	const auto& CurrentDef = StepDefinitions[CurrentStepIndex];
+	CurrentMainTargetIndex=-1;
+	CurrentProgressIndex=0;
+	if(CurrentDef->bExecuteStepByEachMainTarget)
+	{
+		MainTargetQueue = OwnerSequence->GetTargets();
+		CurrentMainTargetIndex = 0;
+	}
+	ExecuteNextProgress_Alter();
+}
+
+void UDMSSequenceStep::ExecuteNextProgress_Alter()
+{
+	const auto& CurrentDef = StepDefinitions[CurrentStepIndex];
+	const auto ProgressOrder = CurrentDef->GetDefaultProgressOrder();
+
+	if(CurrentProgressIndex >= ProgressOrder.Num())
+	{
+		if(CurrentDef->bExecuteStepByEachMainTarget && CurrentMainTargetIndex < MainTargetQueue.Num())
+		{
+			CurrentMainTargetIndex++;
+			CurrentProgressIndex=0;
+		}
+		else
+		{
+			CurrentStepIndex++;
+			ExecuteNextStep_Alter();
+			return;
+		}
+	}
+
+	const FName& CurrentProgressName = ProgressOrder[CurrentProgressIndex];
+
+	auto Param=this;
+	CurrentDef->ProcessEvent(CurrentDef->FindFunction(CurrentProgressName),&Param);
+}
+
+void UDMSSequenceStep::ProgressEnd(bool bSucceeded) 
+{
+	if (bSucceeded) {
+		//DMS_LOG_SIMPLE(TEXT("==== %s : ON Progress COMPLETED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
+	}
+	else {
+		//DMS_LOG_SIMPLE(TEXT("==== %s : ON Progress FAILED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
+	}
+	bFTFlag=0;
+	if(!bSucceeded){OwnerSequence->OnStepQueueCompleted(false); return;}
+	if(IsProgressQueueFinished()) {OwnerSequence->OnStepQueueCompleted(true); return;}
+	CurrentProgressIndex++; ExecuteNextProgress();
+	
+	//DMS_LOG_SIMPLE(TEXT("==== %s : after progress end ===="),*Seq->GetName());
+}
+
+void UDMSSequenceStep::ProgressEnd_Alter(bool bSucceeded) 
+{
+	if(!bSucceeded){OwnerSequence->OnStepQueueCompleted(false); return;}
+	CurrentProgressIndex++; ExecuteNextProgress();
 }
 
 void UDMSSequenceStep::SetNextProgress(int ProgressIdx)
@@ -62,37 +142,32 @@ void UDMSSequenceStep::SetNextProgress(const FGameplayTag& ProgressTag)
 	}
 }
 
-void UDMSSequenceStep::ProgressEnd(bool bSucceeded)
-{
-	if (bSucceeded) {
-		//DMS_LOG_SIMPLE(TEXT("==== %s : ON Progress COMPLETED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
-	}
-	else {
-		//DMS_LOG_SIMPLE(TEXT("==== %s : ON Progress FAILED [ Depth : %d ] ===="), *Seq->GetName(), SeqManager->GetDepth(Seq));
-	}
-	bFTFlag=0;
-	if(!bSucceeded){OwnerSequence->OnStepQueueCompleted(false); return;}
-	if(IsProgressQueueFinished()) {OwnerSequence->OnStepQueueCompleted(true); return;}
-	CurrentProgressIndex++; ExecuteNextProgress();
-	
-	//DMS_LOG_SIMPLE(TEXT("==== %s : after progress end ===="),*Seq->GetName());
-}
-
 bool UDMSSequenceStep::IsProgressQueueFinished()
 {
 	return (CurrentProgressIndex+1)==ProgressExecutors.Num();
 }
 
-FGameplayTag UDMSSequenceStep::GetCurrentProgressExactTag()
+bool UDMSSequenceStep::IsProgressQueueFinished_Alter() const
+{
+	return (CurrentStepIndex+1)==ProgressExecutors.Num();
+}
+
+FGameplayTag UDMSSequenceStep::GetCurrentProgressExactTag() const
 {
 	return ProgressExecutors[CurrentProgressIndex].ExactTag;
 }
 
-FGameplayTagContainer UDMSSequenceStep::GetCurrentProgressTags()
+FGameplayTagContainer UDMSSequenceStep::GetCurrentProgressTags() const
 {
 	FGameplayTagContainer rv = ProgressExecutors[CurrentProgressIndex].ExactTag.GetSingleTagContainer();
 	rv.AppendTags(ProgressExecutors[CurrentProgressIndex].ExecutingStep->GetStepTag(this));
 	return rv;
+}
+
+TScriptInterface<IDMSEffectorInterface> UDMSSequenceStep::GetCurrentMainTarget() const
+{
+	/* && CurrentMainTargetIndex < MainTargetQueue.Num() */
+	return CurrentMainTargetIndex >= 0 ? MainTargetQueue[CurrentMainTargetIndex] : nullptr;
 }
 
 void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName, bool bFT)

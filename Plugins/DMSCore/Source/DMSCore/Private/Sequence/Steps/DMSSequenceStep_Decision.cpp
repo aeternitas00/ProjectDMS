@@ -77,7 +77,7 @@ FGameplayTag UDMSSequenceStepDefinition_Decision::GetPureStepTag_Implementation(
 {
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.Decision");
 }
-FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const
+FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const
 {
 	FGameplayTagContainer rv;
 	rv.AddTag(GetPureStepTag());
@@ -85,9 +85,53 @@ FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementa
 	return rv;
 }
 
-bool UDMSSequenceStepDefinition_Decision::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutDelegates)
+bool UDMSSequenceStepDefinition_Decision::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
 {
 	if(!GetPureStepTag().MatchesTagExact(ProgressTag)) return false;
 
-	OutDelegates.Add({this,ProgressTag,"Progress_Decision"}); return true;
+	OutExecutor.Add({this,ProgressTag,"Progress_Decision"}); return true;
+}
+
+void UDMSSequenceStepDefinition_TargetSelect::Progress_TargetSelect(UDMSSequenceStep* InstancedStep)
+{
+	BroadcastProgress(InstancedStep, FName("TargetSelect"));
+}
+
+void UDMSSequenceStepDefinition_TargetSelect::TargetSelect(UDMSSequenceStep* InstancedStep)
+{
+	auto GS = UDMSCoreFunctionLibrary::GetDMSGameState(InstancedStep); check(GS);
+	auto SM = GS->GetSequenceManager(); check(SM);
+	auto EH = GS->GetEffectHandler(); check(EH);
+	auto SelM = GS->GetSelectorManager(); check(SelM);
+
+	ADMSPlayerControllerBase* WidgetOwner = nullptr;
+
+	auto DecisionMakers = DecisionMaker->GetTargets(InstancedStep->OwnerSequence->GetSourceObject(), InstancedStep->OwnerSequence);
+
+	TArray<ADMSPlayerControllerBase*> CastedDecisionMakers;
+
+	for (auto DM : DecisionMakers)
+	{
+		if (!DM->Implements<UDMSEffectorInterface>()) continue;
+		CastedDecisionMakers.AddUnique(Cast<IDMSEffectorInterface>(DM)->GetOwningPlayerController());
+	}
+
+	// TODO :: Implementing for cases where multiple players make selections sequentially.
+	WidgetOwner = CastedDecisionMakers.Num() == 0 ? nullptr : CastedDecisionMakers[0];
+
+	if ( WidgetOwner == nullptr ){ InstancedStep->ProgressEnd(false); return;}
+
+
+}
+
+FGameplayTag UDMSSequenceStepDefinition_TargetSelect::GetPureStepTag_Implementation() const
+{
+	return FGameplayTag::RequestGameplayTag("Step.Arkham.TargetSelect");
+}
+
+bool UDMSSequenceStepDefinition_TargetSelect::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
+{
+	if(!GetPureStepTag().MatchesTagExact(ProgressTag)) return false;
+
+	OutExecutor.Add({this,ProgressTag,"Progress_TargetSelect"}); return true;
 }

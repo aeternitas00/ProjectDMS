@@ -7,6 +7,15 @@
 #include "Common/DMSCommons.h"
 #include "DMSSequenceStep.generated.h"
 
+UENUM(BlueprintType)
+enum class EDMSBroadCastFlag : uint8
+{
+	BF_Broadcast = 0 UMETA(DisplayName = "Broadcast"),
+	BF_FreeActionWindow = 0 UMETA(DisplayName = "Broadcast with FreeAction Window"),
+	BF_Unchainable UMETA(DisplayName = "Broadcast but unchainable"),
+	BF_NotBroadcast UMETA(DisplayName = "Broadcast but unchainable"),
+};
+
 /**
  * progress unit of a sequence.
  */
@@ -15,7 +24,13 @@ class DMSCORE_API UDMSSequenceStep : public UObject
 {
 	GENERATED_BODY()
 
+protected:
+	TArray<TScriptInterface<IDMSEffectorInterface>> MainTargetQueue;
+	TScriptInterface<IDMSEffectorInterface> CurrentMainTarget;
 
+	int CurrentProgressIndex;
+	int CurrentStepIndex;
+	int CurrentMainTargetIndex;
 
 public:
 	UDMSSequenceStep();
@@ -31,11 +46,10 @@ public:
 	*/
 	TArray<FProgressExecutor> ProgressExecutors;
 
+
 	/**
 	* 
 	*/
-	int CurrentProgressIndex;
-
 	bool bFTFlag;
 
 	/**
@@ -45,19 +59,40 @@ public:
 	TObjectPtr<ADMSSequence> OwnerSequence;
 
 	void InitializeStepProgress(ADMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder);
+	void InitializeStepProgress(ADMSSequence* iOwnerSequence, const TArray<TObjectPtr<UDMSSequenceStepDefinition>>& iStepDefinitions);
 
 	void RunStepProgressQueue();
+	void RunStepProgressQueue_Alter();
 
 	void ExecuteNextProgress();
+	void ExecuteNextStep_Alter();
+	void ExecuteNextProgress_Alter();
 
 	void SetNextProgress(int ProgressIdx);
 	void SetNextProgress(const FGameplayTag& ProgressTag);
 
+	FORCEINLINE bool IsProgressQueueFinished();
+	FORCEINLINE bool IsProgressQueueFinished_Alter() const;
+
 	UFUNCTION()
 	void ProgressEnd(bool bSucceeded = true);
 
-	FORCEINLINE bool IsProgressQueueFinished();
+	UFUNCTION()
+	void ProgressEnd_Alter(bool bSucceeded = true);
 
+	/**
+	 * Current timing of this step.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FGameplayTag GetCurrentProgressExactTag() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FGameplayTagContainer GetCurrentProgressTags() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TScriptInterface<IDMSEffectorInterface> GetCurrentMainTarget() const;
+
+	//FStepContext GetCurrentStepContext() const;
 	/**
 	 * Initiate step delegates.
 	 * @param	StepInitiated			
@@ -65,15 +100,6 @@ public:
 	 */
 	template<typename FuncInitiated, typename FuncFinished>
 	void InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished);
-
-	/**
-	 * Current timing of this step.
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FGameplayTag GetCurrentProgressExactTag();
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FGameplayTagContainer GetCurrentProgressTags();
 
 	friend class ADMSSequence;
 };
@@ -95,6 +121,12 @@ class DMSCORE_API UDMSSequenceStepDefinition : public UObject
 
 public:
 	UDMSSequenceStepDefinition(){}
+	
+	UPROPERTY()
+	bool EnableExecuteByEach = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="EnableExecuteByEach",EditConditionHides))
+	bool bExecuteStepByEachMainTarget = false;
 
 	UFUNCTION(BlueprintCallable)
 	void BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName, bool bFT = false);
@@ -106,6 +138,9 @@ public:
 	//UFUNCTION()
 	//void Progress_Sample(UDMSSequenceStep* InstancedStep){ /*SOME BEHAVIORS ...*/ InstancedStep->ProgressEnd(false); }
 
+	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
+	TArray<FName> GetDefaultProgressOrder() const;
+	virtual TArray<FName> GetDefaultProgressOrder_Implementation() const {return {};}
 	/**
 	 * Get tag of step.
 	 */
@@ -117,11 +152,7 @@ public:
 	 * Get tags of step ( with additional datas ).
 	 */
 	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	FGameplayTagContainer GetStepTag(UDMSSequenceStep* InstancedStep) const;
-	virtual FGameplayTagContainer GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const {return FGameplayTagContainer(GetPureStepTag());}
-
-	//UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	//TArray<UDMSEffectDefinition*> GetStepResolvingContext(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) const;
-	//virtual TArray<UDMSEffectDefinition*> GetStepResolvingContext_Implementation(ADMSActiveEffect* CurrentAE, UDMSSequenceStep* InstancedStep) {return {};}
+	FGameplayTagContainer GetStepTag(const UDMSSequenceStep* InstancedStep) const;
+	virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const {return FGameplayTagContainer(GetPureStepTag());}
 };
 

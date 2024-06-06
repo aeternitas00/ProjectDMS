@@ -120,7 +120,7 @@ public:
 	void PostSkillTest(UDMSSequenceStep* InstancedStep);
 
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
-	virtual FGameplayTagContainer GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const;
+	virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const;
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 

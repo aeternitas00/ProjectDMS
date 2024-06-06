@@ -53,7 +53,7 @@ void UDMSEffect_MoveCard::Work_Implementation(ADMSSequence* SourceSequence, ADMS
 	}
 	else 
 	{
-		DMS_LOG_SCREEN(TEXT("%s : Move Spawnable to %s"), *iEI->GetName(), *Container_Destination->GetName());
+		//DMS_LOG_SCREEN(TEXT("%s : Move Spawnable to %s"), *iEI->GetName(), *Container_Destination->GetName());
 		UDMSContainerManagerComponent::MigrateObjects(Spawnable, Container_Destination, 0);
 		if(ShuffleAfterMove) Container_Destination->ShuffleTopNObjects();
 	}

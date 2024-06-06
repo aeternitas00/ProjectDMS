@@ -57,7 +57,7 @@ FGameplayTag UDMSSequenceStepDefinition_Apply::GetPureStepTag_Implementation() c
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.Apply");
 }
 
-FGameplayTagContainer UDMSSequenceStepDefinition_Apply::GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const
+FGameplayTagContainer UDMSSequenceStepDefinition_Apply::GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const
 {
 	// combine tag with applying context?
 	FGameplayTagContainer rv = GetPureStepTag().GetSingleTagContainer();

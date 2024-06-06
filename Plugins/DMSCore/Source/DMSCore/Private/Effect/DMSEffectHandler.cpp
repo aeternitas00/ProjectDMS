@@ -126,40 +126,14 @@ void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnTaskCompleted& 
 	UDMSEffectResolveWorker* NewWorker = NewObject<UDMSEffectResolveWorker>(this);
 
 	TArray<UObject*> Contexts;
+
+	// TODO :: Only for AE of current MainTarget
 	for(auto& AE : Sequence->GetAllActiveEffects()) Contexts.Add(AE);
 	NewWorker->SetupTaskWorkerDelegate(Contexts, OnResolveCompleted);	
 	NewWorker->SetupResolveWorker(Sequence);
 	NewWorker->RunTaskWorker(true);
 
-	//OnResolveCompletedMap.Add(Sequence);
-	//OnResolveCompletedMap[Sequence].Count = 0;
-	//OnResolveCompletedMap[Sequence].ApplyingEIs = Sequence->GetAllActiveEffects();
-	//OnResolveCompletedMap[Sequence].Iterator.BindLambda([=](ADMSSequence* SourceSequence, bool PrevSucceeded){
-	//	ApplyNextEffectInstance(SourceSequence,OnResolveCompleted,PrevSucceeded);
-	//});
-	//ApplyNextEffectInstance(Sequence, OnResolveCompleted, true);
 }
-
-
-//void UDMSEffectHandler::ApplyNextEffectInstance(ADMSSequence* SourceSequence,const FOnTaskCompleted& OnResolveCompleted, bool PrevSucceeded)
-//{
-//	if (!PrevSucceeded)
-//	{
-//		// DISCUSSION :: Stopping immediately when failed is FINE?
-//		OnResolveCompleted.ExecuteIfBound(false);
-//		return;
-//	}
-//
-//	if (OnResolveCompletedMap[SourceSequence].Count == SourceSequence->GetAllActiveEffects().Num())
-//		OnResolveCompleted.ExecuteIfBound(true);
-//	else
-//		ApplyAEGetter(SourceSequence)->Apply(SourceSequence, OnResolveCompletedMap[SourceSequence].Iterator);
-//}
-
-//ADMSActiveEffect* UDMSEffectHandler::ApplyAEGetter(ADMSSequence* OwnerSequence)
-//{
-//	return OnResolveCompletedMap[OwnerSequence].ApplyingEIs[OnResolveCompletedMap[OwnerSequence].Count++];
-//}
 
 void UDMSEffectHandler::CleanupNonPersistent()
 {
@@ -170,6 +144,9 @@ void UDMSEffectHandler::CleanupNonPersistent()
 		return rv;
 	});
 }
+
+
+
 
 void UDMSEffectResolveWorker::SetupResolveWorker(ADMSSequence* iSequence)
 {

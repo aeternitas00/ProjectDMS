@@ -76,6 +76,8 @@ TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode
 UDMSEffectNode::UDMSEffectNode() : bForced(false), bCanResponseMulTime(false), bIgnoreNotify(false), bIsChainableEffect(true)
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
+
+	StepDefinitions = StepClassRequirements.Array();
 }
 
 FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(ADMSSequence* CurrentSequence)

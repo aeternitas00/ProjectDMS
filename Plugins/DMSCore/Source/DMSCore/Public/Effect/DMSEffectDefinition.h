@@ -258,6 +258,12 @@ public:
 public:
 
 	/** 
+	* The list of steps that this sequence will have and execute.
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TArray<TObjectPtr<UDMSSequenceStepDefinition>> StepDefinitions;
+
+	/** 
 	 * The list of steps that this sequence will have and execute.
 	 */
 	//

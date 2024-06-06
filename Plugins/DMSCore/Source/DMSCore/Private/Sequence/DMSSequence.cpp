@@ -42,6 +42,13 @@ FGameplayTagContainer ADMSSequence::GetCurrentProgressTags()
 	return InstancedStep->GetCurrentProgressTags();
 }
 
+TArray<TScriptInterface<IDMSEffectorInterface>> ADMSSequence::GetCurrentMainTargets()
+{
+	auto rv = InstancedStep->GetCurrentMainTarget();
+	
+	return rv ? TArray<TScriptInterface<IDMSEffectorInterface>>{rv} : GetTargets();
+}
+
 //TArray<UDMSEffectDefinition*> ADMSSequence::GetCurrentResolveContext(ADMSActiveEffect* CurrentAE)
 //{
 //	return InstancedStep->GetCurrentResolveContext(CurrentAE);
@@ -79,6 +86,11 @@ bool ADMSSequence::IsChainableSequence()
 void ADMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
 {
 	InstancedStep->InitializeStepProgress(this,StepDefinitions,ProgressOrder);
+}
+
+void ADMSSequence::InitializeStepProgress(const TArray<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions)
+{
+	InstancedStep->InitializeStepProgress(this,StepDefinitions);
 }
 
 void ADMSSequence::RunStepProgressQueue()
@@ -194,12 +206,14 @@ void ADMSSequence::OnSequenceFinish(bool Succeeded)
 	DMS_LOG_SIMPLE(TEXT("==== %s : Broadcast Sequence Finished ===="), *GetName());
 	OnSequenceFinished.Broadcast(Succeeded);
 	OnSequenceFinishedDynamic.Broadcast(Succeeded);
+
+	// Check AE -> CreateApplyingSequence
+	//if(OriginalEffectNode->TerminateConditions){
+	//	for(auto& EIStorage : TargetAndEIs)		
+	//		for(auto& AE : EIStorage.EIs)
+	//			AE->ToggleEIState(EDMSAEState::AES_NotifyClosed);
+	//}
 	
-	if(OriginalEffectNode->TerminateConditions){
-		for(auto& EIStorage : TargetAndEIs)		
-			for(auto& AE : EIStorage.EIs)
-				AE->ToggleEIState(EDMSAEState::AES_NotifyClosed);
-	}
 	OnSequenceFinished.Clear();
 	OnSequenceFinishedDynamic.Clear();
 
@@ -260,7 +274,6 @@ void ADMSSequence::OnStepQueueCompleted(bool Succeeded)
 	NewOnChildQueueFinished.BindLambda([this,Succeeded](){
 		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 		SeqManager->CompleteSequence(this, Succeeded);
-		OnSequenceFinish(Succeeded);
 	});
 
 	AddEffectsToChildQueue(OriginalEffectNode->ChildEffects, NewOnChildQueueFinished);
@@ -302,4 +315,14 @@ void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) :  ExecutingStep(Definition), ExactTag(ProgressTag)
 {
 	ExecutorDelegate.BindUFunction(Definition, FunctionName); 
+}
+
+void UDMSChildSequenceWorker::Work_Implementation()
+{
+	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
+	auto CurrentSequence = Cast<ADMSSequence>(GetCurrentContext());
+	CurrentSequence->AddToOnSequenceFinished_Native(
+		[=](bool Succeeded){CompleteSingleTask(true);
+	});
+	SeqManager->RunSequence(CurrentSequence);
 }

@@ -59,7 +59,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnProgressFinished, bool, Succeeded);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Succeeded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succeeded);
 
-// move to step instance
+// TODO :: move to step instance 
+// StepDefinition will define step order and executing ops.
 USTRUCT(BlueprintType)
 struct DMSCORE_API FProgressExecutor
 {
@@ -78,6 +79,17 @@ struct DMSCORE_API FProgressExecutor
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	FGameplayTag ExactTag;
 };
+
+UCLASS()
+class DMSCORE_API UDMSChildSequenceWorker : public UDMSSynchronousTaskWorker
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Work_Implementation();
+	//virtual void OnAllTaskCompleted_Implementation(bool WorkerSucceeded);
+};
+
 /** 
  * 	========================================
  *
@@ -244,6 +256,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FGameplayTagContainer GetCurrentProgressTags();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TArray<TScriptInterface<IDMSEffectorInterface>> GetCurrentMainTargets();
 	/**
 	 * Generate tag container for context description.
 	 */
@@ -285,6 +299,8 @@ public:
 	*/
 	void InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions,const TArray<FGameplayTag>& ProgressOrder);
 
+	void InitializeStepProgress(const TArray<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions);
+
 	/**
 	 * Run registered steps synchronously.
 	 */
@@ -310,8 +326,8 @@ private:
 	void RunNextQueuedEffect();
 
 	FSimpleDelegate OnChildEffectQueueCompleted;
-public:
 
+public:
 	void AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences,const FSimpleDelegate& iOnChildQueueFinished);
 	void AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
 	//void AddEffectsToChildQueue(TArray<TObjectPtr<UDMSEffectNodeWrapper>>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);

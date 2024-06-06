@@ -198,7 +198,7 @@ FGameplayTag UDMSSequenceStepDefinition_SkillTest::GetPureStepTag_Implementation
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest");
 }
 
-FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetStepTag_Implementation(UDMSSequenceStep* InstancedStep) const
+FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(DefaultSkillTestData.StatName);
