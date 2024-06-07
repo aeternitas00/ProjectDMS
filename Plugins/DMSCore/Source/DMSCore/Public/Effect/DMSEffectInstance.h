@@ -42,68 +42,7 @@ enum class EDMSAEState : uint8
 
 ENUM_CLASS_FLAGS(EDMSAEState)
 
-/**
- * 	========================================
- *
- *	서버사이드에서 Apply Step 로직 처리를 할 때 사용 할 단순 워커
- * 
- *	========================================
- *	
- */
-//UCLASS()
-//class DMSCORE_API UDMSEffectApplyWorker : public UObject
-//{
-//	GENERATED_BODY()
-//
-//private:
-//	TObjectPtr<ADMSActiveEffect> OwnerInstance;
-//	TObjectPtr<ADMSSequence> SourceSequence;
-//
-//	TObjectPtr<UDMSEffectNode> ApplyingEffect;
-//	//TArray<TObjectPtr<UDMSEffectDefinition>> ApplyingEffectDefinitions;
-//	uint8 CurrentEDIndex;
-//
-//	uint8 ExecutedOptionNum;
-//	FOnOptionCompleted EffectOptionCompleted;
-//	TObjectPtr<UDMSEffectDefinition> CurrentDef;
-//
-//public:
-//	FOnExecuteCompleted IteratingDelegate;
-//	FOnApplyCompleted CompletedDelegate;
-//	
-//public:
-//	void SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI, const FOnApplyCompleted& iOnApplyCompleted);
-//	
-//	UFUNCTION()
-//	void ApplyNextEffectDef(bool PrevSucceeded);
-//
-//	UFUNCTION()
-//	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
-//};
 
-UCLASS()
-class DMSCORE_API UDMSEffectApplyWorker : public UDMSSynchronousTaskWorker
-{
-	GENERATED_BODY()
-
-private:
-	TObjectPtr<ADMSActiveEffect> OwnerInstance;
-	TObjectPtr<ADMSSequence> SourceSequence;
-	TObjectPtr<UDMSEffectDefinition> CurrentDef;
-	uint8 ExecutedOptionNum;
-	FOnOptionCompleted EffectOptionCompleted;
-
-public:
-	FOnExecuteCompleted IteratingDelegate;
-
-	void SetupApplyWorker(ADMSSequence* iSequence, ADMSActiveEffect* iEI);
-
-	UFUNCTION()
-	void OnEffectOptionCompleted(UDMSEffectOption* CompletedOption);
-
-	virtual void Work_Implementation();
-	virtual void OnAllTaskCompleted_Implementation(bool WorkerSucceeded);
-};
 /**
  * 	========================================
  *
@@ -177,12 +116,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TObjectPtr<UDMSEffectNode> EffectNode;
 
-	/**
-	 * Data needs to running effect node.
-	 */
-	//UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	//TObjectPtr<UDMSDataObjectSet> DataSet;
-
 public:
 	/**
 	 * Apply effect with effect node.
@@ -190,7 +123,8 @@ public:
 	 * @return	OnApplyCompleted				Delegate executed when apply completed.
 	 */
 	//void Apply(ADMSSequence* Sequence, const FResolveIteratingDelegate& OnApplyCompleted);
-	void Apply(ADMSSequence* SourceSequence, const FOnTaskCompleted& OnApplyCompleted);
+	//void Apply(ADMSSequence* SourceSequence, const FOnTaskCompleted& OnApplyCompleted);
+
 	/**
 	 * Get apply target.
 	 * Will be used in ED->Work function.

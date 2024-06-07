@@ -158,12 +158,6 @@ public:
 	TObjectPtr<UDMSEffectNode> OriginalEffectNode;
 
 	/** 
-	 * Data needed for sequence flow, such as 'Damage' by numerical values.
-	 */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//TObjectPtr<UDMSDataObjectSet> SequenceDatas;
-
-	/** 
 	 * 서로 체인되어 시퀀스 트리 진행중 GC 되는것을 막아주는 역할을 하게 하는 용도
 	 * ++ 상위 시퀀스와 연관된 컨디션, 이펙트 같은 것을 구현 하기 위해
 	 */
@@ -224,6 +218,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<ADMSActiveEffect*> GetAllActiveEffects();
 
+	UFUNCTION(BlueprintCallable)
+	TArray<ADMSActiveEffect*> GetCurrentActiveEffects();
 	/**
 	 * Executed when sequence is initiated.
 	 */

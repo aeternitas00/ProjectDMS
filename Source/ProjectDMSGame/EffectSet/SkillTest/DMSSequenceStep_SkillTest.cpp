@@ -193,6 +193,20 @@ void UDMSSequenceStepDefinition_SkillTest::PostSkillTest(UDMSSequenceStep* Insta
 		InstancedStep->ProgressEnd(!DefaultSkillTestData.bStopSequenceIfTestFailed);
 }
 
+TArray<FDMSStepProgressMetaData> UDMSSequenceStepDefinition_SkillTest::GetOrderedProgressData_Implementation() const
+{
+	return {
+		{"Progress_ST1",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_FreeActionWindow : EDMSBroadCastFlag::BF_Unchainable },
+		{"Progress_ST2",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_FreeActionWindow : EDMSBroadCastFlag::BF_Unchainable },
+		{"Progress_ST3",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
+		{"Progress_ST4",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
+		{"Progress_ST5",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
+		{"Progress_ST6",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
+		{"Progress_ST7",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
+		{"Progress_ST8",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable }
+	};
+}
+
 FGameplayTag UDMSSequenceStepDefinition_SkillTest::GetPureStepTag_Implementation() const
 {
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest");

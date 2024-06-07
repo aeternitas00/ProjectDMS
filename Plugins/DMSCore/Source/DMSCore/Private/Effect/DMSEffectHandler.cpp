@@ -107,33 +107,34 @@ TArray<ADMSActiveEffect*> UDMSEffectHandler::CreateApplyingActiveEffect(ADMSSequ
 * @param	Sequence					Resolving sequence.
 * @param	OnResolveCompleted			Lambda executed when resolve completed.
 */
-void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnTaskCompleted& OnResolveCompleted)
-{
-	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
-
-	if(Sequence->GetAllActiveEffects().Num() == 0 || !Sequence->IsTargetted()) {
-		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
-		OnResolveCompleted.ExecuteIfBound(true);
-		return;
-	}
-	// seperate for logging
-	if(Sequence->SequenceState != EDMSSequenceState::SS_Default) {
-		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : Sequence is canceled or ignored"));
-		OnResolveCompleted.ExecuteIfBound(true);
-		return;
-	}
-	
-	UDMSEffectResolveWorker* NewWorker = NewObject<UDMSEffectResolveWorker>(this);
-
-	TArray<UObject*> Contexts;
-
-	// TODO :: Only for AE of current MainTarget
-	for(auto& AE : Sequence->GetAllActiveEffects()) Contexts.Add(AE);
-	NewWorker->SetupTaskWorkerDelegate(Contexts, OnResolveCompleted);	
-	NewWorker->SetupResolveWorker(Sequence);
-	NewWorker->RunTaskWorker(true);
-
-}
+//void UDMSEffectHandler::Resolve(ADMSSequence* Sequence, const FOnTaskCompleted& OnResolveCompleted)
+//{
+//	//DMS_LOG_SCREEN(TEXT("EH : Resolve %s"), *Sequence->GetName());
+//
+//	if(Sequence->GetAllActiveEffects().Num() == 0 || !Sequence->IsTargetted()) {
+//		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : No Resolve Target"));
+//		OnResolveCompleted.ExecuteIfBound(true);
+//		return;
+//	}
+//	// seperate for logging
+//	if(Sequence->SequenceState != EDMSSequenceState::SS_Default) {
+//		DMS_LOG_SIMPLE(TEXT("EffectHandler::Resolve : Sequence is canceled or ignored"));
+//		OnResolveCompleted.ExecuteIfBound(true);
+//		return;
+//	}
+//	
+//	UDMSEffectResolveWorker* NewWorker = NewObject<UDMSEffectResolveWorker>(this);
+//
+//	TArray<UObject*> Contexts;
+//
+//	// TODO :: Only for AE of current MainTarget
+//	for(auto& AE : Sequence->GetCurrentActiveEffects()) 
+//		Contexts.Add(AE);
+//	NewWorker->SetupTaskWorkerDelegate(Contexts, OnResolveCompleted);	
+//	NewWorker->SetupResolveWorker(Sequence);
+//	NewWorker->RunTaskWorker(true);
+//
+//}
 
 void UDMSEffectHandler::CleanupNonPersistent()
 {
@@ -146,21 +147,3 @@ void UDMSEffectHandler::CleanupNonPersistent()
 }
 
 
-
-
-void UDMSEffectResolveWorker::SetupResolveWorker(ADMSSequence* iSequence)
-{
-	SourceSequence=iSequence; 
-	IteratingDelegate.BindDynamic(this, &UDMSEffectResolveWorker::CompleteSingleTask);
-}
-
-void UDMSEffectResolveWorker::Work_Implementation()
-{
-	ADMSActiveEffect* CurrentAE = Cast<ADMSActiveEffect>(GetCurrentContext());
-
-	CurrentAE->Apply(SourceSequence, IteratingDelegate);
-}
-
-//void UDMSEffectResolveWorker::OnAllTaskCompleted_Implementation(bool WorkerSucceeded)
-//{
-//}

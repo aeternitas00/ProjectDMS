@@ -46,8 +46,8 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->SourcePlayer = SourcePlayer;
 	Sequence->SetTarget(Targets);
 	
-	Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
-	//Sequence->InitializeStepProgress(EffectNode->StepDefinitions,EffectNode->ProgressOrder);
+	//Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
+	Sequence->InitializeStepProgress(EffectNode->StepDefinitions);
 
 	// Add new seq to seq tree.
 	if ( ParentSequence == nullptr ) {

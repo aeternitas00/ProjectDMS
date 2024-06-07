@@ -80,6 +80,9 @@ bool ADMSSequence::SetSourcePlayer(AActor* NewSourcePlayer)
 
 bool ADMSSequence::IsChainableSequence()
 {
+	const auto BFlag = InstancedStep->GetCurrentProgressData().ProgressBroadcastFlag;
+	return BFlag != EDMSBroadCastFlag::BF_Unchainable && BFlag != EDMSBroadCastFlag::BF_NoBroadcast;
+	
 	return OriginalEffectNode->bIsChainableEffect;
 }
 
@@ -95,7 +98,7 @@ void ADMSSequence::InitializeStepProgress(const TArray<TObjectPtr<UDMSSequenceSt
 
 void ADMSSequence::RunStepProgressQueue()
 {
-	InstancedStep->RunStepProgressQueue();
+	InstancedStep->RunStepProgressQueue_Alter();
 }
 
 bool ADMSSequence::IsSequenceActive()
@@ -109,7 +112,8 @@ FGameplayTagContainer ADMSSequence::GetSequenceTags()
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
 	//rv.AddTag(GetCurrentProgressExactTag());
 	rv.AppendTags(GetCurrentProgressTags());
-	if(InstancedStep->bFTFlag) rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger"));
+	if ( InstancedStep->GetCurrentProgressData().ProgressBroadcastFlag == EDMSBroadCastFlag::BF_FreeActionWindow ) 
+		rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger"));
 	return rv;
 }
 
@@ -133,6 +137,16 @@ TArray<ADMSActiveEffect*> ADMSSequence::GetAllActiveEffects()
 		rv.Append(Storage.EIs);
 
 	return rv;
+}
+
+TArray<ADMSActiveEffect*> ADMSSequence::GetCurrentActiveEffects()
+{
+	if(InstancedStep->GetCurrentStepDefinition()->bExecuteStepByEachMainTarget){
+		for (auto& Storage : TargetAndEIs)
+			if ( Storage.MainTarget == InstancedStep->GetCurrentMainTarget() )
+				return Storage.EIs;
+	}
+	return GetAllActiveEffects();
 }
 
 void ADMSSequence::AttachChildSequence(ADMSSequence* iSeq) 

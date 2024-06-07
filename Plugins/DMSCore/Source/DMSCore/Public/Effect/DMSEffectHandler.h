@@ -26,30 +26,6 @@ class IDMSEffectorInterface;
 
 //DECLARE_DYNAMIC_DELEGATE_OneParam(FOnResolveCompleted, bool, Succeed);
 
-/**
-* Structure for implementing chained delegates to ensure synchronization in the Resolve step.
-*/
-USTRUCT()
-struct FResolveDelegateCounter {
-	GENERATED_BODY()
-	
-	uint8 Count=0;
-	FResolveIteratingDelegate Iterator;
-	TArray<ADMSActiveEffect*> ApplyingEIs;
-};
-
-UCLASS()
-class DMSCORE_API UDMSEffectResolveWorker : public UDMSSynchronousTaskWorker
-{
-	GENERATED_BODY()
-private:
-	TObjectPtr<ADMSSequence> SourceSequence;
-	FOnTaskCompleted IteratingDelegate;
-public:
-	void SetupResolveWorker(ADMSSequence* iSequence);
-	virtual void Work_Implementation();
-	//virtual void OnAllTaskCompleted_Implementation(bool WorkerSucceeded);
-};
 
 /**
  *	working...
@@ -67,24 +43,6 @@ protected:
 	 */
 	UPROPERTY()
 	TArray<ADMSActiveEffect*> EIList;
-
-	/**
-	 * Store FResolveDelegateCounters for each sequences.
-	 */
-	//UPROPERTY()
-	//TMap<TObjectPtr<ADMSSequence>, FResolveDelegateCounter> OnResolveCompletedMap;
-
-	/**
-	 * Function for sequential execution of Resolving EI in a sequence.
-	 * Work with OnResolveCompletedMap.
-	 * @param	Sequence					Resolving sequence.
-	 */
-	//void ApplyNextEffectInstance(ADMSSequence* SourceSequence, const FOnTaskCompleted& OnResolveCompleted, bool PrevSucceeded);
-	//void ApplyNextEffectInstance_Preview(ADMSSequence* SourceSequence, bool PrevSucceeded);
-
-	//ADMSActiveEffect* ApplyAEGetter(ADMSSequence* OwnerSequence);
-
-	//FResolveIteratingDelegate ResolveIteratingDelegate;
 
 public:
 	UDMSEffectHandler();
@@ -118,6 +76,6 @@ public:
 	 * @param	Sequence					Resolving sequence.
 	 * @param	OnResolveCompleted			Lambda executed when resolve completed.
 	 */
-	void Resolve(ADMSSequence* Sequence, const FOnTaskCompleted& OnResolveCompleted);
+	//void Resolve(ADMSSequence* Sequence, const FOnTaskCompleted& OnResolveCompleted);
 };
 

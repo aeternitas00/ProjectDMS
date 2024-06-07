@@ -81,6 +81,9 @@ FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementa
 {
 	FGameplayTagContainer rv;
 	rv.AddTag(GetPureStepTag());
+
+	for(auto& DD : DecisionDefinitions__)
+		rv.AppendTags(DD->GetDecisionTags());
 	// Get tags from decision context
 	return rv;
 }
@@ -91,6 +94,17 @@ bool UDMSSequenceStepDefinition_Decision::GetProgressOps_Implementation(const FG
 
 	OutExecutor.Add({this,ProgressTag,"Progress_Decision"}); return true;
 }
+
+
+TArray<FDMSStepProgressMetaData> UDMSSequenceStepDefinition_Decision::GetOrderedProgressData_Implementation() const
+{
+	return {{"Progress_Decision",BroadcastFlag_Decision}}; 
+}
+
+
+
+
+
 
 void UDMSSequenceStepDefinition_TargetSelect::Progress_TargetSelect(UDMSSequenceStep* InstancedStep)
 {
@@ -122,6 +136,11 @@ void UDMSSequenceStepDefinition_TargetSelect::TargetSelect(UDMSSequenceStep* Ins
 	if ( WidgetOwner == nullptr ){ InstancedStep->ProgressEnd(false); return;}
 
 
+}
+
+TArray<FDMSStepProgressMetaData> UDMSSequenceStepDefinition_TargetSelect::GetOrderedProgressData_Implementation() const
+{
+	return {{"Progress_TargetSelect",BroadcastFlag_TargetSelect}}; 
 }
 
 FGameplayTag UDMSSequenceStepDefinition_TargetSelect::GetPureStepTag_Implementation() const

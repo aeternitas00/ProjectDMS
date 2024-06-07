@@ -36,6 +36,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TArray<UDMSSelectorRequestForm*> CreateRequestForm(ADMSSequence* Sequence);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	FGameplayTagContainer GetDecisionTags();
+	virtual FGameplayTagContainer GetDecisionTags_Implementation(){return FGameplayTagContainer::EmptyContainer;}
 };
 
 

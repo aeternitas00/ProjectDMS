@@ -40,6 +40,9 @@ struct FDMSSkillTestData
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	float MinResultForTestSuccess = 0.0f;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool IsChainable;
+
 	// Get from decision step. or source player is Tester / sequence target test target;
 	// Get stat from who? ( only one )
 	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced)
@@ -54,9 +57,6 @@ struct FDMSSkillTestData
 
 	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	//bool CanUseBonusStat;
-
-	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	//bool IsCommittable;
 
 	// 최종적인 이펙트 적용 대상 마다 같은 테스트를 반복할지 결정.
 	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -91,7 +91,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = SkillTest)
 	FDMSSkillTestData DefaultSkillTestData;
 
-
 	void SetupTargets(UDMSSequenceStep* InstancedStep, TArray<TObjectPtr<AActor>>& Arr, TObjectPtr<UDMSTargetGenerator>& Generator);
 
 	FGameplayTagContainer GetSeqAttributeTag_Tester();
@@ -119,6 +118,7 @@ public:
 	UFUNCTION()
 	void PostSkillTest(UDMSSequenceStep* InstancedStep);
 
+	virtual TArray<FDMSStepProgressMetaData> GetOrderedProgressData_Implementation() const;
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
 	virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const;
 	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);

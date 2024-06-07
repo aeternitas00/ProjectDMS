@@ -123,26 +123,6 @@ protected:
 	DECLARE_DELEGATE_OneParam(FForcedEIIteratingDelegate, ADMSSequence*);
 	
 	/**
-	 * Structure for implementing chained delegates to ensure synchronization in the Notify step.
-	 */
-	//struct FForcedEICounter {
-	//	//FOnForcedSequenceCompleted ClosingDelegate;
-	//	uint8 Count = 0;
-	//	TMultiMap<TScriptInterface<IDMSEffectorInterface>, ADMSActiveEffect*> NonForcedObjects;
-	//	TArray<TPair<AActor*, ADMSActiveEffect*>> ForcedObjects;	
-	//	//FForcedEIIteratingDelegate IteratingDelegate;
-	//};
-
-	/**
-	 * Store FForcedEICounter for each sequences.
-	 */
-	//TMap<ADMSSequence*, FForcedEICounter> ForcedEIMap;
-
-	//void ActivateNextForced(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
-
-	//void ForcedFinished(ADMSSequence* Sequence,const FSimpleDelegate& OnForcedFinished);
-
-	/**
 	 * Widget class to be used for selecting response objects in the game mode that uses this notify manager.
 	 */
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)

@@ -45,8 +45,9 @@ void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FOnTaskComplet
 	FString TimingStr = NotifyData->GetCurrentProgressExactTag().ToString();
 	//FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress());
 
-	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled) {
-		DMS_LOG_SIMPLE(TEXT("Sequence is canceled"));
+	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled || 
+		NotifyData->GetInstancedStep()->GetCurrentProgressData().ProgressBroadcastFlag == EDMSBroadCastFlag::BF_NoBroadcast ) {
+		DMS_LOG_SIMPLE(TEXT("Sequence is canceled or broadcast mode is NoBroadcast"));
 		ResponseCompleted.ExecuteIfBound(true);
 		return;
 	}

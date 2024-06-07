@@ -13,7 +13,19 @@ enum class EDMSBroadCastFlag : uint8
 	BF_Broadcast = 0 UMETA(DisplayName = "Broadcast"),
 	BF_FreeActionWindow = 0 UMETA(DisplayName = "Broadcast with FreeAction Window"),
 	BF_Unchainable UMETA(DisplayName = "Broadcast but unchainable"),
-	BF_NotBroadcast UMETA(DisplayName = "Broadcast but unchainable"),
+	BF_NoBroadcast UMETA(DisplayName = "No broadcast"),
+};
+
+USTRUCT(BlueprintType)
+struct DMSCORE_API FDMSStepProgressMetaData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FName ProgressFunctionName;
+
+	UPROPERTY(BlueprintReadOnly)
+	EDMSBroadCastFlag ProgressBroadcastFlag;
 };
 
 /**
@@ -50,7 +62,7 @@ public:
 	/**
 	* 
 	*/
-	bool bFTFlag;
+	//bool bFTFlag;
 
 	/**
 	 * Reference owner sequence.
@@ -80,6 +92,10 @@ public:
 	UFUNCTION()
 	void ProgressEnd_Alter(bool bSucceeded = true);
 
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UDMSSequenceStepDefinition* GetCurrentStepDefinition() const {return StepDefinitions[CurrentStepIndex];}
+
 	/**
 	 * Current timing of this step.
 	 */
@@ -88,6 +104,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FGameplayTagContainer GetCurrentProgressTags() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FDMSStepProgressMetaData GetCurrentProgressData() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	TScriptInterface<IDMSEffectorInterface> GetCurrentMainTarget() const;
@@ -111,6 +130,7 @@ void UDMSSequenceStep::InitializeDelegates(FuncInitiated&& StepInitiated, FuncFi
 	OnStepFinished_Delegate.AddLambda(StepFinished);
 }
 
+
 /**
  * progress unit of a sequence.
  */
@@ -120,13 +140,16 @@ class DMSCORE_API UDMSSequenceStepDefinition : public UObject
 	GENERATED_BODY()
 
 public:
-	UDMSSequenceStepDefinition(){}
-	
-	UPROPERTY()
-	bool EnableExecuteByEach = true;
+	UDMSSequenceStepDefinition():bExecuteStepByEachMainTarget(false),EnableExecuteByEach(true),tHideOption(false){}
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="EnableExecuteByEach",EditConditionHides))
-	bool bExecuteStepByEachMainTarget = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category = Effect, meta=(EditCondition="EnableExecuteByEach",EditConditionHides))
+	bool bExecuteStepByEachMainTarget;
+
+	UPROPERTY(VisibleDefaultsOnly,Category = Effect, meta=(EditCondition="tHideOption",EditConditionHides))
+	bool EnableExecuteByEach;
+
+	UPROPERTY()
+	bool tHideOption;
 
 	UFUNCTION(BlueprintCallable)
 	void BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName, bool bFT = false);
@@ -139,8 +162,9 @@ public:
 	//void Progress_Sample(UDMSSequenceStep* InstancedStep){ /*SOME BEHAVIORS ...*/ InstancedStep->ProgressEnd(false); }
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintPure)
-	TArray<FName> GetDefaultProgressOrder() const;
-	virtual TArray<FName> GetDefaultProgressOrder_Implementation() const {return {};}
+	TArray<FDMSStepProgressMetaData> GetOrderedProgressData() const;
+	virtual TArray<FDMSStepProgressMetaData> GetOrderedProgressData_Implementation() const {return {};}
+
 	/**
 	 * Get tag of step.
 	 */

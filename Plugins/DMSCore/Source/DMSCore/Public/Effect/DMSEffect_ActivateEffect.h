@@ -36,11 +36,11 @@ public:
 
 	// == Sort of Hard coded Searching == //
 	// == Use it when you know exactly what it'll be attached to. == //
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = Effect)
 	bool UseEffectFromOuter;
 
 	// Tag of the effect set to reference.
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
 	FGameplayTag EffectSetName;
 
 	// Index in EffectSet of EffectNode to be activated.
@@ -48,11 +48,11 @@ public:
 	//uint8 EffectIdx;
 
 	// Index in EffectSet of EffectNode to be activated.
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
 	TArray<uint8> EffectIdxArr;
 
 	// EffectNode that will activate itself when it doesn't use Outer's one.
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffectArr;
 
 	UDMSEffectSet* GetEffectSetFromOuter(ADMSActiveEffect* iEI);
@@ -89,14 +89,14 @@ class DMSCORE_API USelReqGenerator_ObjCand_ActivateEffect : public USelReqGenera
 
 public:
 	// == Use it when you know exactly what it'll be attached to. == //
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = Selector)
 	bool UseEffectFromOuter;
 
 	// Tag of the effect set to reference.
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = Selector, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
 	FGameplayTag EffectSetTag;
 
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category = Selector, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffects;
 
 	virtual TArray<UObject*> CollectObjects(ADMSSequence* Sequence, ADMSActiveEffect* TargetEI);
