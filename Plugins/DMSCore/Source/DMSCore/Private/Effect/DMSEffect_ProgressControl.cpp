@@ -11,9 +11,9 @@ void UDMSEffect_ProgressControl::Work_Implementation(ADMSSequence* SourceSequenc
 	auto Step = TargetSeq->GetInstancedStep();
 
 	if(bTargetByIndex)
-		Step->SetNextProgress(JumpTargetIdx);
+		Step->SetNextStep(JumpTargetIdx);
 	else
-		Step->SetNextProgress(JumpTargetTag);
+		Step->SetNextStep(JumpTargetTag);
 
 	OnWorkCompleted.ExecuteIfBound(true);
 }

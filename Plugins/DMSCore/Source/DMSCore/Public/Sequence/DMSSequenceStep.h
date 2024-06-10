@@ -26,6 +26,9 @@ struct DMSCORE_API FDMSStepProgressMetaData
 
 	UPROPERTY(BlueprintReadOnly)
 	EDMSBroadCastFlag ProgressBroadcastFlag;
+
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag ProgressTag;
 };
 
 /**
@@ -54,44 +57,25 @@ public:
 	TArray<TObjectPtr<UDMSSequenceStepDefinition>> StepDefinitions;
 
 	/**
-	* 
-	*/
-	TArray<FProgressExecutor> ProgressExecutors;
-
-
-	/**
-	* 
-	*/
-	//bool bFTFlag;
-
-	/**
 	 * Reference owner sequence.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<ADMSSequence> OwnerSequence;
 
-	void InitializeStepProgress(ADMSSequence* iOwnerSequence,const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder);
 	void InitializeStepProgress(ADMSSequence* iOwnerSequence, const TArray<TObjectPtr<UDMSSequenceStepDefinition>>& iStepDefinitions);
 
 	void RunStepProgressQueue();
-	void RunStepProgressQueue_Alter();
 
+	void ExecuteNextStep();
 	void ExecuteNextProgress();
-	void ExecuteNextStep_Alter();
-	void ExecuteNextProgress_Alter();
 
-	void SetNextProgress(int ProgressIdx);
-	void SetNextProgress(const FGameplayTag& ProgressTag);
+	void SetNextStep(int ProgressIdx);
+	void SetNextStep(const FGameplayTag& ProgressTag);
 
-	FORCEINLINE bool IsProgressQueueFinished();
-	FORCEINLINE bool IsProgressQueueFinished_Alter() const;
+	FORCEINLINE bool IsProgressQueueFinished() const;
 
 	UFUNCTION()
 	void ProgressEnd(bool bSucceeded = true);
-
-	UFUNCTION()
-	void ProgressEnd_Alter(bool bSucceeded = true);
-
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UDMSSequenceStepDefinition* GetCurrentStepDefinition() const {return StepDefinitions[CurrentStepIndex];}
@@ -152,11 +136,7 @@ public:
 	bool tHideOption;
 
 	UFUNCTION(BlueprintCallable)
-	void BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName, bool bFT = false);
-
-	UFUNCTION(BlueprintNativeEvent)
-	bool GetProgressOps(const FGameplayTag& ProgressTag,UPARAM(ref) TArray<FProgressExecutor>& OutExecutors);
-	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutors);
+	void BroadcastProgress(UDMSSequenceStep* InstancedStep, FName AfterFunctionName);
 
 	//UFUNCTION()
 	//void Progress_Sample(UDMSSequenceStep* InstancedStep){ /*SOME BEHAVIORS ...*/ InstancedStep->ProgressEnd(false); }

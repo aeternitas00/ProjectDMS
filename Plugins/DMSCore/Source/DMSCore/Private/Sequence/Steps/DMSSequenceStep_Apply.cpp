@@ -75,9 +75,9 @@ void UDMSSequenceStepDefinition_Apply::Progress_After(UDMSSequenceStep* Instance
 TArray<FDMSStepProgressMetaData> UDMSSequenceStepDefinition_Apply::GetOrderedProgressData_Implementation() const 
 { 
 	return {
-		{"Progress_Before",BroadcastFlag_Before},
-		{"Progress_During",EDMSBroadCastFlag::BF_NoBroadcast},
-		{"Progress_After",BroadcastFlag_After}
+		{"Progress_Before",BroadcastFlag_Before,FGameplayTag::RequestGameplayTag("Step.Arkham.Apply.Before")},
+		{"Progress_During",EDMSBroadCastFlag::BF_NoBroadcast,FGameplayTag::RequestGameplayTag("Step.Arkham.Apply.During")},
+		{"Progress_After",BroadcastFlag_After,FGameplayTag::RequestGameplayTag("Step.Arkham.Apply.After")}
 	}; 
 }
 
@@ -98,30 +98,6 @@ FGameplayTagContainer UDMSSequenceStepDefinition_Apply::GetStepTag_Implementatio
 	return rv;
 	//return FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Step.Arkham.Apply"));
 }
-
-bool UDMSSequenceStepDefinition_Apply::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
-{
-	auto BaseTag = FGameplayTag::RequestGameplayTag("Step.Arkham.Apply");
-	if(ProgressTag.MatchesTagExact(BaseTag)){
-		OutExecutor.Append({
-			{this,FGameplayTag::RequestGameplayTag("Step.Arkham.Apply.Before"),FName(TEXT("Progress_Before"))},
-			{this,FGameplayTag::RequestGameplayTag("Step.Arkham.Apply.During"),FName(TEXT("Progress_During"))},
-			{this,FGameplayTag::RequestGameplayTag("Step.Arkham.Apply.After"),FName(TEXT("Progress_After"))}
-		});	
-		return true;
-	}
-	else if(ProgressTag.MatchesTag(BaseTag)){
-		// Alt :: Using native defined tag 
-		TArray<FString> Words;	ProgressTag.ToString().ParseIntoArray(Words,TEXT("."));
-		FName FunctionName(FString::Printf(TEXT("Progress_%s"), *Words.Last()));
-		if ( FindFunction(FunctionName) == nullptr ) return false;
-
-		OutExecutor.Add({this,ProgressTag,FunctionName});		
-	}
-
-	return false;
-}
-
 
 void UDMSEffectResolveWorker::SetupResolveWorker(ADMSSequence* iSequence, UDMSSequenceStepDefinition_Apply* iApplyDefinition)
 {

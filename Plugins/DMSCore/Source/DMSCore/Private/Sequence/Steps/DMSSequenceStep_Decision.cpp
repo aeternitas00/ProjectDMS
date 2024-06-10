@@ -88,19 +88,10 @@ FGameplayTagContainer UDMSSequenceStepDefinition_Decision::GetStepTag_Implementa
 	return rv;
 }
 
-bool UDMSSequenceStepDefinition_Decision::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
-{
-	if(!GetPureStepTag().MatchesTagExact(ProgressTag)) return false;
-
-	OutExecutor.Add({this,ProgressTag,"Progress_Decision"}); return true;
-}
-
-
 TArray<FDMSStepProgressMetaData> UDMSSequenceStepDefinition_Decision::GetOrderedProgressData_Implementation() const
 {
-	return {{"Progress_Decision",BroadcastFlag_Decision}}; 
+	return {{"Progress_Decision",BroadcastFlag_Decision,FGameplayTag::RequestGameplayTag("Step.Arkham.Decision")}}; 
 }
-
 
 
 
@@ -140,7 +131,7 @@ void UDMSSequenceStepDefinition_TargetSelect::TargetSelect(UDMSSequenceStep* Ins
 
 TArray<FDMSStepProgressMetaData> UDMSSequenceStepDefinition_TargetSelect::GetOrderedProgressData_Implementation() const
 {
-	return {{"Progress_TargetSelect",BroadcastFlag_TargetSelect}}; 
+	return {{"Progress_TargetSelect",BroadcastFlag_TargetSelect,FGameplayTag::RequestGameplayTag("Step.Arkham.TargetSelect")}}; 
 }
 
 FGameplayTag UDMSSequenceStepDefinition_TargetSelect::GetPureStepTag_Implementation() const
@@ -148,9 +139,3 @@ FGameplayTag UDMSSequenceStepDefinition_TargetSelect::GetPureStepTag_Implementat
 	return FGameplayTag::RequestGameplayTag("Step.Arkham.TargetSelect");
 }
 
-bool UDMSSequenceStepDefinition_TargetSelect::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
-{
-	if(!GetPureStepTag().MatchesTagExact(ProgressTag)) return false;
-
-	OutExecutor.Add({this,ProgressTag,"Progress_TargetSelect"}); return true;
-}

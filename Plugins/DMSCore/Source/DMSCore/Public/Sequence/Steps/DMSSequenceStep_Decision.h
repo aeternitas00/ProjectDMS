@@ -52,12 +52,9 @@ public:
 	void MakeDecision(UDMSSequenceStep* InstancedStep);
 
 	// Implementations
-
-	//virtual TArray<FName> GetDefaultProgressOrder_Implementation() const {return {"Progress_Decision"};}
 	virtual TArray<FDMSStepProgressMetaData> GetOrderedProgressData_Implementation() const;
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
 	virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const;
-	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 
 class USelReqGenerator_ObjCand;
@@ -89,9 +86,6 @@ public:
 	void TargetSelect(UDMSSequenceStep* InstancedStep);
 
 	// Implementations
-	//virtual TArray<FName> GetDefaultProgressOrder_Implementation() const {return {"Progress_TargetSelect"};}
 	virtual TArray<FDMSStepProgressMetaData> GetOrderedProgressData_Implementation() const;
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
-	//virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const;
-	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };

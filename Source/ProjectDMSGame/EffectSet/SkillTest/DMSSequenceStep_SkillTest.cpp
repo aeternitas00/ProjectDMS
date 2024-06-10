@@ -100,7 +100,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST1(UDMSSequenceStep* Instan
 	
 	AttComp->MakeAttribute(FGameplayTagContainer(TAG_DMS_Step_SkillTest_Data_TestResult),UDMSAttributeValue_Numeric::StaticClass(), true);
 
-	BroadcastProgress(InstancedStep,FName(NAME_None),1);
+	BroadcastProgress(InstancedStep,FName(NAME_None));
 	// FT WINDOW
 }
 
@@ -110,7 +110,7 @@ void UDMSSequenceStepDefinition_SkillTest::Progress_ST2(UDMSSequenceStep* Instan
 
 	// SELECTOR OR JUST BROADCASTING?
 	// 일단은 그냥 브로드캐스팅으로.
-	BroadcastProgress(InstancedStep,FName(NAME_None),1);
+	BroadcastProgress(InstancedStep,FName(NAME_None));
 
 	// FT WINDOW
 
@@ -196,14 +196,14 @@ void UDMSSequenceStepDefinition_SkillTest::PostSkillTest(UDMSSequenceStep* Insta
 TArray<FDMSStepProgressMetaData> UDMSSequenceStepDefinition_SkillTest::GetOrderedProgressData_Implementation() const
 {
 	return {
-		{"Progress_ST1",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_FreeActionWindow : EDMSBroadCastFlag::BF_Unchainable },
-		{"Progress_ST2",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_FreeActionWindow : EDMSBroadCastFlag::BF_Unchainable },
-		{"Progress_ST3",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
-		{"Progress_ST4",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
-		{"Progress_ST5",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
-		{"Progress_ST6",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
-		{"Progress_ST7",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable },
-		{"Progress_ST8",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable }
+		{"Progress_ST1",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_FreeActionWindow : EDMSBroadCastFlag::BF_Unchainable, FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST1") },
+		{"Progress_ST2",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_FreeActionWindow : EDMSBroadCastFlag::BF_Unchainable, FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST2") },
+		{"Progress_ST3",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable,FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST3") },
+		{"Progress_ST4",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable,FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST4") },
+		{"Progress_ST5",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable,FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST5") },
+		{"Progress_ST6",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable,FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST6") },
+		{"Progress_ST7",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable,FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST7") },
+		{"Progress_ST8",DefaultSkillTestData.IsChainable ? EDMSBroadCastFlag::BF_Broadcast : EDMSBroadCastFlag::BF_Unchainable,FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest.ST8") }
 	};
 }
 
@@ -219,28 +219,6 @@ FGameplayTagContainer UDMSSequenceStepDefinition_SkillTest::GetStepTag_Implement
 	rv.AddTag(GetPureStepTag());
 	// Get tags from testing context
 	return rv;
-}
-
-bool UDMSSequenceStepDefinition_SkillTest::GetProgressOps_Implementation(const FGameplayTag& ProgressTag, TArray<FProgressExecutor>& OutExecutor)
-{
-	FGameplayTag BaseTag = FGameplayTag::RequestGameplayTag("Step.Arkham.SkillTest");
-	if(ProgressTag.MatchesTagExact(BaseTag)) {
-		for(int i=1;i<=8;i++){
-			FName FunctionName(FString::Printf(TEXT("Progress_ST%d"),i));
-			FGameplayTag ExactTag(FGameplayTag::RequestGameplayTag(*FString::Printf(TEXT("Step.Arkham.SkillTest.ST%d"),i)));
-			OutExecutor.Add(FProgressExecutor(this,ExactTag,FunctionName));
-		}
-		return true;
-	}
-	else if(ProgressTag.MatchesTag(BaseTag)){
-		// Alt :: Using native defined tag 
-		TArray<FString> Words;	ProgressTag.ToString().ParseIntoArray(Words,TEXT("."));
-		FName FunctionName(FString::Printf(TEXT("Progress_%s"), *Words.Last()));
-		if ( FindFunction(FunctionName) == nullptr ) return false;
-
-		OutExecutor.Add(FProgressExecutor(this,ProgressTag,FunctionName));		
-	}
-	return false;
 }
 
 

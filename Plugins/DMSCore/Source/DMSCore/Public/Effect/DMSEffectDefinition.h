@@ -212,8 +212,8 @@ public:
 	 * Actual effects that activatable in that timing
 	 * Works in order to 0~n
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
-	TArray<TObjectPtr<UDMSEffectDefinition>> EffectDefinitions;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
+	//TArray<TObjectPtr<UDMSEffectDefinition>> EffectDefinitions;
 
 	/**
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
@@ -268,11 +268,11 @@ public:
 	 */
 	//
 	// NOTE :: EDITOR EXTENSION?
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	TSet<TObjectPtr<UDMSSequenceStepDefinition>> StepClassRequirements;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	//TSet<TObjectPtr<UDMSSequenceStepDefinition>> StepClassRequirements;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	TArray<FGameplayTag> ProgressOrder;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
+	//TArray<FGameplayTag> ProgressOrder;
 };
 
 /** 

@@ -53,7 +53,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSequenceInitiatedDynamic);
 DECLARE_DELEGATE_OneParam(FOnSequenceFinished_Signature, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSequenceFinished, bool);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FProgressExecutor_Signature, UDMSSequenceStep*, InstancedStep);
+//DECLARE_DYNAMIC_DELEGATE_OneParam(FProgressExecutor_Signature, UDMSSequenceStep*, InstancedStep);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnProgressFinished, bool, Succeeded);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSequenceFinishedDynamic_Signature, bool, Succeeded);
@@ -61,24 +61,24 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSequenceFinishedDynamic,bool,Succ
 
 // TODO :: move to step instance 
 // StepDefinition will define step order and executing ops.
-USTRUCT(BlueprintType)
-struct DMSCORE_API FProgressExecutor
-{
-	GENERATED_BODY()
-
-	FProgressExecutor(){}
-	//FProgressExecutor(const FProgressExecutor_Signature& iExecutor,const FGameplayTag& ProgressTag):ExecutorDelegate(iExecutor),ExactTag(ProgressTag){};
-	FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName);
-
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FProgressExecutor_Signature ExecutorDelegate;
-	
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UDMSSequenceStepDefinition> ExecutingStep;
-
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FGameplayTag ExactTag;
-};
+//USTRUCT(BlueprintType)
+//struct DMSCORE_API FProgressExecutor
+//{
+//	GENERATED_BODY()
+//
+//	FProgressExecutor(){}
+//	//FProgressExecutor(const FProgressExecutor_Signature& iExecutor,const FGameplayTag& ProgressTag):ExecutorDelegate(iExecutor),ExactTag(ProgressTag){};
+//	FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName);
+//
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	FProgressExecutor_Signature ExecutorDelegate;
+//	
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	TObjectPtr<UDMSSequenceStepDefinition> ExecutingStep;
+//
+//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+//	FGameplayTag ExactTag;
+//};
 
 UCLASS()
 class DMSCORE_API UDMSChildSequenceWorker : public UDMSSynchronousTaskWorker
@@ -293,7 +293,7 @@ public:
 	* Instancing & initiate steps with effect node.
 	* @param	StepClasses				Step classes to instantiate & initialize.
 	*/
-	void InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions,const TArray<FGameplayTag>& ProgressOrder);
+	//void InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions,const TArray<FGameplayTag>& ProgressOrder);
 
 	void InitializeStepProgress(const TArray<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions);
 

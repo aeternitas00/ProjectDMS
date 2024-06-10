@@ -86,10 +86,10 @@ bool ADMSSequence::IsChainableSequence()
 	return OriginalEffectNode->bIsChainableEffect;
 }
 
-void ADMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
-{
-	InstancedStep->InitializeStepProgress(this,StepDefinitions,ProgressOrder);
-}
+//void ADMSSequence::InitializeStepProgress(const TSet<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions, const TArray<FGameplayTag>& ProgressOrder)
+//{
+//	InstancedStep->InitializeStepProgress(this,StepDefinitions,ProgressOrder);
+//}
 
 void ADMSSequence::InitializeStepProgress(const TArray<TObjectPtr<UDMSSequenceStepDefinition>>& StepDefinitions)
 {
@@ -98,7 +98,7 @@ void ADMSSequence::InitializeStepProgress(const TArray<TObjectPtr<UDMSSequenceSt
 
 void ADMSSequence::RunStepProgressQueue()
 {
-	InstancedStep->RunStepProgressQueue_Alter();
+	InstancedStep->RunStepProgressQueue();
 }
 
 bool ADMSSequence::IsSequenceActive()
@@ -326,10 +326,10 @@ void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ADMSSequence, AttributeComponent);
 }
 
-FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) :  ExecutingStep(Definition), ExactTag(ProgressTag)
-{
-	ExecutorDelegate.BindUFunction(Definition, FunctionName); 
-}
+//FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) :  ExecutingStep(Definition), ExactTag(ProgressTag)
+//{
+//	ExecutorDelegate.BindUFunction(Definition, FunctionName); 
+//}
 
 void UDMSChildSequenceWorker::Work_Implementation()
 {

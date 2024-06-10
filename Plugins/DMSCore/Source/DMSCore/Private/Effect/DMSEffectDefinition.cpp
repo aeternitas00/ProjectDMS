@@ -77,14 +77,15 @@ UDMSEffectNode::UDMSEffectNode() : bForced(false), bCanResponseMulTime(false), b
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
 
-	StepDefinitions = StepClassRequirements.Array();
+	//StepDefinitions = StepClassRequirements.Array();
 }
 
 FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(ADMSSequence* CurrentSequence)
 {
 	FGameplayTagContainer ctn;
 	ctn.AppendTags(NodeTags);
-	for (auto& fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
+
+	//for (auto& fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
 
 	return ctn;
 }

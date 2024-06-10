@@ -91,11 +91,8 @@ public:
 	void Progress_After(UDMSSequenceStep* InstancedStep);
 
 	// Implementations
-	//virtual TArray<FName> GetDefaultProgressOrder_Implementation() const {return {"Progress_Before","Progress_During","Progress_After"};}
 	virtual TArray<FDMSStepProgressMetaData> GetOrderedProgressData_Implementation() const;
 	virtual FGameplayTag GetPureStepTag_Implementation() const;
 	virtual FGameplayTagContainer GetStepTag_Implementation(const UDMSSequenceStep* InstancedStep) const;
-
-	virtual bool GetProgressOps_Implementation(const FGameplayTag& ProgressTag,TArray<FProgressExecutor>& OutExecutor);
 };
 
