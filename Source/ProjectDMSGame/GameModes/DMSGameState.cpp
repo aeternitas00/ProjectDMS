@@ -6,13 +6,14 @@
 #include "Player/DMSPlayerController.h"
 #include "Camera/DMSCameraPawn.h"
 #include "Card/DMSCardManagerComponent.h"
+#include "Attribute/DMSAttributeComponent.h"
 //#include "Effect/DMSEIManagerComponent.h"
 
 ADMSGameState::ADMSGameState(const FObjectInitializer& Initializer) : Super(Initializer)
 {
 	ContainerManagerComponent = CreateDefaultSubobject<UDMSContainerManagerComponent>(TEXT("ContainerManagerComponent"));
-	//EIManagerComponent = CreateDefaultSubobject<UDMSEIManagerComponent>("EIManagerComponent");
-
+	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributesComponent"));
+	AttributeComponent->SetIsReplicated(true);
 }
  
 void ADMSGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

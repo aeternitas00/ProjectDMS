@@ -7,6 +7,7 @@
 #include "UObject/NoExportTypes.h"
 #include "DMSPhaseManager.generated.h"
 
+// class ADMSPhase;
 class UDMSPhase;
 /**
  * 

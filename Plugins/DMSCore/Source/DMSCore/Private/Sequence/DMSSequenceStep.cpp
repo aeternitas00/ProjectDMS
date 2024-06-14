@@ -24,7 +24,7 @@ void UDMSSequenceStep::InitializeStepProgress(ADMSSequence* iOwnerSequence,const
 void UDMSSequenceStep::RunStepProgressQueue()
 {
 	if(StepDefinitions.Num()==0) { OwnerSequence->OnStepQueueCompleted(true); return; }
-	ExecuteNextProgress();
+	ExecuteNextStep();
 }
 
 void UDMSSequenceStep::ExecuteNextStep()
@@ -48,7 +48,7 @@ void UDMSSequenceStep::ExecuteNextProgress()
 
 	if(CurrentProgressIndex >= ProgressOrder.Num())
 	{
-		if(CurrentDef->bExecuteStepByEachMainTarget && CurrentMainTargetIndex < MainTargetQueue.Num())
+		if(CurrentDef->bExecuteStepByEachMainTarget && CurrentMainTargetIndex+1 < MainTargetQueue.Num())
 		{
 			CurrentMainTargetIndex++;
 			CurrentProgressIndex=0;
@@ -107,9 +107,15 @@ bool UDMSSequenceStep::IsProgressQueueFinished() const
 	return CurrentStepIndex >= StepDefinitions.Num();
 }
 
-FGameplayTag UDMSSequenceStep::GetCurrentProgressExactTag() const
+FGameplayTag UDMSSequenceStep::GetCurrentStepTag() const
 {
 	return StepDefinitions[CurrentStepIndex]->GetPureStepTag();
+	//return ProgressExecutors[CurrentProgressIndex].ExactTag;
+}
+
+FGameplayTag UDMSSequenceStep::GetCurrentProgressExactTag() const
+{
+	return GetCurrentProgressData().ProgressTag;
 	//return ProgressExecutors[CurrentProgressIndex].ExactTag;
 }
 
@@ -144,7 +150,7 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	FOnTaskCompletedNative AfterBroadcast;
 	if( AfterFunctionName.IsNone() ) {
 		AfterBroadcast.BindLambda( [=](bool){
-			FGameplayTag seqtag = InstancedStep->GetCurrentProgressExactTag();
+			FGameplayTagContainer seqtag = InstancedStep->GetCurrentProgressTags();
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
 			InstancedStep->ProgressEnd(true);
 			DMS_LOG_SIMPLE(TEXT("==== %s : after broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
@@ -154,7 +160,7 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	{
 		AfterBroadcast.BindLambda( [=](bool){
 			//InstancedStep->bFTFlag=0;
-			FGameplayTag seqtag = InstancedStep->GetCurrentProgressExactTag();
+			FGameplayTagContainer seqtag = InstancedStep->GetCurrentProgressTags();
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
 			UDMSSequenceStep* Param = InstancedStep;
 			this->ProcessEvent(this->FindFunction(AfterFunctionName),&Param);

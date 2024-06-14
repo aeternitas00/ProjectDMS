@@ -186,6 +186,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	TArray<ADMSSpawnableBase*> GetTopNObjects(int Num);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TArray<ADMSSpawnableBase*> GetRandomNObjects(int Num);
+
 	UFUNCTION(BlueprintCallable)
 	void ShuffleTopNObjects(int Num=0);
 
@@ -200,6 +203,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnContainerRemoved(const TArray<ADMSSpawnableBase*>& RemovedCards);
 	void OnContainerRemoved_Implementation(const TArray<ADMSSpawnableBase*>& RemovedCards){}
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDisplayWidgetReady();
+
 	//UFUNCTION(BlueprintImplementableEvent)
 	//void OnContainerUpdated();
 };

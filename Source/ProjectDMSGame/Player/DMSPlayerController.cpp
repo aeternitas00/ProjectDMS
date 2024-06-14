@@ -82,5 +82,6 @@ void ADMSPlayerController::Server_OnSetupComplete_Implementation()
 {
 	ADMSGameMode* GameMode = GetWorld()->GetAuthGameMode<ADMSGameMode>();
 
+	Cast<ADMSPlayerState>(PlayerState)->PlayerHUDReady();
 	GameMode->PlayerReady();
 }

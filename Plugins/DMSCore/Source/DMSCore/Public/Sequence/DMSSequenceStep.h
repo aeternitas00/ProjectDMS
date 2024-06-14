@@ -84,6 +84,9 @@ public:
 	 * Current timing of this step.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FGameplayTag GetCurrentStepTag() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FGameplayTag GetCurrentProgressExactTag() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)

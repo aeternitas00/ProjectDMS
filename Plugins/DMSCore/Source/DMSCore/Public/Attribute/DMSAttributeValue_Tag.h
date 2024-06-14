@@ -6,6 +6,15 @@
 #include "Attribute/DMSAttribute.h"
 #include "DMSAttributeValue_Tag.generated.h"
 
+UENUM(BlueprintType)
+enum class EDMSModifierType_Tag : uint8
+{
+	MT_Add UMETA(DisplayName = "Add"),
+	MT_Remove UMETA(DisplayName = "Remove"),
+	MT_Override UMETA(DisplayName = "Set (Override)"),
+	MT_MAX
+};
+
 /**
  * 
  */

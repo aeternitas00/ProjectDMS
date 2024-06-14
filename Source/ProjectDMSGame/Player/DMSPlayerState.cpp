@@ -42,6 +42,11 @@ void ADMSPlayerState::SetupAttributes()
 	}
 }
 
+void ADMSPlayerState::PlayerHUDReady()
+{
+	ContainerManagerComponent->OnDisplayWidgetReady();
+}
+
 void ADMSPlayerState::LoadDatasFromSave(UDMSSaveGame* SaveGame)
 {
 	PlayerCharacterData = SaveGame->SavedCharacterData;
@@ -123,6 +128,11 @@ UDMSSpawnableContainerComponent* ADMSPlayerState::SearchContainer(const FGamepla
 
 ADMSLocationBase* ADMSPlayerState::GetCurrentLocation_Implementation()
 {
+	if(!CharacterRef)
+	{
+		DMS_LOG_DETAIL(Warning,TEXT("%s : Player has NO CHARACTER"),*GetName());
+		return nullptr;
+	}
 	return IDMSLocatableInterface::Execute_GetCurrentLocation(CharacterRef);
 }
 

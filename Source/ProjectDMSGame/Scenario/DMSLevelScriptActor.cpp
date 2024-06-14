@@ -12,6 +12,10 @@
 #include "Effect/DMSEffectorInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Effect/DMSEIManagerComponent.h"
+#include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttributeValue_Boolean.h"
+#include "Attribute/DMSAttributeValue_Object.h"
+
 
 ADMSLevelScriptActor::ADMSLevelScriptActor(/*const FObjectInitializer& ObjectInitializer*/)//:Super(ObjectInitializer)
 {
@@ -57,6 +61,14 @@ void ADMSLevelScriptActor::InitializeDMSGame(/*UPARAM(ref)TArray<ADMSLocationBas
 	ScenarioRules.GetKeys(Keys);
 	for (auto& Key : Keys)
 		EIManagerComponent->SetupOwnEffect(ScenarioRules[Key],Key);
+
+	auto StartingLocation = GS->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Object>(FGameplayTag::RequestGameplayTag("Attribute.Arkham.Scenario.StartingLocation").GetSingleTagContainer(),true)->GetValue()[0];
+
+	UDMSAttributeValue_Boolean* VisitedAtt = StartingLocation && StartingLocation->IsA<AActor>() ?
+		Cast<AActor>(StartingLocation)->GetComponentByClass<UDMSAttributeComponent>()->GetTypedAttributeValue<UDMSAttributeValue_Boolean>(FGameplayTag::RequestGameplayTag("Attribute.Arkham.Location.Revealed").GetSingleTagContainer(),true) :
+		nullptr ;
+
+	if(VisitedAtt)	VisitedAtt->SetValue(true);
 }
 
 TArray<ADMSLocationBase*> ADMSLevelScriptActor::GetStartingLocations()

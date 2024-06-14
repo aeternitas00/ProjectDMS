@@ -247,7 +247,7 @@ public:
 	bool IsTargetted() const {return bTargeted;}
 
 	UFUNCTION(BlueprintCallable)
-	FGameplayTag GetCurrentProgressExactTag();
+	FGameplayTag GetCurrentStepTag();
 
 	UFUNCTION(BlueprintCallable)
 	FGameplayTagContainer GetCurrentProgressTags();

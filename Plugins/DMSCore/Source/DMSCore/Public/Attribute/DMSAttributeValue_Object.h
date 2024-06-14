@@ -9,6 +9,15 @@
 class UDMSAttributeModifierOp;
 class UDMSAttributeValue;
 
+UENUM(BlueprintType)
+enum class EDMSModifierType_Object : uint8
+{
+	MT_Add UMETA(DisplayName = "Add"),
+	MT_Remove UMETA(DisplayName = "Remove"),
+	MT_Override UMETA(DisplayName = "Set (Override)"),
+	MT_MAX
+};
+
 UCLASS(BlueprintType)
 class DMSCORE_API UDMSAttributeValue_Object : public UDMSAttributeValue
 {

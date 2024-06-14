@@ -67,4 +67,9 @@ public:
 	TArray<ADMSSpawnableBase*> GetAllObjects();
 
 	virtual void InitializeComponent();
+
+	/**
+	 * 
+	 */
+	void OnDisplayWidgetReady();
 };

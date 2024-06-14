@@ -7,12 +7,14 @@
 #include "Card/DMSCardManagerComponent.h"
 #include "Common/DMSGameTags.h"
 #include "Effect/DMSEIManagerComponent.h"
+#include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttributeValue_Boolean.h"
 
 ADMSLocationBase::ADMSLocationBase(const FObjectInitializer& ObjectInitializer):ADMSEffectorActorBase(ObjectInitializer)
 {
 	ContainerManagerComponent = CreateDefaultSubobject<UDMSContainerManagerComponent>(TEXT("ContainerManagerComponent"));
-	//LocContainerClass=Card
-	//ChildSlot=CreateDefaultSubobject< USceneComponent>("ChildSlot");
+	AttributeComponent = CreateDefaultSubobject<UDMSAttributeComponent>(TEXT("AttributesComponent"));
+	AttributeComponent->SetIsReplicated(true);
 }
 
 
@@ -98,6 +100,8 @@ void ADMSLocationBase::OnInitialized_Implementation()
 	auto LocData = Cast<UDMSLocationData>(OriginalData);
 	
 	EIManagerComponent->SetupOwnEffect(LocData->LocationEffect, TAG_DMS_EffectType_Effect);
+	auto VisitedAttribute = AttributeComponent->MakeAttribute(FGameplayTag::RequestGameplayTag("Attribute.Arkham.Location.Revealed").GetSingleTagContainer(),UDMSAttributeValue_Boolean::StaticClass(),true);
+	//Cast<UDMSAttributeValue_Boolean>(VisitedAttribute->AttributeValue)->SetValue(false);
 }
 
 void ADMSLocationBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

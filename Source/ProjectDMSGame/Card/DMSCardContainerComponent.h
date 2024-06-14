@@ -100,7 +100,7 @@ public:
 	//void OnContainerAdded(const TArray<ADMSCardBase*>& AddedCards);
 	void OnContainerAdded_Implementation(const TArray<ADMSCardBase*>& AddedCards){}
 
-
+	//virtual void OnOwnerPlayerHUDReady_Implementation();
 	//UFUNCTION(BlueprintNativeEvent)
 	//void OnContainerRemoved(const TArray<ADMSCardBase*>& RemovedCards);
 	void OnContainerRemoved_Implementation(const TArray<ADMSCardBase*>& RemovedCards){}

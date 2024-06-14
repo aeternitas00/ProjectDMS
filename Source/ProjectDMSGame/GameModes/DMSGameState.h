@@ -24,6 +24,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
 	TObjectPtr<UDMSContainerManagerComponent> ContainerManagerComponent;
 
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Replicated)
+	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
 public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	int TestPlayerNum = 0;

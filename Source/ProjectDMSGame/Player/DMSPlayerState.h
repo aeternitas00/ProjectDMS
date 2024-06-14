@@ -133,14 +133,14 @@ public:
 	void SetupDefaults();
 
 	/**
-	 * Setup player's CardManager.
-	 */
-	//void SetupCardContainers();
-
-	/**
 	 * Setup player's AttributeManager.
 	 */
 	void SetupAttributes();
+
+	/**
+	 * 
+	 */
+	void PlayerHUDReady();
 
 	/**
 	 * Search for named card container from CardManagerComponent.

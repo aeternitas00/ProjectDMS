@@ -110,6 +110,18 @@ TArray<ADMSSpawnableBase*> UDMSSpawnableContainerComponent::GetTopNObjects(int N
 	return TArray<ADMSSpawnableBase*>(&SpawnableList.Actors.GetData()[SpawnableList.Actors.Num() - Num], Num);
 }
 
+TArray<ADMSSpawnableBase*> UDMSSpawnableContainerComponent::GetRandomNObjects(int Num)
+{
+	if (SpawnableList.Actors.Num() == 0 || Num <= 0) return TArray<ADMSSpawnableBase*>();
+	if (SpawnableList.Actors.Num() <= Num) Num = SpawnableList.Actors.Num();
+
+	FRandomStream Stream(FDateTime::Now().GetTicks());
+	auto CopiedArr = SpawnableList.Actors;
+	UDMSCoreFunctionLibrary::ShuffleArray(Stream,CopiedArr);
+
+	return TArray<ADMSSpawnableBase*>(&CopiedArr.GetData()[CopiedArr.Num() - Num], Num);
+}
+
 void UDMSSpawnableContainerComponent::ShuffleTopNObjects(int Num)
 {
 	FRandomStream Stream(FDateTime::Now().GetTicks());

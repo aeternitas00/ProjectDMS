@@ -61,7 +61,7 @@ public:
 	static FString GetTimingString(const EDMSTimingFlag& Flag);
 
 	template<typename Type>
-	static void ShuffleArray(FRandomStream& Stream, TArray<Type>& Array, const int32& ShuffleRange);
+	static void ShuffleArray(FRandomStream& Stream, TArray<Type>& Array, const int32& ShuffleRange = 0);
 };
 
 

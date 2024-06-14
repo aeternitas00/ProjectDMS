@@ -32,9 +32,9 @@ ADMSSequence::ADMSSequence() : SourcePlayer(nullptr), SourceObject(nullptr), bTa
 	InstancedStep = CreateDefaultSubobject<UDMSSequenceStep>(FName("StepInstance"));
 }
 
-FGameplayTag ADMSSequence::GetCurrentProgressExactTag()
+FGameplayTag ADMSSequence::GetCurrentStepTag()
 {
-	return InstancedStep->GetCurrentProgressExactTag();
+	return InstancedStep->GetCurrentStepTag();
 }
 
 FGameplayTagContainer ADMSSequence::GetCurrentProgressTags()
@@ -110,7 +110,7 @@ FGameplayTagContainer ADMSSequence::GetSequenceTags()
 {
 	FGameplayTagContainer rv;
 	rv.AppendTags(OriginalEffectNode->GenerateTagContainer(this));
-	//rv.AddTag(GetCurrentProgressExactTag());
+	//rv.AddTag(GetCurrentStepTag());
 	rv.AppendTags(GetCurrentProgressTags());
 	if ( InstancedStep->GetCurrentProgressData().ProgressBroadcastFlag == EDMSBroadCastFlag::BF_FreeActionWindow ) 
 		rv.AddTag(FGameplayTag::RequestGameplayTag("Step.Arkham.FreeTrigger"));

@@ -9,6 +9,7 @@
 
 class UDMSContainerManagerComponent;
 class UDMSLocationData;
+class UDMSAttributeComponent;
 
 UENUM(BlueprintType)
 enum class EBitOperatorType : uint8
@@ -56,6 +57,14 @@ protected:
 	//TObjectPtr<USceneComponent> ChildSlot;
 	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	//TObjectPtr<const UDMSLocationData> LocationData;
+
+	/**
+	* Attribute component.
+	* Manage mana, resource, etc... of player.
+	*/
+	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Replicated)
+	TObjectPtr<UDMSAttributeComponent> AttributeComponent;
+
 	UPROPERTY(BlueprintReadOnly,VisibleInstanceOnly,Replicated)
 	TObjectPtr<UDMSContainerManagerComponent> ContainerManagerComponent;
 

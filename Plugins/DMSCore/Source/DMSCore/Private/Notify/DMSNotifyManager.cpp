@@ -42,7 +42,7 @@ void UDMSForcedEffectWorker::Work_Implementation()
 void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FOnTaskCompletedNative& ResponseCompleted)
 {
 	DMS_LOG_SIMPLE(TEXT("==== %s : BROADCASTING  ===="), *NotifyData->GetName());
-	FString TimingStr = NotifyData->GetCurrentProgressExactTag().ToString();
+	FString TimingStr = NotifyData->GetCurrentStepTag().ToString();
 	//FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(NotifyData->GetCurrentProgress());
 
 	if (NotifyData->SequenceState == EDMSSequenceState::SS_Canceled || 
@@ -104,7 +104,7 @@ void UDMSNotifyManager::CreateRespondentSelector(ADMSSequence* CurrentSequence, 
 	//auto GS = Cast<ADMSGameModeBase>(GetWorld()->GetAuthGameMode())->GetDMSGameState();
 	//auto SelM = GS->GetSelectorManager();
 	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(this); check(SelM);
-	FString TimingStr = CurrentSequence->GetCurrentProgressExactTag().ToString();
+	FString TimingStr = CurrentSequence->GetCurrentStepTag().ToString();
 	//FString TimingStr = UDMSCoreFunctionLibrary::GetTimingString(CurrentSequence->GetCurrentProgress());
 	DMS_LOG_SIMPLE(TEXT("==== %s [%s] : Create Respondent Selector  ===="), *CurrentSequence->GetName(), *TimingStr);
 

@@ -58,6 +58,14 @@ void UDMSContainerManagerComponent::InitializeComponent()
 	}
 }
 
+void UDMSContainerManagerComponent::OnDisplayWidgetReady()
+{
+	for(auto& Container : Containers)
+	{
+		Container.Value->OnDisplayWidgetReady();
+	}
+}
+
 
 void UDMSContainerManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

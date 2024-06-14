@@ -6,6 +6,10 @@
 #include "Player/DMSPlayerState.h"
 #include "GameModes/DMSGameState.h"
 
+#include "Attribute/DMSAttributeComponent.h"
+#include "Attribute/DMSAttributeValue_Boolean.h"
+#include "Attribute/DMSAttributeValue_Object.h"
+
 #include "Scenario/DMSLevelScriptActor.h"
 #include "Sequence/DMSSeqManager.h"
 #include "Notify/DMSNotifyManager.h"
@@ -93,20 +97,23 @@ void ADMSGameMode::PlayerReady()
 {	
 	ADMSGameState* GS = Cast<ADMSGameState>(GetDMSGameState());
 	check(GS);
-
-	auto CurrentLSA = Cast<ADMSLevelScriptActor>(GetWorld()->GetLevelScriptActor());
-	auto StartingLocation = CurrentLSA->GetStartingLocations()[0];
-
 	NumReadyPlayer++;
-	if ( GS->TestPlayerNum == NumReadyPlayer)
-	{
+	if ( GS->TestPlayerNum == NumReadyPlayer )
+	{	
+		auto CurrentLSA = Cast<ADMSLevelScriptActor>(GetWorld()->GetLevelScriptActor());
+		auto StartingLocation = CurrentLSA->GetStartingLocations()[0];
+
+		auto StartingLocationAtt = GS->GetComponentByClass<UDMSAttributeComponent>()->MakeAttribute(FGameplayTag::RequestGameplayTag("Attribute.Arkham.Scenario.StartingLocation").GetSingleTagContainer(),UDMSAttributeValue_Object::StaticClass(),true);
+		
+		Cast<UDMSAttributeValue_Object>(StartingLocationAtt->AttributeValue)->SetValue({StartingLocation});
+
 		for (auto PS : GS->GetDMSPlayers()) {
 
 			auto PlayerID = PS->GetPlayerId();
 			auto CharacterAsset_Soft = UKismetSystemLibrary::GetSoftObjectReferenceFromPrimaryAssetId(PS->PlayerCharacterData.AssetID);
 			auto CharacterAsset = Cast<UDMSCharacterDefinition>(UKismetSystemLibrary::LoadAsset_Blocking(CharacterAsset_Soft));
 			if (CharacterAsset)
-				PS->CharacterRef = SpawnDMSGameActor<ADMSCharacterBase>(CharacterAsset, PlayerID,StartingLocation,FTransform(FVector(- 10, 0, 0)));
+				PS->CharacterRef = SpawnDMSGameActor<ADMSCharacterBase>(CharacterAsset, PlayerID, StartingLocation, FTransform(FVector(- 10, 0, 0)));
 
 			// Spawn cards
 			// TODO :: INITIAL SPAWN TO NONE CONTAINER AND DO ADDITIONAL MOVEMENT WITH OTHER METHOD FOLLOWS GAME RULE.
