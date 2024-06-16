@@ -1,3 +1,5 @@
+// Copyright JeongWoo Lee
+
 #pragma once
 
 /**

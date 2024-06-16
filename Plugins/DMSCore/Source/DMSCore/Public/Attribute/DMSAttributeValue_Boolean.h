@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright JeongWoo Lee
 
 #pragma once
 
@@ -26,6 +26,10 @@ class DMSCORE_API UDMSAttributeValue_Boolean : public UDMSAttributeValue
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = Attribute) 
 	bool Value;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = Attribute) 
+	int OverDepth;
+
 
 public:
 	UDMSAttributeValue_Boolean();

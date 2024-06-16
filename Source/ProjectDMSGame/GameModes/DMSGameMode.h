@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright JeongWoo Lee
 
 #pragma once
 
@@ -37,7 +37,7 @@ class ADMSSpawnableBase;
  *  ========================================
  */
 UCLASS(/*Blueprintable, Config = Game*/)
-class PROJECTDMSGAME_API ADMSGameMode: public ADMSGameModeBase
+class PROJECTDMSGAME_API ADMSGameMode : public ADMSGameModeBase
 {
 	GENERATED_BODY()
 

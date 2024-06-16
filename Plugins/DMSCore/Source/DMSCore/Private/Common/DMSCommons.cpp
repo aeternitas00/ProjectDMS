@@ -1,3 +1,5 @@
+// Copyright JeongWoo Lee
+
 #include "Common/DMSCommons.h"
 
 //void UDMSDataObjectSet::Inherit(UDMSDataObjectSet* Parent)

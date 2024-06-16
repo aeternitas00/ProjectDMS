@@ -1,9 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright JeongWoo Lee
 
 #pragma once
 
 #include "DMSCoreIncludes.h"
 //#include "DMSSerializedAttribute.generated.h"
+
+// DEPRECATED 
+//
+// Use FDMSAttributeDefinition instead
 
 /**
  * 

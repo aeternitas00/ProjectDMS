@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright JeongWoo Lee
 
 #include "DMSGame.h"
 #include "Modules/ModuleManager.h"

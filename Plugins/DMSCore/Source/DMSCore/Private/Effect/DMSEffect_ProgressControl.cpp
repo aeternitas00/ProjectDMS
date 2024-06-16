@@ -1,3 +1,5 @@
+// Copyright JeongWoo Lee
+
 #include "Effect/DMSEffect_ProgressControl.h"
 #include "Effect/DMSEffectInstance.h"
 #include "Sequence/DMSSequence.h"

@@ -1,3 +1,5 @@
+// Copyright JeongWoo Lee
+
 #pragma once
 
 /**
@@ -29,7 +31,6 @@
   * =========================================
   *
   */
-
 UCLASS(Blueprintable, BlueprintType, Const, EditInlineNew, ClassGroup = (Condition), meta = (DisplayName = "CO Timing Condition"))
 class DMSCORE_API UDMSSeqTimingCondition : public UDMSConditionObject
 {

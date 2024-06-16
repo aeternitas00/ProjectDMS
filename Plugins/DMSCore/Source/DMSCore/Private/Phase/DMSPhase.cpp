@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright JeongWoo Lee
 
 #include "Phase/DMSPhase.h"
 #include "Phase/DMSPhaseManager.h"

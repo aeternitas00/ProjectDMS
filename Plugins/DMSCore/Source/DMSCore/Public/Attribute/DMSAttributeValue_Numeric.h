@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright JeongWoo Lee
 
 #pragma once
 
@@ -25,7 +25,7 @@ class DMSCORE_API UDMSAttributeValue_Numeric : public UDMSAttributeValue
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = Attribute) 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = OnRep_Value, Category = Attribute) 
 	float Value;
 
 public:
@@ -35,7 +35,10 @@ public:
 	float GetValue() const { return Value; }
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
-	void SetValue(float i) { Value=i; }
+	void SetValue(float i) { /*if (GetLocalRole() == ROLE_Authority)*/  Value=i; }
+
+	UFUNCTION()
+	void OnRep_Value();
 
 	//virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
 	virtual void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);

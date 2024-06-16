@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright JeongWoo Lee
 
 #pragma once
 
@@ -20,6 +20,8 @@
 class UDMSAttributeModifierOp;
 class UDMSAttributeValue;
 class ADMSActiveEffect;
+
+// Modifier structure can be used in anywhere ( definitions, other runtime logics... )
 USTRUCT(BlueprintType)
 struct FDMSAttributeModifier
 {
@@ -27,18 +29,19 @@ struct FDMSAttributeModifier
 
 public:
 	/**
-	* 
-	*/
+	 * Instanced definition of operator 
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
 	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
 
 	/**
-	* 
-	*/
+	 * Operating value.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
 	TObjectPtr<UDMSAttributeValue> Value;
 };
 
+// Serializable definition of attribute
 USTRUCT(BlueprintType)
 struct FDMSAttributeDefinition
 {
@@ -46,14 +49,14 @@ struct FDMSAttributeDefinition
 
 public:
 	/**
-	* 
-	*/
+	 * Defualt tag of attribute.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	FGameplayTagContainer DefaultTag;
 
 	/**
-	* 
-	*/
+	 * Defualt value of attribute.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
 	TObjectPtr<UDMSAttributeValue> DefaultValue;
 
@@ -63,28 +66,32 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeModified, UDMSAttribute*, Attribute);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAttributeModifiedSignature, UDMSAttribute*, Attribute);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeValueModified, UDMSAttributeValue*, AttributeValue);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAttributeValueModifiedSignature, UDMSAttributeValue*, AttributeValue);
 
+// Abstract wrapper class for values of attribute.
 UCLASS(Blueprintable,EditInlineNew,Abstract)
 class DMSCORE_API UDMSAttributeValue : public UObject
 {
 	GENERATED_BODY()
 
 public:
+	//// Server-side delegate
+	//FOnAttributeValueModified OnServerAttributeValueChanged;
+
+	//// Client-side delegate
+	//FOnAttributeValueModified OnClientAttributeValueChanged;
+
 	UFUNCTION(BlueprintNativeEvent, Category = Attribute)
 	void ExecuteModifier(const FDMSAttributeModifier& Modifier);
 	virtual void ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier);
-
-	//UFUNCTION(BlueprintNativeEvent, Category = Attribute)
-	//virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
 	virtual void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
-	//virtual void GetDeltaAfterModify_Implementation(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
-
 	virtual bool IsSupportedForNetworking() const override {return true;}
 };
 
 
 /**
- *	Class of attribute base.
+ *	Attribute object.
  */
 UCLASS(BlueprintType, Blueprintable, EditInlineNew)
 class DMSCORE_API UDMSAttribute : public UObject
@@ -93,7 +100,7 @@ class DMSCORE_API UDMSAttribute : public UObject
 
 public:
 	/**
-	 * 
+	 * Tag of attribute
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Attribute)
 	FGameplayTagContainer AttributeTag;
@@ -104,8 +111,12 @@ public:
 	UPROPERTY()
 	FOnAttributeModified OnAttributeModified;
 	
+	// Server-side delegate
+	UPROPERTY()
+	FOnAttributeModified OnClientAttributeModified;
+
 	/**
-	 * 
+	 * Value of attribute.
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Instanced, Replicated, Category = Attribute)
 	TObjectPtr<UDMSAttributeValue> AttributeValue;
@@ -119,15 +130,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void BindOnModified(const FOnAttributeModifiedSignature& iDelegate);
 
+	//UFUNCTION(BlueprintCallable, Server, Category = Attribute)
+	//void Server_BindOnModified(const FOnAttributeModifiedSignature& iDelegate);
+
+	//UFUNCTION(BlueprintCallable, Client, Category = Attribute)
+	//void Client_BindOnModified(const FOnAttributeModifiedSignature& iDelegate);
+
 	// Implements Ops
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void ApplyModifier(const FDMSAttributeModifier& Modifier);
 
 	//UFUNCTION(BlueprintCallable, Category = Attribute)
+
+	// "Revert" 기능을 위한 헬퍼 함수. ( 리버트 할때 사용할 모디파이어를 리턴 )
 	void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+
 	void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
 
 	void GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass);
+
 	void DuplicateValue(UDMSAttributeValue* Value);
 
 	virtual bool IsSupportedForNetworking() const override {return true;}
@@ -135,7 +156,7 @@ public:
 };
 
 /**
- *	Attibute Modifier object. Using in ModAtt Effect. 
+ *	Attibute Modifier object. Various ways to use it.
  */
 UCLASS(BlueprintType,Blueprintable,EditInlineNew,Abstract)
 class DMSCORE_API UDMSAttributeModifierOp : public UObject
@@ -144,16 +165,10 @@ class DMSCORE_API UDMSAttributeModifierOp : public UObject
 
 public:	
 	/**
-	 * 
+	 * DEPRECATED :: Moved to implemented class.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
 	EDMSModifierType AttributeModifierType;
-
-	/**
-	 * 
-	 */
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-	//FGameplayTagContainer AttributeTag;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ExecuteOp(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue);

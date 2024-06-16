@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright JeongWoo Lee
 
 #pragma once
 
@@ -89,7 +89,7 @@ public:
 	void UpdateData(UObject* Respondent, UObject* EffectInstance);
 
 	/**
-	 * 
+	 * Helper function that getting AE from main target.
 	 */
 	UFUNCTION(BlueprintCallable)
 	void GetEffectInstancesFromObject(TScriptInterface<IDMSEffectorInterface> iObject, TArray<ADMSActiveEffect*>& outArray);
@@ -98,7 +98,8 @@ public:
 };
 /**
  *	========================================
- * 
+ *  
+ *  Handle "Nofiting" of game events.
  *	노티파이 매니저가 노티파이 리시버들에게 [ "SourceObjectClass"가 "EffectKeyword"를 (어떻게) "TargetObjectClass"에게 "Timing"(하기전/하는중/한후) ] 
  *
  *	========================================

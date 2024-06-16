@@ -1,3 +1,5 @@
+// Copyright JeongWoo Lee
+
 #include "Common/DMSSpawnableComponent.h"
 #include "Common/DMSSpawnableDataBase.h"
 #include "Library/DMSCoreFunctionLibrary.h"

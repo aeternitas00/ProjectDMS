@@ -1,5 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
+// Copyright JeongWoo Lee
 
 #include "GameModes/DMSGameModeBase.h"
 //#include "Player/DMSPlayerStateBase.h"

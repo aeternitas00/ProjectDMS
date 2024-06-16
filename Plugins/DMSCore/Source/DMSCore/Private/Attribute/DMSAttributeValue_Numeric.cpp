@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright JeongWoo Lee
 
 
 #include "Attribute/DMSAttributeValue_Numeric.h"
@@ -64,6 +64,10 @@ void UDMSAttributeModifierOp_Numeric::ExecuteOp_Implementation(UDMSAttributeValu
 	//		break;
 	//}
 //}
+
+void UDMSAttributeValue_Numeric::OnRep_Value()
+{
+}
 
 void UDMSAttributeValue_Numeric::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
 {

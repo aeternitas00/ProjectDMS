@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright JeongWoo Lee
 
 using UnrealBuildTool;
 using System.Collections.Generic;

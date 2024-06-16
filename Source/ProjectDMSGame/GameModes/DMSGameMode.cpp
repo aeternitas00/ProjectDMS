@@ -1,5 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
+// Copyright JeongWoo Lee
 
 #include "DMSGameMode.h"
 #include "System/DMSSession.h"
