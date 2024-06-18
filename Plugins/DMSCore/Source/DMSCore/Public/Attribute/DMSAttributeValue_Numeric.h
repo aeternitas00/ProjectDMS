@@ -25,6 +25,7 @@ class DMSCORE_API UDMSAttributeValue_Numeric : public UDMSAttributeValue
 	GENERATED_BODY()
 
 protected:
+	// Rep Testing
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = OnRep_Value, Category = Attribute) 
 	float Value;
 
@@ -37,6 +38,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Attribute)
 	void SetValue(float i) { /*if (GetLocalRole() == ROLE_Authority)*/  Value=i; }
 
+	// OnRep Testing
 	UFUNCTION()
 	void OnRep_Value();
 

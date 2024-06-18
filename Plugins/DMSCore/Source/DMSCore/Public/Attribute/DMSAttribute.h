@@ -23,7 +23,7 @@ class ADMSActiveEffect;
 
 // Modifier structure can be used in anywhere ( definitions, other runtime logics... )
 USTRUCT(BlueprintType)
-struct FDMSAttributeModifier
+struct DMSCORE_API FDMSAttributeModifier
 {
 	GENERATED_BODY()
 
@@ -41,9 +41,10 @@ public:
 	TObjectPtr<UDMSAttributeValue> Value;
 };
 
+
 // Serializable definition of attribute
 USTRUCT(BlueprintType)
-struct FDMSAttributeDefinition
+struct DMSCORE_API FDMSAttributeDefinition
 {
 	GENERATED_BODY()
 
@@ -81,6 +82,9 @@ public:
 
 	//// Client-side delegate
 	//FOnAttributeValueModified OnClientAttributeValueChanged;
+
+	UFUNCTION(BlueprintCallable, Category = Attribute)
+	void ExecuteModifierDefinition(class UDMSAttributeModifierDefinition* Modifier);
 
 	UFUNCTION(BlueprintNativeEvent, Category = Attribute)
 	void ExecuteModifier(const FDMSAttributeModifier& Modifier);

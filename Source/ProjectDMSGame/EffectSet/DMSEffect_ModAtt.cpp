@@ -158,3 +158,42 @@ void UDMSAttributeValueProcesser::Process_Implementation(UObject* iObject)
 	AttValue->ExecuteModifier(ProcessorModifier);
 	
 }
+
+
+//bool UDMSAttributeModifierDefinition::ApplyModifierDefinition(UDMSAttributeValue* TargetAttribute)
+//{
+//	return false;
+//}
+
+bool UDMSAttributeModifierDefinition::GenerateModifier(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, UPARAM(Ref)FDMSAttributeModifier& OutModifier)
+{
+	if( !GenerateRawModifier(EI,SourceSequence,OutModifier)) return false;
+
+	FDMSAttributeModifier CoefficientModifier;
+	if ( !Coefficient->GenerateModifier(EI,SourceSequence,CoefficientModifier) ) return false;
+	OutModifier.Value->ExecuteModifier(CoefficientModifier);
+	return true;
+}
+
+bool UDMSAttributeModifierDefinition_Static::GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
+{
+	OutModifier.ModifierOp = ModifierOp;
+	OutModifier.Value = DuplicateObject(Value,EI);
+	return true;
+}
+
+bool UDMSAttributeModifierDefinition_Attribute::GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
+{
+
+	auto AttOwners = ValueAttributeOwner->GetTargets(EI,SourceSequence);
+	if(AttOwners.Num()==0 || !AttOwners[0]->IsA<AActor>()) return false;
+
+	auto SourceAttribute = Cast<AActor>(AttOwners[0])->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(ValueAttributeTags);
+
+	if(!SourceAttribute) return false;
+
+	OutModifier.ModifierOp = ModifierOp;
+	OutModifier.Value = DuplicateObject(SourceAttribute->AttributeValue,EI);
+
+	return true;
+}

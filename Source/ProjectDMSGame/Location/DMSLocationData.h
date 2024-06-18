@@ -35,7 +35,7 @@ public:
 	 * Traits of location
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TArray<FGameplayTag> LocationTraits;
+	TArray<FDMSAttributeDefinition> LocationAttributes;
 
 	// location brush
 	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

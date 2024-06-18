@@ -138,11 +138,9 @@ public:
 	 * 이펙트 노드에 대한 대표 키워드. 비워두어도 상관 없음. 
 	 * 대표 키워드를 통한 노티파이 플로우의 세부적인 쿼리옵션을 사용하고 싶을 경우 사용.
 	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	//FGameplayTag NodeTag;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Node Additional Tag"))
 	FGameplayTagContainer NodeTags;
+
 	/**
 	 * It returns a container that consolidates all the tags associated with the node like EffectDefinition's one (e.g., tags for the target attribute in ED_ModAtt). 
 	 */
@@ -194,6 +192,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
 	bool bIsChainableEffect;
 
+	//=================== Definitions ===================//
+
 	/**
 	 * Effect's activatable timing.
 	 */ 
@@ -205,15 +205,6 @@ public:
 	 */ 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TObjectPtr<UDMSConditionCombiner> TerminateConditions;
-
-	//=================== Definitions ===================//
-
-	/**
-	 * Actual effects that activatable in that timing
-	 * Works in order to 0~n
-	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, Instanced)
-	//TArray<TObjectPtr<UDMSEffectDefinition>> EffectDefinitions;
 
 	/**
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
@@ -260,19 +251,9 @@ public:
 	/** 
 	* The list of steps that this sequence will have and execute.
 	*/
+	// NOTE :: EDITOR EXTENSION?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TArray<TObjectPtr<UDMSSequenceStepDefinition>> StepDefinitions;
-
-	/** 
-	 * The list of steps that this sequence will have and execute.
-	 */
-	//
-	// NOTE :: EDITOR EXTENSION?
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
-	//TSet<TObjectPtr<UDMSSequenceStepDefinition>> StepClassRequirements;
-
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect)
-	//TArray<FGameplayTag> ProgressOrder;
 };
 
 /** 

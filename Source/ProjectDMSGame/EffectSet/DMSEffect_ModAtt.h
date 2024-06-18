@@ -10,6 +10,68 @@
 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute_Revert);
+
+UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
+
+class DMSCORE_API UDMSAttributeModifierDefinition : public UObject
+{
+	GENERATED_BODY()
+
+protected:
+	/**
+	* Instanced definition of operator 
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
+	TObjectPtr<UDMSAttributeModifierOp> ModifierOp;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
+	TObjectPtr<UDMSAttributeModifierDefinition> Coefficient;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	bool ApplyModifierDefinition(UDMSAttributeValue* TargetAttribute);
+
+	UFUNCTION(BlueprintCallable)
+	bool GenerateModifier(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
+
+	UFUNCTION(BlueprintNativeEvent)
+	bool GenerateRawModifier(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
+	virtual bool GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
+};
+
+UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
+
+class DMSCORE_API UDMSAttributeModifierDefinition_Static : public UDMSAttributeModifierDefinition
+{
+	GENERATED_BODY()
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = Attribute)
+	TObjectPtr<UDMSAttributeValue> Value;
+
+public:
+	virtual bool GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
+};
+
+UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
+
+class DMSCORE_API UDMSAttributeModifierDefinition_Attribute : public UDMSAttributeModifierDefinition
+{
+	GENERATED_BODY()
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	FGameplayTagContainer ValueAttributeTags;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Attribute)
+	TObjectPtr<UDMSTargetGenerator> ValueAttributeOwner;
+
+public:
+	virtual bool GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
+};
+
+
+
 /**
  *	Base for effects that change value of attributes.
  *	Implementing the GenerateModifier function allows implementing 'how to adjust attributes' in various ways."

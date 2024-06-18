@@ -56,6 +56,11 @@ void UDMSAttribute::DuplicateValue(UDMSAttributeValue* Value)
 	AttributeValue = DuplicateObject<UDMSAttributeValue>(Value, this);
 }
 
+void UDMSAttributeValue::ExecuteModifierDefinition(UDMSAttributeModifierDefinition* Modifier)
+{
+	Modifier->ApplyModifierDefinition(this);	
+}
+
 void UDMSAttributeValue::ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier) { Modifier.ModifierOp->ExecuteOp(this, Modifier.Value); }
 
 //void UDMSAttributeValue::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
