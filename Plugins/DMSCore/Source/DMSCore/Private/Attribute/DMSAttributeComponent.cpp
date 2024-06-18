@@ -87,7 +87,7 @@ UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTa
 		AddReplicatedSubObject(NewAtt);
 		Attributes.Add(NewAtt);
 	}
-	NewAtt->DuplicateValue(AttributeValue);
+	NewAtt->CopyValueFromOther(AttributeValue);
 	return NewAtt;
 }
 

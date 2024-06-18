@@ -159,7 +159,6 @@ void UDMSAttributeValueProcesser::Process_Implementation(UObject* iObject)
 	
 }
 
-
 //bool UDMSAttributeModifierDefinition::ApplyModifierDefinition(UDMSAttributeValue* TargetAttribute)
 //{
 //	return false;

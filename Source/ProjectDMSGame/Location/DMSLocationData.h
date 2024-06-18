@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ProjectDMS.h"
+#include "Attribute/DMSAttribute.h"
 #include "Common/DMSSpawnableDataBase.h"
 #include "DMSLocationData.generated.h"
 

@@ -83,8 +83,8 @@ public:
 	//// Client-side delegate
 	//FOnAttributeValueModified OnClientAttributeValueChanged;
 
-	UFUNCTION(BlueprintCallable, Category = Attribute)
-	void ExecuteModifierDefinition(class UDMSAttributeModifierDefinition* Modifier);
+	//UFUNCTION(BlueprintCallable, Category = Attribute)
+	//void ExecuteModifierDefinition(class UDMSAttributeModifierDefinition* Modifier);
 
 	UFUNCTION(BlueprintNativeEvent, Category = Attribute)
 	void ExecuteModifier(const FDMSAttributeModifier& Modifier);
@@ -153,7 +153,7 @@ public:
 
 	void GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueClass);
 
-	void DuplicateValue(UDMSAttributeValue* Value);
+	void CopyValueFromOther(UDMSAttributeValue* Value);
 
 	virtual bool IsSupportedForNetworking() const override {return true;}
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

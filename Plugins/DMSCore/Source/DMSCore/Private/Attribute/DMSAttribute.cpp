@@ -49,17 +49,17 @@ void UDMSAttribute::GenerateValue(const TSubclassOf<UDMSAttributeValue>& ValueCl
 	AttributeValue = NewObject<UDMSAttributeValue>(this,ValueClass);
 }
 
-void UDMSAttribute::DuplicateValue(UDMSAttributeValue* Value)
+void UDMSAttribute::CopyValueFromOther(UDMSAttributeValue* Value)
 {	
 	if(AttributeValue!=nullptr) {AttributeValue->MarkAsGarbage();}
 	
 	AttributeValue = DuplicateObject<UDMSAttributeValue>(Value, this);
 }
 
-void UDMSAttributeValue::ExecuteModifierDefinition(UDMSAttributeModifierDefinition* Modifier)
-{
-	Modifier->ApplyModifierDefinition(this);	
-}
+//void UDMSAttributeValue::ExecuteModifierDefinition(UDMSAttributeModifierDefinition* Modifier)
+//{
+//	Modifier->ApplyModifierDefinition(this);	
+//}
 
 void UDMSAttributeValue::ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier) { Modifier.ModifierOp->ExecuteOp(this, Modifier.Value); }
 

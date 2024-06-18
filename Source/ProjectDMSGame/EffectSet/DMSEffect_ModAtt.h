@@ -11,9 +11,9 @@
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute)
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_DMS_Effect_ModAttribute_Revert);
 
-UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
+UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract)
 
-class DMSCORE_API UDMSAttributeModifierDefinition : public UObject
+class PROJECTDMSGAME_API UDMSAttributeModifierDefinition : public UObject
 {
 	GENERATED_BODY()
 
@@ -28,8 +28,8 @@ protected:
 	TObjectPtr<UDMSAttributeModifierDefinition> Coefficient;
 
 public:
-	UFUNCTION(BlueprintCallable)
-	bool ApplyModifierDefinition(UDMSAttributeValue* TargetAttribute);
+	//UFUNCTION(BlueprintCallable)
+	//bool ApplyModifierDefinition(UDMSAttributeValue* TargetAttribute);
 
 	UFUNCTION(BlueprintCallable)
 	bool GenerateModifier(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, UPARAM(Ref) FDMSAttributeModifier& OutModifier);
@@ -39,9 +39,9 @@ public:
 	virtual bool GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
 };
 
-UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
+UCLASS()
 
-class DMSCORE_API UDMSAttributeModifierDefinition_Static : public UDMSAttributeModifierDefinition
+class PROJECTDMSGAME_API UDMSAttributeModifierDefinition_Static : public UDMSAttributeModifierDefinition
 {
 	GENERATED_BODY()
 
@@ -53,21 +53,21 @@ public:
 	virtual bool GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
 };
 
-UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
+UCLASS()
 
-class DMSCORE_API UDMSAttributeModifierDefinition_Attribute : public UDMSAttributeModifierDefinition
+class PROJECTDMSGAME_API UDMSAttributeModifierDefinition_Attribute : public UDMSAttributeModifierDefinition
 {
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Attribute)
 	FGameplayTagContainer ValueAttributeTags;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Instanced, Category = Attribute)
 	TObjectPtr<UDMSTargetGenerator> ValueAttributeOwner;
 
 public:
-	virtual bool GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier){return false;}
+	virtual bool GenerateRawModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier);
 };
 
 
@@ -85,6 +85,9 @@ public:
 	// 자손임을 표현하기 위해 파생 키워드들은 + ".~~" 하는 형태? ex) ModifyAttribute.Deal 
 	// ( 일종의 포함 관계에 속하는 이펙트들의 구분 위함. --> HP가 변화했을 때 > { HP 피해를 입었을 때 , HP 회복을 했을 때 } )
 	UDMSEffect_ModAtt();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	TObjectPtr<UDMSAttributeModifierDefinition> ModifierDefinition;
 
 	/**
 	 *	Create attribute if there isn't matching one.
