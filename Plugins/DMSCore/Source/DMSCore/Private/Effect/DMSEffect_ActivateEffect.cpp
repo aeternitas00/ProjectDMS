@@ -40,25 +40,35 @@ void UDMSEffect_ActivateEffect::Work_Implementation(ADMSSequence* SourceSequence
 
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
 
-	FSimpleDelegate ResumeDelegate;
-	ResumeDelegate.BindLambda([=]() {
+	//FSimpleDelegate ResumeDelegate;
+	//ResumeDelegate.BindLambda([=]() {
+	//	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
+	//	OnWorkCompleted.ExecuteIfBound(true);
+	//	DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect completed lambda ends ===="),*SourceSequence->GetName());
+	//});
+
+	FOnTaskCompletedNative ResumeDelegate;
+	ResumeDelegate.BindLambda([=](bool Succeed){
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
-		OnWorkCompleted.ExecuteIfBound(true);
+		OnWorkCompleted.ExecuteIfBound(Succeed);
 		DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect completed lambda ends ===="),*SourceSequence->GetName());
 	});
 
-	TArray<ADMSSequence*> Sequences;
-
-	for ( auto& NodeWrapper : NodeWrappers )
-	{
-		auto Node = NodeWrapper->GetEffectNode();
-		auto NewSeq = SeqMan->RequestCreateSequence(iEI->GetApplyTargetInterface()->GetObject(), SourceSequence->GetSourcePlayer(), Node, {});
-		Sequences.Add(NewSeq);
-	}
-
-	SourceSequence->AddEffectsToChildQueue(Sequences,ResumeDelegate);
 	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN FIRST EFFECT ===="),*SourceSequence->GetName());
-	SourceSequence->RunChildEffectQueue();
+	SourceSequence->RunChildEffectQueue(NodeWrappers,ResumeDelegate,iEI->GetApplyTarget(),true);
+
+	//TArray<ADMSSequence*> Sequences;
+
+	//for ( auto& NodeWrapper : NodeWrappers )
+	//{
+	//	auto Node = NodeWrapper->GetEffectNode();
+	//	auto NewSeq = SeqMan->RequestCreateSequence(iEI->GetApplyTargetInterface()->GetObject(), SourceSequence->GetSourcePlayer(), Node, {});
+	//	Sequences.Add(NewSeq);
+	//}
+
+	//SourceSequence->AddEffectsToChildQueue(Sequences,ResumeDelegate);
+	//DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN FIRST EFFECT ===="),*SourceSequence->GetName());
+	//SourceSequence->RunChildEffectQueue();
 }
 
 UDMSEffectSet* UDMSEffect_ActivateEffect_Static::GetEffectSetFromOuter(ADMSActiveEffect* iEI)

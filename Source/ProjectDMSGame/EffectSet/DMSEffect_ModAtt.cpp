@@ -42,7 +42,14 @@ void UDMSEffect_ModAtt::Work_Implementation(ADMSSequence* SourceSequence, ADMSAc
 	UDMSAttributeComponent* AttComp=nullptr;
 
 	FDMSAttributeModifier Modifier;
-	if (!GenerateModifier(iEI, SourceSequence, Modifier)) {
+	if(ModifierDefinition == nullptr)
+	{
+		OnWorkCompleted.ExecuteIfBound(false); return;
+	}
+
+	if(!ModifierDefinition->GenerateModifier(iEI, SourceSequence, Modifier)) 
+	//if (!GenerateModifier(iEI, SourceSequence, Modifier)) 
+	{
 		OnWorkCompleted.ExecuteIfBound(false); return;
 	}
 
@@ -82,7 +89,9 @@ bool UDMSEffect_ModAtt::Predict_Implementation(ADMSSequence* SourceSequence, ADM
 	FDMSAttributeModifier Modifier;
 
 	bool rv=false;
-	if (!GenerateModifier(iEI, SourceSequence, Modifier))	return false;
+	if(ModifierDefinition == nullptr) return false;
+	if(!ModifierDefinition->GenerateModifier(iEI, SourceSequence, Modifier))  return false;
+	///if (!GenerateModifier(iEI, SourceSequence, Modifier))	return false;
 
 	if (!GetTargetAttComp(iEI, Outer, AttComp))
 	{
@@ -167,6 +176,8 @@ void UDMSAttributeValueProcesser::Process_Implementation(UObject* iObject)
 bool UDMSAttributeModifierDefinition::GenerateModifier(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, UPARAM(Ref)FDMSAttributeModifier& OutModifier)
 {
 	if( !GenerateRawModifier(EI,SourceSequence,OutModifier)) return false;
+
+	if ( Coefficient == nullptr ) return true;
 
 	FDMSAttributeModifier CoefficientModifier;
 	if ( !Coefficient->GenerateModifier(EI,SourceSequence,CoefficientModifier) ) return false;

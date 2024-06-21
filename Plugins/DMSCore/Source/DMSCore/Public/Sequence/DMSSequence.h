@@ -84,8 +84,12 @@ UCLASS()
 class DMSCORE_API UDMSChildSequenceWorker : public UDMSSynchronousTaskWorker
 {
 	GENERATED_BODY()
-
+private:
+	//bool AbortIfFailed;
+	TObjectPtr<AActor> SourceTweak;
+	TObjectPtr<ADMSSequence> ParentSequence;
 public:
+	void SetupChildSequenceWorker(ADMSSequence* iParentSequence,AActor* iSourceTweak){ ParentSequence = iParentSequence; SourceTweak = iSourceTweak; }
 	virtual void Work_Implementation();
 	//virtual void OnAllTaskCompleted_Implementation(bool WorkerSucceeded);
 };
@@ -317,18 +321,18 @@ protected:
 	TObjectPtr<UDMSSequenceStep> InstancedStep;
 
 private:
-	TQueue<ADMSSequence*> ChildEffectQueue;
+	//TQueue<ADMSSequence*> ChildEffectQueue;
 
-	void RunNextQueuedEffect();
+	//void RunNextQueuedEffect();
 
-	FSimpleDelegate OnChildEffectQueueCompleted;
+	//FSimpleDelegate OnChildEffectQueueCompleted;
 
 public:
-	void AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences,const FSimpleDelegate& iOnChildQueueFinished);
-	void AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
+	//void AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences,const FSimpleDelegate& iOnChildQueueFinished);
+	//void AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
 	//void AddEffectsToChildQueue(TArray<TObjectPtr<UDMSEffectNodeWrapper>>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
 
-	void RunChildEffectQueue();
+	void RunChildEffectQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects, const FOnTaskCompletedNative& OnChildQueueCompleted,AActor* SourceTweak = nullptr, bool AbortOption=false);
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

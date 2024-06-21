@@ -17,7 +17,7 @@ bool UDMSSeqTimingCondition::CheckOperation_Implementation(UObject* CheckingGame
 
 bool UDMSSeqStateCondition::CheckOperation_Implementation(UObject* CheckingGameObject, ADMSSequence* CurrentSequence) const
 {
-	ADMSSequence* CheckingSeq = CheckParent ? CurrentSequence->ParentSequence.Get() : CurrentSequence;
-
-	return SuccessCondition.Contains(CheckingSeq->SequenceState);
+	ADMSSequence* CheckingSeq = CurrentSequence;
+	if (CheckParent) CheckingSeq = CurrentSequence->ParentSequence;
+	return CheckingSeq ? SuccessCondition.Contains(CheckingSeq->SequenceState) : false;
 }

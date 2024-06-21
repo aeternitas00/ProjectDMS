@@ -48,7 +48,7 @@ private:
 	TObjectPtr<ADMSSequence> SourceSequence;
 
 public:
-	FOnExecuteCompleted IteratingDelegate;
+	//FOnExecuteCompleted IteratingDelegate;
 
 	void SetupForcedWorker(ADMSSequence* iSequence);
 

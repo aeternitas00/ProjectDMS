@@ -234,88 +234,103 @@ void ADMSSequence::OnSequenceFinish(bool Succeeded)
 	MarkAsGarbage();
 }
 
-void ADMSSequence::AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences, const FSimpleDelegate& iOnChildQueueFinished)
-{
-	for(auto& ChildSeq : iChildSequences){
-		ChildSeq->AddToPreSequenceFinished_Native(
-			[=, ParentSequence = this](bool Succeeded){ParentSequence->RunNextQueuedEffect();});
-		ChildEffectQueue.Enqueue(ChildSeq);
-	}
-	OnChildEffectQueueCompleted = iOnChildQueueFinished;
-}
-
-void ADMSSequence::AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects, const FSimpleDelegate& iOnChildQueueFinished)
-{
-	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
-	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager(this); 		check(NotifyManager);
-	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);		check(EffectHandler);
-
-	// Run child effect if exist and condition check succeeded.
-	for(auto& lChildEffect : iChildEffects)
-	{
-		if (lChildEffect != nullptr && lChildEffect->GetEffectNode() != nullptr &&
-			lChildEffect->GetEffectNode()->Conditions->CheckCondition(GetSourceObject(), this)) {
-
-			// Proceed to run child effect sequence.
-			auto ChildNode = lChildEffect->GetEffectNode();
-			// follows parents data. 
-			ADMSSequence* NewSeq = SeqManager->RequestCreateSequence(GetSourceObject(), GetSourcePlayer(), ChildNode,
-				TArray<TScriptInterface<IDMSEffectorInterface>>(), true, this);
-
-			// Set delegates when child effect sequence completed.
-			NewSeq->AddToPreSequenceFinished_Native(
-				[=, ParentSequence = this](bool Succeeded) __declspec(noinline) {
-				// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
-				DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
-
-				ParentSequence->RunNextQueuedEffect();
-
-				DMS_LOG_SIMPLE(TEXT("==== %s : after activate child effect lambda ends ===="),*ParentSequence->GetName());
-			});
-
-			ChildEffectQueue.Enqueue(NewSeq);
-		}
-	}
-
-	OnChildEffectQueueCompleted = iOnChildQueueFinished;
-}
+//void ADMSSequence::AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences, const FSimpleDelegate& iOnChildQueueFinished)
+//{
+//	for(auto& ChildSeq : iChildSequences){
+//		ChildSeq->AddToPreSequenceFinished_Native(
+//			[=, ParentSequence = this](bool Succeeded){ParentSequence->RunNextQueuedEffect();});
+//		ChildEffectQueue.Enqueue(ChildSeq);
+//	}
+//	OnChildEffectQueueCompleted = iOnChildQueueFinished;
+//}
+//
+//void ADMSSequence::AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects, const FSimpleDelegate& iOnChildQueueFinished)
+//{
+//	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
+//	auto NotifyManager	=	UDMSCoreFunctionLibrary::GetDMSNotifyManager(this); 		check(NotifyManager);
+//	auto EffectHandler	=	UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);		check(EffectHandler);
+//
+//	// Run child effect if exist and condition check succeeded.
+//	for(auto& lChildEffect : iChildEffects)
+//	{
+//		if (lChildEffect != nullptr && lChildEffect->GetEffectNode() != nullptr &&
+//			lChildEffect->GetEffectNode()->Conditions->CheckCondition(GetSourceObject(), this)) {
+//
+//			// Proceed to run child effect sequence.
+//			auto ChildNode = lChildEffect->GetEffectNode();
+//			// follows parents data. 
+//			ADMSSequence* NewSeq = SeqManager->RequestCreateSequence(GetSourceObject(), GetSourcePlayer(), ChildNode,
+//				TArray<TScriptInterface<IDMSEffectorInterface>>(), true, this);
+//
+//			// Set delegates when child effect sequence completed.
+//			NewSeq->AddToPreSequenceFinished_Native(
+//				[=, ParentSequence = this](bool Succeeded) __declspec(noinline) {
+//				// ==== ON CHILD EFFECT SEQUENCE COMPLETED ====
+//				DMS_LOG_SIMPLE(TEXT("==== %s : ON CHILD EFFECT SEQUENCE COMPLETED [ Depth : %d ] ==== "), *ParentSequence->GetName(), SeqManager->GetDepth(ParentSequence));
+//
+//				ParentSequence->RunNextQueuedEffect();
+//
+//				DMS_LOG_SIMPLE(TEXT("==== %s : after activate child effect lambda ends ===="),*ParentSequence->GetName());
+//			});
+//
+//			ChildEffectQueue.Enqueue(NewSeq);
+//		}
+//	}
+//
+//	OnChildEffectQueueCompleted = iOnChildQueueFinished;
+//}
 
 void ADMSSequence::OnStepQueueCompleted(bool Succeeded)
 {
 	SequenceState = Succeeded ? EDMSSequenceState::SS_Succeed : EDMSSequenceState::SS_Failed;
 
-	FSimpleDelegate NewOnChildQueueFinished;
-	NewOnChildQueueFinished.BindLambda([this,Succeeded](){
+	FOnTaskCompletedNative NewOnChildQueueFinished;
+	NewOnChildQueueFinished.BindLambda([this,Succeeded](bool){
 		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 		SeqManager->CompleteSequence(this, Succeeded);
 	});
 
-	AddEffectsToChildQueue(OriginalEffectNode->ChildEffects, NewOnChildQueueFinished);
-	RunChildEffectQueue();	
+	RunChildEffectQueue(OriginalEffectNode->ChildEffects,NewOnChildQueueFinished);
+
+	//FSimpleDelegate NewOnChildQueueFinished;
+	//NewOnChildQueueFinished.BindLambda([this,Succeeded](){
+	//	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
+	//	SeqManager->CompleteSequence(this, Succeeded);
+	//});
+
+	//AddEffectsToChildQueue(OriginalEffectNode->ChildEffects, NewOnChildQueueFinished);
+	//RunChildEffectQueue();	
 }
 
-void ADMSSequence::RunNextQueuedEffect()
-{	
-	if(ChildEffectQueue.IsEmpty())
-	{
-		auto LocalCopy = OnChildEffectQueueCompleted;
-		OnChildEffectQueueCompleted.Unbind();
-		LocalCopy.ExecuteIfBound();
-	}
-	else
-	{
-		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
-		auto NewSeq = *ChildEffectQueue.Peek();
-		ChildEffectQueue.Pop();
-	
-		SeqManager->RunSequence(NewSeq);
-	}
-}
+//void ADMSSequence::RunNextQueuedEffect()
+//{	
+//	if(ChildEffectQueue.IsEmpty())
+//	{
+//		auto LocalCopy = OnChildEffectQueueCompleted;
+//		OnChildEffectQueueCompleted.Unbind();
+//		LocalCopy.ExecuteIfBound();
+//	}
+//	else
+//	{
+//		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
+//		auto NewSeq = *ChildEffectQueue.Peek();
+//		ChildEffectQueue.Pop();
+//	
+//		SeqManager->RunSequence(NewSeq);
+//	}
+//}
 
-void ADMSSequence::RunChildEffectQueue()
+void ADMSSequence::RunChildEffectQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects, const FOnTaskCompletedNative& OnChildQueueCompleted,AActor* SourceTweak, bool AbortOption)
 {
-	// works
-	RunNextQueuedEffect();
+	UDMSChildSequenceWorker* ChildSeqWorker = NewObject<UDMSChildSequenceWorker>(this);
+
+	TArray<UObject*> Contexts;
+	for(auto& CE : iChildEffects) Contexts.Add(CE);
+
+	ChildSeqWorker->SetupTaskWorkerDelegate_Native(Contexts, OnChildQueueCompleted);
+	ChildSeqWorker->SetupChildSequenceWorker(this,SourceTweak);
+
+	ChildSeqWorker->RunTaskWorker(AbortOption);
 }
 
 void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -326,17 +341,23 @@ void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ADMSSequence, AttributeComponent);
 }
 
-//FProgressExecutor::FProgressExecutor(UDMSSequenceStepDefinition* Definition, const FGameplayTag& ProgressTag, const FName& FunctionName) :  ExecutingStep(Definition), ExactTag(ProgressTag)
-//{
-//	ExecutorDelegate.BindUFunction(Definition, FunctionName); 
-//}
-
 void UDMSChildSequenceWorker::Work_Implementation()
 {
 	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
-	auto CurrentSequence = Cast<ADMSSequence>(GetCurrentContext());
-	CurrentSequence->AddToOnSequenceFinished_Native(
-		[=](bool Succeeded){CompleteSingleTask(true);
+	auto CurrentSequenceDefinition = Cast<UDMSEffectNodeWrapper>(GetCurrentContext());
+	UDMSEffectNode* ChildEffectNode = CurrentSequenceDefinition ? CurrentSequenceDefinition->GetEffectNode() : nullptr;
+	ADMSSequence* NewSeq = nullptr;
+
+	if (ChildEffectNode != nullptr && ChildEffectNode->Conditions->CheckCondition((SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject()), ParentSequence)) {
+		NewSeq = SeqManager->RequestCreateSequence((SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject()), ParentSequence->GetSourcePlayer(), ChildEffectNode,
+			TArray<TScriptInterface<IDMSEffectorInterface>>(), true, ParentSequence);
+	}
+
+	if (NewSeq == nullptr) {CompleteSingleTask(true);return;}
+
+	NewSeq->AddToOnSequenceFinished_Native(
+		[=](bool Succeeded){CompleteSingleTask(Succeeded);
 	});
-	SeqManager->RunSequence(CurrentSequence);
+
+	SeqManager->RunSequence(NewSeq);
 }
