@@ -100,6 +100,10 @@ void ADMSLocationBase::OnInitialized_Implementation()
 	auto LocData = Cast<UDMSLocationData>(OriginalData);
 	
 	EIManagerComponent->SetupOwnEffect(LocData->LocationEffect, TAG_DMS_EffectType_Effect);
+
+	for(auto& Attribute : LocData->LocationAttributes)
+		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue,true);
+
 	auto VisitedAttribute = AttributeComponent->MakeAttribute(FGameplayTag::RequestGameplayTag("Attribute.Arkham.Location.Revealed").GetSingleTagContainer(),UDMSAttributeValue_Boolean::StaticClass(),true);
 	//Cast<UDMSAttributeValue_Boolean>(VisitedAttribute->AttributeValue)->SetValue(false);
 }

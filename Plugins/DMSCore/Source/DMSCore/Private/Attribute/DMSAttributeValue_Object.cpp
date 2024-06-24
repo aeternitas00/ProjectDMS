@@ -27,11 +27,18 @@
 void UDMSAttributeValue_Object::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
 {
 	if(!OriginalModifier.Value->IsA<UDMSAttributeValue_Object>() )return;
+	auto CastedOriginalOp = Cast<UDMSAttributeModifierOp_Object>(OriginalModifier.ModifierOp);
+	if(!CastedOriginalOp) return;
+
 	FDMSAttributeModifier NewRevertSubMod, NewRevertAddMod;
-	NewRevertSubMod.ModifierOp = NewObject<UDMSAttributeModifierOp_Object>(OriginalActiveEffect);
-	NewRevertSubMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Subtractive;
-	NewRevertAddMod.ModifierOp = NewObject<UDMSAttributeModifierOp_Object>(OriginalActiveEffect);
-	NewRevertAddMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Additive;
+
+	auto SubModOp =  NewObject<UDMSAttributeModifierOp_Object>(OriginalActiveEffect);
+	SubModOp->ModifierType = EDMSModifierType_Object::MT_Remove;
+	NewRevertSubMod.ModifierOp = SubModOp;
+
+	auto AddModOp =  NewObject<UDMSAttributeModifierOp_Object>(OriginalActiveEffect);	
+	AddModOp->ModifierType = EDMSModifierType_Object::MT_Add;;
+	NewRevertAddMod.ModifierOp = AddModOp;
 
 	auto CastedSubValue = NewObject<UDMSAttributeValue_Object>(OriginalActiveEffect);
 	auto CastedAddValue = NewObject<UDMSAttributeValue_Object>(OriginalActiveEffect);
@@ -39,27 +46,25 @@ void UDMSAttributeValue_Object::GetDeltasAfterModify(const FDMSAttributeModifier
 	NewRevertAddMod.Value = CastedAddValue;
 
 	auto CastedModifierValue = Cast<UDMSAttributeValue_Object>(OriginalModifier.Value)->GetValue();
-	switch(OriginalModifier.ModifierOp->AttributeModifierType)
+	switch(CastedOriginalOp->ModifierType)
 	{
-		case EDMSModifierType::MT_Additive:
+		case EDMSModifierType_Object::MT_Add:
 			for(auto Adding : CastedModifierValue){
 				if(!Value.Contains(Adding)) CastedSubValue->AddValue(Adding);
 			}
 			break;
-		case EDMSModifierType::MT_Subtractive:
+		case EDMSModifierType_Object::MT_Remove:
 			for(auto Removing : CastedModifierValue){
 				if(Value.Contains(Removing)) CastedAddValue->AddValue(Removing);
 			}
 			break;
-		case EDMSModifierType::MT_Override:
+		case EDMSModifierType_Object::MT_Override:
 			for(auto Adding : CastedModifierValue){
 				if(!Value.Contains(Adding)) CastedSubValue->AddValue(Adding);
 			}
 			for(auto& Removing : Value){
 				if(!CastedModifierValue.Contains(Removing)) CastedAddValue->AddValue(Removing);
 			}
-			break;
-		case EDMSModifierType::MT_Multiplicative:
 			break;
 		default:
 			break;
@@ -81,15 +86,16 @@ void UDMSAttributeModifierOp_Object::ExecuteOp_Implementation(UDMSAttributeValue
 	auto CastedRightValue = Cast<UDMSAttributeValue_Object>(ModifierValue);
 	if(!CastedValue || !CastedRightValue) return;
 
-	switch(AttributeModifierType)
+	switch(ModifierType)
+	//switch(AttributeModifierType)
 	{
-		case EDMSModifierType::MT_Additive:
+		case EDMSModifierType_Object::MT_Add:
 			CastedValue->AppendValue(CastedRightValue->GetValue());
 			break;
-		case EDMSModifierType::MT_Override:
+		case EDMSModifierType_Object::MT_Override:
 			CastedValue->SetValue(CastedRightValue->GetValue());
 			break;
-		case EDMSModifierType::MT_Subtractive:
+		case EDMSModifierType_Object::MT_Remove:
 			CastedValue->RemoveValues(CastedRightValue->GetValue());
 			break;
 		default:
@@ -103,9 +109,10 @@ bool UDMSAttributeModifierOp_Object::Predict_Implementation(UDMSAttribute* Targe
 	auto CastedRightValue = Cast<UDMSAttributeValue_Object>(ModifierValue);
 	if(!CastedValue || !CastedRightValue) return false;
 	bool rv=false;
-	switch(AttributeModifierType)
+	switch(ModifierType)
+	//switch(AttributeModifierType)
 	{
-		case EDMSModifierType::MT_Additive:
+		case EDMSModifierType_Object::MT_Add:
 			if(CastedValue->GetValue().Num()==0) {rv=true; break;}
 			for(auto& SearchItem : CastedValue->GetValue())
 			{
@@ -113,7 +120,7 @@ bool UDMSAttributeModifierOp_Object::Predict_Implementation(UDMSAttribute* Targe
 				{ rv=true; break; }
 			}
 			break;
-		case EDMSModifierType::MT_Subtractive:
+		case EDMSModifierType_Object::MT_Remove:
 			if(CastedRightValue->GetValue().Num()==0) {rv=true; break;}
 			for(auto& SearchItem : CastedRightValue->GetValue())
 			{

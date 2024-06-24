@@ -51,6 +51,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (EditCondition = "UseEffectFromOuter", EditConditionHides))
 	TArray<uint8> EffectIdxArr;
 
+	//UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
+	//TArray<TObjectPtr<UDMSSequenceDefinition>> StaticDefinitionArr;
+
 	// EffectNode that will activate itself when it doesn't use Outer's one.
 	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (EditCondition = "!UseEffectFromOuter", EditConditionHides))
 	TArray<TObjectPtr<UDMSEffectNodeWrapper>> StaticEffectArr;

@@ -21,80 +21,70 @@ void UDMSAttributeModifierOp_Numeric::ExecuteOp_Implementation(UDMSAttributeValu
 	auto CastedValue = Cast<UDMSAttributeValue_Numeric>(AttValue);
 	auto CastedRightValue = Cast<UDMSAttributeValue_Numeric>(ModifierValue);
 	if(!CastedValue || !CastedRightValue) return;
-
-	switch(AttributeModifierType)
+	float Temporal = 0.0f;
+	switch(ModifierType)
+	//switch(AttributeModifierType)
 	{
-		case EDMSModifierType::MT_Additive:
-			CastedValue->SetValue(CastedValue->GetValue() + CastedRightValue->GetValue());
+		case EDMSModifierType_Numeric::MT_Additive:
+			Temporal = CastedValue->GetValue() + CastedRightValue->GetValue();			
 			break;
-		case EDMSModifierType::MT_Override:
-			CastedValue->SetValue(CastedRightValue->GetValue());
+		case EDMSModifierType_Numeric::MT_Override:
+			Temporal = CastedRightValue->GetValue();
 			break;
-		case EDMSModifierType::MT_Multiplicative:
-			CastedValue->SetValue(CastedValue->GetValue() * CastedRightValue->GetValue());
+		case EDMSModifierType_Numeric::MT_Multiplicative:
+			Temporal = CastedValue->GetValue() * CastedRightValue->GetValue();
 			break;
-		case EDMSModifierType::MT_Subtractive:
-			CastedValue->SetValue(CastedValue->GetValue() - CastedRightValue->GetValue());
+		case EDMSModifierType_Numeric::MT_Subtractive:
+			Temporal = CastedValue->GetValue() - CastedRightValue->GetValue();
 			break;
 		default:
 			break;
 	}
-}
 
-//void UDMSAttributeValue_Numeric::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
-//{
-	//if(!OutValue->IsA<UDMSAttributeValue_Numeric>() || !Modifier.Value->IsA<UDMSAttributeValue_Numeric>() )return;
-	//auto CastedOutValue = Cast<UDMSAttributeValue_Numeric>(OutValue);
-	//auto CastedModifierValue = Cast<UDMSAttributeValue_Numeric>(Modifier.Value);
-	//switch(Modifier.ModifierOp->AttributeModifierType)
-	//{
-	//	case EDMSModifierType::MT_Additive:
-	//		CastedOutValue->Value=CastedModifierValue->Value;
-	//		break;
-	//	case EDMSModifierType::MT_Subtractive:
-	//		CastedOutValue->Value=CastedModifierValue->Value * -1;
-	//		break;
-	//	case EDMSModifierType::MT_Override:
-	//		CastedOutValue->Value=CastedModifierValue->Value - Value;
-	//		break;
-	//	case EDMSModifierType::MT_Multiplicative:
-	//		CastedOutValue->Value = (Value*CastedModifierValue->Value) - Value;
-	//		break;
-	//	default:
-	//		break;
-	//}
-//}
+	if (OperatorFlag == EDMSNumericOperatorFlag::OF_Clamp)
+	{
+		if(Temporal<FlagMinValue) Temporal = FlagMinValue;
+		else if(Temporal>FlagMaxValue) Temporal = FlagMaxValue;	
+	}
+
+	CastedValue->SetValue(Temporal);
+}
 
 void UDMSAttributeValue_Numeric::OnRep_Value()
 {
 }
 
+UDMSAttributeValue* UDMSAttributeValue_Numeric::GetDeltaAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect)
+{
+	if(!OriginalModifier.Value->IsA<UDMSAttributeValue_Numeric>() )return nullptr;
+	auto OriginalOp = Cast<UDMSAttributeModifierOp_Numeric>(OriginalModifier.ModifierOp);
+	if(!OriginalOp) return nullptr;
+
+	UDMSAttributeValue_Numeric* OutValue = NewObject<UDMSAttributeValue_Numeric>(OriginalActiveEffect);
+	OutValue->SetValue(GetValue());
+	OutValue->ExecuteModifier(OriginalModifier);
+	OutValue->SetValue(OutValue->GetValue() - GetValue());
+	
+	return OutValue;
+}
+
 void UDMSAttributeValue_Numeric::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
 {
 	if(!OriginalModifier.Value->IsA<UDMSAttributeValue_Numeric>() )return;
+	auto OriginalOp = Cast<UDMSAttributeModifierOp_Numeric>(OriginalModifier.ModifierOp);
+	if(!OriginalOp) return;
+
+	UDMSAttributeValue_Numeric* NewOutValue = NewObject<UDMSAttributeValue_Numeric>(OriginalActiveEffect);
+	NewOutValue->SetValue(GetValue());
+	NewOutValue->ExecuteModifier(OriginalModifier);
+	NewOutValue->SetValue(NewOutValue->GetValue() - GetValue());
+
 	FDMSAttributeModifier NewRevertMod;
-	NewRevertMod.ModifierOp = NewObject<UDMSAttributeModifierOp_Numeric>(OriginalActiveEffect);
-	NewRevertMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Subtractive;
-	UDMSAttributeValue_Numeric* CastedOutValue;
-	NewRevertMod.Value = CastedOutValue = NewObject<UDMSAttributeValue_Numeric>(OriginalActiveEffect);
-	auto CastedModifierValue = Cast<UDMSAttributeValue_Numeric>(OriginalModifier.Value);
-	switch(OriginalModifier.ModifierOp->AttributeModifierType)
-	{
-		case EDMSModifierType::MT_Additive:
-			CastedOutValue->Value=CastedModifierValue->Value;
-			break;
-		case EDMSModifierType::MT_Subtractive:
-			CastedOutValue->Value=CastedModifierValue->Value * -1;
-			break;
-		case EDMSModifierType::MT_Override:
-			CastedOutValue->Value=CastedModifierValue->Value - Value;
-			break;
-		case EDMSModifierType::MT_Multiplicative:
-			CastedOutValue->Value = (Value*CastedModifierValue->Value) - Value;
-			break;
-		default:
-			break;
-	}
+	auto NewOp = NewObject<UDMSAttributeModifierOp_Numeric>(OriginalActiveEffect);
+	NewOp->ModifierType = EDMSModifierType_Numeric::MT_Subtractive;
+	NewRevertMod.ModifierOp=NewOp;
+	NewRevertMod.Value=NewOutValue;
+
 	OutModifiers.Add(NewRevertMod);
 }
 
@@ -109,7 +99,9 @@ bool UDMSAttributeModifierOp_Numeric::Predict_Implementation(UDMSAttribute* Targ
 
 	bool rv = true;
 
-	if (bExistFailureCondition)
+
+	if (OperatorFlag == EDMSNumericOperatorFlag::OF_FailCondition)
+	//if (bExistFailureCondition)
 	{
 		UDMSAttributeValue_Numeric* TempValue = DuplicateObject<UDMSAttributeValue_Numeric>(CastedValue,Target);
 
@@ -117,20 +109,22 @@ bool UDMSAttributeModifierOp_Numeric::Predict_Implementation(UDMSAttribute* Targ
 
 		float PredictValue = TempValue->GetValue();
 	
-		switch (FailureConditionOperator)
-		{
-			case EDMSComparisonOperator::BO_Equal:
-				rv = PredictValue == FailureConditionValue; break;
-			case EDMSComparisonOperator::BO_Greater:
-				rv =  PredictValue > FailureConditionValue; break;
-			case EDMSComparisonOperator::BO_Less:
-				rv =  PredictValue < FailureConditionValue; break;
-			case EDMSComparisonOperator::BO_GreaterEqual:
-				rv =  PredictValue >= FailureConditionValue; break;
-			case EDMSComparisonOperator::BO_LessEqual:
-				rv =  PredictValue <= FailureConditionValue; break;
-			default: break;
-		}
+		rv = PredictValue>=FlagMinValue && PredictValue<=FlagMaxValue;
+
+		//switch (FlagOperator)
+		//{
+		//	case EDMSComparisonOperator::BO_Equal:
+		//		rv = PredictValue == FlagMaxValue; break;
+		//	case EDMSComparisonOperator::BO_Greater:
+		//		rv =  PredictValue > FlagMaxValue; break;
+		//	case EDMSComparisonOperator::BO_Less:
+		//		rv =  PredictValue < FlagMaxValue; break;
+		//	case EDMSComparisonOperator::BO_GreaterEqual:
+		//		rv =  PredictValue >= FlagMaxValue; break;
+		//	case EDMSComparisonOperator::BO_LessEqual:
+		//		rv =  PredictValue <= FlagMaxValue; break;
+		//	default: break;
+		//}
 		TempValue->MarkAsGarbage();
 	}
 

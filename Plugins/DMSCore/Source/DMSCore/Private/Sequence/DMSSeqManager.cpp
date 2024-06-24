@@ -11,6 +11,7 @@
 #include "Effect/DMSEffectDefinition.h"
 #include "Effect/DMSEffectorInterface.h"
 #include "Conditions/DMSConditionObject.h"
+#include "Selector/DMSDecisionDefinition_Object.h"
 #include "Notify/DMSNotifyManager.h"
 #include "Attribute/DMSAttributeComponent.h"
 #include "Library/DMSCoreFunctionLibrary.h"
@@ -70,6 +71,60 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 
 	return Sequence;
 }
+
+//ADMSSequence* UDMSSeqManager::RequestCreateSequence_SD(	AActor* SourceObject, AActor* SourcePlayer, UDMSSequenceDefinition* SeqDefinition, bool LinkAttributeWithParent, ADMSSequence* ParentSequence)
+//{
+//	if( !IsValid(SeqDefinition) || !IsValid(SourceObject) || !IsValid(SourcePlayer) ){ 
+//		DMS_LOG_SIMPLE(TEXT("==== Request Create Sequence Failed [Essential params not valid] ===="));
+//		return nullptr;
+//	}
+//
+//	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
+//
+//	if ( SeqDefinition->Targeter_Main )
+//	{
+//		auto GeneratedTargets = SeqDefinition->Targeter_Main->GetTargets(SourceObject,ParentSequence ? ParentSequence : CurrentSequence.Get());
+//
+//		for ( auto& Target : GeneratedTargets ) {if (Target->Implements<UDMSEffectorInterface>()) Targets.Add(Target);}
+//	}
+//	//if ( SeqDefinition->SourceTweaker )
+//	//{
+//	//	SeqDefinition->SourceTweaker->GetTargets(SourceObject, ParentSequence ? ParentSequence : CurrentSequence.Get()))
+//	//}
+//
+//	//UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);	check(EH);
+//
+//	//// Initialize new sequence
+//	//ADMSSequence* Sequence = GetWorld()->SpawnActor<ADMSSequence>();
+//
+//	//Sequence->SourceObject = SourceObject;
+//	//Sequence->SourcePlayer = SourcePlayer;
+//	//Sequence->SetTarget(Targets);
+//
+//	////Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
+//	//Sequence->InitializeStepProgress(EffectNode->StepDefinitions);
+//
+//	//// Add new seq to seq tree.
+//	//if ( ParentSequence == nullptr ) {
+//	//	if ( RootSequence == nullptr ) {
+//	//		RootSequence = Sequence;
+//	//		//RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
+//	//	}
+//	//	else if ( CurrentSequence != nullptr )
+//	//		Sequence->ParentSequence = CurrentSequence;
+//	//	//CurrentSequence->AttachChildSequence(Sequence);
+//	//}
+//	//else {
+//	//	Sequence->ParentSequence = ParentSequence;
+//	//	//ParentSequence->AttachChildSequence(Sequence);
+//	//}
+//
+//	//if ( LinkAttributeWithParent ) Sequence->AttributeComponent->ParentComponent = Sequence->ParentSequence->AttributeComponent;
+//
+//	//DMS_LOG_SIMPLE(TEXT("==== %s : Request Create Sequence [%s] of [%s] to [%d : %s] ===="),  *SourceObject->GetName(), *Sequence->GetName(), *EffectNode->NodeTags.ToString(), GetDepth(Sequence), Sequence->ParentSequence == nullptr ? TEXT("EmptySequence") : *Sequence->ParentSequence->GetName());
+//
+//	//return Sequence;
+//}
 
 void UDMSSeqManager::RequestAppendNewSequence_Implementation(
 	AActor* SourceObject, 

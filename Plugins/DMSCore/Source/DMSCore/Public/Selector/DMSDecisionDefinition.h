@@ -85,8 +85,8 @@ public:
 
 protected:
 	virtual UDMSSelectorRequestForm* CreateNewRequestForm(ADMSSequence* Sequence){return nullptr;}
+
 public:
-	
 	// 리퀘스트 폼을 제작 
 	TArray<UDMSSelectorRequestForm*> GenerateRequestForm(ADMSSequence* Sequence, bool SelectForEachEI);
 	// 리퀘스트 폼에 들어갈 캔디데이트를 생성하는 함수 ( 사실상 이것을 위해 존재하는 클래스라고 보면 됨. )

@@ -89,6 +89,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = Attribute)
 	void ExecuteModifier(const FDMSAttributeModifier& Modifier);
 	virtual void ExecuteModifier_Implementation(const FDMSAttributeModifier& Modifier);
+	virtual UDMSAttributeValue* GetDeltaAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect);
 	virtual void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
 	virtual bool IsSupportedForNetworking() const override {return true;}
 };
@@ -147,7 +148,7 @@ public:
 	//UFUNCTION(BlueprintCallable, Category = Attribute)
 
 	// "Revert" 기능을 위한 헬퍼 함수. ( 리버트 할때 사용할 모디파이어를 리턴 )
-	void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+	UDMSAttributeValue* GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,ADMSActiveEffect* OriginalActiveEffect);
 
 	void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
 
@@ -171,8 +172,8 @@ public:
 	/**
 	 * DEPRECATED :: Moved to implemented class.
 	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
-	EDMSModifierType AttributeModifierType;
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Attribute)
+	//EDMSModifierType AttributeModifierType;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ExecuteOp(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue);

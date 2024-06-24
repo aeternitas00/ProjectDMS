@@ -27,7 +27,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = Attribute) 
 	bool Value;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, Category = Attribute) 
+	UPROPERTY(Replicated) 
 	int OverDepth;
 
 
@@ -54,7 +54,7 @@ class DMSCORE_API UDMSAttributeModifierOp_Boolean : public UDMSAttributeModifier
 	GENERATED_BODY()
 
 public:	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Exist failure condition"))
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Modifier Type"))
 	EDMSModifierType_Boolean _ModifierType;
 
 public:

@@ -42,11 +42,20 @@ public:
 	UFUNCTION()
 	void OnRep_Value();
 
-	//virtual void GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue);
+	virtual UDMSAttributeValue* GetDeltaAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect);
 	virtual void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
+
+UENUM(BlueprintType)
+enum class EDMSNumericOperatorFlag : uint8
+{
+	OF_Default = 0 UMETA(DisplayName = "Execute normally"),
+	OF_Clamp UMETA(DisplayName = "Execute with clamp"),
+	OF_FailCondition UMETA(DisplayName = "Block if predict result is specific value"),
+	OF_MAX
+};
 /**
 *	
 */
@@ -56,23 +65,40 @@ class DMSCORE_API UDMSAttributeModifierOp_Numeric : public UDMSAttributeModifier
 	GENERATED_BODY()
 
 public:	
-	/**
-	* It has failure condition.
-	*/
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Exist failure condition"))
-	bool bExistFailureCondition = false;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Modifier Type"))
+	EDMSModifierType_Numeric ModifierType;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
+	EDMSNumericOperatorFlag OperatorFlag;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != OF_Default", EditConditionHides))
+	float FlagMinValue;
 
 	/**
-	* Checking operator.
-	*/
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
-	EDMSComparisonOperator FailureConditionOperator;
+	 * Clamping value.
+	 */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != OF_Default", EditConditionHides))
+	float FlagMaxValue;
 
 	/**
-	* Operating value.
+	* Fail checking operator.
 	*/
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
-	float FailureConditionValue; // float? 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != OF_Default", EditConditionHides))
+	EDMSComparisonOperator FlagOperator;
+
+	/**
+	 * It has failure condition.
+	 */
+	//UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Exist failure condition"))
+	//bool bExistFailureCondition = false;
+
+
+	/**
+	 * Fail condition value
+	 */
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "bExistFailureCondition", EditConditionHides))
+	//float FailureConditionValue; // float? 
 
 
 public:

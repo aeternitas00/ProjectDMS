@@ -32,9 +32,9 @@ void UDMSAttribute::ApplyModifier(const FDMSAttributeModifier& Modifier)
 	OnAttributeModified.Broadcast(this);
 }
 
-void UDMSAttribute::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,TObjectPtr<UDMSAttributeValue>& OutValue)
+UDMSAttributeValue* UDMSAttribute::GetDeltaAfterModify(const FDMSAttributeModifier& Modifier,ADMSActiveEffect* OriginalActiveEffect)
 {
-	//AttributeValue->GetDeltaAfterModify(Modifier,OutValue);
+	return AttributeValue->GetDeltaAfterModify(Modifier,OriginalActiveEffect);
 }
 
 void UDMSAttribute::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
@@ -67,6 +67,12 @@ void UDMSAttributeValue::ExecuteModifier_Implementation(const FDMSAttributeModif
 //{
 //	//OutValue->Value = Modifier.Value->Value;
 //}
+
+UDMSAttributeValue* UDMSAttributeValue::GetDeltaAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect)
+{
+	return nullptr;
+	//OutModifiers.Add(NewModifier);
+}
 
 void UDMSAttributeValue::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
 {

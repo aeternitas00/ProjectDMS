@@ -11,11 +11,17 @@
 void UDMSAttributeValue_Tag::GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect, TArray<FDMSAttributeModifier>& OutModifiers)
 {
 	if(!OriginalModifier.Value->IsA<UDMSAttributeValue_Tag>() )return;
+	auto CastedOriginalOp = Cast<UDMSAttributeModifierOp_Tag>(OriginalModifier.ModifierOp);
+	if(!CastedOriginalOp) return;
+	
 	FDMSAttributeModifier NewRevertSubMod, NewRevertAddMod;
-	NewRevertSubMod.ModifierOp = NewObject<UDMSAttributeModifierOp_Tag>(OriginalActiveEffect);
-	NewRevertSubMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Subtractive;
-	NewRevertAddMod.ModifierOp = NewObject<UDMSAttributeModifierOp_Tag>(OriginalActiveEffect);
-	NewRevertAddMod.ModifierOp->AttributeModifierType = EDMSModifierType::MT_Additive;
+	auto SubModOp =  NewObject<UDMSAttributeModifierOp_Tag>(OriginalActiveEffect);
+	SubModOp->ModifierType = EDMSModifierType_Tag::MT_Remove;
+	NewRevertSubMod.ModifierOp = SubModOp;
+	
+	auto AddModOp =  NewObject<UDMSAttributeModifierOp_Tag>(OriginalActiveEffect);	
+	AddModOp->ModifierType = EDMSModifierType_Tag::MT_Add;;
+	NewRevertAddMod.ModifierOp = AddModOp;
 
 	auto CastedSubValue = NewObject<UDMSAttributeValue_Tag>(OriginalActiveEffect);
 	auto CastedAddValue = NewObject<UDMSAttributeValue_Tag>(OriginalActiveEffect);
@@ -23,27 +29,26 @@ void UDMSAttributeValue_Tag::GetDeltasAfterModify(const FDMSAttributeModifier& O
 	NewRevertAddMod.Value = CastedAddValue;
 
 	auto CastedModifierValue = Cast<UDMSAttributeValue_Tag>(OriginalModifier.Value)->GetValue();
-	switch(OriginalModifier.ModifierOp->AttributeModifierType)
+	
+	switch(CastedOriginalOp->ModifierType)
 	{
-		case EDMSModifierType::MT_Additive:
+		case EDMSModifierType_Tag::MT_Add:
 			for(auto Adding : CastedModifierValue){
 				if(!Value.HasTagExact(Adding)) CastedSubValue->AddSingleValue(Adding);
 			}
 			break;
-		case EDMSModifierType::MT_Subtractive:
+		case EDMSModifierType_Tag::MT_Remove:
 			for(auto Removing : CastedModifierValue){
 				if(Value.HasTagExact(Removing)) CastedAddValue->AddSingleValue(Removing);
 			}
 			break;
-		case EDMSModifierType::MT_Override:
+		case EDMSModifierType_Tag::MT_Override:
 			for(auto Adding : CastedModifierValue){
 				if(!Value.HasTagExact(Adding)) CastedSubValue->AddSingleValue(Adding);
 			}
 			for(auto& Removing : Value){
 				if(!CastedModifierValue.HasTagExact(Removing)) CastedAddValue->AddSingleValue(Removing);
 			}
-			break;
-		case EDMSModifierType::MT_Multiplicative:
 			break;
 		default:
 			break;
@@ -65,15 +70,16 @@ void UDMSAttributeModifierOp_Tag::ExecuteOp_Implementation(UDMSAttributeValue* A
 	auto CastedRightValue = Cast<UDMSAttributeValue_Tag>(ModifierValue);
 	if(!CastedValue || !CastedRightValue) return;
 
-	switch(AttributeModifierType)
+	switch(ModifierType)
+	//switch(AttributeModifierType)
 	{
-		case EDMSModifierType::MT_Additive:
+		case EDMSModifierType_Tag::MT_Add:
 			CastedValue->AddValue(CastedRightValue->GetValue());
 			break;
-		case EDMSModifierType::MT_Override:
+		case EDMSModifierType_Tag::MT_Override:
 			CastedValue->SetValue(CastedRightValue->GetValue());
 			break;
-		case EDMSModifierType::MT_Subtractive:
+		case EDMSModifierType_Tag::MT_Remove:
 			CastedValue->RemoveValue(CastedRightValue->GetValue());
 			break;
 		default:
@@ -87,9 +93,11 @@ bool UDMSAttributeModifierOp_Tag::Predict_Implementation(UDMSAttribute* Target, 
 	auto CastedRightValue = Cast<UDMSAttributeValue_Tag>(ModifierValue);
 	if(!CastedValue || !CastedRightValue) return false;
 	bool rv=false;
-	switch(AttributeModifierType)
+
+	switch(ModifierType)
+	//switch(AttributeModifierType)
 	{
-		case EDMSModifierType::MT_Additive:
+		case EDMSModifierType_Tag::MT_Add:
 			if(CastedValue->GetValue().Num()==0) {rv=true; break;}
 			for(auto& SearchItem : CastedValue->GetValue())
 			{
@@ -97,7 +105,7 @@ bool UDMSAttributeModifierOp_Tag::Predict_Implementation(UDMSAttribute* Target, 
 				{ rv=true; break; }
 			}
 			break;
-		case EDMSModifierType::MT_Subtractive:
+		case EDMSModifierType_Tag::MT_Remove:
 			if(CastedRightValue->GetValue().Num()==0) {rv=true; break;}
 			for(auto& SearchItem : CastedRightValue->GetValue())
 			{

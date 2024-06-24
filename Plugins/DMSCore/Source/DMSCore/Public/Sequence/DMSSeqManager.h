@@ -96,6 +96,15 @@ public:
 		ADMSSequence* ParentSequence = nullptr
 	);	
 
+	//UFUNCTION(BlueprintCallable/*, Server, Reliable*/)
+	//ADMSSequence* RequestCreateSequence_SD(
+	//	AActor* SourceObject, 
+	//	AActor* SourcePlayer,
+	//	UDMSSequenceDefinition* SeqDefinition, 
+	//	bool LinkAttributeWithParent = false,
+	//	ADMSSequence* ParentSequence = nullptr
+	//);	
+
 	// 멀티플레이 테스트용 임시 함수
 	/**
 	* Create a Sequence object.

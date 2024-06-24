@@ -32,6 +32,8 @@ public:
 	UDMSAttributeComponent();
 
 protected:
+	UPROPERTY()
+	FOnAttributeModified OnAttributeAdded;
 public:	
 	/**
 	 * Storing attribute instances
@@ -77,6 +79,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UDMSAttribute* DuplicateAttribute(UDMSAttribute* Attribute, bool Exact = false);
 
+	void RegisterAttribute_Internal(UDMSAttribute* NewAttribute);
 	/**
 	 * Bind param OnModified deletegate to named attribute instance.
 	 * @param	AttributeName						Target attribute's tag
@@ -84,6 +87,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	void BindOnModifiedToAttribute(const FGameplayTagContainer& AttributeName, const FOnAttributeModifiedSignature& iDelegate);
+
+	UFUNCTION(BlueprintCallable)
+	void BindOnAttributeAdded(const FOnAttributeModifiedSignature& iDelegate);
 
 	/**
 	 * Getter of attribute instance

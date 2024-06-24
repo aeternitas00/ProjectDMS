@@ -59,8 +59,9 @@ UCLASS()
 class DMSCORE_API UDMSAttributeModifierOp_Tag : public UDMSAttributeModifierOp
 {
 	GENERATED_BODY()
-protected:
-
+public:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect, meta = (DisplayName = "Modifier Type"))
+	EDMSModifierType_Tag ModifierType;
 public:
 	virtual void ExecuteOp_Implementation(UDMSAttributeValue* AttValue, UDMSAttributeValue* ModifierValue) override;
 	virtual bool Predict_Implementation(UDMSAttribute* Target, UDMSAttributeValue* ModifierValue) override;

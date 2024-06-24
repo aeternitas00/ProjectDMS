@@ -8,7 +8,7 @@
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute, "Effect.ModAttribute");
 UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_ModAttribute_Revert, "Effect.ModAttribute.Revert");
-
+UE_DEFINE_GAMEPLAY_TAG(TAG_DMS_Effect_Attribute_Delta, "Attribute.Arkham.System.Delta");
 
 // 자손임을 표현하기 위해 파생 키워드들은 + ".~~" 하는 형태? ex) ModifyAttribute.Deal 
 // ( 일종의 포함 관계에 속하는 이펙트들의 구분 위함. --> HP가 변화했을 때 > { HP 피해를 입었을 때 , HP 회복을 했을 때 } )
@@ -17,6 +17,13 @@ UDMSEffect_ModAtt::UDMSEffect_ModAtt() //:bCreateIfNull(false)
 { 
 	EffectTag = TAG_DMS_Effect_ModAttribute;
 	
+}
+
+FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
+{ 
+	FGameplayTagContainer Rv(EffectTag);
+	Rv.AppendTags(TargetAttributeTags);
+	return Rv;
 }
 
 bool UDMSEffect_ModAtt::GetTargetAttComp(ADMSActiveEffect* iEI, AActor*& OutTarget, UDMSAttributeComponent*& OutComp)
@@ -65,17 +72,24 @@ void UDMSEffect_ModAtt::Work_Implementation(ADMSSequence* SourceSequence, ADMSAc
 	
 	UDMSAttribute* TargetAtt = AttComp->GetAttribute(TargetAttributeTags);
 
-	// 일반적인 로직으로 구현?? // ED_Revertable?
-	if (bTemporal){
-		TArray<FDMSAttributeModifier> RevertMods;
-		TargetAtt->GetDeltasAfterModify(Modifier,iEI,RevertMods);
+	UDMSAttributeValue* DeltaVal = TargetAtt->GetDeltaAfterModify(Modifier,iEI);
 
-		iEI->OnDetach.AddLambda([=,CaptureMods = RevertMods]()__declspec(noinline){
-			auto LocalMods = CaptureMods;
-			for (auto& RevertMod : LocalMods)
-				TargetAtt->ApplyModifier(RevertMod);
-		});
-	}
+	auto DeltaAttributeTags = TargetAttributeTags;
+	DeltaAttributeTags.AddTag(TAG_DMS_Effect_Attribute_Delta);
+
+	iEI->GetComponentByClass<UDMSAttributeComponent>()->GenerateAndSetAttribute(DeltaAttributeTags,DeltaVal,true);
+	
+	// 일반적인 로직으로 구현?? // ED_Revertable?
+	//if (bTemporal){
+	//	TArray<FDMSAttributeModifier> RevertMods;
+	//	TargetAtt->GetDeltasAfterModify(Modifier,iEI,RevertMods);
+
+	//	iEI->OnDetach.AddLambda([=,CaptureMods = RevertMods]()__declspec(noinline){
+	//		auto LocalMods = CaptureMods;
+	//		for (auto& RevertMod : LocalMods)
+	//			TargetAtt->ApplyModifier(RevertMod);
+	//	});
+	//}
 	TargetAtt->ApplyModifier(Modifier);
 
 	OnWorkCompleted.ExecuteIfBound(true);
@@ -111,62 +125,56 @@ bool UDMSEffect_ModAtt::Predict_Implementation(ADMSSequence* SourceSequence, ADM
 	return rv;
 }
 
-FGameplayTagContainer UDMSEffect_ModAtt::GetEffectTags_Implementation()
-{ 
-	FGameplayTagContainer Rv(EffectTag);
-	Rv.AppendTags(TargetAttributeTags);
-	return Rv;
-}
 
 
-bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
-{
-	//UDMSDataObject* ValueData = nullptr;
-	if (!ModifierOp) return false;
+//bool UDMSEffect_ModAtt_FromAttribute::GenerateModifier_Implementation(ADMSActiveEffect* EI, ADMSSequence* SourceSequence, FDMSAttributeModifier& OutModifier)
+//{
+//	//UDMSDataObject* ValueData = nullptr;
+//	if (!ModifierOp) return false;
+//
+//	UDMSAttributeComponent* AttComp = nullptr;
+//	
+//	switch (ValueAttributeSource) {
+//		case EDMSAttributeSourceFlag::AE: 
+//			AttComp = EI->GetComponentByClass<UDMSAttributeComponent>(); break;
+//		case EDMSAttributeSourceFlag::SourcePlayer: 
+//			AttComp = SourceSequence->GetSourcePlayer()->GetComponentByClass<UDMSAttributeComponent>(); break;
+//		case EDMSAttributeSourceFlag::SourceObject: 
+//			AttComp = SourceSequence->GetSourceObject()->GetComponentByClass<UDMSAttributeComponent>(); break;
+//		case EDMSAttributeSourceFlag::TG:
+//			 for(auto& Owner : ValueAttributeOwner->GetTargets(EI,SourceSequence))
+//			 {
+//				 AttComp = Owner->IsA<AActor>() ? Cast<AActor>(Owner)->GetComponentByClass<UDMSAttributeComponent>() : nullptr;
+//				 break;
+//			 }
+//			break;
+//		default: break;
+//	}
+//	if(AttComp == nullptr) return false;
+//
+//	auto Att = AttComp->GetAttribute(ValueAttributeTags);
+//
+//	if (Att == nullptr) return false;
+//
+//	UDMSAttributeValue* TempValue = DuplicateObject<UDMSAttributeValue>(Att->AttributeValue,EI);
+//
+//	for (auto& Prc : ValueProcessers)
+//		Prc->Process(TempValue);	
+//	
+//	OutModifier.ModifierOp = ModifierOp;
+//	OutModifier.Value = TempValue;
+//	return true;
+//}
 
-	UDMSAttributeComponent* AttComp = nullptr;
-	
-	switch (ValueAttributeSource) {
-		case EDMSAttributeSourceFlag::AE: 
-			AttComp = EI->GetComponentByClass<UDMSAttributeComponent>(); break;
-		case EDMSAttributeSourceFlag::SourcePlayer: 
-			AttComp = SourceSequence->GetSourcePlayer()->GetComponentByClass<UDMSAttributeComponent>(); break;
-		case EDMSAttributeSourceFlag::SourceObject: 
-			AttComp = SourceSequence->GetSourceObject()->GetComponentByClass<UDMSAttributeComponent>(); break;
-		case EDMSAttributeSourceFlag::TG:
-			 for(auto& Owner : ValueAttributeOwner->GetTargets(EI,SourceSequence))
-			 {
-				 AttComp = Owner->IsA<AActor>() ? Cast<AActor>(Owner)->GetComponentByClass<UDMSAttributeComponent>() : nullptr;
-				 break;
-			 }
-			break;
-		default: break;
-	}
-	if(AttComp == nullptr) return false;
-
-	auto Att = AttComp->GetAttribute(ValueAttributeTags);
-
-	if (Att == nullptr) return false;
-
-	UDMSAttributeValue* TempValue = DuplicateObject<UDMSAttributeValue>(Att->AttributeValue,EI);
-
-	for (auto& Prc : ValueProcessers)
-		Prc->Process(TempValue);	
-	
-	OutModifier.ModifierOp = ModifierOp;
-	OutModifier.Value = TempValue;
-	return true;
-}
-
-void UDMSAttributeValueProcesser::Process_Implementation(UObject* iObject)
-{
-	if (iObject==nullptr || !iObject->IsA<UDMSAttributeValue>()) return;
-
-	auto AttValue = Cast<UDMSAttributeValue>(iObject);
-
-	AttValue->ExecuteModifier(ProcessorModifier);
-	
-}
+//void UDMSAttributeValueProcesser::Process_Implementation(UObject* iObject)
+//{
+//	if (iObject==nullptr || !iObject->IsA<UDMSAttributeValue>()) return;
+//
+//	auto AttValue = Cast<UDMSAttributeValue>(iObject);
+//
+//	AttValue->ExecuteModifier(ProcessorModifier);
+//	
+//}
 
 //bool UDMSAttributeModifierDefinition::ApplyModifierDefinition(UDMSAttributeValue* TargetAttribute)
 //{

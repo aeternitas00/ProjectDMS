@@ -72,8 +72,7 @@ UDMSAttribute* UDMSAttributeComponent::MakeAttribute(const FGameplayTagContainer
 	Rv = NewObject<UDMSAttribute>(this);
 	Rv->AttributeTag = AttributeName;
 	Rv->GenerateValue(AttributeValueClass);
-	AddReplicatedSubObject(Rv);
-	Attributes.Add(Rv);
+	RegisterAttribute_Internal(Rv);
 
 	return Rv;
 }
@@ -84,10 +83,14 @@ UDMSAttribute* UDMSAttributeComponent::GenerateAndSetAttribute(const FGameplayTa
 	if (NewAtt == nullptr) {
 		NewAtt = NewObject<UDMSAttribute>(this);
 		NewAtt->AttributeTag = AttributeName;
-		AddReplicatedSubObject(NewAtt);
-		Attributes.Add(NewAtt);
+		NewAtt->CopyValueFromOther(AttributeValue);
+
+		RegisterAttribute_Internal(NewAtt);
 	}
-	NewAtt->CopyValueFromOther(AttributeValue);
+	else{
+		NewAtt->CopyValueFromOther(AttributeValue);
+	}
+
 	return NewAtt;
 }
 
@@ -105,10 +108,16 @@ UDMSAttribute* UDMSAttributeComponent::DuplicateAttribute(UDMSAttribute* Attribu
 
 	UDMSAttribute* NewAtt = DuplicateObject(Attribute,this);
 	NewAtt->AttributeTag = Attribute->AttributeTag;
-	AddReplicatedSubObject(NewAtt);
-	Attributes.Add(NewAtt);
-
+	RegisterAttribute_Internal(NewAtt);
 	return NewAtt;
+}
+
+void UDMSAttributeComponent::RegisterAttribute_Internal(UDMSAttribute* NewAttribute)
+{
+	AddReplicatedSubObject(NewAttribute);
+	Attributes.Add(NewAttribute);
+
+	OnAttributeAdded.Broadcast(NewAttribute);
 }
 
 bool UDMSAttributeComponent::PredictModifier(const FGameplayTagContainer& AttributeTag, const FDMSAttributeModifier& Modifier) const
@@ -132,6 +141,11 @@ void UDMSAttributeComponent::BindOnModifiedToAttribute(const FGameplayTagContain
 	if (!ContainAttribute(AttributeTag)) return;
 
 	GetAttribute(AttributeTag)->BindOnModified(iDelegate);
+}
+
+void UDMSAttributeComponent::BindOnAttributeAdded(const FOnAttributeModifiedSignature& iDelegate)
+{
+	OnAttributeAdded.Add(iDelegate);
 }
 
 void UDMSAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -9,6 +9,7 @@
 #include "Effect/DMSEffectOption.h"
 #include "Attribute/DMSAttribute.h"
 #include "Sequence/Steps/DMSSequenceStep_Decision.h"
+#include "Selector/DMSDecisionDefinition_Object.h"
 #include "Sequence/Steps/DMSSequenceStep_Apply.h"
 #include "Conditions/DMSConditionObject.h"
 

@@ -111,6 +111,50 @@ public:
 	//virtual void Serialize(FArchive& Ar) override;
 };
 
+UCLASS(Blueprintable, BlueprintType, ClassGroup = (Effect), DefaultToInstanced, EditInlineNew)
+class DMSCORE_API UDMSSequenceDefinition : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+	/**
+	 * Contexts of generating active effect.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
+	TObjectPtr<UDMSEffectNodeWrapper> EffectNode;
+
+	/**
+	 * 
+	 */
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Source object searcher"))
+	//TObjectPtr<UDMSTargetGenerator> SourceTweaker;
+
+	/**
+	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
+	 * The EffectNode uses this target generator to set the target of sequence by itself.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (EditCondition = "!bMainTargetSelectable", EditConditionHides ,DisplayName = "Main target searcher"))
+	TObjectPtr<UDMSTargetGenerator> Targeter_Main;
+
+	/**
+	* Use this when effect has to set targets with runtime data ( Sequence ).
+	* @param	iSequence						Current sequence.
+	* @return	Generated targets.
+	*/
+	//UFUNCTION(BlueprintCallable,Category = Effect)
+	//static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, ADMSSequence* iSequence);
+
+	/**
+	* Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
+	* @param	iSequence						Current sequence.
+	* @return	Generated apply targets.
+	*/
+	//UFUNCTION(BlueprintCallable, Category = Effect)
+	//static TArray<FDMSSequenceEIStorage> GenerateApplyTarget(UDMSEffectNode* Node, ADMSSequence* iSequence);
+};
+
+
 /**
  *
  * 	========================================
@@ -247,10 +291,9 @@ public:
 	//=================== Step ===================//
 
 public:
-
 	/** 
-	* The list of steps that this sequence will have and execute.
-	*/
+	 * The list of steps that this sequence will have and execute.
+	 */
 	// NOTE :: EDITOR EXTENSION?
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect)
 	TArray<TObjectPtr<UDMSSequenceStepDefinition>> StepDefinitions;
