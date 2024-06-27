@@ -90,7 +90,7 @@ void ADMSCardBase::OnInitialized_Implementation()
 		EIManagerComponent->SetupOwnEffect(CardDefinition->CardEffectSets[Key], Key);
 
 	for(auto& Attribute : CardDefinition->DefaultAttributes)
-		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue);
+		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue, true);
 }
 
 UDMSEffectSet* ADMSCardBase::GetOwningEffectSet(const FGameplayTag& iSetName)

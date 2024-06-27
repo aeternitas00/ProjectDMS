@@ -43,6 +43,6 @@ void ADMSCharacterBase::OnInitialized_Implementation()
 void ADMSCharacterBase::SetupAttributes(const TArray<FDMSAttributeDefinition>& Attributes)
 {
 	for (auto& Attribute : Attributes){
-		AttributesComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue);
+		AttributesComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue, true);
 	}
 }

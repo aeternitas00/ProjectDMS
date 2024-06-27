@@ -15,6 +15,7 @@ class PROJECTDMSGAME_API ADMSChaosTokenBase : public ADMSEffectorActorBase
 	GENERATED_BODY()
 public:
 	ADMSChaosTokenBase(const FObjectInitializer& ObjectInitializer);
+
 protected:
 
 	/**

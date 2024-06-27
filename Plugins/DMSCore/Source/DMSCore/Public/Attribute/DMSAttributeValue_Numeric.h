@@ -26,7 +26,7 @@ class DMSCORE_API UDMSAttributeValue_Numeric : public UDMSAttributeValue
 
 protected:
 	// Rep Testing
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, ReplicatedUsing = OnRep_Value, Category = Attribute) 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated, /*ReplicatedUsing = OnRep_Value,*/ Category = Attribute) 
 	float Value;
 
 public:
@@ -36,11 +36,11 @@ public:
 	float GetValue() const { return Value; }
 
 	UFUNCTION(BlueprintCallable, Category = Attribute)
-	void SetValue(float i) { /*if (GetLocalRole() == ROLE_Authority)*/  Value=i; }
+	void SetValue(float i);
 
 	// OnRep Testing
-	UFUNCTION()
-	void OnRep_Value();
+	//UFUNCTION()
+	//void OnRep_Value();
 
 	virtual UDMSAttributeValue* GetDeltaAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect);
 	virtual void GetDeltasAfterModify(const FDMSAttributeModifier& OriginalModifier,ADMSActiveEffect* OriginalActiveEffect,TArray<FDMSAttributeModifier>& OutModifiers);
@@ -72,20 +72,20 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = Effect)
 	EDMSNumericOperatorFlag OperatorFlag;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != OF_Default", EditConditionHides))
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != EDMSNumericOperatorFlag::OF_Default", EditConditionHides))
 	float FlagMinValue;
 
 	/**
 	 * Clamping value.
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != OF_Default", EditConditionHides))
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != EDMSNumericOperatorFlag::OF_Default", EditConditionHides))
 	float FlagMaxValue;
 
 	/**
 	* Fail checking operator.
 	*/
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != OF_Default", EditConditionHides))
-	EDMSComparisonOperator FlagOperator;
+	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = Effect, meta = (EditCondition = "OperatorFlag != EDMSNumericOperatorFlag::OF_Default", EditConditionHides))
+	//EDMSComparisonOperator FlagOperator;
 
 	/**
 	 * It has failure condition.

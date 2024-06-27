@@ -136,22 +136,6 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (EditCondition = "!bMainTargetSelectable", EditConditionHides ,DisplayName = "Main target searcher"))
 	TObjectPtr<UDMSTargetGenerator> Targeter_Main;
-
-	/**
-	* Use this when effect has to set targets with runtime data ( Sequence ).
-	* @param	iSequence						Current sequence.
-	* @return	Generated targets.
-	*/
-	//UFUNCTION(BlueprintCallable,Category = Effect)
-	//static TArray<TScriptInterface<IDMSEffectorInterface>> GeneratePresetTarget(UDMSEffectNode* Node, ADMSSequence* iSequence);
-
-	/**
-	* Implement how to generate applying targets. ( Effect like targeting player but apply to player's card or something )
-	* @param	iSequence						Current sequence.
-	* @return	Generated apply targets.
-	*/
-	//UFUNCTION(BlueprintCallable, Category = Effect)
-	//static TArray<FDMSSequenceEIStorage> GenerateApplyTarget(UDMSEffectNode* Node, ADMSSequence* iSequence);
 };
 
 

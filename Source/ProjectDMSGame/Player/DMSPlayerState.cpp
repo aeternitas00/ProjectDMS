@@ -14,6 +14,8 @@
 #include "Card/DMSCardManagerComponent.h"
 
 #include "Attribute/DMSAttributeComponent.h"
+
+#include "Attribute/DMSAttributeValue_Numeric.h"
 #include "Character/DMSCharacterBase.h"
 
 #include "Library/DMSGameFunctionLibrary.h"
@@ -34,11 +36,11 @@ ADMSPlayerState::ADMSPlayerState(const FObjectInitializer& Initializer) : ADMSPl
 void ADMSPlayerState::SetupAttributes()
 {
 	for (auto Stat : DefaultAttributes) {
-		AttributeComponent->GenerateAndSetAttribute(Stat.DefaultTag,Stat.DefaultValue);
+		AttributeComponent->GenerateAndSetAttribute(Stat.DefaultTag,Stat.DefaultValue, true);
 	}
 
 	for (auto CharacterStat : PlayerCharacterData.Attributes){
-		AttributeComponent->GenerateAndSetAttribute(CharacterStat.DefaultTag,CharacterStat.DefaultValue);
+		AttributeComponent->GenerateAndSetAttribute(CharacterStat.DefaultTag,CharacterStat.DefaultValue, true);
 	}
 }
 

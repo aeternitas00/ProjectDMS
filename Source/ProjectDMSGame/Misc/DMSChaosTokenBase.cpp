@@ -32,5 +32,5 @@ void ADMSChaosTokenBase::OnInitialized_Implementation()
 	if(!TokenData) return;
 
 	for(auto& Attribute : TokenData->DefaultAttributes)
-		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue);	
+		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue, true);	
 }

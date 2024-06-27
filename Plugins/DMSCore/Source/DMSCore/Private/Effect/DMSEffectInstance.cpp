@@ -81,7 +81,7 @@ void ADMSActiveEffect::Initialize(UDMSEffectNode* iNode,const EDMSAEState& Initi
 {
 	EffectNode = iNode; 
 	for (auto& Attribute : EffectNode->EffectAttributes)
-		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag,Attribute.DefaultValue);
+		AttributeComponent->GenerateAndSetAttribute(Attribute.DefaultTag,Attribute.DefaultValue, true);
 	CurrentState = InitialState;
 }
 

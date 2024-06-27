@@ -9,6 +9,11 @@ UDMSAttributeValue_Numeric::UDMSAttributeValue_Numeric() : Value(0.0f)
 {
 }
 
+void UDMSAttributeValue_Numeric::SetValue(float i)
+{
+	Value=i;
+}
+
 void UDMSAttributeValue_Numeric::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -50,9 +55,9 @@ void UDMSAttributeModifierOp_Numeric::ExecuteOp_Implementation(UDMSAttributeValu
 	CastedValue->SetValue(Temporal);
 }
 
-void UDMSAttributeValue_Numeric::OnRep_Value()
-{
-}
+//void UDMSAttributeValue_Numeric::OnRep_Value()
+//{
+//}
 
 UDMSAttributeValue* UDMSAttributeValue_Numeric::GetDeltaAfterModify(const FDMSAttributeModifier& OriginalModifier, ADMSActiveEffect* OriginalActiveEffect)
 {

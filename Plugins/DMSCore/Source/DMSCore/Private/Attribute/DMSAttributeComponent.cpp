@@ -32,7 +32,7 @@ bool UDMSAttributeComponent::ContainAttributeByQuery(const FGameplayTagQuery& Qu
 UDMSAttribute* UDMSAttributeComponent::GetAttribute(const FGameplayTagContainer& AttributeTag, bool Exact) const
 {
 	//if (!ContainAttribute(AttributeTag)) return nullptr; // log or what\
-
+	
 	auto ParentAtt = Cast<UDMSAttributeComponent>(ParentComponent);
 	auto Pred = [AttributeTag](UDMSAttribute* Item){ return Item->AttributeTag == AttributeTag;};
 	int ItemIdx = Attributes.IndexOfByPredicate(Pred);
