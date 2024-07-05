@@ -104,18 +104,18 @@ public:
 	 * @param	StepInitiated			
 	 * @param	StepFinished			
 	 */
-	template<typename FuncInitiated, typename FuncFinished>
-	void InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished);
+	//template<typename FuncInitiated, typename FuncFinished>
+	//void InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished);
 
 	friend class ADMSSequence;
 };
 
-template<typename FuncInitiated, typename FuncFinished>
-void UDMSSequenceStep::InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished)
-{
-	OnStepInitiated_Delegate.AddLambda(StepInitiated);
-	OnStepFinished_Delegate.AddLambda(StepFinished);
-}
+//template<typename FuncInitiated, typename FuncFinished>
+//void UDMSSequenceStep::InitializeDelegates(FuncInitiated&& StepInitiated, FuncFinished&& StepFinished)
+//{
+//	OnStepInitiated_Delegate.AddLambda(StepInitiated);
+//	OnStepFinished_Delegate.AddLambda(StepFinished);
+//}
 
 
 /**

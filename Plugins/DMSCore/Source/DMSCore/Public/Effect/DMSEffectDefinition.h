@@ -211,7 +211,7 @@ public:
 	 * This Effect doesn't receive notifies. 
 	 * It will not be activated except through other 'Activate Effect' effect. 
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Is unable to trigger"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Ignore notify"))
 	bool bIgnoreNotify;
 
 	/**
@@ -225,7 +225,7 @@ public:
 	/**
 	 * Effect's activatable timing.
 	 */ 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Trigger Conditions" ,EditCondition = "!bIgnoreNotify", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Trigger / Activate Conditions"))
 	TObjectPtr<UDMSConditionCombiner> Conditions;
 
 	/**

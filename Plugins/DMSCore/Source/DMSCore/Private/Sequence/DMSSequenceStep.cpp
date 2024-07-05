@@ -149,7 +149,7 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	//InstancedStep->bFTFlag=bFT;
 	FOnTaskCompletedNative AfterBroadcast;
 	if( AfterFunctionName.IsNone() ) {
-		AfterBroadcast.BindLambda( [=](bool){
+		AfterBroadcast.BindLambda( [=,this](bool){
 			FGameplayTagContainer seqtag = InstancedStep->GetCurrentProgressTags();
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());
 			InstancedStep->ProgressEnd(true);
@@ -158,7 +158,7 @@ void UDMSSequenceStepDefinition::BroadcastProgress(UDMSSequenceStep* InstancedSt
 	}
 	else
 	{
-		AfterBroadcast.BindLambda( [=](bool){
+		AfterBroadcast.BindLambda( [=,this](bool){
 			//InstancedStep->bFTFlag=0;
 			FGameplayTagContainer seqtag = InstancedStep->GetCurrentProgressTags();
 			DMS_LOG_SIMPLE(TEXT("==== %s : broadcast end lambda [%s] ===="), *InstancedStep->OwnerSequence->GetName(),*seqtag.ToString());

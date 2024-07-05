@@ -70,7 +70,7 @@ void UDMSSelBehavDefinition_Number_UpdateSeqAtt::SetupFormDelegates(ADMSSequence
 		{
 			auto Form = Cast<UDMSSelectorRequestForm_Numeric>(rawForm);
 			// 이거 순서가 확실히 유지되나?
-			Form->OnCompletedNative.BindLambda([=,AE = AEArr[FormIdx]](TArray<uint8> IndexArr)
+			Form->OnCompletedNative.BindLambda([=,this,AE = AEArr[FormIdx]](TArray<uint8> IndexArr)
 			{
 				DMS_LOG_SIMPLE(TEXT("==== %s : SelectorBehavior : Update Data ===="), *AE->GetName());
 
@@ -91,7 +91,7 @@ void UDMSSelBehavDefinition_Number_UpdateSeqAtt::SetupFormDelegates(ADMSSequence
 	else // FormArr.Num() == '1'
 	{
 		auto Form = Cast<UDMSSelectorRequestForm_Numeric>(FormArr[0]);
-		Form->OnCompletedNative.BindLambda([=](TArray<uint8> IndexArr)
+		Form->OnCompletedNative.BindLambda([=,this](TArray<uint8> IndexArr)
 		{
 			float SumOfSelected = 0;
 			for (auto& i : IndexArr)

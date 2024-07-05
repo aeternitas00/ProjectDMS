@@ -56,7 +56,7 @@ void UDMSSequenceStepDefinition_Decision::MakeDecision(UDMSSequenceStep* Instanc
 	if ( WidgetOwner == nullptr ){ InstancedStep->ProgressEnd(false); return;}
 
 	UDMSSelectorWorker* NewWorker = NewObject<UDMSSelectorWorker>(GS);	
-	//NewWorker->AddToRoot();
+	SelM->RegisterWorker(NewWorker);
 	
 	TArray<UObject*> Contexts;
 

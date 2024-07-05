@@ -89,7 +89,7 @@ void UDMSNotifyManager::Broadcast(ADMSSequence* NotifyData, const FOnTaskComplet
 	UDMSForcedEffectWorker* ForcedWorker = NewObject<UDMSForcedEffectWorker>(this);
 	FOnTaskCompletedNative OnForcedEffectCompleted;
 
-	OnForcedEffectCompleted.BindLambda([=](bool){
+	OnForcedEffectCompleted.BindLambda([=,this](bool){
 		auto CapturedRO = ResponsedObjects;
 		CreateRespondentSelector(NotifyData, CapturedRO, ResponseCompleted);
 	});

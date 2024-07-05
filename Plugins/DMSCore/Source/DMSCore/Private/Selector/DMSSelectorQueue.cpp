@@ -27,9 +27,9 @@ void UDMSSelectorWorker::Work_Implementation()
 
 	FOnSelectCompletedNative LazyUpdaterDelegate;
 
-	LazyUpdaterDelegate.BindLambda([=](bool Succeed, const TArray<uint8>& SelectIndexes){
+	LazyUpdaterDelegate.BindLambda([=,this](bool Succeed, const TArray<uint8>& SelectIndexes){
 
-		OnAllSelectorCompleted.AddLambda ( [=](){
+		OnAllSelectorCompleted.AddLambda ( [=,this](){
 			CurrentHandle->StoredForm->OnCompleted.Broadcast(SelectIndexes);
 			CurrentHandle->StoredForm->OnCompletedNative.ExecuteIfBound(SelectIndexes);
 		});
@@ -45,6 +45,10 @@ void UDMSSelectorWorker::OnAllTaskCompleted_Implementation(bool WorkerSucceeded)
 {
 	if(WorkerSucceeded) 
 		OnAllSelectorCompleted.Broadcast();
+
+	auto SelM = UDMSCoreFunctionLibrary::GetDMSSelectorManager(CurrentSequence);
+
+	SelM->DeregisterWorker(this);
 }
 
 

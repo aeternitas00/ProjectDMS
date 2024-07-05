@@ -3,6 +3,8 @@
 
 #include "Selector/DMSSelectorManager.h"
 #include "Selector/DMSConfirmWidgetBase.h"
+#include "Selector/DMSSelectorQueue.h"
+
 // Sets default values for this component's properties
 UDMSSelectorManager::UDMSSelectorManager()
 {
@@ -11,6 +13,16 @@ UDMSSelectorManager::UDMSSelectorManager()
 	
 
 	// ...
+}
+
+void UDMSSelectorManager::RegisterWorker(UDMSSelectorWorker* NewWorker)
+{
+	RunningSelWorkers.AddUnique(NewWorker);
+}
+
+void UDMSSelectorManager::DeregisterWorker(UDMSSelectorWorker* Worker)
+{
+	RunningSelWorkers.Remove(Worker);
 }
 
 UDMSSelectorHandle* UDMSSelectorManager::RequestCreateSelector(UDMSSelectorRequestForm* Form)

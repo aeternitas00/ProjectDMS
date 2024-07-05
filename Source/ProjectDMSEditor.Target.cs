@@ -9,7 +9,7 @@ public class ProjectDMSEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		//IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
 		bUsesSteam = true;
 		ExtraModuleNames.AddRange( new string[] { "ProjectDMSGame" } ); // Editor Module
 	}

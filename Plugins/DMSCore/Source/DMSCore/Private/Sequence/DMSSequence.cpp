@@ -289,8 +289,11 @@ void ADMSSequence::OnStepQueueCompleted(bool Succeeded)
 		auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
 		SeqManager->CompleteSequence(this, Succeeded);
 	});
+	TArray<UDMSEffectNodeWrapper*> ParamChild;
 
-	RunChildEffectQueue(OriginalEffectNode->ChildEffects,NewOnChildQueueFinished);
+	for(auto& CE : OriginalEffectNode->ChildEffects)ParamChild.Add(CE.Get());
+
+	RunChildEffectQueue(ParamChild,NewOnChildQueueFinished);
 
 	//FSimpleDelegate NewOnChildQueueFinished;
 	//NewOnChildQueueFinished.BindLambda([this,Succeeded](){
@@ -356,7 +359,7 @@ void UDMSChildSequenceWorker::Work_Implementation()
 	if (NewSeq == nullptr) {CompleteSingleTask(true);return;}
 
 	NewSeq->AddToOnSequenceFinished_Native(
-		[=](bool Succeeded){CompleteSingleTask(Succeeded);
+		[=,this](bool Succeeded){CompleteSingleTask(Succeeded);
 	});
 
 	SeqManager->RunSequence(NewSeq);

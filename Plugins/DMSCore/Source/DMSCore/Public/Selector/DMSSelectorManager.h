@@ -13,7 +13,7 @@ DECLARE_DELEGATE_TwoParams(FOnSelectCompletedNative, bool, TArray<uint8>);
 
 class UDMSSelectorBase;
 class UDMSAttributeValue;
-
+class UDMSSelectorWorker;
 /**
  * Data class used to request selector creation.
  */
@@ -103,6 +103,11 @@ class DMSCORE_API UDMSSelectorManager : public UActorComponent
 {
 	GENERATED_BODY()
 
+protected:
+
+	// Hard refs of Selector workers
+	UPROPERTY()
+	TArray<TObjectPtr<UDMSSelectorWorker>> RunningSelWorkers;
 public:	
 	UDMSSelectorManager();
 
@@ -110,6 +115,11 @@ protected:
 	//virtual void BeginPlay() override;
 
 public:
+
+
+	void RegisterWorker(UDMSSelectorWorker* NewWorker);
+
+	void DeregisterWorker(UDMSSelectorWorker* Worker);
 	/**
 	 * Create selector handle from param request form
 	 * @param	Form			in Request form.
