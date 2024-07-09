@@ -34,6 +34,10 @@ public:
 protected:
 	UPROPERTY()
 	FOnAttributeModified OnAttributeAdded;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void InitByAttDefs(const TArray<FDMSAttributeDefinition>& iAttDef);
 public:	
 	/**
 	 * Storing attribute instances
@@ -46,7 +50,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	bool ContainAttribute(const FGameplayTagContainer& Tag, bool Exact = false) const;
-	bool ContainAttributeByQuery(const FGameplayTagQuery & Query, bool Exact = false) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool ContainAttributeByQuery(const FGameplayTagQuery& Query, bool Exact = false) const;
+
 	/**
 	 * Trying modify attribute with param Modifier
 	 * @param	Modifier							In modifier

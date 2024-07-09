@@ -127,14 +127,14 @@ public:
 	/**
 	 * 
 	 */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Source object searcher"))
-	//TObjectPtr<UDMSTargetGenerator> SourceTweaker;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Effect, meta = (DisplayName = "Default Attributes of sequence"))
+	TArray<FDMSAttributeDefinition> DefaultAttributes;
 
 	/**
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
 	 * The EffectNode uses this target generator to set the target of sequence by itself.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (EditCondition = "!bMainTargetSelectable", EditConditionHides ,DisplayName = "Main target searcher"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Effect, meta = (DisplayName = "Main target searcher"))
 	TObjectPtr<UDMSTargetGenerator> Targeter_Main;
 };
 
@@ -235,6 +235,7 @@ public:
 	TObjectPtr<UDMSConditionCombiner> TerminateConditions;
 
 	/**
+	 * ======= DEPRECATED ======= 
 	 * Target generator to be used by the EffectNode when the sequence using this EffectNode does not have an explicit target.
 	 * The EffectNode uses this target generator to set the target of sequence by itself.
 	 */
@@ -353,7 +354,7 @@ public:
 };
 
 
-DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FNodeComparer, UDMSEffectNode*, ComparingNode);
+//DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FNodeComparer, UDMSEffectNode*, ComparingNode);
 
 /**
  * 	========================================

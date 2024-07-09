@@ -11,6 +11,12 @@ UDMSAttributeComponent::UDMSAttributeComponent():UDMSSpawnableComponent()
 	bReplicateUsingRegisteredSubObjectList = true;
 }
 
+void UDMSAttributeComponent::InitByAttDefs(const TArray<FDMSAttributeDefinition>& iAttDef)
+{
+	for(auto& Attribute : iAttDef)
+		GenerateAndSetAttribute(Attribute.DefaultTag, Attribute.DefaultValue, true);
+}
+
 
 bool UDMSAttributeComponent::ContainAttribute(const FGameplayTagContainer& Tag, bool Exact) const
 {

@@ -21,20 +21,20 @@ struct DMSCORE_API FDMSStepProgressMetaData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FName ProgressFunctionName;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	EDMSBroadCastFlag ProgressBroadcastFlag;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayTag ProgressTag;
 };
 
 /**
  * progress unit of a sequence.
  */
-UCLASS(NotBlueprintable, DefaultToInstanced, EditInlineNew)
+UCLASS(BlueprintType, Blueprintable, DefaultToInstanced, EditInlineNew)
 class DMSCORE_API UDMSSequenceStep : public UObject
 {
 	GENERATED_BODY()
@@ -74,7 +74,7 @@ public:
 
 	FORCEINLINE bool IsProgressQueueFinished() const;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ProgressEnd(bool bSucceeded = true);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)

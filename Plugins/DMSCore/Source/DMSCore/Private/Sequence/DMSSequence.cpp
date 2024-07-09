@@ -336,6 +336,19 @@ void ADMSSequence::RunChildEffectQueue(TArray<UDMSEffectNodeWrapper*>& iChildEff
 	ChildSeqWorker->RunTaskWorker(AbortOption);
 }
 
+void ADMSSequence::RunChildEffectQueue(TArray<UDMSSequenceDefinition*>& iChildEffects, const FOnTaskCompletedNative& OnChildQueueCompleted,AActor* SourceTweak, bool AbortOption)
+{
+	UDMSChildSequenceWorker* ChildSeqWorker = NewObject<UDMSChildSequenceWorker>(this);
+
+	TArray<UObject*> Contexts;
+	for(auto& CE : iChildEffects) Contexts.Add(CE);
+
+	ChildSeqWorker->SetupTaskWorkerDelegate_Native(Contexts, OnChildQueueCompleted);
+	ChildSeqWorker->SetupChildSequenceWorker(this,SourceTweak);
+
+	ChildSeqWorker->RunTaskWorker(AbortOption);
+}
+
 void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -347,20 +360,40 @@ void ADMSSequence::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 void UDMSChildSequenceWorker::Work_Implementation()
 {
 	auto SeqManager = UDMSCoreFunctionLibrary::GetDMSSequenceManager(this);		check(SeqManager);
-	auto CurrentSequenceDefinition = Cast<UDMSEffectNodeWrapper>(GetCurrentContext());
-	UDMSEffectNode* ChildEffectNode = CurrentSequenceDefinition ? CurrentSequenceDefinition->GetEffectNode() : nullptr;
 	ADMSSequence* NewSeq = nullptr;
 
-	if (ChildEffectNode != nullptr && ChildEffectNode->Conditions->CheckCondition((SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject()), ParentSequence)) {
-		NewSeq = SeqManager->RequestCreateSequence((SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject()), ParentSequence->GetSourcePlayer(), ChildEffectNode,
-			TArray<TScriptInterface<IDMSEffectorInterface>>(), true, ParentSequence);
+	if ( GetCurrentContext()->IsA<UDMSEffectNodeWrapper>() ){
+		auto CurrentSequenceDefinition = Cast<UDMSEffectNodeWrapper>(GetCurrentContext());
+		UDMSEffectNode* ChildEffectNode = CurrentSequenceDefinition ? CurrentSequenceDefinition->GetEffectNode() : nullptr;
+
+		if (ChildEffectNode != nullptr && ChildEffectNode->Conditions->CheckCondition((SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject()), ParentSequence)) {
+			NewSeq = SeqManager->RequestCreateSequence((SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject()), ParentSequence->GetSourcePlayer(), ChildEffectNode,
+				TArray<TScriptInterface<IDMSEffectorInterface>>(), true, ParentSequence);
+		}
+	}
+
+
+	else if ( GetCurrentContext()->IsA<UDMSSequenceDefinition>() ){
+		auto CurrentSequenceDefinition = Cast<UDMSSequenceDefinition>(GetCurrentContext());
+
+		if (!CurrentSequenceDefinition->EffectNode) {CompleteSingleTask(true);return;}
+
+		auto EN = CurrentSequenceDefinition->EffectNode->GetEffectNode();
+		if (EN->Conditions->CheckCondition((SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject()), ParentSequence)) {
+			FDMSSequenceSpawnParameters SSParam;
+			SSParam.SourceObject = SourceTweak!=nullptr ? SourceTweak.Get() : ParentSequence->GetSourceObject();
+			SSParam.SourcePlayer = ParentSequence->GetSourcePlayer();
+			SSParam.LinkAttributeWithParent = true;
+			SSParam.ParentSequence = ParentSequence;
+			NewSeq = SeqManager->RequestCreateSequence_SD(SSParam, CurrentSequenceDefinition);
+		}
 	}
 
 	if (NewSeq == nullptr) {CompleteSingleTask(true);return;}
 
 	NewSeq->AddToOnSequenceFinished_Native(
 		[=,this](bool Succeeded){CompleteSingleTask(Succeeded);
-	});
+		});
 
 	SeqManager->RunSequence(NewSeq);
 }

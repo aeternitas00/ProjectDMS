@@ -14,12 +14,13 @@
 
 #include "DMSCoreIncludes.h"
 #include "UObject/Interface.h"
+#include "Player/DMSPlayerControllerBase.h"
 #include "DMSEffectorInterface.generated.h"
 
 class ADMSActiveEffect;
 class ADMSSequence;
 class UDMSEffectSet;
-class ADMSPlayerControllerBase;
+//class ADMSPlayerControllerBase;
 class UDMSEIManagerComponent;
 
 UINTERFACE(MinimalAPI, BlueprintType)

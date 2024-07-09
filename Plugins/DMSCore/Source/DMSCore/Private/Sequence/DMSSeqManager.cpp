@@ -23,8 +23,6 @@ UDMSSeqManager::UDMSSeqManager() : RootSequence(nullptr), CurrentSequence(nullpt
 	
 }
 
-
-
 ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 	AActor* SourceObject,
 	AActor* SourcePlayer, 
@@ -51,19 +49,7 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 	Sequence->InitializeStepProgress(EffectNode->StepDefinitions);
 
 	// Add new seq to seq tree.
-	if ( ParentSequence == nullptr ) {
-		if ( RootSequence == nullptr ) {
-			RootSequence = Sequence;
-			//RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
-		}
-		else if ( CurrentSequence != nullptr )
-			Sequence->ParentSequence = CurrentSequence;
-			//CurrentSequence->AttachChildSequence(Sequence);
-	}
-	else {
-		Sequence->ParentSequence = ParentSequence;
-		//ParentSequence->AttachChildSequence(Sequence);
-	}
+	RegisterSequence(Sequence, ParentSequence);
 
 	if ( LinkAttributeWithParent ) Sequence->AttributeComponent->ParentComponent = Sequence->ParentSequence->AttributeComponent;
 
@@ -72,59 +58,55 @@ ADMSSequence* UDMSSeqManager::RequestCreateSequence(
 	return Sequence;
 }
 
-//ADMSSequence* UDMSSeqManager::RequestCreateSequence_SD(	AActor* SourceObject, AActor* SourcePlayer, UDMSSequenceDefinition* SeqDefinition, bool LinkAttributeWithParent, ADMSSequence* ParentSequence)
-//{
-//	if( !IsValid(SeqDefinition) || !IsValid(SourceObject) || !IsValid(SourcePlayer) ){ 
-//		DMS_LOG_SIMPLE(TEXT("==== Request Create Sequence Failed [Essential params not valid] ===="));
-//		return nullptr;
-//	}
-//
-//	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
-//
-//	if ( SeqDefinition->Targeter_Main )
-//	{
-//		auto GeneratedTargets = SeqDefinition->Targeter_Main->GetTargets(SourceObject,ParentSequence ? ParentSequence : CurrentSequence.Get());
-//
-//		for ( auto& Target : GeneratedTargets ) {if (Target->Implements<UDMSEffectorInterface>()) Targets.Add(Target);}
-//	}
-//	//if ( SeqDefinition->SourceTweaker )
-//	//{
-//	//	SeqDefinition->SourceTweaker->GetTargets(SourceObject, ParentSequence ? ParentSequence : CurrentSequence.Get()))
-//	//}
-//
-//	//UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);	check(EH);
-//
-//	//// Initialize new sequence
-//	//ADMSSequence* Sequence = GetWorld()->SpawnActor<ADMSSequence>();
-//
-//	//Sequence->SourceObject = SourceObject;
-//	//Sequence->SourcePlayer = SourcePlayer;
-//	//Sequence->SetTarget(Targets);
-//
-//	////Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
-//	//Sequence->InitializeStepProgress(EffectNode->StepDefinitions);
-//
-//	//// Add new seq to seq tree.
-//	//if ( ParentSequence == nullptr ) {
-//	//	if ( RootSequence == nullptr ) {
-//	//		RootSequence = Sequence;
-//	//		//RootSequence->AddToOnSequenceFinished_Native([this](bool){OnSequenceTreeCompleted();UDMSCoreFunctionLibrary::GetDMSGameState(this)->NotifyNeedToCleanup();});
-//	//	}
-//	//	else if ( CurrentSequence != nullptr )
-//	//		Sequence->ParentSequence = CurrentSequence;
-//	//	//CurrentSequence->AttachChildSequence(Sequence);
-//	//}
-//	//else {
-//	//	Sequence->ParentSequence = ParentSequence;
-//	//	//ParentSequence->AttachChildSequence(Sequence);
-//	//}
-//
-//	//if ( LinkAttributeWithParent ) Sequence->AttributeComponent->ParentComponent = Sequence->ParentSequence->AttributeComponent;
-//
-//	//DMS_LOG_SIMPLE(TEXT("==== %s : Request Create Sequence [%s] of [%s] to [%d : %s] ===="),  *SourceObject->GetName(), *Sequence->GetName(), *EffectNode->NodeTags.ToString(), GetDepth(Sequence), Sequence->ParentSequence == nullptr ? TEXT("EmptySequence") : *Sequence->ParentSequence->GetName());
-//
-//	//return Sequence;
-//}
+ADMSSequence* UDMSSeqManager::RequestCreateSequence_Param(const FDMSSequenceSpawnParameters SSP, UDMSEffectNode* EffectNode)
+{
+	if( !IsValid(EffectNode) || !IsValid(SSP.SourceObject) || !IsValid(SSP.SourcePlayer) ){ 
+		DMS_LOG_SIMPLE(TEXT("==== Request Create Sequence Failed [Essential params not valid] ===="));
+		return nullptr;
+	}
+	UDMSEffectHandler* EH = UDMSCoreFunctionLibrary::GetDMSEffectHandler(this);	check(EH);
+
+	// Initialize new sequence
+	ADMSSequence* Sequence = GetWorld()->SpawnActor<ADMSSequence>();
+	Sequence->OriginalEffectNode = EffectNode;
+	Sequence->SourceObject = SSP.SourceObject;
+	Sequence->SourcePlayer = SSP.SourcePlayer;
+	Sequence->SetTarget(SSP.Targets);
+
+	//Sequence->InitializeStepProgress(EffectNode->StepClassRequirements,EffectNode->ProgressOrder);
+	Sequence->InitializeStepProgress(EffectNode->StepDefinitions);
+
+	// Add new seq to seq tree.
+	RegisterSequence(Sequence, SSP.ParentSequence);
+
+	if ( SSP.LinkAttributeWithParent ) Sequence->AttributeComponent->ParentComponent = Sequence->ParentSequence->AttributeComponent;
+
+	DMS_LOG_SIMPLE(TEXT("==== %s : Request Create Sequence [%s] of [%s] to [%d : %s] ===="),  *SSP.SourceObject->GetName(), *Sequence->GetName(), *EffectNode->NodeTags.ToString(), GetDepth(Sequence), Sequence->ParentSequence == nullptr ? TEXT("EmptySequence") : *Sequence->ParentSequence->GetName());
+
+	return Sequence;
+}
+
+ADMSSequence* UDMSSeqManager::RequestCreateSequence_SD(const FDMSSequenceSpawnParameters& SequenceSpawnParameters, UDMSSequenceDefinition* SeqDefinition)
+{
+	if( !IsValid(SeqDefinition) || !IsValid(SeqDefinition->EffectNode )) {
+		DMS_LOG_SIMPLE(TEXT("==== Request Create Sequence Failed [Essential params not valid] ===="));
+		return nullptr;
+	}
+	auto CopyedSSP = SequenceSpawnParameters;
+	if ( CopyedSSP.Targets.Num()==0 && SeqDefinition->Targeter_Main )
+	{
+		auto GeneratedTargets = SeqDefinition->Targeter_Main->GetTargets(SequenceSpawnParameters.SourceObject,SequenceSpawnParameters.ParentSequence ? SequenceSpawnParameters.ParentSequence : CurrentSequence);
+
+		for ( auto& Target : GeneratedTargets ) {if (Target->Implements<UDMSEffectorInterface>()) CopyedSSP.Targets.Add(Target);}
+	}
+
+	auto Sequence = RequestCreateSequence_Param(SequenceSpawnParameters, SeqDefinition->EffectNode->GetEffectNode());
+	if (!Sequence) return nullptr;
+
+	Sequence->AttributeComponent->InitByAttDefs(SeqDefinition->DefaultAttributes);
+
+	return Sequence;
+}
 
 void UDMSSeqManager::RequestAppendNewSequence_Implementation(
 	AActor* SourceObject, 
@@ -165,7 +147,7 @@ void UDMSSeqManager::RunSequence_Implementation(ADMSSequence* iSeq)
 
 	CurrentSequence = iSeq;
 
-	if(CurrentSequence==RootSequence)	
+	if(CurrentSequence==RootSequence)
 		OnSequenceTreeInitiated();
 	
 	CurrentSequence->OnSequenceInitiate();
@@ -175,6 +157,19 @@ void UDMSSeqManager::RunSequence_Implementation(ADMSSequence* iSeq)
 		EH->CreateApplyingActiveEffect(iSeq, iSeq->OriginalEffectNode);
 
 	CurrentSequence->RunStepProgressQueue();
+}
+
+void UDMSSeqManager::RegisterSequence(ADMSSequence* Sequence, ADMSSequence* ExplicitParent)
+{
+	if ( ExplicitParent == nullptr ) {
+		if ( RootSequence == nullptr ) 
+			RootSequence = Sequence;
+		else if ( CurrentSequence != nullptr )
+			Sequence->ParentSequence = CurrentSequence;
+	}
+	else 
+		Sequence->ParentSequence = ExplicitParent;
+	
 }
 
 int UDMSSeqManager::GetDepth(ADMSSequence* iSeq) {

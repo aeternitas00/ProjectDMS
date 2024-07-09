@@ -27,7 +27,7 @@ class UDMSSequenceStep;
 class UDMSSequenceStepDefinition;
 class UDMSEIManagerComponent;
 class ADMSActiveEffect;
-//class UDMSDataObjectSet;
+class UDMSSequenceDefinition;
 class UDMSEffectorInterface;
 class UDMSEffectNode;
 class UDMSEffectNodeWrapper;
@@ -322,19 +322,9 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UDMSSequenceStep> InstancedStep;
 
-private:
-	//TQueue<ADMSSequence*> ChildEffectQueue;
-
-	//void RunNextQueuedEffect();
-
-	//FSimpleDelegate OnChildEffectQueueCompleted;
-
 public:
-	//void AddEffectsToChildQueue(TArray<ADMSSequence*>& iChildSequences,const FSimpleDelegate& iOnChildQueueFinished);
-	//void AddEffectsToChildQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
-	//void AddEffectsToChildQueue(TArray<TObjectPtr<UDMSEffectNodeWrapper>>& iChildEffects,const FSimpleDelegate& iOnChildQueueFinished);
-
 	void RunChildEffectQueue(TArray<UDMSEffectNodeWrapper*>& iChildEffects, const FOnTaskCompletedNative& OnChildQueueCompleted,AActor* SourceTweak = nullptr, bool AbortOption=false);
+	void RunChildEffectQueue(TArray<UDMSSequenceDefinition*>& iChildEffects, const FOnTaskCompletedNative& OnChildQueueCompleted,AActor* SourceTweak=nullptr, bool AbortOption=false);
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

@@ -157,3 +157,66 @@ TArray<UObject*> USelReqGenerator_ObjCand_ActivateEffect::MakeDataArray(ADMSActi
 
 	return rv;
 }
+
+
+
+
+
+
+
+UDMSEffect_RunSequenceAsSource::UDMSEffect_RunSequenceAsSource()
+{
+	EffectTag = TAG_DMS_Effect_ActivateEffect;
+}
+
+void UDMSEffect_RunSequenceAsSource::Work_Implementation(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnWorkCompleted)
+{
+	//DMS_LOG_SCREEN(TEXT("%s : %s"), *iAE->GetName(), *EffectTag.ToString());
+
+	UDMSSeqManager* SeqMan = UDMSCoreFunctionLibrary::GetDMSSequenceManager(iEI);
+	if(SeqMan==nullptr) { /*DMS_LOG_SCREEN(TEXT("%s : Seqman is nullptr"), *iAE->GetName());*/OnWorkCompleted.ExecuteIfBound(false); return;}
+
+	TArray<UDMSSequenceDefinition*> SequenceDefinitions;
+
+	if ( !GetSequenceDefinitions(iEI,SequenceDefinitions)) {
+		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
+		OnWorkCompleted.ExecuteIfBound(false);
+		return;
+	}
+
+	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK START ===="), *SourceSequence->GetName());
+
+	FOnTaskCompletedNative ResumeDelegate;
+	ResumeDelegate.BindLambda([=](bool Succeed){
+		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK COMPLETED ===="),*SourceSequence->GetName());
+		OnWorkCompleted.ExecuteIfBound(Succeed);
+		DMS_LOG_SIMPLE(TEXT("==== %s : after activate effect completed lambda ends ===="),*SourceSequence->GetName());
+		});
+
+	DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK : RUN FIRST EFFECT ===="),*SourceSequence->GetName());
+	SourceSequence->RunChildEffectQueue(SequenceDefinitions, ResumeDelegate,iEI->GetApplyTarget(),true);
+}
+
+bool UDMSEffect_RunSequenceAsSource_Att::GetSequenceDefinitions(ADMSActiveEffect* iEI, ADMSSequence* SourceSequence, TArray<UDMSSequenceDefinition*>& OutDefinitions)
+{
+	auto AttOwners = AttributeOwner->GetTargets(iEI,SourceSequence);
+	if(AttOwners.Num()==0 || !AttOwners[0]->IsA<AActor>()) return false;
+
+	auto SourceAttribute = Cast<AActor>(AttOwners[0])->GetComponentByClass<UDMSAttributeComponent>()->GetAttribute(AttributeTags);
+
+	if(!SourceAttribute || !SourceAttribute->AttributeValue->IsA<UDMSAttributeValue_Object>()) return false;
+
+	auto CastedValue = Cast<UDMSAttributeValue_Object>(SourceAttribute->AttributeValue);
+	for(auto& CE : CastedValue->GetValue())
+	{
+		if(CE->IsA<UDMSSequenceDefinition>())
+			OutDefinitions.Add(Cast<UDMSSequenceDefinition>(CE));
+	}
+	return true;
+}
+
+bool UDMSEffect_RunSequenceAsSource_Static::GetSequenceDefinitions(ADMSActiveEffect* iEI, ADMSSequence* SourceSequence, TArray<UDMSSequenceDefinition*>& OutDefinitions)
+{
+	OutDefinitions = StaticDefinitionArr;
+	return true;
+}

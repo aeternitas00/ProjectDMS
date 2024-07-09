@@ -28,34 +28,28 @@ class UDMSDecisionWidget;
 
 //DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(bool, FOnSelectorFinished, UDMSDataObjectSet*, Datas);
 
-//USTRUCT(BlueprintType)
-//struct DMSCORE_API FDMSSequenceSpawnParameters
-//{
-//	GENERATED_BODY()
-//
-//	FDMSSequenceSpawnParameters():SourceObject(nullptr),SourcePlayer(nullptr),EffectNode(nullptr),Targets({}),ParentSequence(nullptr),Datas(nullptr){}
-//	
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	UObject* SourceObject;
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	AActor* SourcePlayer;
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	UDMSEffectNode* EffectNode;
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	ADMSSequence* ParentSequence;
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	UDMSDataObjectSet* Datas;
-//
-//	FSimpleMulticastEventSignature OnSequenceInitiated_Native;
-//	FOnSequenceFinished OnSequenceFinished_Native;
-//
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	FOnSequenceInitiatedDynamic OnSequenceInitiated;
-//	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-//	FOnSequenceFinishedDynamic OnSequenceFinished;
-//};
+USTRUCT(BlueprintType)
+struct DMSCORE_API FDMSSequenceSpawnParameters
+{
+	GENERATED_BODY()
+
+	FDMSSequenceSpawnParameters():SourceObject(nullptr),SourcePlayer(nullptr),Targets({}),ParentSequence(nullptr){}
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TObjectPtr<AActor> SourceObject;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TObjectPtr<AActor> SourcePlayer;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TArray<TScriptInterface<IDMSEffectorInterface>> Targets;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TObjectPtr<ADMSSequence> ParentSequence;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	bool LinkAttributeWithParent;
+};
 
 /**
  *	========================================
@@ -86,7 +80,7 @@ public:
 	 * @param	ParentSequence				Explicit parent sequence. Default is Current sequence of SequenceManager.
 	 * @return	Created sequence : nullptr if request was failed.
 	 */
-	UFUNCTION(BlueprintCallable/*, Server, Reliable*/)
+	UFUNCTION(BlueprintCallable, meta=(DisplayName="Request Create Sequence")/*, Server, Reliable*/)
 	ADMSSequence* RequestCreateSequence(
 		AActor* SourceObject, 
 		AActor* SourcePlayer,
@@ -94,16 +88,13 @@ public:
 		const TArray<TScriptInterface<IDMSEffectorInterface>>& Targets,
 		bool LinkAttributeWithParent = false,
 		ADMSSequence* ParentSequence = nullptr
-	);	
+	);
 
-	//UFUNCTION(BlueprintCallable/*, Server, Reliable*/)
-	//ADMSSequence* RequestCreateSequence_SD(
-	//	AActor* SourceObject, 
-	//	AActor* SourcePlayer,
-	//	UDMSSequenceDefinition* SeqDefinition, 
-	//	bool LinkAttributeWithParent = false,
-	//	ADMSSequence* ParentSequence = nullptr
-	//);	
+	UFUNCTION(BlueprintCallable, meta=(DisplayName="Request Create Sequence")/*, Server, Reliable*/)
+	ADMSSequence* RequestCreateSequence_Param(const FDMSSequenceSpawnParameters SequenceSpawnParameters,UDMSEffectNode* EffectNode);
+
+	UFUNCTION(BlueprintCallable, meta=(DisplayName="Request Create Sequence")/*, Server, Reliable*/)
+	ADMSSequence* RequestCreateSequence_SD(const FDMSSequenceSpawnParameters& SequenceSpawnParameters,UDMSSequenceDefinition* SeqDefinition);
 
 	// 멀티플레이 테스트용 임시 함수
 	/**
@@ -150,7 +141,8 @@ protected:
 	 * ( acutally it just nullifying root sequence. the rest is left to be handled by the gc. )
 	 */
 	//void CleanupSequenceTree();	
-	
+	void RegisterSequence(ADMSSequence* Sequence, ADMSSequence* ExplicitParent = nullptr);
+
 public:
 	/*
 	 * Root of sequence tree. the first created sequence becomes root sequence.

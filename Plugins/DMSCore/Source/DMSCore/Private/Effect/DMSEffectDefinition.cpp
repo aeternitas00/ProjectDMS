@@ -16,7 +16,8 @@
 
 void UDMSEffectDefinition::ExecuteEffectOptions(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnOptionCompleted& OnOptionCompleted)
 {
-	if (EffectOptions.Num()== 0 ) {OnOptionCompleted.Execute(nullptr);return;}
+	if (EffectOptions.Num()==0) {OnOptionCompleted.Execute(nullptr); return;}
+
 	for (auto& EO : EffectOptions)
 	{
 		EO->ExecuteOption(SourceSequence, iEI, OnOptionCompleted);
@@ -25,10 +26,6 @@ void UDMSEffectDefinition::ExecuteEffectOptions(ADMSSequence* SourceSequence, AD
 
 void UDMSEffectDefinition::ExecuteEffectDefinition(ADMSSequence* SourceSequence, ADMSActiveEffect* iEI, const FOnExecuteCompleted& OnExecuteCompleted)
 {
-	//EffectOption->ExecuteOption(SourceSequence, iEI, [=]() {
-	//	Work(SourceSequence, iEI, OnExecuteCompleted);
-	//});
-
 	Work(SourceSequence, iEI, OnExecuteCompleted);
 }
 
@@ -77,16 +74,12 @@ TArray<FDMSSequenceEIStorage> UDMSEffectNode::GenerateApplyTarget(UDMSEffectNode
 UDMSEffectNode::UDMSEffectNode() : bForced(false), bCanResponseMulTime(false), bIgnoreNotify(false), bIsChainableEffect(true)
 {
 	Conditions = CreateDefaultSubobject<UDMSConditionCombiner>("Conditions");
-
-	//StepDefinitions = StepClassRequirements.Array();
 }
 
 FGameplayTagContainer UDMSEffectNode::GenerateTagContainer_Implementation(ADMSSequence* CurrentSequence)
 {
 	FGameplayTagContainer ctn;
 	ctn.AppendTags(NodeTags);
-
-	//for (auto& fx : EffectDefinitions)	ctn.AppendTags(fx->GetEffectTags());
 
 	return ctn;
 }
