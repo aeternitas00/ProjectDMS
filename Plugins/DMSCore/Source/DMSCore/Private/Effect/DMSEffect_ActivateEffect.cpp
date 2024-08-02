@@ -178,7 +178,7 @@ void UDMSEffect_RunSequenceAsSource::Work_Implementation(ADMSSequence* SourceSeq
 
 	TArray<UDMSSequenceDefinition*> SequenceDefinitions;
 
-	if ( !GetSequenceDefinitions(iEI,SequenceDefinitions)) {
+	if ( !GetSequenceDefinitions(iEI,SourceSequence,SequenceDefinitions)) {
 		DMS_LOG_SIMPLE(TEXT("==== %s : ACTIVATE EFFECT WORK CANCELED ===="), *SourceSequence->GetName());
 		OnWorkCompleted.ExecuteIfBound(false);
 		return;
